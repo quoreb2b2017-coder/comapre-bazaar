@@ -123,14 +123,17 @@ export default function HomePage() {
       </div>
 
       {/* Hero */}
-      <header className="bg-gradient-to-br from-[#F78230] via-[#F27F25] to-[#ED8105] py-20 px-4 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_70%_50%,rgba(255,173,86,0.25),transparent_60%)]" aria-hidden="true" />
+      <header className="bg-gradient-to-br from-[#FFB161] via-[#F58220] to-[#CB5C00] py-20 px-4 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_20%,rgba(255,235,207,0.2),transparent_55%)]" aria-hidden="true" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_80%_55%,rgba(255,201,138,0.28),transparent_62%)]" aria-hidden="true" />
+        <div className="absolute inset-0 bg-[linear-gradient(130deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0)_45%,rgba(123,44,0,0.16)_100%)]" aria-hidden="true" />
+        <div className="absolute inset-x-0 bottom-0 h-24 bg-[linear-gradient(to_bottom,rgba(203,92,0,0)_0%,rgba(171,73,0,0.24)_100%)]" aria-hidden="true" />
         <div className="max-w-3xl mx-auto text-center relative">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl text-white leading-tight tracking-tight mb-5">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl text-white leading-tight tracking-tight mb-5 drop-shadow-[0_2px_10px_rgba(110,45,0,0.35)]">
             Find the <em className="text-[#FCE7D0] not-italic">right</em> business software,{' '}
             <br className="hidden sm:block" />without the guesswork
           </h1>
-          <p className="text-lg sm:text-xl text-white/80 leading-relaxed mb-8 max-w-xl mx-auto">
+          <p className="text-lg sm:text-xl text-white/85 leading-relaxed mb-8 max-w-xl mx-auto">
             Independent comparisons of CRM, payroll, HR, and marketing software — researched by
             experts, ranked on real criteria, updated for 2026.
           </p>
@@ -144,7 +147,7 @@ export default function HomePage() {
               <Link
                 key={category.href}
                 href={category.href}
-                className="bg-white/10 hover:bg-white/20 border border-white/20 text-white/90 text-xs px-4 py-2 rounded-full transition-colors"
+                className="bg-white/14 hover:bg-white/24 border border-white/30 text-white text-xs px-4 py-2 rounded-full shadow-[0_6px_16px_rgba(110,45,0,0.2)] backdrop-blur-[1px] transition-all"
               >
                 {category.label}
               </Link>

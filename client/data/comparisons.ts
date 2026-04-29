@@ -29,7 +29,7 @@ export const comparisonPages: ComparisonPageData[] = [
     tocItems: [{ label: 'Top CRM picks', anchor: 'picks' }, { label: 'Full comparison table', anchor: 'compare' }, { label: 'FAQ', anchor: 'faqs' }],
     ctaTitle: 'Compare CRM quotes for your team',
     ctaBody: "Tell us your team size and we'll match you with the right CRM vendors — free, no commitment.",
-    ctaSlug: '/marketing/best-crm-software/get-free-quotes',
+    ctaSlug: '/marketing/best-crm-software/get-free-quote',
   },
 
   // ─── EMAIL MARKETING ────────────────────────────────────────────────────

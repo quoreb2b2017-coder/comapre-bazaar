@@ -4,6 +4,7 @@ import { SiteNav } from '@/components/layout/SiteNav'
 import { SiteFooter } from '@/components/layout/SiteFooter'
 import { DisclosureBanner } from '@/components/layout/DisclosureBanner'
 import ArrowNavigation from '@/components/ArrowNavigation'
+import { CompareBazaarChat } from '@/components/chatbot/CompareBazaarChat'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { buildOrganizationSchema, buildWebSiteSchema } from '@/lib/seo'
 
@@ -38,6 +39,7 @@ export default function RootLayout({
         <SiteNav />
         <main className="flex-1">{children}</main>
         <ArrowNavigation />
+        <CompareBazaarChat />
         <SiteFooter />
       </body>
     </html>

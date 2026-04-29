@@ -1,0 +1,1157 @@
+// @ts-nocheck
+"use client";
+
+import { useState, useEffect, useRef } from 'react';
+import ReCAPTCHA from 'react-google-recaptcha';
+import Link from 'next/link';
+import { 
+  CheckCircle, 
+  ChevronDown, 
+  Globe, 
+  Shield, 
+  Zap, 
+  TrendingUp, 
+  BarChart3, 
+  Clock, 
+  ArrowRight,
+  Target,
+  Layout,
+  Users,
+  Star,
+  Award,
+  Sparkles,
+  Palette,
+  Code,
+  Smartphone,
+  Search,
+  ShoppingCart,
+  Rocket,
+  Heart,
+  Monitor,
+  Palette as DesignIcon,
+  Gift
+} from 'lucide-react';
+
+const WebsiteBuildingGetQuotesForm = () => {
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    companyName: '',
+    email: '',
+    phoneNumber: '',
+    zipCode: '',
+    employeeCount: '',
+    websiteType: '',
+    currentWebsite: '',
+    pagesNeeded: '',
+    ecommerceNeeded: '',
+    importantFeatures: [],
+    industry: '',
+    emailUpdates: false
+  });
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [captchaValue, setCaptchaValue] = useState(null);
+  const captchaRef = useRef(null);
+  const [focusedField, setFocusedField] = useState(null);
+
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    if (showSuccess) {
+      timer = setTimeout(() => {
+        setShowSuccess(false);
+      }, 10000);
+    }
+    return () => clearTimeout(timer);
+  }, [showSuccess]);
+
+  useEffect(() => {
+    document.title = "Get Website Building Platform Quotes | Compare-Bazaar";
+  }, []);
+
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === 'checkbox' ? checked : value
+    });
+    if (errors[name]) {
+      setErrors({
+        ...errors,
+        [name]: ''
+      });
+    }
+  };
+
+  const handleCheckboxChange = (feature) => {
+    setFormData({
+      ...formData,
+      importantFeatures: formData.importantFeatures.includes(feature)
+        ? formData.importantFeatures.filter(f => f !== feature)
+        : [...formData.importantFeatures, feature]
+    });
+  };
+
+  const handleSelectChange = (name, value) => {
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+    if (errors[name]) {
+      setErrors({
+        ...errors,
+        [name]: ''
+      });
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = 'Please complete this required field.';
+    }
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = 'Please complete this required field.';
+    }
+    if (!formData.companyName.trim()) {
+      newErrors.companyName = 'Please complete this required field.';
+    }
+    if (!formData.email.trim()) {
+      newErrors.email = 'Please complete this required field.';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email address.';
+    }
+    if (!formData.phoneNumber.trim()) {
+      newErrors.phoneNumber = 'Please complete this required field.';
+    }
+    if (!formData.zipCode.trim()) {
+      newErrors.zipCode = 'Please complete this required field.';
+    } else if (!/^\d{5}$/.test(formData.zipCode)) {
+      newErrors.zipCode = 'Please enter a valid 5-digit zip code.';
+    }
+    if (!formData.employeeCount) {
+      newErrors.employeeCount = 'Please complete this required field.';
+    }
+    if (!formData.websiteType) {
+      newErrors.websiteType = 'Please complete this required field.';
+    }
+    if (!formData.currentWebsite) {
+      newErrors.currentWebsite = 'Please complete this required field.';
+    }
+    if (!formData.pagesNeeded) {
+      newErrors.pagesNeeded = 'Please complete this required field.';
+    }
+    if (!formData.ecommerceNeeded) {
+      newErrors.ecommerceNeeded = 'Please complete this required field.';
+    }
+    if (!formData.industry) {
+      newErrors.industry = 'Please complete this required field.';
+    }
+    // reCAPTCHA is always required
+    if (!captchaValue) {
+      newErrors.captcha = 'Please verify that you\'re not a robot.';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Explicit check: reCAPTCHA must be completed
+    if (!captchaValue) {
+      setErrors({
+        ...errors,
+        captcha: 'Please verify that you\'re not a robot.'
+      });
+      return;
+    }
+    
+    if (!validateForm()) {
+      const firstErrorField = Object.keys(errors)[0];
+      if (firstErrorField) {
+        document.querySelector(`[name="${firstErrorField}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    try {
+      const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY;
+      if (!accessKey) {
+        alert('Form submission is not configured. Please contact support.');
+        setIsSubmitting(false);
+        return;
+      }
+      
+      const submissionData = {
+        access_key: accessKey,
+        subject: 'Website Building Platform Quote Request - Compare-Bazaar',
+        from_name: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        company_name: formData.companyName,
+        phone: formData.phoneNumber,
+        zip_code: formData.zipCode,
+        employee_count: formData.employeeCount,
+        website_type: formData.websiteType,
+        current_website: formData.currentWebsite,
+        pages_needed: formData.pagesNeeded,
+        ecommerce_needed: formData.ecommerceNeeded,
+        important_features: formData.importantFeatures.join(', '),
+        industry: formData.industry,
+        email_updates: formData.emailUpdates ? 'Yes' : 'No',
+        form_source: 'Website Building Platform - Get Quotes (Compare-Bazaar)',
+        captcha_token: captchaValue
+      };
+
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(submissionData)
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setShowSuccess(true);
+        setFormData({
+          firstName: '',
+          lastName: '',
+          companyName: '',
+          email: '',
+          phoneNumber: '',
+          zipCode: '',
+          employeeCount: '',
+          websiteType: '',
+          currentWebsite: '',
+          pagesNeeded: '',
+          ecommerceNeeded: '',
+          importantFeatures: [],
+          industry: '',
+          emailUpdates: false
+        });
+        setCaptchaValue(null);
+        if (captchaRef.current) {
+          captchaRef.current.reset();
+        }
+        setErrors({});
+      } else {
+        alert('Sorry, there was a problem submitting your information. Please try again later.');
+      }
+    } catch (error) {
+      console.error('Form submission error:', error);
+      alert('Sorry, there was a problem submitting your information. Please try again later.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const importantFeatures = [
+    { id: 'drag-drop', label: 'Drag-and-Drop Editor', icon: <Layout className="w-5 h-5" /> },
+    { id: 'templates', label: 'Professional Templates', icon: <Palette className="w-5 h-5" /> },
+    { id: 'mobile-responsive', label: 'Mobile Responsive Design', icon: <Smartphone className="w-5 h-5" /> },
+    { id: 'seo-tools', label: 'Built-in SEO Tools', icon: <Search className="w-5 h-5" /> },
+    { id: 'ecommerce', label: 'E-commerce Functionality', icon: <ShoppingCart className="w-5 h-5" /> },
+    { id: 'analytics', label: 'Analytics & Reporting', icon: <BarChart3 className="w-5 h-5" /> }
+  ];
+
+  return (
+    <>
+      {/* Main Content Section - Two Column Layout */}
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-blue-50 to-purple-50 py-8 md:py-12 relative overflow-hidden">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-[#ff8633]/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#000e54]/10 rounded-full blur-3xl animate-pulse delay-500"></div>
+        </div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-start lg:items-stretch">
+            
+            {/* Left Side - Form */}
+            <div className="order-1 lg:order-1 flex">
+              <div className="bg-white rounded-3xl shadow-2xl p-6 md:p-8 lg:p-10 border border-gray-100 backdrop-blur-sm transform transition-all duration-300 hover:shadow-3xl w-full flex flex-col h-full">
+                {/* Header Section */}
+                <div className="mb-6 pb-4 border-b border-gray-200">
+                  <div className="inline-block mb-4">
+                    <span className="bg-gradient-to-r from-[#ff8633] to-orange-600 text-white px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wide shadow-lg">
+                      Get Free Quotes
+                    </span>
+                  </div>
+                  <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                    Find Your Perfect Website Building Platform
+                  </h1>
+                  <p className="text-base text-gray-600 leading-relaxed">
+                    Connect with top website building providers. Compare features, pricing, and find the ideal platform to create a stunning website for your business without coding.
+                  </p>
+                </div>
+
+                {showSuccess && (
+                  <div className="mb-6 bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 rounded-xl p-4 shadow-lg animate-fadeIn">
+                    <div className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                          <CheckCircle className="h-5 w-5 text-white" />
+                        </div>
+                      </div>
+                      <div className="ml-3">
+                        <h3 className="text-base font-semibold text-green-800">Thank you!</h3>
+                        <p className="mt-1 text-sm text-green-700">
+                          Your submission has been received. We will get back to you soon with your free quotes.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <form onSubmit={handleSubmit} className="space-y-5 flex-1 flex flex-col">
+                  {/* First Name and Last Name in One Row */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="group">
+                      <label htmlFor="firstName" className="block text-sm font-bold text-gray-800 mb-2 transition-colors group-focus-within:text-[#ff8633]">
+                        First Name <span className="text-red-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          id="firstName"
+                          name="firstName"
+                          value={formData.firstName}
+                          onChange={handleInputChange}
+                          onFocus={() => setFocusedField('firstName')}
+                          onBlur={() => setFocusedField(null)}
+                          className={`w-full px-4 py-3.5 border-2 rounded-xl text-gray-900 placeholder-gray-400 
+                            bg-white transition-all duration-300 ease-in-out
+                            focus:outline-none focus:ring-4 focus:ring-[#ff8633]/20 focus:border-[#ff8633] 
+                            hover:border-gray-400 hover:shadow-md
+                            ${errors.firstName 
+                              ? 'border-red-500 bg-red-50 focus:ring-red-200 focus:border-red-500' 
+                              : 'border-gray-300'
+                            }
+                            ${focusedField === 'firstName' ? 'shadow-lg scale-[1.01]' : ''}
+                          `}
+                          placeholder="John"
+                        />
+                        {focusedField === 'firstName' && !errors.firstName && (
+                          <div className="absolute inset-0 rounded-xl border-2 border-[#ff8633] pointer-events-none animate-pulse-border"></div>
+                        )}
+                      </div>
+                      {errors.firstName && (
+                        <p className="mt-1.5 text-sm text-red-600 font-medium animate-slideDown flex items-center">
+                          <span className="mr-1">⚠</span> {errors.firstName}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="group">
+                      <label htmlFor="lastName" className="block text-sm font-bold text-gray-800 mb-2 transition-colors group-focus-within:text-[#ff8633]">
+                        Last Name <span className="text-red-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          id="lastName"
+                          name="lastName"
+                          value={formData.lastName}
+                          onChange={handleInputChange}
+                          onFocus={() => setFocusedField('lastName')}
+                          onBlur={() => setFocusedField(null)}
+                          className={`w-full px-4 py-3.5 border-2 rounded-xl text-gray-900 placeholder-gray-400 
+                            bg-white transition-all duration-300 ease-in-out
+                            focus:outline-none focus:ring-4 focus:ring-[#ff8633]/20 focus:border-[#ff8633] 
+                            hover:border-gray-400 hover:shadow-md
+                            ${errors.lastName 
+                              ? 'border-red-500 bg-red-50 focus:ring-red-200 focus:border-red-500' 
+                              : 'border-gray-300'
+                            }
+                            ${focusedField === 'lastName' ? 'shadow-lg scale-[1.01]' : ''}
+                          `}
+                          placeholder="Doe"
+                        />
+                        {focusedField === 'lastName' && !errors.lastName && (
+                          <div className="absolute inset-0 rounded-xl border-2 border-[#ff8633] pointer-events-none animate-pulse-border"></div>
+                        )}
+                      </div>
+                      {errors.lastName && (
+                        <p className="mt-1.5 text-sm text-red-600 font-medium animate-slideDown flex items-center">
+                          <span className="mr-1">⚠</span> {errors.lastName}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Company Name */}
+                  <div className="group">
+                    <label htmlFor="companyName" className="block text-sm font-bold text-gray-800 mb-2 transition-colors group-focus-within:text-[#ff8633]">
+                      Company Name <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        id="companyName"
+                        name="companyName"
+                        value={formData.companyName}
+                        onChange={handleInputChange}
+                        onFocus={() => setFocusedField('companyName')}
+                        onBlur={() => setFocusedField(null)}
+                        className={`w-full px-4 py-3.5 border-2 rounded-xl text-gray-900 placeholder-gray-400 
+                          bg-white transition-all duration-300 ease-in-out
+                          focus:outline-none focus:ring-4 focus:ring-[#ff8633]/20 focus:border-[#ff8633] 
+                          hover:border-gray-400 hover:shadow-md
+                          ${errors.companyName 
+                            ? 'border-red-500 bg-red-50 focus:ring-red-200 focus:border-red-500' 
+                            : 'border-gray-300'
+                          }
+                          ${focusedField === 'companyName' ? 'shadow-lg scale-[1.01]' : ''}
+                        `}
+                        placeholder="Enter your company name"
+                      />
+                      {focusedField === 'companyName' && !errors.companyName && (
+                        <div className="absolute inset-0 rounded-xl border-2 border-[#ff8633] pointer-events-none animate-pulse-border"></div>
+                      )}
+                    </div>
+                    {errors.companyName && (
+                      <p className="mt-1.5 text-sm text-red-600 font-medium animate-slideDown flex items-center">
+                        <span className="mr-1">⚠</span> {errors.companyName}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Business Email */}
+                  <div className="group">
+                    <label htmlFor="email" className="block text-sm font-bold text-gray-800 mb-2 transition-colors group-focus-within:text-[#ff8633]">
+                      Business Email <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        onFocus={() => setFocusedField('email')}
+                        onBlur={() => setFocusedField(null)}
+                        className={`w-full px-4 py-3.5 border-2 rounded-xl text-gray-900 placeholder-gray-400 
+                          bg-white transition-all duration-300 ease-in-out
+                          focus:outline-none focus:ring-4 focus:ring-[#ff8633]/20 focus:border-[#ff8633] 
+                          hover:border-gray-400 hover:shadow-md
+                          ${errors.email 
+                            ? 'border-red-500 bg-red-50 focus:ring-red-200 focus:border-red-500' 
+                            : 'border-gray-300'
+                          }
+                          ${focusedField === 'email' ? 'shadow-lg scale-[1.01]' : ''}
+                        `}
+                        placeholder="john.doe@company.com"
+                      />
+                      {focusedField === 'email' && !errors.email && (
+                        <div className="absolute inset-0 rounded-xl border-2 border-[#ff8633] pointer-events-none animate-pulse-border"></div>
+                      )}
+                    </div>
+                    {errors.email && (
+                      <p className="mt-1.5 text-sm text-red-600 font-medium animate-slideDown flex items-center">
+                        <span className="mr-1">⚠</span> {errors.email}
+                      </p>
+                    )}
+                    <p className="mt-2 text-xs text-gray-500 leading-relaxed">
+                      By entering your email above, you consent to receive marketing emails from compare-bazaar.com
+                    </p>
+                  </div>
+
+                  {/* Phone Number and Zip Code in One Row */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="group">
+                      <label htmlFor="phoneNumber" className="block text-sm font-bold text-gray-800 mb-2 transition-colors group-focus-within:text-[#ff8633]">
+                        Phone Number <span className="text-red-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="tel"
+                          id="phoneNumber"
+                          name="phoneNumber"
+                          value={formData.phoneNumber}
+                          onChange={handleInputChange}
+                          onFocus={() => setFocusedField('phoneNumber')}
+                          onBlur={() => setFocusedField(null)}
+                          className={`w-full px-4 py-3.5 border-2 rounded-xl text-gray-900 placeholder-gray-400 
+                            bg-white transition-all duration-300 ease-in-out
+                            focus:outline-none focus:ring-4 focus:ring-[#ff8633]/20 focus:border-[#ff8633] 
+                            hover:border-gray-400 hover:shadow-md
+                            ${errors.phoneNumber 
+                              ? 'border-red-500 bg-red-50 focus:ring-red-200 focus:border-red-500' 
+                              : 'border-gray-300'
+                            }
+                            ${focusedField === 'phoneNumber' ? 'shadow-lg scale-[1.01]' : ''}
+                          `}
+                          placeholder="(555) 123-4567"
+                        />
+                        {focusedField === 'phoneNumber' && !errors.phoneNumber && (
+                          <div className="absolute inset-0 rounded-xl border-2 border-[#ff8633] pointer-events-none animate-pulse-border"></div>
+                        )}
+                      </div>
+                      {errors.phoneNumber && (
+                        <p className="mt-1.5 text-sm text-red-600 font-medium animate-slideDown flex items-center">
+                          <span className="mr-1">⚠</span> {errors.phoneNumber}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="group">
+                      <label htmlFor="zipCode" className="block text-sm font-bold text-gray-800 mb-2 transition-colors group-focus-within:text-[#ff8633]">
+                        Business Zip Code <span className="text-red-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          id="zipCode"
+                          name="zipCode"
+                          value={formData.zipCode}
+                          onChange={handleInputChange}
+                          onFocus={() => setFocusedField('zipCode')}
+                          onBlur={() => setFocusedField(null)}
+                          maxLength="5"
+                          className={`w-full px-4 py-3.5 border-2 rounded-xl text-gray-900 placeholder-gray-400 
+                            bg-white transition-all duration-300 ease-in-out
+                            focus:outline-none focus:ring-4 focus:ring-[#ff8633]/20 focus:border-[#ff8633] 
+                            hover:border-gray-400 hover:shadow-md
+                            ${errors.zipCode 
+                              ? 'border-red-500 bg-red-50 focus:ring-red-200 focus:border-red-500' 
+                              : 'border-gray-300'
+                            }
+                            ${focusedField === 'zipCode' ? 'shadow-lg scale-[1.01]' : ''}
+                          `}
+                          placeholder="12345"
+                        />
+                        {focusedField === 'zipCode' && !errors.zipCode && (
+                          <div className="absolute inset-0 rounded-xl border-2 border-[#ff8633] pointer-events-none animate-pulse-border"></div>
+                        )}
+                      </div>
+                      {errors.zipCode && (
+                        <p className="mt-1.5 text-sm text-red-600 font-medium animate-slideDown flex items-center">
+                          <span className="mr-1">⚠</span> {errors.zipCode}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Number of Employees */}
+                  <div className="group">
+                    <label htmlFor="employeeCount" className="block text-sm font-bold text-gray-800 mb-2 transition-colors group-focus-within:text-[#ff8633]">
+                      Number of Employees <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <select
+                        id="employeeCount"
+                        name="employeeCount"
+                        value={formData.employeeCount}
+                        onChange={(e) => handleSelectChange('employeeCount', e.target.value)}
+                        onFocus={() => setFocusedField('employeeCount')}
+                        onBlur={() => setFocusedField(null)}
+                        className={`w-full px-4 py-3.5 pr-12 border-2 rounded-xl text-gray-900 bg-white 
+                          transition-all duration-300 ease-in-out cursor-pointer
+                          focus:outline-none focus:ring-4 focus:ring-[#ff8633]/20 focus:border-[#ff8633] 
+                          hover:border-gray-400 hover:shadow-md
+                          appearance-none
+                          ${errors.employeeCount 
+                            ? 'border-red-500 bg-red-50 focus:ring-red-200 focus:border-red-500' 
+                            : 'border-gray-300'
+                          }
+                          ${focusedField === 'employeeCount' ? 'shadow-lg scale-[1.01]' : ''}
+                        `}
+                      >
+                        <option value="">Select number of employees</option>
+                        <option value="1 - 10">1 - 10</option>
+                        <option value="11 - 50">11 - 50</option>
+                        <option value="51 - 200">51 - 200</option>
+                        <option value="201 - 500">201 - 500</option>
+                        <option value="500+">500+</option>
+                      </select>
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                        <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${focusedField === 'employeeCount' ? 'text-[#ff8633] rotate-180' : ''}`} />
+                      </div>
+                    </div>
+                    {errors.employeeCount && (
+                      <p className="mt-1.5 text-sm text-red-600 font-medium animate-slideDown flex items-center">
+                        <span className="mr-1">⚠</span> {errors.employeeCount}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Website Type */}
+                  <div className="group">
+                    <label htmlFor="websiteType" className="block text-sm font-bold text-gray-800 mb-2 transition-colors group-focus-within:text-[#ff8633]">
+                      Type of Website <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <select
+                        id="websiteType"
+                        name="websiteType"
+                        value={formData.websiteType}
+                        onChange={(e) => handleSelectChange('websiteType', e.target.value)}
+                        onFocus={() => setFocusedField('websiteType')}
+                        onBlur={() => setFocusedField(null)}
+                        className={`w-full px-4 py-3.5 pr-12 border-2 rounded-xl text-gray-900 bg-white 
+                          transition-all duration-300 ease-in-out cursor-pointer
+                          focus:outline-none focus:ring-4 focus:ring-[#ff8633]/20 focus:border-[#ff8633] 
+                          hover:border-gray-400 hover:shadow-md
+                          appearance-none
+                          ${errors.websiteType 
+                            ? 'border-red-500 bg-red-50 focus:ring-red-200 focus:border-red-500' 
+                            : 'border-gray-300'
+                          }
+                          ${focusedField === 'websiteType' ? 'shadow-lg scale-[1.01]' : ''}
+                        `}
+                      >
+                        <option value="">Select website type</option>
+                        <option value="Business Website">Business Website</option>
+                        <option value="E-commerce Store">E-commerce Store</option>
+                        <option value="Blog">Blog</option>
+                        <option value="Portfolio">Portfolio</option>
+                        <option value="Landing Page">Landing Page</option>
+                        <option value="Other">Other</option>
+                      </select>
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                        <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${focusedField === 'websiteType' ? 'text-[#ff8633] rotate-180' : ''}`} />
+                      </div>
+                    </div>
+                    {errors.websiteType && (
+                      <p className="mt-1.5 text-sm text-red-600 font-medium animate-slideDown flex items-center">
+                        <span className="mr-1">⚠</span> {errors.websiteType}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Current Website Status */}
+                  <div className="group">
+                    <label htmlFor="currentWebsite" className="block text-sm font-bold text-gray-800 mb-2 transition-colors group-focus-within:text-[#ff8633]">
+                      Current Website Status <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <select
+                        id="currentWebsite"
+                        name="currentWebsite"
+                        value={formData.currentWebsite}
+                        onChange={(e) => handleSelectChange('currentWebsite', e.target.value)}
+                        onFocus={() => setFocusedField('currentWebsite')}
+                        onBlur={() => setFocusedField(null)}
+                        className={`w-full px-4 py-3.5 pr-12 border-2 rounded-xl text-gray-900 bg-white 
+                          transition-all duration-300 ease-in-out cursor-pointer
+                          focus:outline-none focus:ring-4 focus:ring-[#ff8633]/20 focus:border-[#ff8633] 
+                          hover:border-gray-400 hover:shadow-md
+                          appearance-none
+                          ${errors.currentWebsite 
+                            ? 'border-red-500 bg-red-50 focus:ring-red-200 focus:border-red-500' 
+                            : 'border-gray-300'
+                          }
+                          ${focusedField === 'currentWebsite' ? 'shadow-lg scale-[1.01]' : ''}
+                        `}
+                      >
+                        <option value="">Select option</option>
+                        <option value="No website yet">No website yet</option>
+                        <option value="Have a website but want to rebuild">Have a website but want to rebuild</option>
+                        <option value="Looking to add features to existing site">Looking to add features to existing site</option>
+                      </select>
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                        <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${focusedField === 'currentWebsite' ? 'text-[#ff8633] rotate-180' : ''}`} />
+                      </div>
+                    </div>
+                    {errors.currentWebsite && (
+                      <p className="mt-1.5 text-sm text-red-600 font-medium animate-slideDown flex items-center">
+                        <span className="mr-1">⚠</span> {errors.currentWebsite}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Pages Needed and E-commerce */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="group">
+                      <label htmlFor="pagesNeeded" className="block text-sm font-bold text-gray-800 mb-2 transition-colors group-focus-within:text-[#ff8633]">
+                        Number of Pages Needed <span className="text-red-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <select
+                          id="pagesNeeded"
+                          name="pagesNeeded"
+                          value={formData.pagesNeeded}
+                          onChange={(e) => handleSelectChange('pagesNeeded', e.target.value)}
+                          onFocus={() => setFocusedField('pagesNeeded')}
+                          onBlur={() => setFocusedField(null)}
+                          className={`w-full px-4 py-3.5 pr-12 border-2 rounded-xl text-gray-900 bg-white 
+                            transition-all duration-300 ease-in-out cursor-pointer
+                            focus:outline-none focus:ring-4 focus:ring-[#ff8633]/20 focus:border-[#ff8633] 
+                            hover:border-gray-400 hover:shadow-md
+                            appearance-none
+                            ${errors.pagesNeeded 
+                              ? 'border-red-500 bg-red-50 focus:ring-red-200 focus:border-red-500' 
+                              : 'border-gray-300'
+                            }
+                            ${focusedField === 'pagesNeeded' ? 'shadow-lg scale-[1.01]' : ''}
+                          `}
+                        >
+                          <option value="">Select range</option>
+                          <option value="1 - 5 pages">1 - 5 pages</option>
+                          <option value="6 - 10 pages">6 - 10 pages</option>
+                          <option value="11 - 20 pages">11 - 20 pages</option>
+                          <option value="20+ pages">20+ pages</option>
+                        </select>
+                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                          <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${focusedField === 'pagesNeeded' ? 'text-[#ff8633] rotate-180' : ''}`} />
+                        </div>
+                      </div>
+                      {errors.pagesNeeded && (
+                        <p className="mt-1.5 text-sm text-red-600 font-medium animate-slideDown flex items-center">
+                          <span className="mr-1">⚠</span> {errors.pagesNeeded}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="group">
+                      <label htmlFor="ecommerceNeeded" className="block text-sm font-bold text-gray-800 mb-2 transition-colors group-focus-within:text-[#ff8633]">
+                        Need E-commerce? <span className="text-red-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <select
+                          id="ecommerceNeeded"
+                          name="ecommerceNeeded"
+                          value={formData.ecommerceNeeded}
+                          onChange={(e) => handleSelectChange('ecommerceNeeded', e.target.value)}
+                          onFocus={() => setFocusedField('ecommerceNeeded')}
+                          onBlur={() => setFocusedField(null)}
+                          className={`w-full px-4 py-3.5 pr-12 border-2 rounded-xl text-gray-900 bg-white 
+                            transition-all duration-300 ease-in-out cursor-pointer
+                            focus:outline-none focus:ring-4 focus:ring-[#ff8633]/20 focus:border-[#ff8633] 
+                            hover:border-gray-400 hover:shadow-md
+                            appearance-none
+                            ${errors.ecommerceNeeded 
+                              ? 'border-red-500 bg-red-50 focus:ring-red-200 focus:border-red-500' 
+                              : 'border-gray-300'
+                            }
+                            ${focusedField === 'ecommerceNeeded' ? 'shadow-lg scale-[1.01]' : ''}
+                          `}
+                        >
+                          <option value="">Select option</option>
+                          <option value="Yes, need online store">Yes, need online store</option>
+                          <option value="No, just a website">No, just a website</option>
+                          <option value="Maybe in the future">Maybe in the future</option>
+                        </select>
+                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                          <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${focusedField === 'ecommerceNeeded' ? 'text-[#ff8633] rotate-180' : ''}`} />
+                        </div>
+                      </div>
+                      {errors.ecommerceNeeded && (
+                        <p className="mt-1.5 text-sm text-red-600 font-medium animate-slideDown flex items-center">
+                          <span className="mr-1">⚠</span> {errors.ecommerceNeeded}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Industry */}
+                  <div className="group">
+                    <label htmlFor="industry" className="block text-sm font-bold text-gray-800 mb-2 transition-colors group-focus-within:text-[#ff8633]">
+                      Industry <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <select
+                        id="industry"
+                        name="industry"
+                        value={formData.industry}
+                        onChange={(e) => handleSelectChange('industry', e.target.value)}
+                        onFocus={() => setFocusedField('industry')}
+                        onBlur={() => setFocusedField(null)}
+                        className={`w-full px-4 py-3.5 pr-12 border-2 rounded-xl text-gray-900 bg-white 
+                          transition-all duration-300 ease-in-out cursor-pointer
+                          focus:outline-none focus:ring-4 focus:ring-[#ff8633]/20 focus:border-[#ff8633] 
+                          hover:border-gray-400 hover:shadow-md
+                          appearance-none
+                          ${errors.industry 
+                            ? 'border-red-500 bg-red-50 focus:ring-red-200 focus:border-red-500' 
+                            : 'border-gray-300'
+                          }
+                          ${focusedField === 'industry' ? 'shadow-lg scale-[1.01]' : ''}
+                        `}
+                      >
+                        <option value="">Select your industry</option>
+                        <option value="E-commerce">E-commerce</option>
+                        <option value="Technology">Technology</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Healthcare">Healthcare</option>
+                        <option value="Retail">Retail</option>
+                        <option value="Real Estate">Real Estate</option>
+                        <option value="Education">Education</option>
+                        <option value="Other">Other</option>
+                      </select>
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                        <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${focusedField === 'industry' ? 'text-[#ff8633] rotate-180' : ''}`} />
+                      </div>
+                    </div>
+                    {errors.industry && (
+                      <p className="mt-1.5 text-sm text-red-600 font-medium animate-slideDown flex items-center">
+                        <span className="mr-1">⚠</span> {errors.industry}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Important Features */}
+                  <div className="group">
+                    <label className="block text-sm font-bold text-gray-800 mb-3 transition-colors group-focus-within:text-[#ff8633]">
+                      Important Features (Select all that apply)
+                    </label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {importantFeatures.map((feature) => (
+                        <label
+                          key={feature.id}
+                          className={`relative flex items-start p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
+                            formData.importantFeatures.includes(feature.id)
+                              ? 'border-[#ff8633] bg-orange-50 shadow-lg'
+                              : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={formData.importantFeatures.includes(feature.id)}
+                            onChange={() => handleCheckboxChange(feature.id)}
+                            className="sr-only"
+                          />
+                          <div className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center mr-3 mt-0.5 ${
+                            formData.importantFeatures.includes(feature.id)
+                              ? 'border-[#ff8633] bg-[#ff8633]'
+                              : 'border-gray-300'
+                          }`}>
+                            {formData.importantFeatures.includes(feature.id) && (
+                              <CheckCircle className="w-3 h-3 text-white" />
+                            )}
+                          </div>
+                          <div className="flex-1">
+                            <div className={`inline-flex p-2 rounded-lg mb-2 ${
+                              formData.importantFeatures.includes(feature.id)
+                                ? 'bg-gradient-to-r from-[#ff8633] to-orange-600 text-white'
+                                : 'bg-gray-100 text-gray-600'
+                            }`}>
+                              {feature.icon}
+                            </div>
+                            <p className={`text-xs font-semibold ${
+                              formData.importantFeatures.includes(feature.id)
+                                ? 'text-gray-900'
+                                : 'text-gray-700'
+                            }`}>
+                              {feature.label}
+                            </p>
+                          </div>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Email Updates Checkbox */}
+                  <div className="flex items-start gap-3 p-4 bg-gradient-to-r from-orange-50 to-blue-50 rounded-xl border border-orange-200">
+                    <input
+                      type="checkbox"
+                      id="emailUpdates"
+                      name="emailUpdates"
+                      checked={formData.emailUpdates}
+                      onChange={handleInputChange}
+                      className="mt-1 w-5 h-5 text-[#ff8633] border-gray-300 rounded focus:ring-[#ff8633] cursor-pointer"
+                    />
+                    <label htmlFor="emailUpdates" className="text-sm text-gray-700 cursor-pointer">
+                      I'd like to receive email updates about website building solutions and best practices.
+                    </label>
+                  </div>
+
+                  {/* reCAPTCHA */}
+                  <div className="pt-2">
+                    <div className="flex justify-start">
+                      <ReCAPTCHA
+                        ref={captchaRef}
+                        sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'}
+                        onChange={(value) => setCaptchaValue(value)}
+                      />
+                    </div>
+                    {errors.captcha && (
+                      <p className="mt-2 text-sm text-red-600 font-medium text-left">{errors.captcha}</p>
+                    )}
+                  </div>
+
+                  {/* Consent Text */}
+                  <div className="pt-2">
+                    <p className="text-xs text-gray-600 leading-relaxed">
+                      By clicking "Get Free Quotes" below, I consent to receive from compare-bazaar.com at any time SMS text messages and I also consent to receive from compare-bazaar.com and up to five service providers at any time emails, telemarketing calls using auto-dialer, artificial voices or pre-recordings, which could result in wireless charges, at the number provided above. I understand that consent is not a condition of purchase. I also agree to the{' '}
+                      <Link href="/terms-of-use" className="text-[#ff8633] hover:underline font-semibold">Terms & Conditions</Link>
+                      {' '}and{' '}
+                      <Link href="/privacy-policy" className="text-[#ff8633] hover:underline font-semibold">Privacy Policy</Link>
+                      , which are also linked at the bottom of the page.
+                    </p>
+                  </div>
+
+                  {/* Submit Button */}
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full py-4 px-6 bg-gradient-to-r from-[#ff8633] to-orange-600 text-white font-bold text-base rounded-xl hover:shadow-2xl hover:scale-[1.02] transform transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2 mt-3"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        Submitting...
+                      </>
+                    ) : (
+                      <>
+                        Get Free Quotes
+                        <ArrowRight className="w-5 h-5" />
+                      </>
+                    )}
+                  </button>
+                </form>
+              </div>
+            </div>
+
+            {/* Right Side - Enhanced Dashboard with Brand Colors */}
+            <div className="order-2 lg:order-2 flex">
+              <div className="bg-gradient-to-br from-[#000e54] via-blue-900 to-[#000e54] rounded-3xl shadow-2xl p-6 md:p-8 lg:p-10 border border-blue-800/30 backdrop-blur-sm w-full flex flex-col h-full text-white relative overflow-hidden">
+                {/* Decorative Elements */}
+                <div className="absolute top-0 right-0 w-96 h-96 bg-[#ff8633]/10 rounded-full blur-3xl -mr-48 -mt-48 animate-pulse"></div>
+                <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl -ml-48 -mb-48 animate-pulse delay-1000"></div>
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#000e54]/20 rounded-full blur-3xl"></div>
+                
+                <div className="relative z-10 flex flex-col h-full">
+                  {/* Header */}
+                  <div className="mb-6">
+                    <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#ff8633] to-orange-600 rounded-2xl mb-4 shadow-xl">
+                      <Globe className="w-8 h-8" />
+                    </div>
+                    <h2 className="text-2xl md:text-3xl font-bold mb-3 leading-tight">
+                      Build Your Dream Website Today
+                    </h2>
+                    <p className="text-blue-200 text-sm leading-relaxed">
+                      Discover powerful website building platforms that help you create stunning, professional websites without coding. Choose from top providers and launch your online presence.
+                    </p>
+                  </div>
+
+                  {/* Key Benefits Section */}
+                  <div className="bg-gradient-to-r from-[#ff8633]/20 to-orange-600/20 rounded-xl p-4 mb-5 border border-[#ff8633]/30">
+                    <h3 className="text-lg font-bold mb-3 text-white flex items-center gap-2">
+                      <Sparkles className="w-5 h-5" />
+                      Why Choose Compare Bazaar?
+                    </h3>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-[#ff8633]"></div>
+                        <p className="text-sm text-blue-100">Compare 25+ top website building platforms</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-[#ff8633]"></div>
+                        <p className="text-sm text-blue-100">Get personalized recommendations based on your website needs</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-[#ff8633]"></div>
+                        <p className="text-sm text-blue-100">Free quotes with no obligation to purchase</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-[#ff8633]"></div>
+                        <p className="text-sm text-blue-100">Expert guidance from website building specialists</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Stats Grid */}
+                  <div className="grid grid-cols-2 gap-3 mb-5">
+                    <div className="bg-white/15 backdrop-blur-md rounded-xl p-3 border border-white/20 hover:bg-white/20 transition-all duration-300">
+                      <div className="text-2xl font-bold text-[#ff8633] mb-1">3,000+</div>
+                      <div className="text-xs text-blue-200">Websites Built</div>
+                    </div>
+                    <div className="bg-white/15 backdrop-blur-md rounded-xl p-3 border border-white/20 hover:bg-white/20 transition-all duration-300">
+                      <div className="text-2xl font-bold text-[#ff8633] mb-1">99%</div>
+                      <div className="text-xs text-blue-200">Satisfaction Rate</div>
+                    </div>
+                    <div className="bg-white/15 backdrop-blur-md rounded-xl p-3 border border-white/20 hover:bg-white/20 transition-all duration-300">
+                      <div className="text-2xl font-bold text-[#ff8633] mb-1">25+</div>
+                      <div className="text-xs text-blue-200">Platform Options</div>
+                    </div>
+                    <div className="bg-white/15 backdrop-blur-md rounded-xl p-3 border border-white/20 hover:bg-white/20 transition-all duration-300">
+                      <div className="text-2xl font-bold text-[#ff8633] mb-1">24/7</div>
+                      <div className="text-xs text-blue-200">Expert Support</div>
+                    </div>
+                  </div>
+
+                  {/* Top Website Building Features */}
+                  <div className="mb-5">
+                    <h3 className="text-lg font-bold mb-3 text-white">Top Website Building Features</h3>
+                    <div className="space-y-2">
+                      {[
+                        { icon: <Layout className="w-5 h-5" />, text: 'Drag-and-Drop Editor', benefit: 'No coding required', color: 'from-blue-400 to-cyan-500' },
+                        { icon: <Palette className="w-5 h-5" />, text: 'Professional Templates', benefit: '500+ ready-made designs', color: 'from-purple-400 to-pink-500' },
+                        { icon: <Smartphone className="w-5 h-5" />, text: 'Mobile Responsive', benefit: 'Perfect on all devices', color: 'from-green-400 to-emerald-500' },
+                        { icon: <Search className="w-5 h-5" />, text: 'SEO Built-in', benefit: 'Rank higher on Google', color: 'from-yellow-400 to-orange-500' },
+                        { icon: <ShoppingCart className="w-5 h-5" />, text: 'E-commerce Ready', benefit: 'Sell online instantly', color: 'from-red-400 to-pink-500' },
+                        { icon: <BarChart3 className="w-5 h-5" />, text: 'Analytics Dashboard', benefit: 'Track visitor behavior', color: 'from-indigo-400 to-blue-500' }
+                      ].map((feature, index) => (
+                        <div 
+                          key={index}
+                          className="flex items-center gap-3 p-3 bg-white/10 rounded-xl border border-white/15 hover:bg-white/15 transition-all duration-300 group"
+                        >
+                          <div className={`flex-shrink-0 p-2 rounded-lg bg-gradient-to-r ${feature.color} shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                            {feature.icon}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm text-white font-semibold">{feature.text}</p>
+                            <p className="text-xs text-blue-300">{feature.benefit}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* How It Works */}
+                  <div className="mb-5">
+                    <h3 className="text-lg font-bold mb-3 text-white flex items-center gap-2">
+                      <Rocket className="w-5 h-5 text-[#ff8633]" />
+                      How It Works
+                    </h3>
+                    <div className="space-y-2.5">
+                      <div className="flex items-start gap-3 p-3 bg-gradient-to-r from-[#ff8633]/20 to-orange-600/20 rounded-lg border border-[#ff8633]/30">
+                        <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-r from-[#ff8633] to-orange-600 flex items-center justify-center text-sm font-bold">1</div>
+                        <div>
+                          <p className="text-sm text-white font-semibold mb-1">Submit Your Requirements</p>
+                          <p className="text-xs text-blue-200">Tell us about your website needs and business goals</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3 p-3 bg-gradient-to-r from-blue-600/20 to-blue-500/20 rounded-lg border border-blue-500/30">
+                        <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center text-sm font-bold">2</div>
+                        <div>
+                          <p className="text-sm text-white font-semibold mb-1">Get Matched Instantly</p>
+                          <p className="text-xs text-blue-200">Our system matches you with 3-5 perfect website building platforms</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3 p-3 bg-gradient-to-r from-green-500/20 to-green-600/20 rounded-lg border border-green-500/30">
+                        <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center text-sm font-bold">3</div>
+                        <div>
+                          <p className="text-sm text-white font-semibold mb-1">Compare & Launch</p>
+                          <p className="text-xs text-blue-200">Review quotes, choose your platform, and launch your website</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Success Stories */}
+                  <div className="mb-5">
+                    <h3 className="text-lg font-bold mb-3 text-white flex items-center gap-2">
+                      <Heart className="w-5 h-5 text-[#ff8633]" />
+                      Success Stories
+                    </h3>
+                    <div className="space-y-3">
+                      <div className="bg-white/10 rounded-xl p-3 border border-white/15">
+                        <p className="text-sm text-blue-100 italic mb-2">"Found the perfect website builder and launched our site in just 2 days! The drag-and-drop editor made it so easy, and we saved thousands compared to hiring a developer."</p>
+                        <p className="text-sm text-[#ff8633] font-semibold">- Michael K., Small Business Owner</p>
+                      </div>
+                      <div className="bg-white/10 rounded-xl p-3 border border-white/15">
+                        <p className="text-sm text-blue-100 italic mb-2">"The comparison helped us choose a platform with great e-commerce features. Our online store is now live and generating sales every day!"</p>
+                        <p className="text-sm text-[#ff8633] font-semibold">- Emma R., E-commerce Entrepreneur</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Trust Badge & Rating */}
+                  <div className="mt-auto pt-4 border-t border-white/20">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <div className="flex -space-x-2">
+                          {[1, 2, 3, 4, 5].map((i) => (
+                            <div key={i} className="w-8 h-8 rounded-full bg-gradient-to-br from-[#ff8633] to-orange-600 border-2 border-[#000e54] flex items-center justify-center text-xs font-bold">
+                              {String.fromCharCode(64 + i)}
+                            </div>
+                          ))}
+                        </div>
+                        <div className="ml-2">
+                          <div className="flex items-center gap-0.5 mb-0.5">
+                            {[1, 2, 3, 4, 5].map((i) => (
+                              <Star key={i} className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
+                            ))}
+                          </div>
+                          <p className="text-xs text-blue-300">4.9/5 from 3,000+ reviews</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="bg-gradient-to-r from-white/15 to-white/10 backdrop-blur-md rounded-xl p-3 border border-white/20">
+                      <div className="flex items-start gap-2">
+                        <Shield className="w-5 h-5 text-[#ff8633] flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p className="text-sm text-white leading-relaxed font-semibold mb-1">100% Secure & Confidential</p>
+                          <p className="text-xs text-blue-200 leading-relaxed">
+                            Your information is encrypted and never shared with third parties.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-3 bg-gradient-to-r from-[#ff8633]/20 to-orange-600/20 rounded-lg p-3 border border-[#ff8633]/30">
+                      <p className="text-sm text-white font-semibold mb-1 flex items-center gap-1">
+                        <Gift className="w-4 h-4 text-[#ff8633]" />
+                        Quick Match Guarantee
+                      </p>
+                      <p className="text-xs text-blue-100">Get matched with 3-5 perfect website building platforms within 24 hours</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <style jsx>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.5s ease-out;
+        }
+        @keyframes slideDown {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-slideDown {
+          animation: slideDown 0.3s ease-out;
+        }
+        @keyframes pulse-border {
+          0%, 100% {
+            opacity: 1;
+          }
+          50% {
+            opacity: 0.5;
+          }
+        }
+        .animate-pulse-border {
+          animation: pulse-border 2s ease-in-out infinite;
+        }
+        .delay-1000 {
+          animation-delay: 1s;
+        }
+        .delay-500 {
+          animation-delay: 0.5s;
+        }
+      `}</style>
+    </>
+  );
+};
+
+export default WebsiteBuildingGetQuotesForm;
+

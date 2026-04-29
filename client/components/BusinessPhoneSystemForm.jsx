@@ -204,7 +204,7 @@ const BusinessPhoneSystemForm = ({ onClose }) => {
       
       // Redirect to quotes page after successful submission
       setTimeout(() => {
-        window.open('/Technology/business-phone-systems/get-free-quotes', '_blank');
+        window.open('/technology/get-free-quotes', '_blank');
       }, 2000);
       
     } catch (error) {

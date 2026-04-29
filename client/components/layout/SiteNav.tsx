@@ -45,9 +45,24 @@ const NAV_ITEMS = [
   { label: 'Blog', href: '/blog' },
 ]
 
+const QUOTE_SERVICES = [
+  { label: 'All Software Quotes', href: '/technology/get-free-quotes', description: 'Tell us your needs and get matched' },
+  { label: 'CRM Software Quotes', href: '/marketing/best-crm-software/get-free-quote', description: 'HubSpot, Zoho, Salesforce, more' },
+  { label: 'Payroll Software Quotes', href: '/technology/best-payroll-system/get-free-quotes', description: 'ADP, Gusto, OnPay, Rippling' },
+  { label: 'Business Phone System Quotes', href: '/technology/business-phone-systems/get-free-quotes', description: 'VoIP and cloud phone platforms' },
+  { label: 'GPS Fleet Quotes', href: '/technology/gps-fleet-management-software/get-free-quotes', description: 'Fleet tracking and telematics tools' },
+  { label: 'Employee Management Quotes', href: '/technology/best-employee-management-software/get-free-quotes', description: 'HR and workforce management solutions' },
+  { label: 'Email Marketing Quotes', href: '/marketing/best-email-marketing-services/get-free-quotes', description: 'Campaign and automation platforms' },
+  { label: 'Website Builder Quotes', href: '/marketing/best-website-building-platform/get-free-quotes', description: 'Wix, Squarespace, Shopify and more' },
+  { label: 'Sales CRM Quotes', href: '/sales/best-crm-software/get-free-quotes', description: 'Pipeline, forecasting and deal workflows' },
+  { label: 'Call Center Quotes', href: '/sales/best-call-center-management-software/get-free-quotes', description: 'Contact center and agent operations tools' },
+  { label: 'Project Management Quotes', href: '/sales/best-project-management-software/get-free-quotes', description: 'Asana, Monday, ClickUp, Jira' },
+]
+
 export function SiteNav() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
+  const [quotesOpen, setQuotesOpen] = useState(false)
 
   return (
     <nav className="sticky top-0 z-50 bg-white border-b border-gray-200" aria-label="Main navigation">
@@ -94,15 +109,17 @@ export function SiteNav() {
 
                 {item.children && openDropdown === item.label && (
                   <div className="absolute top-full left-0 pt-2 z-50">
-                    <div className="w-[18rem] bg-white/95 backdrop-blur border border-gray-200 rounded-xl shadow-xl py-2">
+                    <div className="w-[20rem] bg-white border border-gray-200 rounded-lg shadow-lg py-2">
+                      <p className="px-4 pt-1 pb-2 text-[11px] font-semibold tracking-wider uppercase text-[#9C4302] border-b border-gray-100">
+                        {item.label} Services
+                      </p>
                       {item.children.map((child) => (
                         <Link
                           key={child.href}
                           href={child.href}
-                          className="block px-4 py-2.5 hover:bg-[#fff4eb] transition-colors border-l-2 border-transparent hover:border-[#F27F25]"
+                          className="block px-4 py-2.5 hover:bg-[#FFF8F2] transition-colors border-b border-gray-50 last:border-b-0"
                         >
-                          <span className="block text-sm font-medium text-gray-700">{child.label}</span>
-                          {child.description && <span className="block text-xs text-gray-500 mt-0.5">{child.description}</span>}
+                          <span className="block text-sm text-gray-700 hover:text-[#9C4302]">{child.label}</span>
                         </Link>
                       ))}
                     </div>
@@ -114,12 +131,40 @@ export function SiteNav() {
 
           {/* CTA */}
           <div className="flex items-center gap-3">
-            <Link
-              href="/get-free-quotes"
-              className="hidden sm:inline-flex items-center bg-brand hover:bg-brand-hover text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
+            <div
+              className="relative hidden sm:block"
+              onMouseEnter={() => setQuotesOpen(true)}
+              onMouseLeave={() => setQuotesOpen(false)}
             >
-              Get Free Quotes
-            </Link>
+              <Link
+                href="/technology/get-free-quotes"
+                className="inline-flex items-center gap-1.5 bg-brand hover:bg-brand-hover text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors shadow-sm"
+              >
+                Get Free Quotes
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="m6 9 6 6 6-6" />
+                </svg>
+              </Link>
+
+              {quotesOpen && (
+                <div className="absolute right-0 top-full pt-2 z-50">
+                  <div className="w-[20rem] bg-white border border-gray-200 rounded-lg shadow-lg py-2">
+                    <p className="px-4 pt-1 pb-2 text-[11px] font-semibold tracking-wider uppercase text-[#9C4302] border-b border-gray-100">
+                      Quote Services
+                    </p>
+                    {QUOTE_SERVICES.map((service) => (
+                      <Link
+                        key={service.href}
+                        href={service.href}
+                        className="block px-4 py-2.5 hover:bg-[#FFF8F2] transition-colors border-b border-gray-50 last:border-b-0"
+                      >
+                        <span className="block text-sm text-gray-700 hover:text-[#9C4302]">{service.label}</span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
             {/* Mobile burger */}
             <button
               className="md:hidden p-2 text-gray-600"
@@ -155,23 +200,37 @@ export function SiteNav() {
                 <Link
                   key={child.href}
                   href={child.href}
-                  className="block px-9 py-2.5 text-sm text-gray-600 border-b border-gray-50"
+                  className="block px-9 py-2.5 text-sm text-gray-600 border-b border-gray-50 hover:bg-[#FFF8F2] hover:text-[#9C4302] transition-colors"
                   onClick={() => setMobileOpen(false)}
                 >
                   <span className="block">{child.label}</span>
-                  {child.description && <span className="block text-xs text-gray-400 mt-0.5">{child.description}</span>}
                 </Link>
               ))}
             </div>
           ))}
           <div className="px-6 py-4">
             <Link
-              href="/get-free-quotes"
+              href="/technology/get-free-quotes"
               className="block text-center bg-brand text-white text-sm font-semibold px-4 py-2 rounded-lg"
               onClick={() => setMobileOpen(false)}
             >
               Get Free Quotes
             </Link>
+            <div className="mt-3 border border-gray-200 rounded-lg bg-white py-2">
+              <p className="px-3 pb-2 text-[11px] font-semibold tracking-wider uppercase text-[#9C4302] border-b border-gray-100">
+                Quote Services
+              </p>
+              {QUOTE_SERVICES.map((service) => (
+                <Link
+                  key={service.href}
+                  href={service.href}
+                  className="block px-3 py-2.5 text-sm text-gray-700 hover:bg-[#FFF8F2] hover:text-[#9C4302] transition-colors border-b border-gray-50 last:border-b-0"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {service.label}
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       )}

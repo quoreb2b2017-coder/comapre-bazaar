@@ -24,24 +24,28 @@ const LEGAL = [
 
 export function SiteFooter() {
   return (
-    <footer className="bg-gradient-to-r from-[#F78230] via-[#F27F25] to-[#ED8105] text-white mt-16 border-t-2 border-[#FCE7D0]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+    <footer className="relative overflow-hidden bg-gradient-to-br from-[#FFB161] via-[#F58220] to-[#CB5C00] text-white mt-16 border-t-2 border-[#FCE7D0]">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_15%_15%,rgba(255,236,212,0.18),transparent_54%)]" aria-hidden="true" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_85%_70%,rgba(255,192,126,0.25),transparent_60%)]" aria-hidden="true" />
+      <div className="absolute inset-0 bg-[linear-gradient(125deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0)_45%,rgba(123,44,0,0.16)_100%)]" aria-hidden="true" />
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-10">
           {/* Brand */}
           <div>
             <p className="font-serif text-[22px] text-white mb-3 tracking-tight">
               Compare<span className="text-[#FCE7D0]">Bazaar</span>
             </p>
-            <p className="text-sm leading-relaxed max-w-xs">
+            <p className="text-sm text-white/90 leading-relaxed max-w-xs">
               Independent business software comparisons and buying guides. We help B2B
               decision-makers find the right tools without the vendor noise.
             </p>
-            <p className="text-sm mt-4">
-              <a href="mailto:marketing@compare-bazaar.com" className="hover:text-white transition-colors">
+            <p className="text-sm text-white/90 mt-4">
+              <a href="mailto:marketing@compare-bazaar.com" className="hover:text-[#FFE9CF] transition-colors">
                 marketing@compare-bazaar.com
               </a>
               <br />
-              <a href="tel:+13322310404" className="hover:text-white transition-colors">
+              <a href="tel:+13322310404" className="hover:text-[#FFE9CF] transition-colors">
                 +1 332-231-0404
               </a>
             </p>
@@ -55,7 +59,7 @@ export function SiteFooter() {
             <ul className="space-y-2">
               {CATEGORIES.map(({ label, href }) => (
                 <li key={href}>
-                  <Link href={href} className="text-sm hover:text-white transition-colors">
+                  <Link href={href} className="text-sm text-white/90 hover:text-[#FFE9CF] transition-colors">
                     {label}
                   </Link>
                 </li>
@@ -71,7 +75,7 @@ export function SiteFooter() {
             <ul className="space-y-2">
               {COMPANY.map(({ label, href }) => (
                 <li key={href}>
-                  <Link href={href} className="text-sm hover:text-white transition-colors">
+                  <Link href={href} className="text-sm text-white/90 hover:text-[#FFE9CF] transition-colors">
                     {label}
                   </Link>
                 </li>
@@ -87,7 +91,7 @@ export function SiteFooter() {
             <ul className="space-y-2">
               {LEGAL.map(({ label, href }) => (
                 <li key={href}>
-                  <Link href={href} className="text-sm hover:text-white transition-colors">
+                  <Link href={href} className="text-sm text-white/90 hover:text-[#FFE9CF] transition-colors">
                     {label}
                   </Link>
                 </li>
@@ -100,19 +104,19 @@ export function SiteFooter() {
               href="https://www.linkedin.com/company/comparebazaar/"
               rel="noopener noreferrer"
               target="_blank"
-              className="text-sm hover:text-white transition-colors"
+              className="text-sm text-white/90 hover:text-[#FFE9CF] transition-colors"
             >
               LinkedIn
             </a>
           </div>
         </div>
 
-        <div className="border-t border-white/35 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs">
+        <div className="border-t border-white/35 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-white/90">
           <p>© {new Date().getFullYear()} CompareBazaar.com · All Rights Reserved</p>
           <div className="flex flex-wrap gap-4">
-            <Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy</Link>
-            <Link href="/terms-of-use" className="hover:text-white transition-colors">Terms</Link>
-            <Link href="/advertising-disclosure" className="hover:text-white transition-colors">Advertising</Link>
+            <Link href="/privacy-policy" className="hover:text-[#FFE9CF] transition-colors">Privacy</Link>
+            <Link href="/terms-of-use" className="hover:text-[#FFE9CF] transition-colors">Terms</Link>
+            <Link href="/advertising-disclosure" className="hover:text-[#FFE9CF] transition-colors">Advertising</Link>
           </div>
         </div>
       </div>

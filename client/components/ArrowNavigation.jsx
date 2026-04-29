@@ -28,7 +28,7 @@ const ArrowNavigation = () => {
   }, []);
 
   return (
-    <div className="fixed bottom-20 right-8 z-50">
+    <div className="fixed bottom-8 right-[5.5rem] sm:right-24 z-40">
       <button
         onClick={handleScroll}
         aria-label={isAtBottom ? "Scroll to top" : "Scroll to bottom"}
