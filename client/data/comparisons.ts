@@ -1,0 +1,312 @@
+import type { ComparisonPageData } from '@/types'
+
+export const comparisonPages: ComparisonPageData[] = [
+  // ─── CRM (Marketing) ───────────────────────────────────────────────────
+  {
+    slug: 'crm-software',
+    title: 'Best CRM Software for Small Business & Teams (2026) | Compare Bazaar',
+    metaDescription: 'We tested 11 CRM platforms in 2026. HubSpot leads for integrations, Zoho for growing teams, Salesforce for enterprise. Compare pricing, features, and free trials.',
+    canonical: '/marketing/best-crm-software',
+    h1: 'Best CRM Software for Small Business & Teams (2026)',
+    intro: 'We tested 11 CRM platforms over 6 weeks — evaluating pipeline management, automation, AI features, integrations, and pricing at three team sizes. HubSpot leads for flexibility, Zoho for growing teams on a budget, and Salesforce for enterprises needing deep customisation.',
+    breadcrumbs: [{ label: 'Home', href: '/' }, { label: 'Marketing', href: '/marketing' }, { label: 'Best CRM Software' }],
+    author: { initials: 'SK', name: 'Sarah Kim', credential: 'CRM & Sales Tech Editor · Former Salesforce consultant' },
+    reviewer: 'James Liu',
+    lastReviewed: 'April 14, 2026',
+    winnerSummary: '<strong>HubSpot CRM</strong> is our top pick for most small businesses — generous free plan, best-in-class integrations, and fast onboarding. <strong>Zoho CRM</strong> is the best budget pick for growing teams. <strong>Salesforce</strong> wins for large enterprises.',
+    products: [
+      { id: 'hubspot', logo: 'HS', name: 'HubSpot CRM', tagline: 'Best CRM for integrations & mid-market teams', score: '4.5', reviewCount: 4821, badges: [{ variant: 'top', label: '🏆 Top Pick' }, { variant: 'free', label: 'Free Plan' }], pros: ['Best-in-class free tier with no user cap', '1,500+ integrations including Gmail, Slack, Shopify', 'Combines CRM, email marketing, and website tools in one', 'Clean UX — fastest onboarding of any platform we tested', 'Strong AI-powered lead scoring and deal forecasting'], cons: ['Paid plans jump significantly in price at scale', 'Advanced reporting requires Professional tier ($800+/mo)', 'Email sends limited on the free plan (2,000/month)'], pricingLabel: 'Starts from', pricingAmount: 'Free', pricingPeriod: ' · Paid from $15/user/month', vendorUrl: 'https://www.hubspot.com/products/crm', reviewSlug: 'hubspot-crm-review', isTopPick: true },
+      { id: 'zoho', logo: 'ZO', name: 'Zoho CRM', tagline: 'Best CRM for growing, decentralised teams', score: '4.4', reviewCount: 3210, badges: [{ variant: 'trial', label: '15-day trial' }], pros: ['AI assistant (Zia) included on mid-tier plans', 'Best multi-channel support: email, social, live chat, VoIP', 'Blueprint feature guides reps through each deal stage', 'Strong mobile app — best we tested for remote teams'], cons: ['UI can feel cluttered compared to HubSpot', 'Free plan limited to 3 users', 'Some advanced features buried in settings'], pricingLabel: 'Starts from', pricingAmount: '$14', pricingPeriod: '/user/month (billed annually)', vendorUrl: 'https://www.zoho.com/crm/', reviewSlug: 'zoho-crm-review' },
+      { id: 'pipedrive-crm', logo: 'PD', name: 'Pipedrive', tagline: 'Best CRM for pipeline management & sales teams', score: '4.2', reviewCount: 2984, badges: [{ variant: 'trial', label: '14-day trial' }], pros: ['Most intuitive drag-and-drop pipeline view tested', 'Smart contact management with auto-enrichment', 'Revenue forecasting built into all paid plans', 'Excellent mobile app for field sales teams'], cons: ['No free plan — trial only', 'Weaker marketing automation vs. HubSpot', 'Reporting less flexible than Salesforce'], pricingLabel: 'Starts from', pricingAmount: '$14', pricingPeriod: '/user/month (billed annually)', vendorUrl: 'https://www.pipedrive.com/', reviewSlug: 'pipedrive-review' },
+    ],
+    table: { headers: ['CRM Platform', 'Expert Score', 'Starting Price', 'Free Plan', 'AI Features', 'Best For'], rows: [{ cells: ['HubSpot CRM', '4.5/5', 'Free / $15/user', '✓', '✓', 'Integrations, SMBs'] }, { cells: ['Zoho CRM', '4.4/5', '$14/user/mo', '✓ (3 users)', '✓', 'Growing teams'] }, { cells: ['Pipedrive', '4.2/5', '$14/user/mo', '✗', '✓', 'Sales pipeline'] }, { cells: ['Salesforce Sales Cloud', '4.3/5', '$25/user/mo', '✗', '✓', 'Enterprise'] }, { cells: ['Creatio', '4.1/5', '$25/user/mo', '✗', '✓', 'No-code workflow'] }, { cells: ['HoneyBook', '4.0/5', '$29/user/mo', '✗', '✗', 'Freelancers'] }] },
+    faqs: [
+      { question: 'What is the best CRM software for small business in 2026?', answer: 'HubSpot CRM is the best overall for small business in 2026. Its free plan is genuinely powerful — no user cap, clean pipeline view, contact management, and email tracking. For teams needing AI features at lower cost, Zoho CRM at $14/user/month is the strongest alternative.' },
+      { question: 'Is HubSpot better than Salesforce?', answer: 'For most small and mid-market businesses: yes. HubSpot is faster to set up, significantly cheaper, and bundles marketing, sales, and service tools. Salesforce wins for large enterprises needing deep custom objects and complex reporting.' },
+      { question: 'Do CRM platforms offer free trials?', answer: 'Most do. HubSpot offers a permanent free plan. Zoho CRM offers a 15-day free trial. Pipedrive and Creatio offer 14-day trials. Salesforce offers a 30-day trial.' },
+      { question: 'What CRM integrates best with Gmail?', answer: 'HubSpot has the strongest native Gmail integration — email tracking, templates, and sequences work directly inside Gmail. Zoho CRM also integrates well with Google Workspace.' },
+    ],
+    tocItems: [{ label: 'Top CRM picks', anchor: 'picks' }, { label: 'Full comparison table', anchor: 'compare' }, { label: 'FAQ', anchor: 'faqs' }],
+    ctaTitle: 'Compare CRM quotes for your team',
+    ctaBody: "Tell us your team size and we'll match you with the right CRM vendors — free, no commitment.",
+    ctaSlug: '/marketing/best-crm-software/get-free-quotes',
+  },
+
+  // ─── EMAIL MARKETING ────────────────────────────────────────────────────
+  {
+    slug: 'email-marketing',
+    title: 'Best Email Marketing Services for Business (2026) | Compare Bazaar',
+    metaDescription: 'We tested 9 email marketing platforms in 2026. Mailchimp leads for beginners, Klaviyo for e-commerce, ActiveCampaign for automation. Compare pricing and features.',
+    canonical: '/marketing/best-email-marketing-services',
+    h1: 'Best Email Marketing Services for Business (2026)',
+    intro: 'We tested 9 email marketing platforms on deliverability, automation depth, list-based pricing, and ease of use. Mailchimp wins for beginners, Klaviyo dominates e-commerce segmentation, and ActiveCampaign leads for complex automation workflows.',
+    breadcrumbs: [{ label: 'Home', href: '/' }, { label: 'Marketing', href: '/marketing' }, { label: 'Best Email Marketing' }],
+    author: { initials: 'PW', name: 'Priya Winters', credential: 'Marketing Tech Reviewer · B2B SaaS marketing specialist' },
+    reviewer: 'Sarah Kim',
+    lastReviewed: 'April 10, 2026',
+    winnerSummary: '<strong>Mailchimp</strong> is our top pick for most small businesses — generous free plan, easy templates, solid deliverability. <strong>Klaviyo</strong> is best for e-commerce. <strong>ActiveCampaign</strong> wins for advanced automation.',
+    products: [
+      { id: 'mailchimp', logo: 'MC', name: 'Mailchimp', tagline: 'Best email marketing tool for beginners & SMBs', score: '4.5', reviewCount: 6201, badges: [{ variant: 'top', label: '🏆 Top Pick' }, { variant: 'free', label: 'Free Plan' }], pros: ['Best-in-class free plan (500 contacts, 1,000 sends/month)', 'Drag-and-drop builder — easiest UI we tested', 'Strong deliverability with dedicated send infrastructure', 'AI-powered subject line optimisation included', '1,000+ integrations including Shopify, WooCommerce'], cons: ['Pricing scales steeply past 5,000 contacts', 'Automation less powerful than ActiveCampaign', 'Customer support slow on free plan'], pricingLabel: 'Starts from', pricingAmount: 'Free', pricingPeriod: ' · Paid from $13/month', vendorUrl: 'https://mailchimp.com', reviewSlug: 'mailchimp-review', isTopPick: true },
+      { id: 'klaviyo', logo: 'KL', name: 'Klaviyo', tagline: 'Best email marketing platform for e-commerce', score: '4.4', reviewCount: 3840, badges: [{ variant: 'free', label: 'Free Plan' }], pros: ['Best-in-class e-commerce segmentation (Shopify, WooCommerce native)', 'Predictive analytics for lifetime value and churn risk', 'SMS + email in one platform', 'Revenue attribution reporting built in'], cons: ['Pricing is high for large lists', 'Overkill for non-e-commerce businesses', 'Steeper learning curve than Mailchimp'], pricingLabel: 'Starts from', pricingAmount: 'Free', pricingPeriod: ' · Paid from $20/month (250 contacts)', vendorUrl: 'https://www.klaviyo.com', reviewSlug: 'klaviyo-review' },
+      { id: 'activecampaign', logo: 'AC', name: 'ActiveCampaign', tagline: 'Best for advanced email automation', score: '4.3', reviewCount: 4102, badges: [{ variant: 'trial', label: '14-day trial' }], pros: ['Most powerful automation builder we tested', 'CRM built into all plans', 'Lead scoring and site tracking standard', 'Excellent deliverability track record'], cons: ['No free plan — trial only', 'UI has a learning curve', 'Pricing higher than basic tools'], pricingLabel: 'Starts from', pricingAmount: '$15', pricingPeriod: '/month (1,000 contacts)', vendorUrl: 'https://www.activecampaign.com', reviewSlug: 'activecampaign-review' },
+    ],
+    table: { headers: ['Platform', 'Score', 'Starting Price', 'Free Plan', 'Automation', 'Best For'], rows: [{ cells: ['Mailchimp', '4.5/5', 'Free / $13/mo', '✓', 'Basic', 'Beginners, SMBs'] }, { cells: ['Klaviyo', '4.4/5', 'Free / $20/mo', '✓ (250 contacts)', 'Advanced', 'E-commerce'] }, { cells: ['ActiveCampaign', '4.3/5', '$15/mo', '✗', 'Best-in-class', 'Complex automation'] }, { cells: ['Brevo', '4.2/5', 'Free / $25/mo', '✓', 'Good', 'Transactional email'] }, { cells: ['GetResponse', '4.1/5', '$15.58/mo', '✗', 'Strong', 'All-in-one + webinars'] }] },
+    faqs: [
+      { question: 'What is the best free email marketing tool in 2026?', answer: 'Mailchimp offers the most generous free plan — 500 contacts and 1,000 sends/month with no time limit. Brevo is also strong with unlimited contacts but a 300/day send cap.' },
+      { question: 'Is Klaviyo worth it for a small e-commerce store?', answer: 'Klaviyo is worth it once you have at least 1,000+ customers and an active Shopify or WooCommerce store. For very early-stage stores, Mailchimp or Brevo are more cost-effective.' },
+      { question: 'What email tool has the best deliverability?', answer: 'ActiveCampaign and Mailchimp consistently score highest in deliverability benchmarks. Klaviyo also performs well for e-commerce senders.' },
+    ],
+    tocItems: [{ label: 'Top email picks', anchor: 'picks' }, { label: 'Full comparison table', anchor: 'compare' }, { label: 'FAQ', anchor: 'faqs' }],
+    ctaTitle: 'Compare email marketing quotes',
+    ctaBody: "Tell us your list size and we'll match you with the right email platforms.",
+    ctaSlug: '/marketing/best-email-marketing-services/get-free-quotes',
+  },
+
+  // ─── WEBSITE BUILDER ────────────────────────────────────────────────────
+  {
+    slug: 'website-builder',
+    title: 'Best Website Building Platforms for Business (2026) | Compare Bazaar',
+    metaDescription: 'We tested 8 website builders in 2026. Wix leads for flexibility, Squarespace for design, Shopify for e-commerce. Compare pricing, templates, and SEO features.',
+    canonical: '/marketing/best-website-building-platform',
+    h1: 'Best Website Building Platforms for Business (2026)',
+    intro: 'We built test sites on 8 platforms and evaluated templates, SEO tools, e-commerce features, and pricing. Wix leads on flexibility and apps, Squarespace on design quality, and Shopify on e-commerce depth.',
+    breadcrumbs: [{ label: 'Home', href: '/' }, { label: 'Marketing', href: '/marketing' }, { label: 'Best Website Builders' }],
+    author: { initials: 'PW', name: 'Priya Winters', credential: 'Marketing Tech Reviewer · B2B SaaS marketing specialist' },
+    reviewer: 'Sarah Kim',
+    lastReviewed: 'April 9, 2026',
+    winnerSummary: '<strong>Wix</strong> is our top pick for most small businesses — largest app market, solid SEO tools, and a free plan to start. <strong>Squarespace</strong> wins on design quality. <strong>Shopify</strong> is the only choice for serious e-commerce.',
+    products: [
+      { id: 'wix', logo: 'WX', name: 'Wix', tagline: 'Best website builder for small business flexibility', score: '4.5', reviewCount: 8410, badges: [{ variant: 'top', label: '🏆 Top Pick' }, { variant: 'free', label: 'Free Plan' }], pros: ['900+ templates; 300+ apps in the Wix App Market', 'Best drag-and-drop editor we tested', 'Wix SEO Wiz guides beginners through optimisation', 'Built-in email marketing and booking tools', 'Free plan available (Wix-branded domain)'], cons: ["Can't switch templates after going live", 'Free plan shows Wix ads', 'Storage limited on lower paid plans'], pricingLabel: 'Starts from', pricingAmount: 'Free', pricingPeriod: ' · Paid from $17/month', vendorUrl: 'https://www.wix.com', reviewSlug: 'wix-review', isTopPick: true },
+      { id: 'squarespace', logo: 'SQ', name: 'Squarespace', tagline: 'Best website builder for design quality', score: '4.3', reviewCount: 5920, badges: [{ variant: 'trial', label: '14-day trial' }], pros: ['Best-looking templates of any builder we tested', 'All templates fully responsive and mobile-optimised', 'Strong portfolio and creative business support', 'Solid built-in blogging and SEO tools'], cons: ['Less flexible layout than Wix once template is chosen', 'App ecosystem smaller than Wix', 'E-commerce limited on Basic plan'], pricingLabel: 'Starts from', pricingAmount: '$16', pricingPeriod: '/month (billed annually)', vendorUrl: 'https://www.squarespace.com', reviewSlug: 'squarespace-review' },
+      { id: 'shopify', logo: 'SH', name: 'Shopify', tagline: 'Best website builder for e-commerce stores', score: '4.6', reviewCount: 12340, badges: [{ variant: 'trial', label: '3-day trial + 3 months $1/mo' }], pros: ['Industry-standard e-commerce platform', '8,000+ apps in the Shopify App Store', 'Multi-channel selling: web, social, POS, marketplaces', 'Best abandoned cart and checkout conversion tools'], cons: ['Transaction fees unless using Shopify Payments', 'Designed for stores — not ideal for service businesses', 'Content/blog tools are secondary'], pricingLabel: 'Starts from', pricingAmount: '$39', pricingPeriod: '/month (after trial)', vendorUrl: 'https://www.shopify.com', reviewSlug: 'shopify-review' },
+    ],
+    table: { headers: ['Platform', 'Score', 'Starting Price', 'Free Plan', 'E-Commerce', 'SEO Tools'], rows: [{ cells: ['Wix', '4.5/5', 'Free / $17/mo', '✓', '✓ (Basic)', 'Strong'] }, { cells: ['Squarespace', '4.3/5', '$16/mo', '✗', '✓', 'Good'] }, { cells: ['Shopify', '4.6/5', '$39/mo', '✗', 'Best-in-class', 'Moderate'] }, { cells: ['WordPress.com', '4.2/5', 'Free / $9/mo', '✓', 'Add-on', 'Excellent'] }, { cells: ['Webflow', '4.2/5', '$14/mo', 'Limited', '✓', 'Strong'] }] },
+    faqs: [
+      { question: 'What is the easiest website builder for a small business with no coding skills?', answer: 'Wix is the easiest for beginners — its ADI can generate a starter site in minutes with no coding. Squarespace is a close second and often easier to make look professional right away.' },
+      { question: 'Should I use Shopify or Wix for an online store?', answer: 'If e-commerce is your primary goal, use Shopify. It has superior inventory management, more payment options, and 8,000+ commerce apps. If you run a service business that also sells a few products, Wix is more than adequate.' },
+      { question: 'Can I move my website from Wix to WordPress later?', answer: "Yes, but it requires manual work — Wix doesn't have a direct WordPress export. You'll need to recreate your pages or use a migration service." },
+    ],
+    tocItems: [{ label: 'Top website builder picks', anchor: 'picks' }, { label: 'Full comparison table', anchor: 'compare' }, { label: 'FAQ', anchor: 'faqs' }],
+    ctaTitle: 'Get website builder recommendations',
+    ctaBody: "Tell us your business type and goals — we'll point you to the right platform.",
+    ctaSlug: '/marketing/best-website-building-platform/get-free-quotes',
+  },
+
+  // ─── PAYROLL ────────────────────────────────────────────────────────────
+  {
+    slug: 'payroll-software',
+    title: 'Best Payroll Software for Small Business (2026) | Compare Bazaar',
+    metaDescription: 'We compared 8 payroll platforms in 2026. Gusto leads for ease of use, ADP for enterprise, OnPay for contractors. Compare pricing, features, and compliance.',
+    canonical: '/technology/best-payroll-system',
+    h1: 'Best Payroll Software for Small Business (2026)',
+    intro: 'We evaluated 8 payroll platforms on tax compliance accuracy, ease of setup, contractor support, and HR integration. Gusto wins for most small businesses, OnPay is the best value for mixed workforces, and ADP leads for enterprise-grade compliance.',
+    breadcrumbs: [{ label: 'Home', href: '/' }, { label: 'Technology', href: '/technology' }, { label: 'Best Payroll Software' }],
+    author: { initials: 'MR', name: 'Marcus Rivera', credential: 'Payroll & HR Software Lead · ex-ADP implementation specialist' },
+    reviewer: 'James Liu',
+    lastReviewed: 'April 16, 2026',
+    winnerSummary: '<strong>Gusto</strong> is our top pick for most small businesses — transparent pricing, full-service payroll, and the cleanest UI we tested. <strong>OnPay</strong> is the best value for teams with contractors. <strong>ADP</strong> leads for enterprise compliance.',
+    products: [
+      { id: 'gusto', logo: 'GU', name: 'Gusto', tagline: 'Best payroll software for small business ease of use', score: '4.6', reviewCount: 5120, badges: [{ variant: 'top', label: '🏆 Top Pick' }, { variant: 'trial', label: '30-day trial' }], pros: ['Transparent pricing — no per-run fees', 'Automated federal, state, and local tax filing', 'Full employee self-service portal and mobile app', 'Next-day and same-day direct deposit options', 'Benefits administration (health, 401k) built in'], cons: ['No dedicated payroll specialist on lower tiers', 'Limited international payroll support', 'HR tools require higher-tier plans'], pricingLabel: 'Starts from', pricingAmount: '$40', pricingPeriod: '/month + $6/person', vendorUrl: 'https://gusto.com', reviewSlug: 'gusto-review', isTopPick: true },
+      { id: 'onpay', logo: 'OP', name: 'OnPay', tagline: 'Best payroll for SMBs with contractors', score: '4.4', reviewCount: 2110, badges: [{ variant: 'trial', label: '1-month free' }], pros: ['Single transparent price — no hidden fees', 'Unlimited payroll runs included', 'Strong multi-state payroll compliance', 'Excellent contractor and 1099 support', 'Free migration from any payroll provider'], cons: ['No time-tracking tool built in', 'Benefits offering smaller than Gusto', 'Phone support hours more limited'], pricingLabel: 'Starts from', pricingAmount: '$40', pricingPeriod: '/month + $6/person', vendorUrl: 'https://onpay.com', reviewSlug: 'onpay-review' },
+      { id: 'adp', logo: 'AD', name: 'ADP Run', tagline: 'Best payroll software for growing enterprises', score: '4.2', reviewCount: 6830, badges: [{ variant: 'trial', label: '3-month trial' }], pros: ['Industry-leading compliance and risk management', 'Dedicated payroll specialist on higher tiers', 'Broad HR suite integration available', 'Strong global payroll capabilities'], cons: ['Pricing not transparent — requires quote', 'Can be expensive for small teams', 'UI is dated compared to Gusto or Rippling'], pricingLabel: 'From', pricingAmount: '~$10', pricingPeriod: '/user/mo + $50 base (quote required)', vendorUrl: 'https://www.adp.com/solutions/small-business/payroll.aspx', reviewSlug: 'adp-review' },
+    ],
+    table: { headers: ['Platform', 'Score', 'Starting Price', 'Tax Filing', 'Contractor Support', 'Time Tracking'], rows: [{ cells: ['Gusto', '4.6/5', '$40 + $6/person', '✓ Full-service', '✓', 'Add-on'] }, { cells: ['OnPay', '4.4/5', '$40 + $6/person', '✓ Full-service', '✓', '✗'] }, { cells: ['ADP Run', '4.2/5', 'Custom quote', '✓ Full-service', '✓', 'Add-on'] }, { cells: ['Rippling', '4.3/5', '$8/user/mo', '✓', '✓', '✓'] }, { cells: ['QuickBooks Payroll', '4.0/5', '$45 + $5/user', '✓', 'Limited', '✗'] }, { cells: ['Patriot Software', '4.0/5', '$17 + $4/user', 'Self-service or full', '✓', 'Add-on'] }] },
+    faqs: [
+      { question: 'What is the easiest payroll software for a small business?', answer: 'Gusto has the simplest onboarding and clearest UI of any payroll tool we tested. Most small business owners can complete their first payroll run within 30 minutes of signing up.' },
+      { question: 'Does payroll software automatically file taxes?', answer: 'Most full-service platforms — including Gusto, OnPay, ADP, and Rippling — handle federal, state, and local tax filings automatically.' },
+      { question: 'How much does payroll software cost for a 10-person team?', answer: 'Gusto costs about $100/month ($40 base + $6 × 10). OnPay is the same. ADP typically runs $150–250/month for teams of this size.' },
+    ],
+    tocItems: [{ label: 'Top payroll picks', anchor: 'picks' }, { label: 'Full comparison table', anchor: 'compare' }, { label: 'FAQ', anchor: 'faqs' }],
+    ctaTitle: 'Compare payroll quotes',
+    ctaBody: "Tell us your team size and we'll match you with the right payroll vendors.",
+    ctaSlug: '/technology/best-payroll-system/get-free-quotes',
+  },
+
+  // ─── VOIP ───────────────────────────────────────────────────────────────
+  {
+    slug: 'business-phone-systems',
+    title: 'Best Business Phone Systems & VoIP Services (2026) | Compare Bazaar',
+    metaDescription: 'We tested 8 VoIP phone systems in 2026. RingCentral leads for features, Nextiva for support, Ooma for small business value. Compare pricing and call quality.',
+    canonical: '/technology/business-phone-systems',
+    h1: 'Best Business Phone Systems & VoIP Services (2026)',
+    intro: 'We evaluated 8 VoIP and business phone platforms on call quality, mobile apps, team messaging, and pricing. RingCentral leads on feature depth, Nextiva scores highest for customer support, and Ooma Office offers the best value for small businesses.',
+    breadcrumbs: [{ label: 'Home', href: '/' }, { label: 'Technology', href: '/technology' }, { label: 'Business Phone Systems' }],
+    author: { initials: 'JL', name: 'James Liu', credential: 'Business Technology Editor · IT procurement specialist' },
+    reviewer: 'Marcus Rivera',
+    lastReviewed: 'April 12, 2026',
+    winnerSummary: '<strong>RingCentral MVP</strong> is our top pick — deepest feature set, strong uptime SLA, and 200+ integrations. <strong>Ooma Office</strong> is the best value for small businesses under 10 seats. <strong>Nextiva</strong> leads for customer support quality.',
+    products: [
+      { id: 'ringcentral', logo: 'RC', name: 'RingCentral', tagline: 'Best VoIP phone system for feature depth', score: '4.5', reviewCount: 4312, badges: [{ variant: 'top', label: '🏆 Top Pick' }, { variant: 'trial', label: '14-day trial' }], pros: ['200+ integrations including Salesforce, HubSpot, Teams', '99.999% uptime SLA — best in class', 'Video, messaging, and phone in one app', 'Advanced call routing, IVR, and analytics', 'Global reach: local numbers in 100+ countries'], cons: ['More expensive than competitors at entry level', 'Can be complex for very small teams', 'Occasional mobile app sync delays reported'], pricingLabel: 'Starts from', pricingAmount: '$20', pricingPeriod: '/user/month (billed annually)', vendorUrl: 'https://www.ringcentral.com', reviewSlug: 'ringcentral-review', isTopPick: true },
+      { id: 'nextiva', logo: 'NX', name: 'Nextiva', tagline: 'Best business phone system for customer support', score: '4.3', reviewCount: 2810, badges: [{ variant: 'trial', label: '7-day trial' }], pros: ['Best-rated customer support of any VoIP we tested', 'Unlimited domestic calling on all plans', 'Strong call analytics and sentiment analysis', 'Built-in CRM features on higher tiers'], cons: ['Higher starting price than Ooma or Dialpad', 'Video conferencing less polished than Zoom'], pricingLabel: 'Starts from', pricingAmount: '$25', pricingPeriod: '/user/month (billed annually)', vendorUrl: 'https://www.nextiva.com', reviewSlug: 'nextiva-review' },
+      { id: 'ooma', logo: 'OO', name: 'Ooma Office', tagline: 'Best VoIP system value for small business', score: '4.1', reviewCount: 1920, badges: [{ variant: 'trial', label: '30-day trial' }], pros: ['Lowest price of any full-featured VoIP we tested', 'No contracts required — month-to-month', 'Easy DIY setup — no IT team needed', 'Free toll-free number included on all plans'], cons: ['Advanced features require Pro tier', 'Mobile app less polished than RingCentral', 'Video calling limited compared to rivals'], pricingLabel: 'Starts from', pricingAmount: '$19.95', pricingPeriod: '/user/month', vendorUrl: 'https://www.ooma.com/office/', reviewSlug: 'ooma-review' },
+    ],
+    table: { headers: ['Platform', 'Score', 'Price/User/Mo', 'Unlimited Calling', 'Video', 'Uptime SLA'], rows: [{ cells: ['RingCentral MVP', '4.5/5', '$20', '✓', '✓', '99.999%'] }, { cells: ['Nextiva', '4.3/5', '$25', '✓', '✓', '99.999%'] }, { cells: ['Ooma Office', '4.1/5', '$19.95', '✓', 'Limited', '99.8%'] }, { cells: ['Dialpad', '4.2/5', '$15', '✓', '✓', '100% (claimed)'] }, { cells: ['Zoom Phone', '4.1/5', '$10', '✓', 'Via Zoom', '99.9%'] }] },
+    faqs: [
+      { question: 'What is the best VoIP phone system for a small business?', answer: 'Ooma Office offers the best value for small businesses under 10 seats — low per-user cost, no contracts, and easy setup. RingCentral is a better fit once you need advanced call routing or deep CRM integrations.' },
+      { question: 'Can I keep my existing business phone number when switching to VoIP?', answer: 'Yes. Number porting is supported by all major VoIP providers. The process typically takes 2–4 weeks.' },
+      { question: 'Is VoIP call quality as good as a traditional landline?', answer: 'Modern VoIP systems on a stable broadband connection match or exceed traditional landline quality. We recommend at least 100 Kbps per concurrent call and a wired connection for best results.' },
+    ],
+    tocItems: [{ label: 'Top phone system picks', anchor: 'picks' }, { label: 'Full comparison table', anchor: 'compare' }, { label: 'FAQ', anchor: 'faqs' }],
+    ctaTitle: 'Compare phone system quotes',
+    ctaBody: "Tell us your team size and use case — we'll match you with the right VoIP vendors.",
+    ctaSlug: '/technology/business-phone-systems/get-free-quotes',
+  },
+
+  // ─── GPS FLEET MANAGEMENT ───────────────────────────────────────────────
+  {
+    slug: 'gps-fleet-management',
+    title: 'Best GPS Fleet Management Software (2026) | Compare Bazaar',
+    metaDescription: 'We compared 7 GPS fleet tracking platforms in 2026. Samsara leads for AI safety, Verizon Connect for large fleets, Fleetio for maintenance. Compare pricing.',
+    canonical: '/technology/gps-fleet-management-software',
+    h1: 'Best GPS Fleet Management Software (2026)',
+    intro: 'We evaluated 7 fleet management platforms on GPS accuracy, driver safety features, maintenance scheduling, and cost per vehicle. Samsara leads on AI safety and real-time visibility, Verizon Connect dominates for large enterprise fleets, and Fleetio is the best dedicated maintenance platform.',
+    breadcrumbs: [{ label: 'Home', href: '/' }, { label: 'Technology', href: '/technology' }, { label: 'GPS Fleet Management' }],
+    author: { initials: 'JL', name: 'James Liu', credential: 'Business Technology Editor · IT procurement specialist' },
+    reviewer: 'Marcus Rivera',
+    lastReviewed: 'April 8, 2026',
+    winnerSummary: '<strong>Samsara</strong> is our top pick for most fleets — best AI dashcam integration, real-time GPS, and driver coaching. <strong>Verizon Connect</strong> leads for large enterprise fleets. <strong>Fleetio</strong> is the best standalone maintenance tracker.',
+    products: [
+      { id: 'samsara', logo: 'SA', name: 'Samsara', tagline: 'Best GPS fleet management for AI safety features', score: '4.6', reviewCount: 3810, badges: [{ variant: 'top', label: '🏆 Top Pick' }, { variant: 'trial', label: 'Free demo' }], pros: ['Best AI dashcam with real-time collision alerts', 'Industry-leading GPS accuracy and refresh rate', 'Driver coaching scores and automated safety reports', 'ELD compliance built in for HOS tracking', 'Open API for custom integrations'], cons: ['Pricing requires a quote — not transparent', 'Long-term contract required (typically 3 years)', 'Premium features on higher tiers only'], pricingLabel: 'From', pricingAmount: '~$27', pricingPeriod: '/vehicle/month (quote required)', vendorUrl: 'https://www.samsara.com', reviewSlug: 'samsara-review', isTopPick: true },
+      { id: 'verizon-connect', logo: 'VC', name: 'Verizon Connect', tagline: 'Best fleet GPS software for large enterprise fleets', score: '4.2', reviewCount: 2640, badges: [{ variant: 'trial', label: 'Free demo' }], pros: ['Largest GPS network coverage in North America', 'Strong dispatch and route optimisation tools', 'Robust reporting and fuel management', 'Towing and trailer tracking available'], cons: ['Pricing opaque — requires sales call', 'Customer support has mixed reviews', 'Interface less modern than Samsara'], pricingLabel: 'From', pricingAmount: '~$20', pricingPeriod: '/vehicle/month (quote required)', vendorUrl: 'https://www.verizonconnect.com', reviewSlug: 'verizon-connect-review' },
+      { id: 'fleetio', logo: 'FL', name: 'Fleetio', tagline: 'Best fleet maintenance management software', score: '4.3', reviewCount: 1920, badges: [{ variant: 'trial', label: '14-day trial' }], pros: ['Best-in-class vehicle maintenance scheduling', 'Clear, transparent per-vehicle pricing', 'Inspection checklists and work order management', 'Strong integrations with fuel cards and GPS providers'], cons: ['GPS tracking requires third-party integration', 'Less real-time safety feature depth than Samsara'], pricingLabel: 'Starts from', pricingAmount: '$4', pricingPeriod: '/vehicle/month', vendorUrl: 'https://www.fleetio.com', reviewSlug: 'fleetio-review' },
+    ],
+    table: { headers: ['Platform', 'Score', 'Price/Vehicle', 'GPS Tracking', 'ELD Compliance', 'Dashcam AI', 'Maintenance'], rows: [{ cells: ['Samsara', '4.6/5', '~$27/mo (quote)', 'Real-time', '✓', '✓', '✓'] }, { cells: ['Verizon Connect', '4.2/5', '~$20/mo (quote)', 'Real-time', '✓', 'Add-on', '✓'] }, { cells: ['Fleetio', '4.3/5', 'From $4/mo', 'Via integration', '✗', '✗', 'Best-in-class'] }, { cells: ['Motive (KeepTruckin)', '4.2/5', '~$20/mo (quote)', 'Real-time', '✓', '✓', '✓'] }, { cells: ['Azuga', '4.0/5', 'From $25/vehicle', 'Real-time', '✓', 'Add-on', '✓'] }] },
+    faqs: [
+      { question: 'How much does GPS fleet tracking software cost?', answer: 'Fleet tracking pricing typically ranges from $15–$45 per vehicle per month. Fleetio starts at $4/vehicle/month for maintenance-only tracking. Enterprise platforms like Samsara and Verizon Connect require a custom quote and usually need annual or multi-year contracts.' },
+      { question: 'Does GPS fleet software work for small fleets (under 10 vehicles)?', answer: 'Yes. For fleets under 10 vehicles, Fleetio or Azuga offer more straightforward pricing without long-term contract requirements.' },
+      { question: 'What is ELD compliance and which fleet software includes it?', answer: 'ELD (Electronic Logging Device) compliance is a federal requirement for commercial vehicles over 10,000 lbs in interstate commerce. Samsara, Motive, and Verizon Connect all include FMCSA-registered ELD solutions.' },
+    ],
+    tocItems: [{ label: 'Top fleet software picks', anchor: 'picks' }, { label: 'Full comparison', anchor: 'compare' }, { label: 'FAQ', anchor: 'faqs' }],
+    ctaTitle: 'Compare fleet management quotes',
+    ctaBody: "Tell us your fleet size and we'll match you with the right vendors.",
+    ctaSlug: '/technology/gps-fleet-management-software/get-free-quotes',
+  },
+
+  // ─── EMPLOYEE MANAGEMENT ────────────────────────────────────────────────
+  {
+    slug: 'employee-management',
+    title: 'Best Employee Management Software (2026) | Compare Bazaar',
+    metaDescription: 'We tested 8 employee management platforms in 2026. Rippling leads for automation, BambooHR for SMB HR, Workday for enterprise. Compare pricing and features.',
+    canonical: '/technology/best-employee-management-software',
+    h1: 'Best Employee Management Software (2026)',
+    intro: 'We evaluated 8 platforms on onboarding, performance management, time tracking, and HR workflow automation. Rippling leads for all-in-one automation, BambooHR is the best SMB HR system, and Workday is the enterprise standard.',
+    breadcrumbs: [{ label: 'Home', href: '/' }, { label: 'Technology', href: '/technology' }, { label: 'Employee Management Software' }],
+    author: { initials: 'MR', name: 'Marcus Rivera', credential: 'Payroll & HR Software Lead · ex-ADP implementation specialist' },
+    reviewer: 'James Liu',
+    lastReviewed: 'April 14, 2026',
+    winnerSummary: '<strong>Rippling</strong> is our top pick — it automates the most HR tasks across payroll, IT, and benefits in one platform. <strong>BambooHR</strong> is the best fit for SMBs that want clean HR without complexity. <strong>Workday</strong> leads for large enterprises.',
+    products: [
+      { id: 'rippling', logo: 'RP', name: 'Rippling', tagline: 'Best all-in-one employee management & HR automation', score: '4.6', reviewCount: 4820, badges: [{ variant: 'top', label: '🏆 Top Pick' }, { variant: 'trial', label: 'Free demo' }], pros: ['Only platform that manages HR, IT, and payroll in one', 'Automated onboarding triggers across all systems simultaneously', 'Device management and app provisioning built in', 'Workflow automation with no-code builder', 'Strong international payroll support'], cons: ['Pricing by module — can add up', 'Setup requires more configuration than BambooHR', 'Overkill for very small teams'], pricingLabel: 'From', pricingAmount: '$8', pricingPeriod: '/user/month + modules', vendorUrl: 'https://www.rippling.com', reviewSlug: 'rippling-review', isTopPick: true },
+      { id: 'bamboohr', logo: 'BB', name: 'BambooHR', tagline: 'Best HR software for small and mid-size business', score: '4.4', reviewCount: 3610, badges: [{ variant: 'trial', label: '7-day trial' }], pros: ['Clean, intuitive UI — lowest learning curve we tested', 'Strong performance management and review tools', 'Employee self-service portal for documents and PTO', 'eSignatures included on all plans', 'Excellent mobile app'], cons: ['Payroll is US-only and costs extra', 'Limited workflow automation vs. Rippling', 'Reporting less flexible at enterprise scale'], pricingLabel: 'From', pricingAmount: 'Custom', pricingPeriod: ' pricing (typically $6–$9/user/mo)', vendorUrl: 'https://www.bamboohr.com', reviewSlug: 'bamboohr-review' },
+      { id: 'workday', logo: 'WD', name: 'Workday HCM', tagline: 'Best enterprise employee management system', score: '4.3', reviewCount: 5210, badges: [{ variant: 'trial', label: 'Free demo' }], pros: ['Industry standard for large enterprise HR', 'Best-in-class analytics and workforce planning', 'Strong compliance tooling for multinational companies', 'Deep integration ecosystem'], cons: ['Enterprise pricing — not suitable for SMBs', 'Long implementation timelines', 'Requires dedicated HR/IT admin to manage'], pricingLabel: 'From', pricingAmount: 'Custom', pricingPeriod: ' pricing (enterprise only)', vendorUrl: 'https://www.workday.com', reviewSlug: 'workday-review' },
+    ],
+    table: { headers: ['Platform', 'Score', 'Starting Price', 'Payroll', 'Performance Mgmt', 'IT Provisioning', 'International'], rows: [{ cells: ['Rippling', '4.6/5', '$8/user + modules', '✓', '✓', '✓', '✓'] }, { cells: ['BambooHR', '4.4/5', '~$6–9/user', 'Add-on', '✓', '✗', 'Limited'] }, { cells: ['Workday HCM', '4.3/5', 'Custom', '✓', '✓', '✓', '✓'] }, { cells: ['ADP Workforce Now', '4.1/5', 'Custom', '✓', '✓', '✗', '✓'] }, { cells: ['Gusto HR', '4.2/5', '$40 + $6/user', '✓', 'Basic', '✗', '✗'] }, { cells: ['Lattice', '4.2/5', '$11/user', '✗', 'Best-in-class', '✗', '✗'] }] },
+    faqs: [
+      { question: 'What is the best employee management software for a 50-person company?', answer: "BambooHR is our top recommendation for a 50-person company — right balance of features, ease of use, and cost. Rippling is worth considering if you also have IT device management needs." },
+      { question: 'Does employee management software include payroll?', answer: "Not always. BambooHR charges extra for payroll. Rippling and Gusto include it in their platform. Workday includes payroll but is enterprise-priced." },
+      { question: 'What is the difference between HRIS and HCM software?', answer: 'HRIS focuses on storing and managing employee data. HCM is broader — it includes talent acquisition, performance management, learning, and workforce planning alongside core HR data.' },
+    ],
+    tocItems: [{ label: 'Top picks', anchor: 'picks' }, { label: 'Comparison table', anchor: 'compare' }, { label: 'FAQ', anchor: 'faqs' }],
+    ctaTitle: 'Compare HR software quotes',
+    ctaBody: "Tell us your team size and HR needs — we'll match you with the right vendors.",
+    ctaSlug: '/technology/best-employee-management-software/get-free-quotes',
+  },
+
+  // ─── SALES CRM ──────────────────────────────────────────────────────────
+  {
+    slug: 'sales-crm',
+    title: 'Best CRM Software for Sales Teams (2026) | Compare Bazaar',
+    metaDescription: 'We compared 8 CRM platforms for sales teams in 2026. Pipedrive leads for pipeline management, Salesforce for enterprise, HubSpot for marketing alignment. Compare pricing.',
+    canonical: '/sales/best-crm-software',
+    h1: 'Best CRM Software for Sales Teams (2026)',
+    intro: 'We evaluated 8 CRM platforms specifically for sales team workflows — pipeline visibility, deal tracking, forecasting, and sales automation. Pipedrive leads for clean pipeline management, Salesforce for enterprise depth, and HubSpot Sales Hub for teams that need sales and marketing in one.',
+    breadcrumbs: [{ label: 'Home', href: '/' }, { label: 'Sales', href: '/sales' }, { label: 'Best Sales CRM' }],
+    author: { initials: 'SK', name: 'Sarah Kim', credential: 'CRM & Sales Tech Editor · Former Salesforce consultant' },
+    reviewer: 'James Liu',
+    lastReviewed: 'April 15, 2026',
+    winnerSummary: '<strong>Pipedrive</strong> is our top pick for most sales teams — purpose-built for pipeline management, clean UI, and strong forecasting. <strong>Salesforce</strong> is the enterprise standard. <strong>HubSpot Sales Hub</strong> wins for teams that also need marketing alignment.',
+    products: [
+      { id: 'pipedrive-sales', logo: 'PD', name: 'Pipedrive', tagline: 'Best CRM for sales pipeline management', score: '4.5', reviewCount: 7120, badges: [{ variant: 'top', label: '🏆 Top Pick' }, { variant: 'trial', label: '14-day trial' }], pros: ['Most intuitive pipeline view of any CRM we tested', 'Smart contact enrichment and activity reminders', 'Revenue forecasting on all paid plans', 'AI sales assistant with deal health insights', 'Strong mobile app for field sales'], cons: ['No free plan — trial only', 'Marketing automation requires add-on', 'Reporting less flexible than Salesforce'], pricingLabel: 'Starts from', pricingAmount: '$14', pricingPeriod: '/user/month (billed annually)', vendorUrl: 'https://www.pipedrive.com', reviewSlug: 'pipedrive-sales-review', isTopPick: true },
+      { id: 'salesforce', logo: 'SF', name: 'Salesforce Sales Cloud', tagline: 'Best CRM for enterprise sales teams', score: '4.4', reviewCount: 9830, badges: [{ variant: 'trial', label: '30-day trial' }], pros: ['Most customisable CRM on the market', 'Einstein AI for opportunity scoring and forecasting', '360-degree customer view across all touchpoints', 'AppExchange: 3,000+ apps and integrations'], cons: ['Steepest learning curve of any CRM tested', 'Expensive at scale — implementation costs high', 'Requires dedicated admin for most companies'], pricingLabel: 'Starts from', pricingAmount: '$25', pricingPeriod: '/user/month (billed annually)', vendorUrl: 'https://www.salesforce.com/products/sales-cloud/overview/', reviewSlug: 'salesforce-review' },
+      { id: 'hubspot-sales', logo: 'HS', name: 'HubSpot Sales Hub', tagline: 'Best CRM for sales + marketing alignment', score: '4.3', reviewCount: 6210, badges: [{ variant: 'free', label: 'Free Plan' }], pros: ['Native connection to HubSpot Marketing Hub', 'Best email tracking and sequence tools', 'Generous free plan with no user limit', 'Deal pipeline and meeting scheduling included free'], cons: ['Paid tiers get expensive at scale', 'Advanced reporting requires Professional tier ($500+/mo)', 'AI features less deep than Salesforce Einstein'], pricingLabel: 'Starts from', pricingAmount: 'Free', pricingPeriod: ' · Paid from $15/user/month', vendorUrl: 'https://www.hubspot.com/products/sales', reviewSlug: 'hubspot-sales-review' },
+    ],
+    table: { headers: ['Platform', 'Score', 'Starting Price', 'Free Plan', 'AI Forecasting', 'Email Sequences', 'Best For'], rows: [{ cells: ['Pipedrive', '4.5/5', '$14/user/mo', '✗', '✓', '✓', 'Sales pipeline'] }, { cells: ['Salesforce Sales Cloud', '4.4/5', '$25/user/mo', '✗', '✓ (Einstein)', '✓', 'Enterprise'] }, { cells: ['HubSpot Sales Hub', '4.3/5', 'Free / $15/user', '✓', 'Limited', '✓', 'Sales + marketing'] }, { cells: ['Monday CRM', '4.1/5', '$9/user/mo', '✗', 'Limited', '✗', 'Simple visibility'] }, { cells: ['Close CRM', '4.2/5', '$29/user/mo', '✗', '✓', '✓ (built-in calling)', 'Inside sales'] }, { cells: ['Zoho CRM', '4.3/5', '$14/user/mo', '✓ (3 users)', '✓ (Zia)', '✓', 'Growing teams'] }] },
+    faqs: [
+      { question: 'What CRM is best for a 5-person sales team?', answer: "Pipedrive or HubSpot Sales Hub. Both are fast to set up and don't require a dedicated CRM admin. HubSpot gives you a free tier to start; Pipedrive's paid plans offer stronger forecasting from day one." },
+      { question: 'What is the difference between a sales CRM and a marketing CRM?', answer: 'A sales CRM focuses on deal pipelines, activity tracking, forecasting, and closing velocity. A marketing CRM focuses on lead capture, campaign attribution, and nurture sequences. Many platforms like HubSpot and Salesforce cover both.' },
+      { question: 'How long does it take to implement a CRM for a sales team?', answer: 'Simple CRMs like Pipedrive can be live in hours. HubSpot takes 1–2 weeks to configure properly. Salesforce implementations for 50+ person teams typically take 4–12 weeks.' },
+    ],
+    tocItems: [{ label: 'Top sales CRM picks', anchor: 'picks' }, { label: 'Comparison table', anchor: 'compare' }, { label: 'FAQ', anchor: 'faqs' }],
+    ctaTitle: 'Compare CRM quotes for your sales team',
+    ctaBody: "Tell us your team size and sales process — we'll match you with the right CRM.",
+    ctaSlug: '/sales/best-crm-software/get-free-quotes',
+  },
+
+  // ─── CALL CENTER ────────────────────────────────────────────────────────
+  {
+    slug: 'call-center',
+    title: 'Best Call Center Software & Management Platforms (2026) | Compare Bazaar',
+    metaDescription: 'We tested 8 call center platforms in 2026. Talkdesk leads for AI, Genesys for enterprise, Freshdesk for SMBs. Compare agent pricing and omnichannel features.',
+    canonical: '/sales/best-call-center-management-software',
+    h1: 'Best Call Center Software & Management Platforms (2026)',
+    intro: 'We evaluated 8 call center platforms on IVR routing, agent desktop UX, AI-powered features, omnichannel support, and pricing. Talkdesk leads for AI-first operations, Genesys Cloud for enterprise deployments, and Freshdesk Contact Center for SMBs.',
+    breadcrumbs: [{ label: 'Home', href: '/' }, { label: 'Sales', href: '/sales' }, { label: 'Call Center Software' }],
+    author: { initials: 'SK', name: 'Sarah Kim', credential: 'CRM & Sales Tech Editor · Former Salesforce consultant' },
+    reviewer: 'James Liu',
+    lastReviewed: 'April 11, 2026',
+    winnerSummary: '<strong>Talkdesk</strong> is our top pick for AI-powered call centers. <strong>Genesys Cloud</strong> leads for large enterprise deployments. <strong>Freshdesk Contact Center</strong> is the best value for SMBs.',
+    products: [
+      { id: 'talkdesk', logo: 'TD', name: 'Talkdesk', tagline: 'Best AI-powered call center software', score: '4.5', reviewCount: 2840, badges: [{ variant: 'top', label: '🏆 Top Pick' }, { variant: 'trial', label: 'Free demo' }], pros: ['Best AI Assist — real-time agent guidance during calls', 'Automated quality management and call scoring', 'Strong omnichannel: voice, chat, email, SMS', 'Pre-built integrations with Salesforce, HubSpot, Zendesk', 'Guardian compliance monitoring built in'], cons: ['Pricing higher than SMB alternatives', 'Implementation requires professional services for large deployments', 'Some AI features require higher tiers'], pricingLabel: 'From', pricingAmount: '$75', pricingPeriod: '/agent/month', vendorUrl: 'https://www.talkdesk.com', reviewSlug: 'talkdesk-review', isTopPick: true },
+      { id: 'genesys', logo: 'GN', name: 'Genesys Cloud CX', tagline: 'Best call center software for enterprise', score: '4.4', reviewCount: 3120, badges: [{ variant: 'trial', label: 'Free demo' }], pros: ['Most complete enterprise contact center platform', 'Best workforce management and forecasting tools', 'Omnichannel orchestration across all channels', 'Strong compliance and security certifications'], cons: ['Complex setup — requires dedicated admin', 'Expensive at scale', 'SMBs typically over-served by its feature depth'], pricingLabel: 'From', pricingAmount: '$75', pricingPeriod: '/agent/month', vendorUrl: 'https://www.genesys.com/genesys-cloud', reviewSlug: 'genesys-review' },
+      { id: 'freshdesk-cc', logo: 'FD', name: 'Freshdesk Contact Center', tagline: 'Best call center software for SMBs', score: '4.1', reviewCount: 2210, badges: [{ variant: 'free', label: 'Free Plan' }, { variant: 'trial', label: '21-day trial' }], pros: ['Generous free plan (unlimited agents, 2 lines)', 'Simple setup — can be live in under an hour', 'Strong ticket integration with Freshdesk helpdesk', 'Transparent, affordable per-agent pricing'], cons: ['Advanced routing and AI on higher tiers only', 'Omnichannel weaker than enterprise alternatives', 'Limited workforce management tools'], pricingLabel: 'Starts from', pricingAmount: 'Free', pricingPeriod: ' · Paid from $15/agent/month', vendorUrl: 'https://www.freshworks.com/freshcaller-cloud-pbx/', reviewSlug: 'freshdesk-cc-review' },
+    ],
+    table: { headers: ['Platform', 'Score', 'Price/Agent/Mo', 'Free Plan', 'AI Features', 'Omnichannel', 'WFM Tools'], rows: [{ cells: ['Talkdesk', '4.5/5', 'From $75', '✗', 'Best-in-class', '✓', '✓'] }, { cells: ['Genesys Cloud CX', '4.4/5', 'From $75', '✗', 'Strong', '✓', 'Best-in-class'] }, { cells: ['Freshdesk Contact Center', '4.1/5', 'Free / $15', '✓', 'Basic', '✓', 'Limited'] }, { cells: ['Five9', '4.2/5', 'From $149', '✗', 'Strong', '✓', '✓'] }, { cells: ['Aircall', '4.0/5', 'From $30', '✗', 'Basic', 'Voice + email', 'Limited'] }, { cells: ['NICE CXone', '4.3/5', 'Custom quote', '✗', 'Strong', '✓', 'Best-in-class'] }] },
+    faqs: [
+      { question: 'What is the cheapest call center software for a small business?', answer: 'Freshdesk Contact Center offers the most generous free plan — unlimited agents with 2 phone lines at no cost. Aircall starts at $30/agent/month for straightforward voice calling.' },
+      { question: 'What does call center software cost per agent?', answer: 'SMB platforms range from free (Freshdesk) to $30–$55/agent/month. Enterprise platforms like Talkdesk, Five9, and Genesys start at $75–$149/agent/month.' },
+      { question: 'What is the difference between a contact center and a call center?', answer: 'A call center handles voice calls only. A contact center is omnichannel — it manages voice, email, chat, SMS, and social media in a unified platform.' },
+    ],
+    tocItems: [{ label: 'Top picks', anchor: 'picks' }, { label: 'Comparison table', anchor: 'compare' }, { label: 'FAQ', anchor: 'faqs' }],
+    ctaTitle: 'Compare call center software quotes',
+    ctaBody: "Tell us your agent count and channel needs — we'll find the right fit.",
+    ctaSlug: '/sales/best-call-center-management-software/get-free-quotes',
+  },
+
+  // ─── PROJECT MANAGEMENT ─────────────────────────────────────────────────
+  {
+    slug: 'project-management',
+    title: 'Best Project Management Software for Teams (2026) | Compare Bazaar',
+    metaDescription: 'We tested 9 project management tools in 2026. Monday.com leads for flexibility, ClickUp for value, Asana for enterprise workflows. Compare pricing and features.',
+    canonical: '/sales/best-project-management-software',
+    h1: 'Best Project Management Software for Teams (2026)',
+    intro: 'We evaluated 9 project management platforms on task management, views (Kanban, Gantt, calendar), automation, and pricing. Monday.com leads on flexibility and views, ClickUp offers the best free tier, and Asana is the strongest for cross-functional enterprise workflows.',
+    breadcrumbs: [{ label: 'Home', href: '/' }, { label: 'Sales', href: '/sales' }, { label: 'Project Management Software' }],
+    author: { initials: 'JL', name: 'James Liu', credential: 'Business Technology Editor · IT procurement specialist' },
+    reviewer: 'Sarah Kim',
+    lastReviewed: 'April 13, 2026',
+    winnerSummary: '<strong>Monday.com</strong> is our top pick — most flexible views, strong automation, and scales from SMB to enterprise. <strong>ClickUp</strong> offers the best free tier. <strong>Asana</strong> leads for enterprise team workflows.',
+    products: [
+      { id: 'monday', logo: 'MO', name: 'Monday.com', tagline: 'Best project management software for team flexibility', score: '4.5', reviewCount: 7210, badges: [{ variant: 'top', label: '🏆 Top Pick' }, { variant: 'trial', label: '14-day trial' }], pros: ['Most views of any PM tool: Kanban, Gantt, calendar, map, workload', 'No-code automation builder — 200+ templates', 'Best dashboard customisation for reporting', 'Broad app integrations (200+)', 'Scales from 2 to 2,000+ users without switching tools'], cons: ['No free plan — 14-day trial only', 'Can feel overwhelming for simple projects', 'Per-seat pricing adds up for larger teams'], pricingLabel: 'Starts from', pricingAmount: '$9', pricingPeriod: '/user/month (min 3 users, billed annually)', vendorUrl: 'https://monday.com', reviewSlug: 'monday-review', isTopPick: true },
+      { id: 'clickup', logo: 'CU', name: 'ClickUp', tagline: 'Best free project management software', score: '4.4', reviewCount: 8940, badges: [{ variant: 'free', label: 'Free Plan' }], pros: ['Most generous free plan — unlimited tasks, users, and storage', 'All views available on free tier', 'Built-in docs, whiteboards, and time tracking', 'AI writing assistant on paid plans'], cons: ['Can be overwhelming — too many features for simple use cases', 'Mobile app less polished than Asana', 'Notifications can be noisy'], pricingLabel: 'Starts from', pricingAmount: 'Free', pricingPeriod: ' · Paid from $7/user/month', vendorUrl: 'https://clickup.com', reviewSlug: 'clickup-review' },
+      { id: 'asana', logo: 'AS', name: 'Asana', tagline: 'Best project management tool for enterprise workflows', score: '4.3', reviewCount: 5620, badges: [{ variant: 'free', label: 'Free Plan' }, { variant: 'trial', label: '30-day trial' }], pros: ['Best cross-functional workflow management', 'Timeline (Gantt) view on all paid plans', 'Strong portfolio and goal-tracking features', 'Deep Salesforce and Slack integrations'], cons: ['Free plan limited to 15 users', 'Time tracking requires third-party integration', 'Less customisable than Monday.com or ClickUp'], pricingLabel: 'Starts from', pricingAmount: 'Free', pricingPeriod: ' · Paid from $10.99/user/month', vendorUrl: 'https://asana.com', reviewSlug: 'asana-review' },
+    ],
+    table: { headers: ['Platform', 'Score', 'Starting Price', 'Free Plan', 'Gantt View', 'Automations'], rows: [{ cells: ['Monday.com', '4.5/5', '$9/user/mo', '✗ (trial only)', '✓', '200+ templates'] }, { cells: ['ClickUp', '4.4/5', 'Free / $7/user', '✓', '✓', '✓'] }, { cells: ['Asana', '4.3/5', 'Free / $10.99/user', '✓ (15 users)', '✓ (paid)', '✓'] }, { cells: ['Notion', '4.1/5', 'Free / $8/user', '✓', 'Limited', 'Limited'] }, { cells: ['Jira', '4.2/5', 'Free / $7.75/user', '✓ (10 users)', '✓', '✓'] }, { cells: ['Trello', '3.9/5', 'Free / $5/user', '✓', 'Via Power-Up', 'Limited'] }, { cells: ['Smartsheet', '4.1/5', '$9/user/mo', '✗', '✓', '✓'] }] },
+    faqs: [
+      { question: 'What is the best free project management software?', answer: "ClickUp has the most generous free tier — unlimited tasks, unlimited users, and access to most view types. Asana's free plan is strong for teams under 15." },
+      { question: 'Is Monday.com worth the money?', answer: "For teams that need multiple project views, reporting dashboards, and workflow automation, yes. Monday.com's flexibility means you rarely need to switch tools as you grow." },
+      { question: 'What project management tool is best for software development teams?', answer: 'Jira is the industry standard for agile software teams — purpose-built for sprint planning and bug tracking. ClickUp and Linear are strong modern alternatives with better UX for smaller engineering teams.' },
+    ],
+    tocItems: [{ label: 'Top PM tool picks', anchor: 'picks' }, { label: 'Full comparison table', anchor: 'compare' }, { label: 'FAQ', anchor: 'faqs' }],
+    ctaTitle: 'Compare PM software for your team',
+    ctaBody: "Tell us your team size and workflow type — we'll recommend the right tool.",
+    ctaSlug: '/sales/best-project-management-software/get-free-quotes',
+  },
+]
+
+export function getComparisonPageBySlug(slug: string): ComparisonPageData | undefined {
+  return comparisonPages.find((p) => p.slug === slug)
+}
+
+export function getComparisonPageByCanonical(canonical: string): ComparisonPageData | undefined {
+  return comparisonPages.find((p) => p.canonical === canonical)
+}
