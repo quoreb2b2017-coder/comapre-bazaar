@@ -24,17 +24,13 @@ const LEGAL = [
 
 export function SiteFooter() {
   return (
-    <footer className="relative overflow-hidden bg-gradient-to-br from-[#FFB161] via-[#F58220] to-[#CB5C00] text-white mt-16 border-t-2 border-[#FCE7D0]">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_15%_15%,rgba(255,236,212,0.18),transparent_54%)]" aria-hidden="true" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_85%_70%,rgba(255,192,126,0.25),transparent_60%)]" aria-hidden="true" />
-      <div className="absolute inset-0 bg-[linear-gradient(125deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0)_45%,rgba(123,44,0,0.16)_100%)]" aria-hidden="true" />
-
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-12">
+    <footer className="bg-[#0B2A6F] text-white mt-16 border-t-2 border-[#081F52]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-10">
           {/* Brand */}
           <div>
             <p className="font-serif text-[22px] text-white mb-3 tracking-tight">
-              Compare<span className="text-[#FCE7D0]">Bazaar</span>
+              Compare<span className="text-[#F58220]">Bazaar</span>
             </p>
             <p className="text-sm text-white/90 leading-relaxed max-w-xs">
               Independent business software comparisons and buying guides. We help B2B

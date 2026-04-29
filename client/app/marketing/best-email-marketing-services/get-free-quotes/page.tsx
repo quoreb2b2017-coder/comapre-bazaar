@@ -57,7 +57,7 @@ const EmailMarketingGetQuotesForm = () => {
     if (showSuccess) {
       timer = setTimeout(() => {
         setShowSuccess(false);
-      }, 10000);
+      }, 3000);
     }
     return () => clearTimeout(timer);
   }, [showSuccess]);

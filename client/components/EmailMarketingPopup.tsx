@@ -22,7 +22,11 @@ function PopupShell({
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
-    setOpen(true)
+    const timer = setTimeout(() => {
+      setOpen(true)
+    }, 3000)
+
+    return () => clearTimeout(timer)
   }, [])
 
   if (!open) return null

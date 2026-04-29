@@ -28,8 +28,8 @@ export async function POST(req: NextRequest) {
 
     const candidateModels = [
       process.env.ANTHROPIC_MODEL,
-      'claude-3-5-haiku-20241022',
-      'claude-3-5-sonnet-20241022',
+      'claude-haiku-4-5-20251001',
+      'claude-sonnet-4-5-20250929',
     ].filter(Boolean)
 
     let response: Response | null = null

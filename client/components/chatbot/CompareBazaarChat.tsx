@@ -81,9 +81,9 @@ function detectChips(userMsg: string, botReply: string): Chip[] {
   if (combined.match(/price|cost|how much|pricing|budget/))
     return [
       { label: 'Get Free Quotes', href: '/technology/get-free-quotes' },
-      { label: 'Browse All Software', href: '/' },
+      { label: 'Browse All Software', href: '/browse-all-software' },
     ]
-  return [{ label: 'Browse All Software ->', href: '/' }]
+  return [{ label: 'Browse All Software ->', href: '/browse-all-software' }]
 }
 
 const getTime = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -100,7 +100,7 @@ export function CompareBazaarChat() {
       text: "Hi! I'm the Compare Bazaar assistant. I can help you find and compare the best business software. What are you looking for today?",
       chips: [
         { label: 'Get Free Quotes', href: '/technology/get-free-quotes' },
-        { label: 'Browse All Software', href: '/' },
+        { label: 'Browse All Software', href: '/browse-all-software' },
       ],
       time: getTime(),
     },
