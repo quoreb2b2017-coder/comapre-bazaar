@@ -8,46 +8,6 @@ const nextConfig = {
   async redirects() {
     return [
       {
-        source: '/Marketing/best-crm-software',
-        destination: '/marketing/best-crm-software',
-        permanent: true,
-      },
-      {
-        source: '/Marketing/best-email-marketing-services',
-        destination: '/marketing/best-email-marketing-services',
-        permanent: true,
-      },
-      {
-        source: '/Marketing/best-website-building-platform',
-        destination: '/marketing/best-website-building-platform',
-        permanent: true,
-      },
-      {
-        source: '/Sales/best-crm-software',
-        destination: '/sales/best-crm-software',
-        permanent: true,
-      },
-      {
-        source: '/Sales/best-project-management-software',
-        destination: '/sales/best-project-management-software',
-        permanent: true,
-      },
-      {
-        source: '/Sales/best-call-center-management-software',
-        destination: '/sales/best-call-center-management-software',
-        permanent: true,
-      },
-      {
-        source: '/Technology/business-phone-systems',
-        destination: '/technology/business-phone-systems',
-        permanent: true,
-      },
-      {
-        source: '/Technology/gps-fleet-management-software',
-        destination: '/technology/gps-fleet-management-software',
-        permanent: true,
-      },
-      {
         source: '/technology/best-payroll-system',
         destination: '/human-resources/best-payroll-software',
         permanent: true,
