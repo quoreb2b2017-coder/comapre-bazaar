@@ -4,7 +4,6 @@
 import { useState, useEffect, useRef } from 'react';
 import ReCAPTCHA from 'react-google-recaptcha';
 import Link from 'next/link';
-import Image from 'next/image';
 import {
   CheckCircle,
   ChevronDown,
@@ -18,7 +17,12 @@ import {
   FileText,
   ArrowRight,
   Award,
-  Star
+  Star,
+  Building2,
+  Boxes,
+  Leaf,
+  HandCoins,
+  Calculator
 } from 'lucide-react';
 
 const PayrollGetQuotesForm = () => {
@@ -48,30 +52,35 @@ const PayrollGetQuotesForm = () => {
     {
       name: "ADP",
       logo: "/images/adp.jpg",
+      icon: Building2,
       color: "#D32F2F", // Red
       description: "ADP is a leading provider of human capital management solutions, offering comprehensive payroll services for businesses of all sizes. With decades of experience, ADP delivers reliable, automated payroll processing, tax compliance, and HR solutions that help enterprises streamline their workforce management."
     },
     {
       name: "Zoho",
       logo: "/images/zoho.png",
+      icon: Boxes,
       color: "#1A73E8", // Blue
       description: "Zoho Payroll is an affordable, user-friendly payroll solution designed for small businesses. It offers automated payroll processing, tax compliance, and seamless integration with the Zoho ecosystem. Perfect for growing businesses that need efficient payroll management without the complexity."
     },
     {
       name: "BambooHR",
       logo: "/images/bomb.png",
+      icon: Leaf,
       color: "#00A86B", // Green
       description: "BambooHR combines powerful HR management with integrated payroll functionality. This all-in-one platform helps businesses manage employee data, process payroll, track time, and handle benefits administration from a single, intuitive interface. Ideal for companies seeking comprehensive HR and payroll solutions."
     },
     {
       name: "OnPay",
       logo: "/images/on.jpg",
+      icon: HandCoins,
       color: "#0066CC", // Blue
       description: "OnPay offers straightforward, transparent payroll services with unlimited payroll runs and no hidden fees. Designed for small to medium businesses, OnPay provides full-service payroll, tax filing, and contractor payment management. It's perfect for businesses with mixed workforces including contractors and employees."
     },
     {
       name: "QuickBooks",
       logo: "/images/quick.png",
+      icon: Calculator,
       color: "#0077C5", // Blue/Green
       description: "QuickBooks Payroll seamlessly integrates with QuickBooks accounting software, making it the perfect choice for businesses already using QuickBooks. It offers automated payroll processing, tax calculations, direct deposit, and real-time sync with your accounting data for streamlined financial management."
     }
@@ -812,20 +821,18 @@ const PayrollGetQuotesForm = () => {
                           onClick={() => setCurrentBrandIndex(index)}
                         >
                           <div className="w-full h-full flex items-center justify-center">
-                            <Image
-                              src={brand.logo}
-                              alt={brand.name}
-                              width={64}
-                              height={64}
-                              className="object-contain"
-                              style={{
-                                height: '56px',
-                                width: 'auto',
-                                maxWidth: '64px',
-                                maxHeight: '56px',
-                                objectFit: 'contain'
-                              }}
-                            />
+                            <div
+                              className="w-12 h-12 rounded-xl flex items-center justify-center shadow-sm"
+                              style={{ backgroundColor: `${brand.color}20` }}
+                            >
+                              {brand.icon ? (
+                                <brand.icon className="w-6 h-6" style={{ color: brand.color }} aria-hidden="true" />
+                              ) : (
+                                <span className="text-sm font-bold" style={{ color: brand.color }}>
+                                  {brand.name.slice(0, 2).toUpperCase()}
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
                       ))}

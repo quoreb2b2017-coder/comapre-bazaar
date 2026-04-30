@@ -24,11 +24,11 @@ const LEGAL = [
 
 export function SiteFooter() {
   return (
-    <footer className="bg-[#0B2A6F] text-white mt-16 border-t-2 border-[#081F52]">
+    <footer className="bg-[#0B2A6F] text-white mt-16 border-t-2 border-[#081F52] w-full self-stretch">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-10">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 mb-10">
           {/* Brand */}
-          <div>
+          <div className="col-span-2 lg:col-span-1">
             <p className="font-serif text-[22px] text-white mb-3 tracking-tight">
               Compare<span className="text-[#F58220]">Bazaar</span>
             </p>
@@ -107,8 +107,8 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <div className="border-t border-white/35 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-white/90">
-          <p>© {new Date().getFullYear()} CompareBazaar.com · All Rights Reserved</p>
+        <div className="border-t border-white/35 pt-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-xs text-white/90">
+          <p className="text-left">© {new Date().getFullYear()} CompareBazaar.com · All Rights Reserved</p>
           <div className="flex flex-wrap gap-4">
             <Link href="/privacy-policy" className="hover:text-[#FFE9CF] transition-colors">Privacy</Link>
             <Link href="/terms-of-use" className="hover:text-[#FFE9CF] transition-colors">Terms</Link>

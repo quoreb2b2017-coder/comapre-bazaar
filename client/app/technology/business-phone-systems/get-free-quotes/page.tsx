@@ -5,7 +5,6 @@ import { useState, useEffect, useRef } from 'react';
 import ReCAPTCHA from 'react-google-recaptcha';
 import Head from 'next/head';
 import Link from 'next/link';
-import Image from 'next/image';
 import { CheckCircle, Phone, Shield, Zap, TrendingUp, Users, BarChart3, PhoneCall, MessageSquare, Video, DollarSign, Clock, CheckCircle2, Star, ArrowRight } from 'lucide-react';
 
 const BusinessPhoneSystemGetQuotesForm = () => {
@@ -253,7 +252,7 @@ const BusinessPhoneSystemGetQuotesForm = () => {
 
                 <form onSubmit={handleSubmit} className="space-y-6 flex-1 flex flex-col">
                   {/* First Name and Last Name in One Row */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-4">
                     <div className="group">
                       <label htmlFor="firstName" className="block text-sm font-bold text-gray-800 mb-2 transition-colors group-focus-within:text-[#ff8633]">
                         First Name <span className="text-red-500">*</span>
@@ -327,6 +326,7 @@ const BusinessPhoneSystemGetQuotesForm = () => {
                     </div>
                   </div>
 
+                  <div className="grid grid-cols-2 gap-4">
                   {/* Company Name */}
                   <div className="group">
                     <label htmlFor="companyName" className="block text-sm font-bold text-gray-800 mb-2 transition-colors group-focus-within:text-[#ff8633]">
@@ -550,6 +550,7 @@ const BusinessPhoneSystemGetQuotesForm = () => {
                       </p>
                     )}
                   </div>
+                  </div>
 
                   {/* Email Updates Checkbox */}
                   <div className="flex items-start">
@@ -641,8 +642,8 @@ const BusinessPhoneSystemGetQuotesForm = () => {
 
             {/* Right Side - Product Demo/Content */}
             <div className="order-2 lg:order-2 flex">
-              <div className="lg:sticky lg:top-4 bg-white rounded-l-none lg:rounded-r-3xl rounded-3xl shadow-2xl p-0 flex flex-col border-0 lg:border-l border-gray-200 relative overflow-hidden w-full h-full">
-                <div className="flex flex-col flex-1">
+              <div className="lg:sticky lg:top-4 bg-white rounded-l-none lg:rounded-r-3xl rounded-3xl shadow-2xl p-0 flex flex-col border-0 lg:border-l border-gray-200 relative overflow-hidden w-full h-auto">
+                <div className="flex flex-col">
                   <div className="mb-4 text-center px-4 sm:px-6 pt-4 sm:pt-6">
                     <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">
                       Experience Business Phone Systems
@@ -653,15 +654,17 @@ const BusinessPhoneSystemGetQuotesForm = () => {
                   </div>
 
                   {/* BPS Image */}
-                  <div className="w-full mb-4 flex-1">
-                    <div className="relative w-full min-h-[500px] sm:min-h-[550px] md:min-h-[600px] overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-                      <Image
-                        src="/images/BPS.png"
-                        alt="Business Phone Systems"
-                        fill
-                        className="object-cover"
-                        priority
-                        sizes="(max-width: 768px) 100vw, 50vw"
+                  <div className="w-full mb-4">
+                    <div className="relative w-full h-[190px] sm:h-[240px] md:h-[280px] overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+                      <img
+                        src="https://images.unsplash.com/photo-1596524430615-b46475ddff6e?auto=format&fit=crop&w=1400&q=80"
+                        alt="Customer support agent using business phone system with headset"
+                        className="w-full h-full object-cover"
+                        loading="eager"
+                        onError={(e) => {
+                          e.currentTarget.src =
+                            "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1400&q=80";
+                        }}
                       />
                     </div>
                   </div>
