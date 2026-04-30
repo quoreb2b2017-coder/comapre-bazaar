@@ -201,7 +201,7 @@ const BusinessPhoneSystemGetQuotesForm = () => {
       <Head>
         <title>Get Business Phone System Quotes | Compare-Bazaar</title>
         <meta name="description" content="Get free, no-obligation quotes from top business phone system providers. Compare VoIP solutions and find the best fit for your business." />
-        <link rel="canonical" href="https://www.compare-bazaar.com/Technology/business-phone-systems/get-free-quotes" />
+        <link rel="canonical" href="https://www.compare-bazaar.com/technology/business-phone-systems/get-free-quotes" />
       </Head>
       
       {/* Main Content Section - Two Column Layout */}

@@ -250,6 +250,59 @@ From `client` directory:
 
 ---
 
+## Vercel Frontend Deploy (Production)
+
+This repo is multi-folder (`client` + `backend`). Frontend deploy is configured via root `vercel.json` with:
+
+- framework: Next.js
+- root directory: `client`
+- build command: `npm run build`
+
+### 1) Push latest code
+
+```bash
+git add .
+git commit -m "prepare frontend for vercel deploy"
+git push
+```
+
+### 2) Import repo in Vercel
+
+- Go to Vercel dashboard -> **Add New Project**
+- Select this GitHub repo
+- Vercel will detect `vercel.json` and use `client` as project root automatically
+
+### 3) Add frontend environment variables in Vercel
+
+Set these under **Project Settings -> Environment Variables**:
+
+- `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY`
+- `NEXT_PUBLIC_RECAPTCHA_SITE_KEY`
+- `RECAPTCHA_SECRET_KEY`
+- `ANTHROPIC_API_KEY`
+- `ANTHROPIC_MODEL` (optional, fallback models are used if missing)
+
+Reference template: `client/.env.example`
+
+### 4) Deploy
+
+- Click **Deploy**
+- After deploy, verify:
+  - Homepage loads
+  - One quote form submits
+  - `/api/chat` responds
+  - Canonical/redirect behavior works for HR routes
+
+### 5) Optional domain + SEO sanity
+
+- Add your custom domain in Vercel settings
+- Re-check:
+  - `https://<domain>/sitemap.xml`
+  - `https://<domain>/robots.txt`
+  - page source has correct canonical URLs
+
+---
+
 ## Troubleshooting
 
 - If chat API returns authentication error:

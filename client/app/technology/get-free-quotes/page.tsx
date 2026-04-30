@@ -15,10 +15,10 @@ const quoteGroups = [
   {
     title: "Technology",
     services: [
-      { label: "Payroll Software Quotes", href: "/technology/best-payroll-system/get-free-quotes" },
+      { label: "Payroll Software Quotes", href: "/human-resources/best-payroll-software/get-free-quotes" },
       { label: "Business Phone System Quotes", href: "/technology/business-phone-systems/get-free-quotes" },
       { label: "GPS Fleet Management Quotes", href: "/technology/gps-fleet-management-software/get-free-quotes" },
-      { label: "Employee Management Quotes", href: "/technology/best-employee-management-software/get-free-quotes" },
+      { label: "Employee Management Quotes", href: "/human-resources/best-employee-management-software/get-free-quotes" },
     ],
   },
   {

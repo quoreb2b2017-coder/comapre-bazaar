@@ -47,7 +47,7 @@ export const hubPages: HubPageData[] = [
     breadcrumbs: [{ label: 'Home', href: '/' }, { label: 'Technology' }],
     cards: [
       {
-        href: '/technology/best-payroll-system',
+        href: '/human-resources/best-payroll-software',
         icon: 'wallet',
         title: 'Best Payroll Software (2026)',
         description: 'Gusto, ADP, OnPay compared on tax compliance, contractor support, and pricing.',
@@ -68,7 +68,7 @@ export const hubPages: HubPageData[] = [
         meta: '7 platforms reviewed',
       },
       {
-        href: '/technology/best-employee-management-software',
+        href: '/human-resources/best-employee-management-software',
         icon: 'users',
         title: 'Best Employee Management Software',
         description: 'Rippling, BambooHR, Workday compared on HR automation, onboarding, and compliance.',
@@ -122,14 +122,14 @@ export const hubPages: HubPageData[] = [
     breadcrumbs: [{ label: 'Home', href: '/' }, { label: 'HR Software' }],
     cards: [
       {
-        href: '/technology/best-employee-management-software',
+        href: '/human-resources/best-employee-management-software',
         icon: 'users',
         title: 'Best Employee Management Software',
         description: 'Rippling, BambooHR, Workday ranked on automation, onboarding, and compliance.',
         meta: '8 platforms reviewed',
       },
       {
-        href: '/technology/best-payroll-system',
+        href: '/human-resources/best-payroll-software',
         icon: 'wallet',
         title: 'Best Payroll Software for Small Business',
         description: 'Gusto, ADP, OnPay compared on tax filing, contractors, and ease of use.',

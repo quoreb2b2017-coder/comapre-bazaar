@@ -200,7 +200,7 @@ const EmployeeManagementGetQuotesForm = () => {
       <Head>
         <title>Get Employee Management Software Quotes | Compare-Bazaar</title>
         <meta name="description" content="Get free, no-obligation quotes from top employee management software providers. Compare solutions and find the best fit for your business." />
-        <link rel="canonical" href="https://www.compare-bazaar.com/Technology/best-employee-management-software/get-free-quotes" />
+        <link rel="canonical" href="https://www.compare-bazaar.com/human-resources/best-employee-management-software/get-free-quotes" />
       </Head>
       
       {/* Main Content Section - Two Column Layout */}

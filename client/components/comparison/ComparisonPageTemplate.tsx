@@ -118,7 +118,10 @@ export function ComparisonPageTemplate({ data }: ComparisonPageProps) {
         { name: 'Web.com', subtitle: 'Best for Beginners' },
         { name: 'Bluehost', subtitle: 'Best for WordPress' },
       ]).map((card) => {
-        const normalizedCardName = card.name.toLowerCase().replace(' hub crm', 'hubspot')
+        const normalizedCardName = card.name
+          .toLowerCase()
+          .replace('hub crm', 'hubspot')
+          .replace('hubspot crm', 'hubspot')
         const tableRow = data.table.rows.find((row) => row.cells[0].toLowerCase().includes(normalizedCardName))
         const product = data.products.find((p) => p.name.toLowerCase().includes(normalizedCardName))
         return {
@@ -176,14 +179,12 @@ export function ComparisonPageTemplate({ data }: ComparisonPageProps) {
                       >
                         Compare Quotes
                       </a>
-                      <a
-                        href={card.vendorUrl}
-                        rel="sponsored noopener noreferrer"
-                        target={card.vendorUrl === '#compare' ? undefined : '_blank'}
-                        className="block text-center border border-[#F27F25] text-[#F27F25] hover:bg-[#fff2e9] text-sm font-semibold py-2 rounded-lg transition-colors"
+                      <span
+                        aria-disabled="true"
+                        className="block text-center border border-[#F27F25] text-[#F27F25] text-sm font-semibold py-2 rounded-lg opacity-60 cursor-not-allowed select-none"
                       >
                         Visit Site
-                      </a>
+                      </span>
                     </div>
                   </article>
                 ))}

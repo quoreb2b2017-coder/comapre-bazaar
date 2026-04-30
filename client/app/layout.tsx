@@ -7,6 +7,7 @@ import ArrowNavigation from '@/components/ArrowNavigation'
 import { CompareBazaarChat } from '@/components/chatbot/CompareBazaarChat'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { buildOrganizationSchema, buildWebSiteSchema } from '@/lib/seo'
+import logoIcon from '@/components/icon.png'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.compare-bazaar.com'),
@@ -19,6 +20,11 @@ export const metadata: Metadata = {
   openGraph: {
     siteName: 'Compare Bazaar',
     type: 'website',
+  },
+  icons: {
+    icon: [{ url: logoIcon.src }],
+    shortcut: [{ url: logoIcon.src }],
+    apple: [{ url: logoIcon.src }],
   },
   robots: { index: true, follow: true },
 }

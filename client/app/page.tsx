@@ -29,7 +29,7 @@ const CATEGORIES = [
     count: '11 platforms reviewed',
   },
   {
-    href: '/technology/best-payroll-system',
+    href: '/human-resources/best-payroll-software',
     icon: WalletIcon,
     title: 'Best Payroll Software for Small Business',
     desc: 'ADP, Gusto, OnPay, and Rippling compared on tax compliance, contractor support, and integrations.',

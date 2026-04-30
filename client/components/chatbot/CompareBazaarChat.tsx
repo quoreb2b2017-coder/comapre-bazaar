@@ -40,8 +40,8 @@ function detectChips(userMsg: string, botReply: string): Chip[] {
     ]
   if (combined.match(/payroll|gusto|adp|onpay/))
     return [
-      { label: 'Get Payroll Quotes ->', href: '/technology/best-payroll-system/get-free-quotes' },
-      { label: 'Compare Payroll Software', href: '/technology/best-payroll-system' },
+      { label: 'Get Payroll Quotes ->', href: '/human-resources/best-payroll-software/get-free-quotes' },
+      { label: 'Compare Payroll Software', href: '/human-resources/best-payroll-software' },
     ]
   if (combined.match(/crm|hubspot|salesforce|pipedrive|pipeline/))
     return [
@@ -55,8 +55,8 @@ function detectChips(userMsg: string, botReply: string): Chip[] {
     ]
   if (combined.match(/employee|hr software|bamboohr|rippling|workday|onboarding/))
     return [
-      { label: 'Get HR Software Quotes ->', href: '/technology/best-employee-management-software/get-free-quotes' },
-      { label: 'Compare HR Software', href: '/technology/best-employee-management-software' },
+      { label: 'Get HR Software Quotes ->', href: '/human-resources/best-employee-management-software/get-free-quotes' },
+      { label: 'Compare HR Software', href: '/human-resources/best-employee-management-software' },
     ]
   if (combined.match(/phone|voip|ringcentral|nextiva|ooma/))
     return [
