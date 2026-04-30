@@ -405,13 +405,13 @@ const ContactPage = () => {
                                                 />
                                             </div>
                                             <div className="relative">
-                                                <label className="block text-sm font-semibold text-gray-700 mb-2 uppercase tracking-wide">Phone Number</label>
+                                                <label className="block text-sm font-semibold text-gray-700 mb-2 uppercase tracking-wide">Contact Detail</label>
                                                 <input
                                                     type="text"
                                                     name="phone"
                                                     value={formData.phone}
                                                     onChange={handleChange}
-                                                    placeholder="Enter your phone number"
+                                                    placeholder="Enter your contact detail"
                                                     className="w-full px-5 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-[#ff8633] focus:border-[#ff8633] outline-none transition-all bg-gray-50 hover:bg-white text-gray-800"
                                                     required
                                                 />

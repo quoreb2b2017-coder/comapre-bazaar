@@ -84,7 +84,6 @@ export default function TermsOfUsePage() {
         <p>If you have questions about these Terms, please contact us:</p>
         <ul>
           <li><strong>Email:</strong> <a href="mailto:legal@compare-bazaar.com">legal@compare-bazaar.com</a></li>
-          <li><strong>Phone:</strong> <a href="tel:+13322310404">+1 332-231-0404</a></li>
           <li><strong>Address:</strong> Compare Bazaar, New York, NY, United States</li>
         </ul>
       </div>

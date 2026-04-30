@@ -48,12 +48,6 @@ export default function DoNotSellPage() {
           >
             Email your request →
           </a>
-          <a
-            href="tel:+13322310404"
-            className="inline-flex items-center gap-2 border border-brand text-brand text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-brand-light transition-colors"
-          >
-            Call +1 332-231-0404
-          </a>
         </div>
       </div>
 
@@ -80,7 +74,6 @@ export default function DoNotSellPage() {
         <p>You can opt out of the sale or sharing of your personal information by:</p>
         <ul>
           <li><strong>Emailing us:</strong> Send a request to <a href="mailto:privacy@compare-bazaar.com">privacy@compare-bazaar.com</a> with the subject line &ldquo;Do Not Sell My Personal Information.&rdquo; Please include your full name and email address so we can identify your data.</li>
-          <li><strong>Calling us:</strong> Contact us at <a href="tel:+13322310404">+1 332-231-0404</a> during business hours (Monday–Friday, 9 AM–5 PM ET).</li>
           <li><strong>Adjusting browser or cookie settings:</strong> You can opt out of interest-based advertising through your browser&apos;s privacy settings, the Digital Advertising Alliance&apos;s opt-out tool at <a href="https://optout.aboutads.info" target="_blank" rel="noopener noreferrer">optout.aboutads.info</a>, or the Network Advertising Initiative at <a href="https://optout.networkadvertising.org" target="_blank" rel="noopener noreferrer">optout.networkadvertising.org</a>.</li>
           <li><strong>Global Privacy Control (GPC):</strong> If your browser transmits a Global Privacy Control signal, we will treat this as a valid opt-out request for the browser or device sending the signal.</li>
         </ul>
@@ -113,7 +106,6 @@ export default function DoNotSellPage() {
         <p>For all privacy-related requests or questions, please contact us:</p>
         <ul>
           <li><strong>Email:</strong> <a href="mailto:privacy@compare-bazaar.com">privacy@compare-bazaar.com</a></li>
-          <li><strong>Phone:</strong> <a href="tel:+13322310404">+1 332-231-0404</a></li>
           <li><strong>Address:</strong> Compare Bazaar, New York, NY, United States</li>
         </ul>
         <p>For more information about how we collect, use, and protect your personal information, please read our full <Link href="/privacy-policy">Privacy Policy</Link>.</p>

@@ -99,7 +99,6 @@ export default function AccessibilityPage() {
         <p>We welcome your feedback on the accessibility of the Compare Bazaar website. If you experience any accessibility barriers, or if you need information in an alternative format, please contact us:</p>
         <ul>
           <li><strong>Email:</strong> <a href="mailto:accessibility@compare-bazaar.com">accessibility@compare-bazaar.com</a></li>
-          <li><strong>Phone:</strong> <a href="tel:+13322310404">+1 332-231-0404</a></li>
           <li><strong>Address:</strong> Compare Bazaar, New York, NY, United States</li>
         </ul>
         <p>We aim to respond to accessibility feedback within <strong>5 business days</strong> and to provide a solution or workaround within <strong>10 business days</strong>.</p>

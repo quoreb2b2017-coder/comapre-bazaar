@@ -76,7 +76,6 @@ function detectChips(userMsg: string, botReply: string): Chip[] {
   if (combined.match(/contact|support|help|email us|call/))
     return [
       { label: 'Email Support', href: 'mailto:marketing@compare-bazaar.com' },
-      { label: 'Call Us', href: 'tel:+13322310404' },
     ]
   if (combined.match(/price|cost|how much|pricing|budget/))
     return [

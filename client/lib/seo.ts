@@ -129,7 +129,6 @@ export function buildOrganizationSchema(): object {
       'Compare Bazaar provides independent business software comparisons, pricing research, and expert buying guides for B2B decision-makers.',
     contactPoint: {
       '@type': 'ContactPoint',
-      telephone: '+1-332-231-0404',
       email: 'marketing@compare-bazaar.com',
       contactType: 'customer support',
     },

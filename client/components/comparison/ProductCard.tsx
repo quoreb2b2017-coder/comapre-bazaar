@@ -121,14 +121,16 @@ export function ProductCard({ product }: ProductCardProps) {
             rel="sponsored noopener noreferrer"
             target="_blank"
             className="bg-brand hover:bg-brand-hover text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
+            aria-label={`Visit ${product.name} website`}
           >
             Visit {product.name.split(' ')[0]} →
           </a>
           <Link
             href={`/reviews/${product.reviewSlug}`}
             className="border border-brand text-brand hover:bg-brand-light text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
+            aria-label={`Read full ${product.name} review`}
           >
-            Full review
+            Full Review
           </Link>
         </div>
       </div>

@@ -409,7 +409,7 @@ const GPSFleetGetQuotesForm = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="group">
                       <label htmlFor="phoneNumber" className="block text-sm font-bold text-gray-800 mb-2 transition-colors group-focus-within:text-[#ff8633]">
-                        Phone Number <span className="text-red-500">*</span>
+                      Contact Detail <span className="text-red-500">*</span>
                       </label>
                       <div className="relative">
                         <input
@@ -430,7 +430,7 @@ const GPSFleetGetQuotesForm = () => {
                             }
                             ${focusedField === 'phoneNumber' ? 'shadow-lg scale-[1.01]' : ''}
                           `}
-                          placeholder="(555) 123-4567"
+                          placeholder="Enter contact detail"
                         />
                         {focusedField === 'phoneNumber' && !errors.phoneNumber && (
                           <div className="absolute inset-0 rounded-xl border-2 border-[#ff8633] pointer-events-none animate-pulse-border"></div>

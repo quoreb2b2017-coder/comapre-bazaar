@@ -26,7 +26,7 @@ export default function PrivacyPolicyPage() {
         <p>Compare Bazaar operates the website at www.compare-bazaar.com (the &ldquo;Site&rdquo;). This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our Site.</p>
         <h2>1. Information We Collect</h2>
         <h3>Information you provide directly</h3>
-        <p>We may collect information you voluntarily submit, including when you fill out a &ldquo;Get Free Quotes&rdquo; form, subscribe to our newsletter, or contact us. This may include your name, email address, phone number, company name, job title, and software inquiry details.</p>
+        <p>We may collect information you voluntarily submit, including when you fill out a &ldquo;Get Free Quotes&rdquo; form, subscribe to our newsletter, or contact us. This may include your name, email address, contact details, company name, job title, and software inquiry details.</p>
         <h3>Information collected automatically</h3>
         <p>When you visit our Site, we automatically collect certain technical information including your IP address and approximate geographic location, browser type and operating system, pages visited and time spent, device type, and cookie identifiers.</p>
         <h3>Cookies and tracking technologies</h3>
@@ -77,7 +77,6 @@ export default function PrivacyPolicyPage() {
         <p>If you have questions or requests regarding this Privacy Policy, please contact us:</p>
         <ul>
           <li><strong>Email:</strong> <a href="mailto:privacy@compare-bazaar.com">privacy@compare-bazaar.com</a></li>
-          <li><strong>Phone:</strong> <a href="tel:+13322310404">+1 332-231-0404</a></li>
           <li><strong>Address:</strong> Compare Bazaar, New York, NY, United States</li>
         </ul>
       </div>

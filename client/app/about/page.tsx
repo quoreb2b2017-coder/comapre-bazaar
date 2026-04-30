@@ -59,8 +59,7 @@ export default function AboutPage() {
         <h2>Contact us</h2>
         <p>
           For editorial inquiries, corrections, or partnership questions, reach us at{' '}
-          <a href="mailto:marketing@compare-bazaar.com">marketing@compare-bazaar.com</a> or by phone
-          at <a href="tel:+13322310404">+1 332-231-0404</a>.
+          <a href="mailto:marketing@compare-bazaar.com">marketing@compare-bazaar.com</a>.
         </p>
         <p>Compare Bazaar is based in New York, NY.</p>
       </div>

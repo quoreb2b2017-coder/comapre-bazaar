@@ -123,11 +123,7 @@ export default function HomePage() {
       </div>
 
       {/* Hero */}
-      <header className="bg-gradient-to-br from-[#FFB161] via-[#F58220] to-[#CB5C00] py-20 px-4 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_20%,rgba(255,235,207,0.2),transparent_55%)]" aria-hidden="true" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_80%_55%,rgba(255,201,138,0.28),transparent_62%)]" aria-hidden="true" />
-        <div className="absolute inset-0 bg-[linear-gradient(130deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0)_45%,rgba(123,44,0,0.16)_100%)]" aria-hidden="true" />
-        <div className="absolute inset-x-0 bottom-0 h-24 bg-[linear-gradient(to_bottom,rgba(203,92,0,0)_0%,rgba(171,73,0,0.24)_100%)]" aria-hidden="true" />
+      <header className="bg-[#F58220] py-20 px-4 relative overflow-hidden">
         <div className="max-w-3xl mx-auto text-center relative">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl text-white leading-tight tracking-tight mb-5 drop-shadow-[0_2px_10px_rgba(110,45,0,0.35)]">
             Find the <em className="text-[#FCE7D0] not-italic">right</em> business software,{' '}

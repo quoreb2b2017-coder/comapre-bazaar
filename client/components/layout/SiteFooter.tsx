@@ -40,10 +40,11 @@ export function SiteFooter() {
               <a href="mailto:marketing@compare-bazaar.com" className="hover:text-[#FFE9CF] transition-colors">
                 marketing@compare-bazaar.com
               </a>
+            </p>
+            <p className="text-sm text-white/90 mt-3 max-w-xs">
+              539 W. Commerce St #2577
               <br />
-              <a href="tel:+13322310404" className="hover:text-[#FFE9CF] transition-colors">
-                +1 332-231-0404
-              </a>
+              Dallas, TX 75208
             </p>
           </div>
 
