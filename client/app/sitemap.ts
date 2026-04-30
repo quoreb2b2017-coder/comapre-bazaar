@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { comparisonPages } from '@/data/comparisons'
 import { hubPages } from '@/data/hubs'
+import { blogPosts } from '@/data/blogPosts'
 
 const BASE_URL = 'https://www.compare-bazaar.com'
 const XML_IMPORTED_PATHS = [
@@ -112,6 +113,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/editorial-process`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${BASE_URL}/about`, lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
     { url: `${BASE_URL}/advertising-disclosure`, lastModified: now, changeFrequency: 'yearly', priority: 0.4 },
+    { url: `${BASE_URL}/blog`, lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
+    { url: `${BASE_URL}/advertise`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${BASE_URL}/start-a-business`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${BASE_URL}/business-planning`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${BASE_URL}/resources/whitepaper`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${BASE_URL}/limit-the-use`, lastModified: now, changeFrequency: 'yearly', priority: 0.4 },
+    { url: `${BASE_URL}/copyright-policy`, lastModified: now, changeFrequency: 'yearly', priority: 0.4 },
   ]
 
   const hubRoutes: MetadataRoute.Sitemap = hubPages.map((hub) => ({
@@ -128,6 +136,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.95,
   }))
 
+  const blogRoutes: MetadataRoute.Sitemap = blogPosts.map((post) => ({
+    url: `${BASE_URL}/blog/${post.slug}`,
+    lastModified: new Date(post.publishedAt),
+    changeFrequency: 'monthly' as const,
+    priority: 0.65,
+  }))
+
   const importedRoutes: MetadataRoute.Sitemap = XML_IMPORTED_PATHS.map((path) => ({
     url: path === '/' ? BASE_URL : `${BASE_URL}${path}`,
     lastModified: now,
@@ -135,7 +150,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: path.startsWith('/reviews/') ? 0.75 : 0.8,
   }))
 
-  const combined = [...staticRoutes, ...hubRoutes, ...comparisonRoutes, ...importedRoutes]
+  const combined = [...staticRoutes, ...hubRoutes, ...comparisonRoutes, ...blogRoutes, ...importedRoutes]
 
   return Array.from(
     new Map(combined.map((entry) => [entry.url, entry])).values()
