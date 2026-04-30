@@ -252,10 +252,9 @@ From `client` directory:
 
 ## Vercel Frontend Deploy (Production)
 
-This repo is multi-folder (`client` + `backend`). Frontend deploy is configured via root `vercel.json` with:
+This repo is multi-folder (`client` + `backend`). Frontend deploy uses root `vercel.json` for commands, and `Root Directory` should be set to `client` in Vercel project settings:
 
 - framework: Next.js
-- root directory: `client`
 - build command: `npm run build`
 
 ### 1) Push latest code
@@ -270,7 +269,7 @@ git push
 
 - Go to Vercel dashboard -> **Add New Project**
 - Select this GitHub repo
-- Vercel will detect `vercel.json` and use `client` as project root automatically
+- In project setup, set **Root Directory** to `client`
 
 ### 3) Add frontend environment variables in Vercel
 
