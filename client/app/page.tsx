@@ -294,6 +294,32 @@ export default function HomePage() {
         {/* FAQ */}
         <HomeFaqSection faqs={FAQS} />
 
+        <section className="bg-gray-50 border border-gray-200 rounded-3xl p-6 sm:p-8" aria-label="Additional resources">
+          <h2 className="text-2xl sm:text-3xl text-navy tracking-tight mb-3">Additional Resources</h2>
+          <p className="text-sm text-gray-600 mb-4">
+            Explore policy pages, planning resources, and company information.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            {[
+              { href: '/business-planning', label: 'Business Planning' },
+              { href: '/start-a-business', label: 'Start a Business' },
+              { href: '/resources/whitepaper', label: 'Whitepaper' },
+              { href: '/contact-us/careers', label: 'Careers' },
+              { href: '/advertise', label: 'Advertise' },
+              { href: '/limit-the-use', label: 'Limit the Use' },
+              { href: '/copyright-policy', label: 'Copyright Policy' },
+            ].map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="text-sm text-brand border border-brand/30 px-3 py-2 rounded-lg hover:bg-brand-light transition-colors"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+        </section>
+
       </div>
     </>
   )

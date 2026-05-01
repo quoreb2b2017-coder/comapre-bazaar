@@ -4,7 +4,10 @@ import { buildComparisonMetadata, ComparisonRoute } from '@/components/compariso
 import { EmployeeManagementPopup } from '@/components/EmailMarketingPopup'
 
 const data = getComparisonPageBySlug('employee-management')
-export const metadata: Metadata = buildComparisonMetadata(data!)
+export const metadata: Metadata = {
+  ...buildComparisonMetadata(data!),
+  robots: { index: false, follow: true },
+}
 export default function Page() {
   return (
     <>

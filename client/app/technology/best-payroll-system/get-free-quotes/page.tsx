@@ -294,6 +294,7 @@ const PayrollGetQuotesForm = () => {
         <title>Get Payroll System Quotes | Compare-Bazaar</title>
         <meta name="description" content="Get free, no-obligation quotes from top payroll software providers. Compare payroll platforms and find the best fit for your business." />
         <link rel="canonical" href="https://www.compare-bazaar.com/human-resources/best-payroll-software/get-free-quotes" />
+        <meta name="robots" content="noindex,follow" />
       </Head>
       {/* Main Content Section - Two Column Layout */}
       <div className="min-h-screen bg-gradient-to-br from-orange-50 via-blue-50 to-purple-50 py-8 md:py-12 relative overflow-hidden">
