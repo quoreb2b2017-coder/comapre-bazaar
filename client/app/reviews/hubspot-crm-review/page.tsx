@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { CheckCircle2, CircleDollarSign, Gauge, Link2, ShieldCheck, Sparkles, Users, Workflow } from 'lucide-react'
+import { CheckCircle2, CircleDollarSign, Gauge, Link2, ShieldCheck, Sparkles, Users, Workflow, UserCircle2, FileClock, CalendarDays } from 'lucide-react'
 import { buildMetadata } from '@/lib/seo'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
 
@@ -98,29 +98,69 @@ export default function HubspotCrmReviewPage() {
         className="mb-6"
       />
 
-      <header className="mb-10 rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 shadow-sm">
-        <p className="text-xs font-semibold uppercase tracking-widest text-brand mb-2">CRM Software Review</p>
-        <h1 className="text-3xl sm:text-4xl text-navy tracking-tight mb-3">
+      <header
+        className="mb-12 rounded-[28px] p-7 sm:p-10 text-white relative overflow-hidden"
+        style={{ background: 'linear-gradient(115deg, #071D4C 0%, #0B2A6F 45%, #1D4ED8 78%, #F58220 128%)' }}
+      >
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.2),transparent_55%)]" aria-hidden="true" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(245,130,32,0.25),transparent_45%)]" aria-hidden="true" />
+        <div className="absolute top-0 right-0 h-44 w-44 rounded-full border border-white/20 -mr-20 -mt-16" aria-hidden="true" />
+        <div className="absolute top-10 right-14 h-6 w-6 rounded-full bg-white/15" aria-hidden="true" />
+        <div className="absolute bottom-10 right-20 h-16 w-16 rounded-full border border-white/15" aria-hidden="true" />
+        <div className="absolute left-1/2 top-0 h-full w-px bg-white/10" aria-hidden="true" />
+        <div
+          className="absolute inset-0 pointer-events-none z-[1] bg-[linear-gradient(135deg,rgba(255,255,255,0.04)_0%,rgba(255,255,255,0)_48%,rgba(0,0,0,0.18)_100%)]"
+          aria-hidden="true"
+        />
+
+        <div className="relative z-10">
+        <p className="text-xs font-semibold uppercase tracking-widest text-white/80 mb-2">CRM Software Review</p>
+        <h1 className="text-3xl sm:text-4xl tracking-tight mb-3">
           HubSpot CRM Review (2026): Is It Still the Best All-Round CRM for Growing Teams?
         </h1>
-        <p className="text-gray-600 leading-relaxed max-w-3xl">
-          We evaluated HubSpot CRM on onboarding speed, day-to-day usability, pipeline visibility, automation,
-          integrations, reporting quality, and total cost over time. This review is written for business owners,
-          sales leaders, and operations teams comparing HubSpot against Zoho, Salesforce, and Pipedrive.
-        </p>
+        <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-white/90">
+          <span className="inline-flex rounded-full bg-white/15 px-3 py-1 font-semibold">Score: 4.5/5</span>
+          <span>4,821 user reviews analyzed</span>
+          <span>Starting price: Free · Paid from $15/user/month</span>
+        </div>
+
+        <div className="mt-5 border-t border-white/20 pt-4 space-y-2 text-sm text-white/85">
+          <p className="flex items-start gap-2">
+            <UserCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0 text-white/80" />
+            <span>
+              Written by <strong className="text-white">Sarah Kim</strong> · CRM & Revenue Systems Editor
+            </span>
+          </p>
+          <p className="flex items-start gap-2">
+            <ShieldCheck className="w-4 h-4 mt-0.5 flex-shrink-0 text-white/80" />
+            <span>
+              Compare Bazaar may earn affiliate commissions from some providers. Editorial rankings remain independent and unbiased.
+            </span>
+          </p>
+          <p className="flex items-start gap-2">
+            <FileClock className="w-4 h-4 mt-0.5 flex-shrink-0 text-white/80" />
+            <span>Last updated: April 2026</span>
+          </p>
+          <p className="flex items-start gap-2">
+            <CalendarDays className="w-4 h-4 mt-0.5 flex-shrink-0 text-white/80" />
+            <span>Published: March 2026</span>
+          </p>
+        </div>
+
         <div className="mt-5 flex flex-wrap gap-2">
           {['Quick Facts', 'Scorecard', 'Feature Breakdown', 'FAQ', 'Final Recommendation'].map((item) => (
             <span
               key={item}
-              className="inline-flex items-center rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-medium text-gray-600"
+              className="inline-flex items-center rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-medium text-white/90"
             >
               {item}
             </span>
           ))}
         </div>
+        </div>
       </header>
 
-      <section className="rounded-2xl border border-gray-200 bg-white p-5 mb-10 shadow-sm">
+      <section className="mb-10 pb-8 border-b border-gray-200">
         <h2 className="text-lg text-navy tracking-tight mb-3">What You Will Learn in This Review</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm text-gray-700">
           <p className="flex items-start gap-2">
@@ -138,16 +178,16 @@ export default function HubspotCrmReviewPage() {
         </div>
       </section>
 
-      <section className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
+      <section className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6 mb-10 pb-8 border-b border-gray-200">
         {QUICK_FACTS.map((fact) => (
-          <article key={fact.label} className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+          <article key={fact.label} className="pl-4 border-l-4 border-[#F58220]/70">
             <p className="text-xs uppercase tracking-wider text-gray-400 mb-1">{fact.label}</p>
             <p className="text-sm text-gray-700 leading-relaxed">{fact.value}</p>
           </article>
         ))}
       </section>
 
-      <section className="rounded-2xl border border-blue-200 bg-brand-light p-6 mb-10 shadow-sm">
+      <section className="mb-10 pb-8 border-b border-gray-200">
         <h2 className="text-xl text-navy tracking-tight mb-3">Quick Verdict</h2>
         <ul className="space-y-2">
           {VERDICT_POINTS.map((point) => (
@@ -159,7 +199,7 @@ export default function HubspotCrmReviewPage() {
         </ul>
       </section>
 
-      <section className="rounded-2xl border border-orange-200 bg-orange-50 p-6 mb-10 shadow-sm relative overflow-hidden">
+      <section className="p-6 mb-10 relative overflow-hidden border-l-4 border-[#F58220] bg-[#FFF7ED]">
         <div className="absolute right-0 top-0 h-24 w-24 rounded-full bg-orange-100 -mr-8 -mt-8" aria-hidden="true" />
         <p className="text-xs font-semibold uppercase tracking-widest text-orange-700 mb-2">Featured Choice</p>
         <h2 className="text-xl text-navy tracking-tight mb-2">Featured: HubSpot CRM for Growing Revenue Teams</h2>
@@ -186,8 +226,8 @@ export default function HubspotCrmReviewPage() {
         </div>
       </section>
 
-      <section className="grid grid-cols-1 lg:grid-cols-[320px,1fr] gap-6 mb-10">
-        <aside className="lg:sticky lg:top-24 h-fit rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+      <section className="grid grid-cols-1 lg:grid-cols-[320px,1fr] gap-8 mb-10">
+        <aside className="lg:sticky lg:top-24 h-fit p-5 border border-gray-200 bg-[#FAFCFF]">
           <h2 className="text-base font-semibold text-navy mb-1">HubSpot CRM Scorecard</h2>
           <p className="text-xs text-gray-500 mb-3">At-a-glance editorial scoring based on testing criteria.</p>
           <table className="w-full text-sm">
@@ -207,7 +247,7 @@ export default function HubspotCrmReviewPage() {
         </aside>
 
         <div className="space-y-8">
-          <article className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
+          <article className="pb-6 border-b border-gray-200">
             <h2 className="text-2xl text-navy tracking-tight mb-2 flex items-center gap-2">
               <Gauge className="w-5 h-5 text-brand" />
               Ease of Use and Setup
@@ -219,7 +259,7 @@ export default function HubspotCrmReviewPage() {
             </p>
           </article>
 
-          <article className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
+          <article className="pb-6 border-b border-gray-200">
             <h2 className="text-2xl text-navy tracking-tight mb-2 flex items-center gap-2">
               <Link2 className="w-5 h-5 text-brand" />
               Integrations and Ecosystem
@@ -231,7 +271,7 @@ export default function HubspotCrmReviewPage() {
             </p>
           </article>
 
-          <article className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
+          <article className="pb-6 border-b border-gray-200">
             <h2 className="text-2xl text-navy tracking-tight mb-2 flex items-center gap-2">
               <CircleDollarSign className="w-5 h-5 text-brand" />
               Pricing Reality
@@ -243,7 +283,7 @@ export default function HubspotCrmReviewPage() {
             </p>
           </article>
 
-          <article className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
+          <article className="pb-6 border-b border-gray-200">
             <h2 className="text-2xl text-navy tracking-tight mb-2 flex items-center gap-2">
               <ShieldCheck className="w-5 h-5 text-brand" />
               Best Fit and Who Should Skip
@@ -255,11 +295,11 @@ export default function HubspotCrmReviewPage() {
             </p>
           </article>
 
-          <article className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
+          <article className="pb-6 border-b border-gray-200">
             <h2 className="text-2xl text-navy tracking-tight mb-3">Feature-by-Feature Breakdown</h2>
             <div className="space-y-4">
               {FEATURE_BREAKDOWN.map((item) => (
-                <div key={item.title} className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+                <div key={item.title} className="p-4 border-l-4 border-[#1D4ED8]/60 bg-[#F8FBFF]">
                   <h3 className="text-base font-semibold text-navy mb-1">{item.title}</h3>
                   <p className="text-sm text-gray-600 leading-relaxed">{item.body}</p>
                 </div>
@@ -294,7 +334,7 @@ export default function HubspotCrmReviewPage() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-gray-200 bg-white p-6 mb-10 shadow-sm">
+      <section className="p-6 mb-10 border-t border-b border-gray-200">
         <h2 className="text-xl text-navy tracking-tight mb-4">HubSpot CRM FAQ</h2>
         <div className="space-y-4">
           {FAQS.map((faq) => (
@@ -306,7 +346,7 @@ export default function HubspotCrmReviewPage() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm bg-[linear-gradient(180deg,#ffffff_0%,#fafcff_100%)]">
+      <section className="p-6 border-l-4 border-[#0B2A6F] bg-[linear-gradient(180deg,#ffffff_0%,#fafcff_100%)]">
         <h2 className="text-xl text-navy tracking-tight mb-3">Final Recommendation</h2>
         <p className="text-gray-600 mb-4">
           HubSpot CRM is a strong choice if your team values quick deployment, strong integrations, and a unified

@@ -55,6 +55,7 @@ const XML_IMPORTED_PATHS = [
   '/reviews/adp-review',
   '/reviews/zoho-payroll-review',
   '/reviews/bamboohr-review',
+  '/reviews/bamboohr-employee-review',
   '/reviews/onpay-review',
   '/reviews/quickbooks-payroll-review',
   '/reviews/gusto-review',

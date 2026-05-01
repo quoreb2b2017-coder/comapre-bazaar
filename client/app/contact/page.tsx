@@ -65,7 +65,7 @@ const ContactPage = () => {
             question: "How can I contact CompareBazar customer support?",
             answer: [
                 "You can reach us through multiple channels:",
-                "• Phone: +1 (800) 123-4567 (24/7 support)",
+                "• Phone support: Available through our request form (24/7 support)",
                 "• Email: support@comparebazar.com",
                 "• Live Chat: Available on our website during business hours",
                 "• Social Media: DM us on Twitter/Facebook/Instagram @CompareBazar",
@@ -95,11 +95,11 @@ const ContactPage = () => {
         {
             question: "Do you have international contact numbers?",
             answer: [
-                "Yes! We serve customers globally with local numbers:",
-                "• UK: +44 20 1234 5678",
-                "• UAE: +971 4 123 4567",
-                "• India: +91 80 1234 5678",
-                "• Australia: +61 2 1234 5678",
+                "Yes! We serve customers globally with regional support coverage:",
+                "• UK support",
+                "• UAE support",
+                "• India support",
+                "• Australia support",
                 "Full list available on our 'Contact Us' page"
             ]
         },
@@ -116,7 +116,7 @@ const ContactPage = () => {
             answer: [
                 "Please report any technical problems to:",
                 "• Email: techsupport@comparebazar.com",
-                "• Phone: +1 (800) 123-4567 (press 3 for technical support)",
+                "• Phone support: Request a technical callback through our support form",
                 "• Use the 'Report Issue' button in your account dashboard",
                 "Include screenshots and details for faster resolution"
             ]

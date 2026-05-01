@@ -3,6 +3,7 @@ import './globals.css'
 import { SiteNav } from '@/components/layout/SiteNav'
 import { SiteFooter } from '@/components/layout/SiteFooter'
 import { DisclosureBanner } from '@/components/layout/DisclosureBanner'
+import { RouteLoadingIndicator } from '@/components/layout/RouteLoadingIndicator'
 import ArrowNavigation from '@/components/ArrowNavigation'
 import { CompareBazaarChat } from '@/components/chatbot/CompareBazaarChat'
 import { JsonLd } from '@/components/seo/JsonLd'
@@ -41,6 +42,7 @@ export default function RootLayout({
         <JsonLd schema={buildWebSiteSchema()} />
       </head>
       <body className="flex flex-col min-h-screen overflow-x-hidden">
+        <RouteLoadingIndicator />
         <DisclosureBanner />
         <SiteNav />
         <main className="flex-1">{children}</main>
