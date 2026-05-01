@@ -4,6 +4,7 @@
 import { useState, useEffect, useRef } from 'react';
 import ReCAPTCHA from 'react-google-recaptcha';
 import Link from 'next/link';
+import Head from 'next/head';
 import {
   CheckCircle,
   ChevronDown,
@@ -289,6 +290,11 @@ const PayrollGetQuotesForm = () => {
 
   return (
     <>
+      <Head>
+        <title>Get Payroll System Quotes | Compare-Bazaar</title>
+        <meta name="description" content="Get free, no-obligation quotes from top payroll software providers. Compare payroll platforms and find the best fit for your business." />
+        <link rel="canonical" href="https://www.compare-bazaar.com/human-resources/best-payroll-software/get-free-quotes" />
+      </Head>
       {/* Main Content Section - Two Column Layout */}
       <div className="min-h-screen bg-gradient-to-br from-orange-50 via-blue-50 to-purple-50 py-8 md:py-12 relative overflow-hidden">
         {/* Animated Background Elements */}

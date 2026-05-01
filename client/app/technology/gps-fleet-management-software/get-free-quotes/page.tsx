@@ -202,7 +202,7 @@ const GPSFleetGetQuotesForm = () => {
       <Head>
         <title>Get GPS Fleet Management Quotes | Compare-Bazaar</title>
         <meta name="description" content="Get free, no-obligation quotes from top GPS fleet management providers. Compare solutions and find the best fit for your business." />
-        <link rel="canonical" href="https://www.compare-bazaar.com/technology/get-free-quotes" />
+        <link rel="canonical" href="https://www.compare-bazaar.com/technology/gps-fleet-management-software/get-free-quotes" />
       </Head>
       
       {/* Main Content Section - Two Column Layout */}
