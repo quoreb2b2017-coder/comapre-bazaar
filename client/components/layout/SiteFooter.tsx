@@ -1,6 +1,7 @@
 import Link from 'next/link'
 
 const CATEGORIES = [
+  { label: 'All Software Quotes', href: '/technology/get-free-quotes' },
   { label: 'Marketing Hub', href: '/marketing' },
   { label: 'Technology Hub', href: '/technology' },
   { label: 'Sales Hub', href: '/sales' },
@@ -12,13 +13,18 @@ const COMPANY = [
   { label: 'Editorial Process', href: '/editorial-process' },
   { label: 'Advertising Disclosure', href: '/advertising-disclosure' },
   { label: 'Contact', href: '/contact' },
-  { label: 'All Software Quotes', href: '/technology/get-free-quotes' },
   { label: 'Careers', href: '/contact-us/careers' },
   { label: 'Advertise With Us', href: '/advertise' },
+]
+
+const RESOURCES = [
+  { label: 'Resources Hub', href: '/resources' },
+  { label: 'Our Blogs', href: '/blog' },
+  { label: 'Whitepaper', href: '/resources/whitepaper' },
+  { label: 'Editorial Process', href: '/editorial-process' },
+  { label: 'Advertising Disclosure', href: '/advertising-disclosure' },
   { label: 'Start a Business', href: '/start-a-business' },
   { label: 'Business Planning', href: '/business-planning' },
-  { label: 'Whitepaper', href: '/resources/whitepaper' },
-  { label: 'Blog', href: '/blog' },
 ]
 
 const LEGAL = [
@@ -34,7 +40,7 @@ export function SiteFooter() {
   return (
     <footer className="bg-[#0B2A6F] text-white mt-16 border-t-2 border-[#081F52] w-full self-stretch">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 mb-10">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-8 sm:gap-10 mb-10">
           {/* Brand */}
           <div className="col-span-2 lg:col-span-1">
             <p className="font-serif text-[22px] text-white mb-3 tracking-tight">
@@ -45,7 +51,7 @@ export function SiteFooter() {
               decision-makers find the right tools without the vendor noise.
             </p>
             <p className="text-sm text-white/90 mt-4">
-              <a href="mailto:marketing@compare-bazaar.com" className="hover:text-[#FFE9CF] transition-colors">
+              <a href="mailto:marketing@compare-bazaar.com" className="hover:text-[#FFE9CF] transition-colors whitespace-nowrap">
                 marketing@compare-bazaar.com
               </a>
             </p>
@@ -58,7 +64,7 @@ export function SiteFooter() {
 
           {/* Categories */}
           <div>
-            <h5 className="text-xs font-semibold uppercase tracking-widest text-white mb-4">
+            <h5 className="text-xs font-semibold uppercase tracking-widest text-[#F58220] mb-4">
               Software Categories
             </h5>
             <ul className="space-y-2">
@@ -74,7 +80,7 @@ export function SiteFooter() {
 
           {/* Company */}
           <div>
-            <h5 className="text-xs font-semibold uppercase tracking-widest text-white mb-4">
+            <h5 className="text-xs font-semibold uppercase tracking-widest text-[#F58220] mb-4">
               Company
             </h5>
             <ul className="space-y-2">
@@ -88,9 +94,25 @@ export function SiteFooter() {
             </ul>
           </div>
 
+          {/* Resources */}
+          <div>
+            <h5 className="text-xs font-semibold uppercase tracking-widest text-[#F58220] mb-4">
+              Resources
+            </h5>
+            <ul className="space-y-2">
+              {RESOURCES.map(({ label, href }) => (
+                <li key={href}>
+                  <Link href={href} className="text-sm text-white/90 hover:text-[#FFE9CF] transition-colors">
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
           {/* Legal */}
           <div>
-            <h5 className="text-xs font-semibold uppercase tracking-widest text-white mb-4">
+            <h5 className="text-xs font-semibold uppercase tracking-widest text-[#F58220] mb-4">
               Legal
             </h5>
             <ul className="space-y-2">

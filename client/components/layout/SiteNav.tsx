@@ -42,7 +42,14 @@ const NAV_ITEMS = [
       { label: 'Best Payroll Software', href: '/human-resources/best-payroll-software', description: 'Payroll and benefits' },
     ],
   },
-  { label: 'Blog', href: '/blog' },
+  {
+    label: 'Resources',
+    href: '/resources',
+    children: [
+      { label: 'Our Blogs', href: '/blog', description: 'Latest software buying guides' },
+      { label: 'Whitepaper', href: '/resources/whitepaper', description: 'In-depth research reports' },
+    ],
+  },
 ]
 
 const QUOTE_SERVICES = [
