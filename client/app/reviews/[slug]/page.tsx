@@ -38,6 +38,51 @@ type CrmDetail = {
 }
 
 const CRM_REVIEW_DETAILS: Record<string, CrmDetail> = {
+  'hubspot-crm-review': {
+    summary:
+      'HubSpot CRM is one of the strongest all-round CRM choices for SMB and mid-market teams that want fast adoption, strong integrations, and a practical growth path from free tools to advanced revenue operations.',
+    onboarding:
+      'Onboarding is among the easiest in this category. Most teams can launch core pipeline workflows quickly, while advanced objects, lifecycle stages, and attribution setup need a short configuration phase.',
+    automation:
+      'Automation depth is solid for lead routing, task creation, lifecycle handoffs, and nurture workflows. Teams that require very complex enterprise logic may still evaluate Salesforce or Creatio for heavier customization.',
+    pricingReality:
+      'HubSpot offers strong entry value, including a usable free tier. Total cost can rise as contact volume, reporting complexity, and paid hubs expand, so teams should model 12-month growth before committing.',
+    reviewer: 'Sarah Kim',
+    reviewerRole: 'CRM & Revenue Systems Editor',
+    updatedOn: 'May 2026',
+    publishedOn: 'March 2026',
+    bestFor: [
+      'SMB and mid-market teams prioritizing quick CRM rollout',
+      'Businesses that need sales and marketing data in one ecosystem',
+      'Teams that value integration depth and clean user experience',
+    ],
+    notIdealFor: [
+      'Enterprises needing deep custom object governance from day one',
+      'Teams optimizing only for lowest long-term platform cost',
+      'Organizations requiring highly bespoke workflow architecture',
+    ],
+    scorecard: [
+      { metric: 'Ease of use', score: '9.1/10' },
+      { metric: 'Automation depth', score: '8.5/10' },
+      { metric: 'Integrations', score: '9.3/10' },
+      { metric: 'Reporting', score: '8.2/10' },
+      { metric: 'Value for money', score: '8.3/10' },
+    ],
+    faqs: [
+      {
+        q: 'Is HubSpot CRM good for small business?',
+        a: 'Yes. HubSpot CRM is one of the best small-business options because onboarding is fast, the free tier is usable, and integrations are strong from the start.',
+      },
+      {
+        q: 'How does HubSpot CRM compare with Zoho CRM?',
+        a: 'HubSpot is typically easier to adopt and better for sales-marketing alignment, while Zoho often provides lower-cost flexibility for budget-sensitive growing teams.',
+      },
+      {
+        q: 'When should teams compare alternatives to HubSpot?',
+        a: 'If you expect heavy contact growth, advanced custom reporting, or strict enterprise governance requirements, compare total cost and customization depth against alternatives.',
+      },
+    ],
+  },
   'zoho-crm-review': {
     summary:
       'Zoho CRM is one of the strongest value options for growing teams that need automation, multichannel tracking, and predictable per-user pricing without enterprise-level overhead.',
