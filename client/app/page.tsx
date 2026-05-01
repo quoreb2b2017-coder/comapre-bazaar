@@ -301,6 +301,7 @@ export default function HomePage() {
           </p>
           <div className="flex flex-wrap gap-3">
             {[
+              { href: '/technology/get-free-quotes', label: 'All Software Quotes' },
               { href: '/business-planning', label: 'Business Planning' },
               { href: '/start-a-business', label: 'Start a Business' },
               { href: '/resources/whitepaper', label: 'Whitepaper' },

@@ -12,6 +12,7 @@ const COMPANY = [
   { label: 'Editorial Process', href: '/editorial-process' },
   { label: 'Advertising Disclosure', href: '/advertising-disclosure' },
   { label: 'Contact', href: '/contact' },
+  { label: 'All Software Quotes', href: '/technology/get-free-quotes' },
   { label: 'Careers', href: '/contact-us/careers' },
   { label: 'Advertise With Us', href: '/advertise' },
   { label: 'Start a Business', href: '/start-a-business' },

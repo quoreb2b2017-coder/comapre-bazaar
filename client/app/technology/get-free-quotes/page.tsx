@@ -1,7 +1,14 @@
-"use client"
-
+import type { Metadata } from 'next'
 import Link from "next/link"
 import { ArrowRight, CheckCircle2, ShieldCheck, Sparkles } from "lucide-react"
+import { buildMetadata } from '@/lib/seo'
+
+export const metadata: Metadata = buildMetadata({
+  title: 'Get Free Software Quotes | Compare Bazaar',
+  description:
+    'Get matched with top software providers across marketing, technology, sales, and HR categories. Compare free quotes in one place.',
+  canonical: '/technology/get-free-quotes',
+})
 
 const quoteGroups = [
   {
