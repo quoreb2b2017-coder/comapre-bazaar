@@ -3,6 +3,9 @@ import Link from 'next/link'
 import { buildMetadata } from '@/lib/seo'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
 
+export const dynamic = 'force-static'
+export const revalidate = 86400
+
 export const metadata: Metadata = buildMetadata({
   title: 'Do Not Sell or Share My Personal Information | Compare Bazaar',
   description: 'California residents and others can opt out of the sale or sharing of personal information. Submit your request here or learn about your privacy rights.',

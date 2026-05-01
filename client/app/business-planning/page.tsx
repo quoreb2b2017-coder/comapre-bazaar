@@ -2,6 +2,9 @@ import type { Metadata } from 'next'
 import { buildMetadata } from '@/lib/seo'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
 
+export const dynamic = 'force-static'
+export const revalidate = 86400
+
 export const metadata: Metadata = buildMetadata({
   title: 'Business Planning Resources',
   description:
