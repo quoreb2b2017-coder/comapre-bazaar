@@ -12,6 +12,11 @@ const COMPANY = [
   { label: 'Editorial Process', href: '/editorial-process' },
   { label: 'Advertising Disclosure', href: '/advertising-disclosure' },
   { label: 'Contact', href: '/contact' },
+  { label: 'Careers', href: '/contact-us/careers' },
+  { label: 'Advertise With Us', href: '/advertise' },
+  { label: 'Start a Business', href: '/start-a-business' },
+  { label: 'Business Planning', href: '/business-planning' },
+  { label: 'Whitepaper', href: '/resources/whitepaper' },
   { label: 'Blog', href: '/blog' },
 ]
 
@@ -20,6 +25,8 @@ const LEGAL = [
   { label: 'Terms of Use', href: '/terms-of-use' },
   { label: 'Accessibility', href: '/accessibility' },
   { label: 'Do Not Sell My Info', href: '/do-not-sell' },
+  { label: 'Limit the Use', href: '/limit-the-use' },
+  { label: 'Copyright Policy', href: '/copyright-policy' },
 ]
 
 export function SiteFooter() {
