@@ -1,4 +1,7 @@
+'use client'
+
 import Link from 'next/link'
+import { CookiePreferencesTrigger } from '@/components/consent/CookiePreferencesTrigger'
 
 const CATEGORIES = [
   { label: 'All Software Quotes', href: '/technology/get-free-quotes' },
@@ -36,9 +39,11 @@ const LEGAL = [
   { label: 'Copyright Policy', href: '/copyright-policy' },
 ]
 
-export function SiteFooter() {
+export function SiteFooter({ className = '' }: { className?: string }) {
   return (
-    <footer className="bg-[#0B2A6F] text-white mt-16 border-t-2 border-[#081F52] w-full self-stretch">
+    <footer
+      className={`bg-[#0B2A6F] text-white mt-16 border-t-2 border-[#081F52] w-full self-stretch ${className}`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-8 sm:gap-10 mb-10">
           {/* Brand */}
@@ -140,10 +145,11 @@ export function SiteFooter() {
 
         <div className="border-t border-white/35 pt-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-xs text-white/90">
           <p className="text-left">© {new Date().getFullYear()} CompareBazaar.com · All Rights Reserved</p>
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-4 items-center">
             <Link href="/privacy-policy" className="hover:text-[#FFE9CF] transition-colors">Privacy</Link>
             <Link href="/terms-of-use" className="hover:text-[#FFE9CF] transition-colors">Terms</Link>
             <Link href="/advertising-disclosure" className="hover:text-[#FFE9CF] transition-colors">Advertising</Link>
+            <CookiePreferencesTrigger className="text-white/90 hover:text-[#FFE9CF] transition-colors text-xs bg-transparent border-0 p-0 cursor-pointer font-inherit" />
           </div>
         </div>
       </div>

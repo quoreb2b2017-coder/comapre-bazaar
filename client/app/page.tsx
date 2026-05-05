@@ -4,6 +4,8 @@ import { buildMetadata, buildItemListSchema } from '@/lib/seo'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { HomeSearchBar } from '@/components/ui/HomeSearchBar'
 import { HomeFaqSection } from '@/components/ui/HomeFaqSection'
+import { loadUnifiedBlogIndex } from '@/lib/blogCms'
+import { BlogHomePreviewCard } from '@/components/blog/BlogListingCards'
 import {
   ClipboardIcon,
   HandshakeIcon,
@@ -108,7 +110,9 @@ const itemListSchema = buildItemListSchema(
   CATEGORIES.map((c) => ({ name: c.title, href: c.href, description: c.desc }))
 )
 
-export default function HomePage() {
+export default async function HomePage() {
+  const recentBlogPosts = (await loadUnifiedBlogIndex()).slice(0, 3)
+
   return (
     <>
       <JsonLd schema={itemListSchema} />
@@ -204,6 +208,34 @@ export default function HomePage() {
             ))}
           </div>
         </section>
+
+        {/* Editorial blog */}
+        {recentBlogPosts.length > 0 ? (
+          <section aria-labelledby="blog-preview-heading">
+            <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-brand">Buying guides</p>
+                <h2 id="blog-preview-heading" className="text-3xl sm:text-4xl text-navy tracking-tight">
+                  Latest from our blog
+                </h2>
+                <p className="mt-2 max-w-xl text-gray-500">
+                  Deep dives on payroll, VoIP, CRM, and more—same scoring mindset as our comparison hubs.
+                </p>
+              </div>
+              <Link
+                href="/blog"
+                className="shrink-0 text-sm font-semibold text-brand hover:underline"
+              >
+                View all articles →
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+              {recentBlogPosts.map((post, index) => (
+                <BlogHomePreviewCard key={post.slug} post={post} priority={index === 0} />
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         {/* How we review */}
         <section className="bg-gray-50 border border-gray-200 rounded-3xl p-8 sm:p-12" aria-labelledby="how-heading">

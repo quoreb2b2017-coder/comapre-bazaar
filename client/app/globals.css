@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -11,6 +11,11 @@
 
   body {
     @apply font-sans text-gray-800 bg-white;
+  }
+
+  /* Blog admin: avoid bright body behind dark UI when html.dark is set */
+  html.dark:has(.blog-admin-root) body {
+    @apply bg-gray-950 text-gray-100;
   }
 
   h1, h2, h3 {
@@ -46,4 +51,381 @@
   .prose-editorial a {
     @apply text-brand underline underline-offset-2;
   }
+
+  /* Blog admin (/blog-admin) — scoped under .blog-admin-root */
+  .blog-admin-root .btn-primary {
+    @apply inline-flex items-center gap-2 bg-brand text-white font-semibold px-4 py-2.5 rounded-xl hover:bg-brand-hover transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .blog-admin-root .btn-secondary {
+    @apply inline-flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 font-medium px-4 py-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all text-sm;
+  }
+  .blog-admin-root .btn-danger {
+    @apply inline-flex items-center gap-2 bg-red-600 text-white font-semibold px-4 py-2.5 rounded-xl hover:bg-red-700 transition-all text-sm;
+  }
+  .blog-admin-root .btn-success {
+    @apply inline-flex items-center gap-2 bg-green-600 text-white font-semibold px-4 py-2.5 rounded-xl hover:bg-green-700 transition-all text-sm;
+  }
+  .blog-admin-root .card {
+    @apply bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl;
+  }
+  .blog-admin-root .input {
+    @apply w-full border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 outline-none focus:border-brand dark:focus:border-brand focus:ring-2 focus:ring-brand/20 transition-all placeholder-gray-400;
+  }
+  .blog-admin-root .label {
+    @apply block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5;
+  }
+  .blog-admin-root .badge-pending {
+    @apply inline-flex items-center gap-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 text-xs font-semibold px-2.5 py-1 rounded-full;
+  }
+  .blog-admin-root .badge-approved {
+    @apply inline-flex items-center gap-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-semibold px-2.5 py-1 rounded-full;
+  }
+  .blog-admin-root .badge-rejected {
+    @apply inline-flex items-center gap-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-xs font-semibold px-2.5 py-1 rounded-full;
+  }
+  .blog-admin-root .badge-published {
+    @apply inline-flex items-center gap-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs font-semibold px-2.5 py-1 rounded-full;
+  }
+  /* Route transitions: fade/slide in after lazy chunk renders */
+  .blog-admin-root .route-page-enter {
+    animation: blog-admin-route-page 0.38s ease-out both;
+  }
+  /* Admin preview: avoid “card behind card” — hero reads closer to the live /blog page */
+  .blog-admin-root .blog-preview section.blog-hero-banner {
+    @apply relative flex flex-col items-stretch overflow-hidden;
+    box-shadow: 0 8px 28px -12px rgba(0, 0, 0, 0.18);
+  }
+  .dark .blog-admin-root .blog-preview section.blog-hero-banner {
+    box-shadow: 0 10px 32px -14px rgba(0, 0, 0, 0.45);
+  }
+  .blog-admin-root .blog-preview section.blog-hero-banner .blog-hero-eyebrow {
+    @apply m-0 mb-2 w-full max-w-none text-xs font-semibold tracking-widest uppercase text-white/80;
+  }
+  .blog-admin-root .blog-preview section.blog-hero-banner h1,
+  .blog-admin-root .blog-preview section.blog-hero-banner .blog-hero-title {
+    @apply mt-0 mb-3 w-full max-w-none text-3xl font-extrabold leading-tight text-white sm:text-4xl md:text-5xl;
+    text-shadow: 0 2px 24px rgba(0, 0, 0, 0.35);
+  }
+  .blog-admin-root .blog-preview section.blog-hero-banner .blog-hero-subtitle {
+    @apply m-0 mt-1 w-full max-w-none text-base font-normal leading-relaxed text-white/90 sm:text-lg;
+  }
+  .blog-admin-root .blog-preview section.blog-hero-banner .blog-hero-icon-row {
+    @apply relative z-[1] w-full max-w-none justify-start;
+  }
+  .blog-admin-root .blog-preview section.blog-hero-banner .blog-hero-pill {
+    @apply transition-transform duration-200;
+  }
+  .blog-admin-root .blog-preview section.blog-hero-banner .blog-hero-pill:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.18) !important;
+  }
+  .blog-admin-root .blog-preview section.blog-hero-banner .blog-hero-pill svg {
+    @apply flex-shrink-0 opacity-95;
+  }
+  .blog-admin-root .blog-preview section.blog-hero-banner .blog-hero-pill-label {
+    @apply leading-tight;
+  }
+  .blog-admin-root .blog-preview section[data-blog-banner='true']:not(.blog-hero-banner) {
+    @apply overflow-hidden;
+  }
+  .blog-admin-root .blog-preview section[data-blog-banner='true']:not(.blog-hero-banner) h1 {
+    @apply mt-0 mb-3 text-3xl sm:text-4xl font-bold;
+  }
+  .blog-admin-root .blog-preview section[data-blog-banner='true']:not(.blog-hero-banner) svg {
+    @apply flex-shrink-0;
+  }
+
+  /* Public blog + admin preview body: Claude-generated HTML (prose plugin supplies typography) */
+  .blog-cms-html section.blog-hero-banner {
+    @apply relative overflow-hidden rounded-[20px];
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.22);
+  }
+  /* Hero copy uses full inner width of card (same horizontal bounds as article below with px-7 sm:px-8) */
+  .blog-cms-html section.blog-hero-banner .blog-hero-eyebrow {
+    @apply m-0 mb-2 w-full max-w-none text-xs font-semibold tracking-widest uppercase text-white/85;
+  }
+  .blog-cms-html section.blog-hero-banner h1,
+  .blog-cms-html section.blog-hero-banner .blog-hero-title {
+    @apply mt-0 mb-3 w-full max-w-none text-3xl font-extrabold leading-tight text-white sm:text-4xl md:text-5xl;
+    text-shadow: 0 2px 24px rgba(0, 0, 0, 0.35);
+  }
+  .blog-cms-html section.blog-hero-banner .blog-hero-subtitle {
+    @apply m-0 mt-1 w-full max-w-none text-base font-normal leading-relaxed text-white/90 sm:text-lg;
+  }
+  .blog-cms-html section.blog-hero-banner .blog-hero-icon-row {
+    @apply relative z-[1] w-full max-w-none justify-start;
+  }
+
+  /* Stack blocks full-width inside padded hero (blobs stay absolute) */
+  .blog-cms-html:not(.prose) > section.blog-hero-banner {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .blog-cms-html section.blog-hero-banner .blog-hero-pill {
+    @apply transition-transform duration-200;
+  }
+  .blog-cms-html section.blog-hero-banner .blog-hero-pill:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.18) !important;
+  }
+  .blog-cms-html img {
+    max-width: 100%;
+    height: auto;
+  }
+  .blog-cms-html table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Old Claude output: section title as only <strong> inside <p> — style like H2 */
+  .blog-cms-html.prose p:has(> strong:only-child) {
+    margin-top: 2.25rem;
+    margin-bottom: 0.75rem;
+    padding-left: 0.75rem;
+    border-left: 4px solid #f58220;
+  }
+  .blog-cms-html.prose p:has(> strong:only-child) strong {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #0f1f3d;
+    line-height: 1.3;
+    display: block;
+  }
+
+  /* Body sections after hero: comfortable vertical rhythm */
+  .blog-cms-html.prose > section:not(.blog-hero-banner) {
+    margin-top: 1.5rem;
+  }
+
+  /* Hero is first block: no extra gap from typography margins */
+  .blog-cms-html.prose > section.blog-hero-banner:first-child {
+    margin-top: 0 !important;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Lead paragraph directly under hero banner (single-column HTML) */
+  .blog-cms-html.prose section.blog-hero-banner + p {
+    font-size: 1.125rem;
+    line-height: 1.75;
+    color: #4b5563;
+    margin-top: 0.5rem;
+    margin-bottom: 1.25rem;
+    max-width: 48rem;
+  }
+
+  /* Hero split out of prose: first body paragraph */
+  .blog-cms-html.prose.blog-cms-after-hero > p:first-child {
+    font-size: 1.125rem;
+    line-height: 1.75;
+    color: #4b5563;
+    margin-top: 0;
+    margin-bottom: 1.25rem;
+    max-width: 48rem;
+  }
+
+  .blog-cms-html:not(.prose) > section.blog-hero-banner:first-child {
+    margin-top: 0;
+  }
+
+  /* Public article body: editorial rhythm, no “card” chrome */
+  .blog-cms-html.prose blockquote {
+    margin-top: 1.75rem;
+    margin-bottom: 1.75rem;
+    padding: 1rem 1.25rem 1rem 1.35rem;
+    border-left-width: 3px;
+    border-left-color: #1d4ed8;
+    background: linear-gradient(90deg, rgba(29, 78, 216, 0.05), transparent 55%);
+    border-radius: 0;
+    quotes: '\201c' '\201d';
+  }
+  .blog-cms-html.prose blockquote p {
+    margin-bottom: 0.65rem;
+  }
+  .blog-cms-html.prose blockquote p:last-child {
+    margin-bottom: 0;
+  }
+
+  .blog-cms-html.prose :where(ul, ol) {
+    margin-top: 0.85rem;
+    margin-bottom: 1.35rem;
+  }
+  .blog-cms-html.prose li {
+    padding-left: 0.25rem;
+  }
+  .blog-cms-html.prose li::marker {
+    color: #9ca3af;
+  }
+
+  .blog-cms-html.prose :not(pre) > code {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.88em;
+    font-weight: 500;
+    color: #1a3057;
+    background: #f3f4f6;
+    padding: 0.15em 0.45em;
+    border-radius: 0.25rem;
+    border: 1px solid #e5e7eb;
+  }
+
+  .blog-cms-html.prose pre {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.875rem;
+    line-height: 1.65;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem 1.15rem;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+  }
+  .blog-cms-html.prose pre code {
+    font-family: inherit;
+    font-size: inherit;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    color: inherit;
+  }
+
+  .blog-cms-html.prose hr {
+    border: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #e5e7eb 12%, #e5e7eb 88%, transparent);
+    margin-top: 2.5rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .blog-cms-html.prose table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95em;
+    margin-top: 1.5rem;
+    margin-bottom: 1.75rem;
+  }
+  .blog-cms-html.prose thead th {
+    text-align: left;
+    font-weight: 600;
+    color: #0f1f3d;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 0.65rem 0.85rem;
+  }
+  .blog-cms-html.prose tbody td {
+    border-bottom: 1px solid #f3f4f6;
+    padding: 0.6rem 0.85rem;
+    vertical-align: top;
+  }
+  .blog-cms-html.prose tbody tr:last-child td {
+    border-bottom-color: #e5e7eb;
+  }
+
+  .blog-cms-html.prose h2 {
+    margin-top: 2.75rem;
+    margin-bottom: 0.85rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #f3f4f6;
+  }
+  .blog-cms-html.prose > h2:first-child,
+  .blog-cms-html.prose.blog-cms-after-hero > h2:first-of-type {
+    margin-top: 0.5rem;
+  }
+
+  .blog-cms-html.prose h3 {
+    margin-top: 2rem;
+    color: #1a3057;
+  }
+
+  .blog-cms-html.prose h4 {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: 1.125rem;
+    letter-spacing: -0.01em;
+    font-weight: 600;
+    color: #1a3057;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.35;
+  }
+
+  .blog-cms-html.prose a {
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: color 0.15s ease;
+  }
+}
+
+@keyframes blog-admin-route-page {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blog-admin-root .route-page-enter {
+    animation: none;
+  }
+  .blog-admin-root .blog-admin-nav-strip {
+    animation: none;
+  }
+}
+
+@keyframes blog-admin-nav-strip-move {
+  0% {
+    left: -40%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+.blog-admin-root .blog-admin-nav-strip {
+  animation: blog-admin-nav-strip-move 0.75s ease-in-out infinite;
+}
+
+.blog-admin-root .ql-container {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+}
+.blog-admin-root .ql-toolbar {
+  border-radius: 12px 12px 0 0 !important;
+  border-color: #e5e7eb !important;
+}
+.blog-admin-root .ql-container {
+  border-radius: 0 0 12px 12px !important;
+  border-color: #e5e7eb !important;
+  min-height: 300px;
+}
+
+.blog-admin-root ::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.blog-admin-root ::-webkit-scrollbar-track {
+  background: transparent;
+}
+.blog-admin-root ::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+.dark .blog-admin-root ::-webkit-scrollbar-thumb {
+  background: #374151;
+}
+
+/* Hide scrollbar while keeping scroll behavior (used for split blog layout). */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }

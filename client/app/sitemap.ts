@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { comparisonPages } from '@/data/comparisons'
 import { hubPages } from '@/data/hubs'
-import { blogPosts } from '@/data/blogPosts'
+import { fetchPublishedBlogSummaries } from '@/lib/blogCms'
 
 const BASE_URL = 'https://www.compare-bazaar.com'
 const XML_IMPORTED_PATHS = [
@@ -102,7 +102,7 @@ const XML_IMPORTED_PATHS = [
   '/reviews/freshdesk-cc-review',
 ] as const
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date()
 
   const staticRoutes: MetadataRoute.Sitemap = [
@@ -134,9 +134,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.95,
   }))
 
-  const blogRoutes: MetadataRoute.Sitemap = blogPosts.map((post) => ({
+  const cmsPosts = await fetchPublishedBlogSummaries()
+  const cmsBlogRoutes: MetadataRoute.Sitemap = cmsPosts.map((post) => ({
     url: `${BASE_URL}/blog/${post.slug}`,
-    lastModified: new Date(post.publishedAt),
+    lastModified: post.publishedAt ? new Date(post.publishedAt) : now,
     changeFrequency: 'monthly' as const,
     priority: 0.65,
   }))
@@ -148,7 +149,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: path.startsWith('/reviews/') ? 0.75 : 0.8,
   }))
 
-  const combined = [...staticRoutes, ...hubRoutes, ...comparisonRoutes, ...blogRoutes, ...importedRoutes]
+  const combined = [
+    ...staticRoutes,
+    ...hubRoutes,
+    ...comparisonRoutes,
+    ...cmsBlogRoutes,
+    ...importedRoutes,
+  ]
 
   return Array.from(
     new Map(combined.map((entry) => [entry.url, entry])).values()

@@ -1,8 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  /** When disk is full (ENOSPC), set DISABLE_WEBPACK_CACHE=1 — slower compiles, no pack cache writes. */
+  webpack: (config, { dev }) => {
+    if (dev && process.env.DISABLE_WEBPACK_CACHE === '1') {
+      config.cache = false
+    }
+    return config
+  },
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'www.compare-bazaar.com' },
+      { protocol: 'https', hostname: 'images.unsplash.com' },
     ],
   },
   async redirects() {
@@ -86,6 +94,15 @@ const nextConfig = {
         source: '/marketing-solutions',
         destination: '/marketing',
         permanent: true,
+      },
+    ]
+  },
+  async rewrites() {
+    const backend = process.env.BACKEND_URL || 'http://127.0.0.1:5000'
+    return [
+      {
+        source: '/api/v1/blog-admin/:path*',
+        destination: `${backend.replace(/\/$/, '')}/api/v1/blog-admin/:path*`,
       },
     ]
   },

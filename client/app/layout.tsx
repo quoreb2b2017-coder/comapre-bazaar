@@ -1,11 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
-import { SiteNav } from '@/components/layout/SiteNav'
-import { SiteFooter } from '@/components/layout/SiteFooter'
-import { DisclosureBanner } from '@/components/layout/DisclosureBanner'
-import { RouteLoadingIndicator } from '@/components/layout/RouteLoadingIndicator'
-import ArrowNavigation from '@/components/ArrowNavigation'
-import { CompareBazaarChat } from '@/components/chatbot/CompareBazaarChat'
+import { SiteChrome } from '@/components/layout/SiteChrome'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { buildOrganizationSchema, buildWebSiteSchema } from '@/lib/seo'
 import logoIcon from '@/components/icon.png'
@@ -36,19 +31,13 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <JsonLd schema={buildOrganizationSchema()} />
         <JsonLd schema={buildWebSiteSchema()} />
       </head>
       <body className="flex flex-col min-h-screen overflow-x-hidden">
-        <RouteLoadingIndicator />
-        <DisclosureBanner />
-        <SiteNav />
-        <main className="flex-1">{children}</main>
-        <ArrowNavigation />
-        <CompareBazaarChat />
-        <SiteFooter />
+        <SiteChrome>{children}</SiteChrome>
       </body>
     </html>
   )
