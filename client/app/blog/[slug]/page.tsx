@@ -7,6 +7,7 @@ import { Breadcrumb } from '@/components/ui/Breadcrumb'
 import { blogPosts } from '@/data/blogPosts'
 import {
   fetchPublishedBlogBySlug,
+  loadUnifiedBlogIndex,
   loadUnifiedRelated,
   plainBlogExcerpt,
   splitCmsHeroFromBody,
@@ -151,7 +152,15 @@ function RelatedBlock({
   )
 }
 
-function BlogTitlesRail({ currentSlug, toc }: { currentSlug: string; toc: Array<{ id: string; label: string }> }) {
+function BlogTitlesRail({
+  currentSlug,
+  toc,
+  latest,
+}: {
+  currentSlug: string
+  toc: Array<{ id: string; label: string }>
+  latest: Array<{ slug: string; title: string }>
+}) {
   const rows = toc.slice(0, 14)
   return (
     <aside className="space-y-8 border-gray-200 lg:sticky lg:top-24 lg:border-l lg:pl-9 xl:pl-10">
@@ -174,6 +183,33 @@ function BlogTitlesRail({ currentSlug, toc }: { currentSlug: string; toc: Array<
           </ul>
         </nav>
       </div>
+      <div>
+        <h3 className="mb-4 border-b border-gray-100 pb-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-gray-400">
+          Latest articles
+        </h3>
+        <ul className="space-y-1.5">
+          {latest.map((item) => (
+            <li key={item.slug}>
+              <Link
+                href={`/blog/${item.slug}`}
+                className={`block border-l-2 py-1.5 pl-4 text-[13px] leading-snug transition-colors ${
+                  item.slug === currentSlug
+                    ? 'border-brand/60 text-navy'
+                    : 'border-transparent text-gray-600 hover:border-brand/50 hover:text-navy'
+                }`}
+              >
+                {item.title}
+              </Link>
+            </li>
+          ))}
+        </ul>
+        <Link
+          href="/blog"
+          className="mt-3 inline-block text-[12px] font-semibold uppercase tracking-[0.12em] text-brand hover:text-brand-hover"
+        >
+          View all articles →
+        </Link>
+      </div>
       <BlogSubscribeBox slug={currentSlug} compact variant="editorial" />
     </aside>
   )
@@ -191,6 +227,10 @@ async function CmsBlogArticle({ cms }: { cms: CmsBlogDetail }) {
     year: 'numeric',
   })
   const related = await loadUnifiedRelated(cms.slug, 3)
+  const latestSidebar = (await loadUnifiedBlogIndex())
+    .filter((item) => item.slug !== cms.slug)
+    .slice(0, 8)
+    .map((item) => ({ slug: item.slug, title: item.title }))
   const headline = (cms.metaTitle && cms.metaTitle.trim()) || cms.title
   const { heroHtml, bodyHtml } = splitCmsHeroFromBody(cms.content)
   const hasHeroBanner = heroHtml != null
@@ -305,7 +345,7 @@ async function CmsBlogArticle({ cms }: { cms: CmsBlogDetail }) {
             </nav>
           </article>
           <div className="h-full">
-            <BlogTitlesRail currentSlug={cms.slug} toc={toc} />
+            <BlogTitlesRail currentSlug={cms.slug} toc={toc} latest={latestSidebar} />
           </div>
         </div>
       </div>
@@ -321,6 +361,10 @@ export default async function BlogPostPage({ params }: Props) {
   if (!post) notFound()
 
   const relatedPosts = await loadUnifiedRelated(post.slug, 3)
+  const latestSidebar = (await loadUnifiedBlogIndex())
+    .filter((item) => item.slug !== post.slug)
+    .slice(0, 8)
+    .map((item) => ({ slug: item.slug, title: item.title }))
 
   const publishedLabel = new Date(post.publishedAt).toLocaleDateString('en-US', {
     month: 'long',
@@ -442,7 +486,7 @@ export default async function BlogPostPage({ params }: Props) {
             </article>
 
             <div className="h-full">
-              <BlogTitlesRail currentSlug={post.slug} toc={toc} />
+              <BlogTitlesRail currentSlug={post.slug} toc={toc} latest={latestSidebar} />
             </div>
           </div>
         </div>
