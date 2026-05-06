@@ -18,6 +18,16 @@ import {
 import api from '../utils/api'
 
 const CH_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6']
+const PRIORITY_STYLES = {
+  high: 'bg-rose-100 text-rose-700',
+  medium: 'bg-amber-100 text-amber-700',
+  advanced: 'bg-indigo-100 text-indigo-700',
+}
+const STATUS_STYLES = {
+  live: 'bg-emerald-100 text-emerald-700',
+  partial: 'bg-yellow-100 text-yellow-700',
+  setup: 'bg-gray-100 text-gray-600',
+}
 
 function fmt(n) {
   const v = Number(n || 0)
@@ -64,6 +74,133 @@ function shortKeywordLabel(s, max = 20) {
   const v = String(s || '').trim()
   if (v.length <= max) return v
   return `${v.slice(0, max - 1)}…`
+}
+
+function priorityLabel(p) {
+  if (p === 'high') return 'High priority'
+  if (p === 'medium') return 'Medium'
+  return 'Advanced'
+}
+
+function buildMetricsCatalog(derived) {
+  const hasTraffic = Number(derived?.last30?.uniqueSessions || 0) > 0
+  const hasTopPages = (derived?.topPages || []).length > 0
+  const hasSources = (derived?.topSources || []).length > 0 || (derived?.channelSplit || []).length > 0
+  const hasGeo = (derived?.mk?.countries || []).length > 0
+  const hasDevice = (derived?.mk?.devices || []).length > 0
+  const hasDailyTrend = (derived?.trend || []).length > 0
+  const hasCampaign = (derived?.campaignRows || []).length > 0
+  const hasConsent = (derived?.consentByType || []).length > 0
+  const hasReferrer = (derived?.topReferrers || []).length > 0
+  const hasEmailIntent = Number(derived?.mk?.emailPrefillHits7d || 0) > 0
+
+  return [
+    {
+      category: '1. Traffic & Visitor Analytics',
+      metrics: [
+        { name: 'Monthly unique visitors', priority: 'high', status: hasTraffic ? 'live' : 'setup' },
+        { name: 'New vs returning visitors', priority: 'high', status: hasTraffic ? 'partial' : 'setup' },
+        { name: 'Traffic source breakdown', priority: 'high', status: hasSources ? 'live' : 'setup' },
+        { name: 'Top landing pages', priority: 'high', status: hasTopPages ? 'live' : 'setup' },
+        { name: 'Bounce rate by page', priority: 'high', status: hasTraffic ? 'partial' : 'setup' },
+        { name: 'Session duration', priority: 'high', status: 'setup' },
+        { name: 'Pages per session', priority: 'medium', status: hasTraffic ? 'live' : 'setup' },
+        { name: 'Geographic breakdown', priority: 'medium', status: hasGeo ? 'live' : 'setup' },
+        { name: 'Device split', priority: 'medium', status: hasDevice ? 'live' : 'setup' },
+        { name: 'Hour/day heatmap', priority: 'advanced', status: hasDailyTrend ? 'partial' : 'setup' },
+      ],
+    },
+    {
+      category: '2. Content Performance Analytics',
+      metrics: [
+        { name: 'Top pages by traffic', priority: 'high', status: hasTopPages ? 'live' : 'setup' },
+        { name: 'Avg time on comparison pages', priority: 'high', status: 'setup' },
+        { name: 'Scroll depth %', priority: 'high', status: 'setup' },
+        { name: 'Blog post performance', priority: 'high', status: hasTopPages ? 'partial' : 'setup' },
+        { name: 'Internal link clicks', priority: 'medium', status: 'setup' },
+        { name: 'Content freshness score', priority: 'medium', status: hasDailyTrend ? 'partial' : 'setup' },
+        { name: 'Exit pages', priority: 'medium', status: hasTopPages ? 'partial' : 'setup' },
+        { name: 'Social shares per article', priority: 'advanced', status: 'setup' },
+        { name: 'Comments / engagement', priority: 'advanced', status: 'setup' },
+      ],
+    },
+    {
+      category: '3. Affiliate & Revenue Analytics',
+      metrics: [
+        { name: 'Affiliate clicks by page', priority: 'high', status: 'setup' },
+        { name: 'Click-through rate (CTR)', priority: 'high', status: 'setup' },
+        { name: 'Conversion rate by vendor', priority: 'high', status: 'setup' },
+        { name: 'Revenue per visitor (RPV)', priority: 'high', status: 'setup' },
+        { name: 'Monthly affiliate revenue', priority: 'high', status: 'setup' },
+        { name: 'Revenue by category', priority: 'high', status: 'setup' },
+        { name: 'Avg. commission per deal', priority: 'medium', status: 'setup' },
+        { name: 'Trial to paid conversion', priority: 'medium', status: 'setup' },
+        { name: 'Sponsor revenue vs affiliate', priority: 'medium', status: 'setup' },
+        { name: '30/60/90 day revenue forecast', priority: 'advanced', status: 'setup' },
+      ],
+    },
+    {
+      category: '4. SEO & Keyword Analytics',
+      metrics: [
+        { name: 'Keyword rankings tracker', priority: 'high', status: hasCampaign ? 'partial' : 'setup' },
+        { name: 'Organic impressions', priority: 'high', status: 'setup' },
+        { name: 'Organic CTR', priority: 'high', status: 'setup' },
+        { name: 'Backlink growth', priority: 'high', status: 'setup' },
+        { name: 'Domain authority trend', priority: 'high', status: 'setup' },
+        { name: 'Page 1 vs page 2 keywords', priority: 'high', status: 'setup' },
+        { name: 'Featured snippet wins', priority: 'medium', status: 'setup' },
+        { name: 'Core Web Vitals', priority: 'medium', status: 'setup' },
+        { name: 'Competitor keyword gap', priority: 'advanced', status: 'setup' },
+      ],
+    },
+    {
+      category: '5. Audience & Buyer Intent Analytics',
+      metrics: [
+        { name: 'Job title / role breakdown', priority: 'high', status: 'setup' },
+        { name: 'Company size distribution', priority: 'high', status: 'setup' },
+        { name: 'Search intent classification', priority: 'high', status: hasTopPages ? 'partial' : 'setup' },
+        { name: 'Repeat visit patterns', priority: 'medium', status: hasTraffic ? 'partial' : 'setup' },
+        { name: 'Industry vertical split', priority: 'medium', status: 'setup' },
+        { name: 'Email list signups', priority: 'medium', status: hasEmailIntent ? 'partial' : 'setup' },
+        { name: 'Lead magnet downloads', priority: 'medium', status: 'setup' },
+        { name: 'Buyer stage mapping', priority: 'advanced', status: 'setup' },
+      ],
+    },
+    {
+      category: '6. Sponsor & Advertiser Analytics',
+      metrics: [
+        { name: 'Sponsor logo impressions', priority: 'high', status: 'setup' },
+        { name: 'Sponsored CTA clicks', priority: 'high', status: 'setup' },
+        { name: 'Sponsor CTR by placement', priority: 'high', status: 'setup' },
+        { name: 'Revenue per sponsor slot', priority: 'high', status: 'setup' },
+        { name: 'Sponsor renewal rate', priority: 'medium', status: 'setup' },
+        { name: 'Newsletter open / click rate', priority: 'medium', status: 'setup' },
+        { name: 'Sponsored article traffic', priority: 'advanced', status: 'setup' },
+      ],
+    },
+    {
+      category: '7. Technical & UX Analytics',
+      metrics: [
+        { name: 'Page load speed', priority: 'high', status: 'setup' },
+        { name: 'Mobile usability score', priority: 'high', status: hasDevice ? 'partial' : 'setup' },
+        { name: '404 error pages', priority: 'medium', status: 'setup' },
+        { name: 'CTA click heatmaps', priority: 'medium', status: 'setup' },
+        { name: 'Form abandonment rate', priority: 'medium', status: 'setup' },
+        { name: 'A/B test results', priority: 'advanced', status: 'setup' },
+      ],
+    },
+    {
+      category: '8. Business Growth Metrics',
+      metrics: [
+        { name: 'MoM revenue growth %', priority: 'high', status: 'setup' },
+        { name: 'Customer acquisition cost', priority: 'medium', status: 'setup' },
+        { name: 'Lifetime value per category', priority: 'medium', status: 'setup' },
+        { name: 'Content ROI', priority: 'medium', status: 'setup' },
+        { name: 'Competitor traffic comparison', priority: 'advanced', status: 'setup' },
+        { name: 'Brand search volume', priority: 'advanced', status: 'setup' },
+      ],
+    },
+  ]
 }
 
 export const Analytics = () => {
@@ -174,6 +311,30 @@ export const Analytics = () => {
       }
     })
 
+    const metricCatalog = buildMetricsCatalog({
+      last30,
+      mk,
+      topPages,
+      topSources,
+      channelSplit,
+      trend,
+      campaignRows,
+      consentByType,
+      topReferrers,
+    })
+    const metricTotals = metricCatalog.reduce(
+      (acc, group) => {
+        group.metrics.forEach((m) => {
+          acc.total += 1
+          if (m.status === 'live') acc.live += 1
+          else if (m.status === 'partial') acc.partial += 1
+          else acc.setup += 1
+        })
+        return acc
+      },
+      { total: 0, live: 0, partial: 0, setup: 0 }
+    )
+
     return {
       last30,
       last7,
@@ -193,6 +354,8 @@ export const Analytics = () => {
       topReferrers,
       consentByType,
       campaignRows,
+      metricCatalog,
+      metricTotals,
     }
   }, [data])
 
@@ -210,6 +373,44 @@ export const Analytics = () => {
         <Metric title="Bounce rate (est.)" value={`${derived.bounceRate}%`} hint={`Sampled ${fmt(derived.sampledSessions)} sessions`} />
         <Metric title="Email-intent hits" value={fmt(derived.mk.emailPrefillHits7d)} hint="Last 7 days" />
       </section>
+
+      <Panel title="Analytics master plan (8 categories, 60+ metrics)">
+        <div className="p-5 space-y-5">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <Metric title="Total metrics" value={fmt(derived.metricTotals.total)} hint="Framework target" />
+            <Metric title="Live now" value={fmt(derived.metricTotals.live)} hint="Already flowing" />
+            <Metric title="Partial" value={fmt(derived.metricTotals.partial)} hint="Needs extra events/tools" />
+            <Metric title="Setup needed" value={fmt(derived.metricTotals.setup)} hint="Integrations pending" />
+          </div>
+
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+            {derived.metricCatalog.map((group) => (
+              <article key={group.category} className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+                <h4 className="font-semibold text-gray-900">{group.category}</h4>
+                <ul className="mt-3 space-y-2">
+                  {group.metrics.map((metric) => (
+                    <li key={metric.name} className="flex items-start justify-between gap-3">
+                      <p className="text-sm text-gray-700">{metric.name}</p>
+                      <div className="shrink-0 flex items-center gap-1.5">
+                        <span className={`px-2 py-0.5 rounded-full text-xs ${PRIORITY_STYLES[metric.priority]}`}>
+                          {priorityLabel(metric.priority)}
+                        </span>
+                        <span className={`px-2 py-0.5 rounded-full text-xs ${STATUS_STYLES[metric.status]}`}>
+                          {metric.status === 'live' ? 'Live' : metric.status === 'partial' ? 'Partial' : 'Setup needed'}
+                        </span>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </div>
+          <p className="text-xs text-gray-500">
+            Suggested connectors for remaining metrics: GA4, Search Console, Ahrefs/Semrush, Hotjar/Clarity, affiliate platform API,
+            Mailchimp/ConvertKit, ad/sponsor CRM, and Looker Studio blending.
+          </p>
+        </div>
+      </Panel>
 
       <section className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <Panel title="Traffic sources breakdown">
