@@ -31,7 +31,7 @@ export function BlogFeaturedCard({ post }: { post: UnifiedBlogCard }) {
         >
           <Image
             src={post.coverUrl}
-            alt=""
+            alt={post.title}
             fill
             className="object-cover transition-[opacity,transform] duration-500 group-hover:scale-[1.02] group-hover:opacity-95"
             sizes="(max-width: 1024px) 100vw, 46vw"
@@ -117,7 +117,7 @@ export function BlogGridCard({ post, index }: { post: UnifiedBlogCard; index?: n
         >
           <Image
             src={post.coverUrl}
-            alt=""
+            alt={post.title}
             fill
             className="object-cover transition-[opacity,transform] duration-300 group-hover:scale-[1.03] group-hover:opacity-92"
             sizes="104px"
@@ -176,7 +176,7 @@ export function BlogHomePreviewCard({ post, priority }: { post: UnifiedBlogCard;
         <div className="relative aspect-[16/10] overflow-hidden bg-gray-100">
           <Image
             src={post.coverUrl}
-            alt=""
+            alt={post.title}
             fill
             priority={priority}
             className="object-cover transition-[opacity,transform] duration-300 group-hover:scale-[1.02] group-hover:opacity-95"

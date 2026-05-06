@@ -378,6 +378,7 @@ export function buildMarketingPayload(
   const rememberedEmailDomain = readEmailDomainHint()
   const effectiveEmailDomain = queryEmailDomain || rememberedEmailDomain
   const effectiveEmailHint = !!effectiveEmailDomain
+  const session = utmFromSearchParams(searchParams)
 
   const base: Record<string, string | number | boolean> = {
     locale,
@@ -386,20 +387,19 @@ export function buildMarketingPayload(
     ...hints,
     emailPrefillHint: effectiveEmailHint,
     emailPrefillDomain: effectiveEmailDomain,
-  }
-
-  if (!marketingAllowed) return base
-
-  const session = utmFromSearchParams(searchParams)
-  const ft = ensureFirstTouchAttribution(pathname, session)
-
-  return {
-    ...base,
     utmSource: session.source,
     utmMedium: session.medium,
     utmCampaign: session.campaign,
     utmContent: session.content,
     utmTerm: session.term,
+  }
+
+  if (!marketingAllowed) return base
+
+  const ft = ensureFirstTouchAttribution(pathname, session)
+
+  return {
+    ...base,
     ftSource: ft.src ?? '',
     ftMedium: ft.med ?? '',
     ftCampaign: ft.camp ?? '',

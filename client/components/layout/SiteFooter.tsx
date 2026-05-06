@@ -56,9 +56,9 @@ export function SiteFooter({ className = '' }: { className?: string }) {
               decision-makers find the right tools without the vendor noise.
             </p>
             <p className="text-sm text-white/90 mt-4">
-              <a href="mailto:marketing@compare-bazaar.com" className="hover:text-[#FFE9CF] transition-colors whitespace-nowrap">
-                marketing@compare-bazaar.com
-              </a>
+              <Link href="/contact" className="hover:text-[#FFE9CF] transition-colors whitespace-nowrap">
+                Contact Support
+              </Link>
             </p>
             <p className="text-sm text-white/90 mt-3 max-w-xs">
               539 W. Commerce St #2577

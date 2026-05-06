@@ -239,7 +239,7 @@ export function buildOrganizationSchema(): object {
       'Compare Bazaar provides independent business software comparisons, pricing research, and expert buying guides for B2B decision-makers.',
     contactPoint: {
       '@type': 'ContactPoint',
-      email: 'marketing@compare-bazaar.com',
+      url: `${SITE_URL}/contact`,
       contactType: 'customer support',
     },
     sameAs: ['https://www.linkedin.com/company/comparebazaar/'],

@@ -1,15 +1,20 @@
 'use client'
 
 import { Suspense } from 'react'
+import dynamic from 'next/dynamic'
 import { usePathname } from 'next/navigation'
 import { SiteNav } from '@/components/layout/SiteNav'
 import { SiteFooter } from '@/components/layout/SiteFooter'
 import { DisclosureBanner } from '@/components/layout/DisclosureBanner'
 import { RouteLoadingIndicator } from '@/components/layout/RouteLoadingIndicator'
 import ArrowNavigation from '@/components/ArrowNavigation'
-import { CompareBazaarChat } from '@/components/chatbot/CompareBazaarChat'
 import { CookieConsentBanner } from '@/components/consent/CookieConsentBanner'
 import { SiteAnalyticsBeacon } from '@/components/consent/SiteAnalyticsBeacon'
+
+const CompareBazaarChat = dynamic(
+  () => import('@/components/chatbot/CompareBazaarChat').then((mod) => mod.CompareBazaarChat),
+  { ssr: false }
+)
 
 function isBlogAdminPath(pathname: string | null) {
   if (!pathname) return false

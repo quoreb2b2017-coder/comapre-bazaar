@@ -10,6 +10,22 @@ function since(days) {
   return d;
 }
 
+function fromRange(rangeRaw) {
+  const range = String(rangeRaw || "week").toLowerCase();
+  if (range === "today") return { key: "today", fromDate: since(1) };
+  if (range === "month") return { key: "month", fromDate: since(30) };
+  return { key: "week", fromDate: since(7) };
+}
+
+function xmlEscape(v) {
+  return String(v ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}
+
 async function windowStats(fromDate) {
   const matchPV = { kind: "page_view", createdAt: { $gte: fromDate } };
   const matchConsent = { kind: "consent", createdAt: { $gte: fromDate } };
@@ -123,7 +139,15 @@ router.get("/site-analytics/report", protect, async (_req, res) => {
       taggedPageViews7d,
       utmSources,
       utmCampaigns,
+      utmMediums,
+      utmContents,
+      utmTerms,
       ftCampaigns,
+      ftSources,
+      ftMediums,
+      ftContents,
+      ftTerms,
+      ftLandingPaths,
       deviceMix,
       countryMix,
       timeZoneMix,
@@ -207,12 +231,175 @@ router.get("/site-analytics/report", protect, async (_req, res) => {
         {
           $match: {
             ...pv7,
-            "marketingMeta.ftCampaign": { $nin: [null, ""] },
+            "marketingMeta.utmMedium": { $nin: [null, ""] },
           },
         },
-        { $group: { _id: "$marketingMeta.ftCampaign", views: { $sum: 1 } } },
+        { $group: { _id: "$marketingMeta.utmMedium", views: { $sum: 1 } } },
+        { $sort: { views: -1 } },
+        { $limit: 20 },
+      ]),
+      SiteAnalyticsEvent.aggregate([
+        {
+          $match: {
+            ...pv7,
+            "marketingMeta.utmContent": { $nin: [null, ""] },
+          },
+        },
+        { $group: { _id: "$marketingMeta.utmContent", views: { $sum: 1 } } },
+        { $sort: { views: -1 } },
+        { $limit: 20 },
+      ]),
+      SiteAnalyticsEvent.aggregate([
+        {
+          $match: {
+            ...pv7,
+            "marketingMeta.utmTerm": { $nin: [null, ""] },
+          },
+        },
+        { $group: { _id: "$marketingMeta.utmTerm", views: { $sum: 1 } } },
+        { $sort: { views: -1 } },
+        { $limit: 20 },
+      ]),
+      SiteAnalyticsEvent.aggregate([
+        {
+          $match: {
+            ...pv7,
+            $or: [
+              { "marketingMeta.ftCampaign": { $nin: [null, ""] } },
+              { "marketingMeta.utmCampaign": { $nin: [null, ""] } },
+            ],
+          },
+        },
+        {
+          $project: {
+            resolved: {
+              $cond: [
+                { $and: [{ $ne: ["$marketingMeta.ftCampaign", null] }, { $ne: ["$marketingMeta.ftCampaign", ""] }] },
+                "$marketingMeta.ftCampaign",
+                "$marketingMeta.utmCampaign",
+              ],
+            },
+          },
+        },
+        { $match: { resolved: { $nin: [null, ""] } } },
+        { $group: { _id: "$resolved", views: { $sum: 1 } } },
         { $sort: { views: -1 } },
         { $limit: 15 },
+      ]),
+      SiteAnalyticsEvent.aggregate([
+        {
+          $match: {
+            ...pv7,
+            $or: [
+              { "marketingMeta.ftSource": { $nin: [null, ""] } },
+              { "marketingMeta.utmSource": { $nin: [null, ""] } },
+            ],
+          },
+        },
+        {
+          $project: {
+            resolved: {
+              $cond: [
+                { $and: [{ $ne: ["$marketingMeta.ftSource", null] }, { $ne: ["$marketingMeta.ftSource", ""] }] },
+                "$marketingMeta.ftSource",
+                "$marketingMeta.utmSource",
+              ],
+            },
+          },
+        },
+        { $match: { resolved: { $nin: [null, ""] } } },
+        { $group: { _id: "$resolved", views: { $sum: 1 } } },
+        { $sort: { views: -1 } },
+        { $limit: 20 },
+      ]),
+      SiteAnalyticsEvent.aggregate([
+        {
+          $match: {
+            ...pv7,
+            $or: [
+              { "marketingMeta.ftMedium": { $nin: [null, ""] } },
+              { "marketingMeta.utmMedium": { $nin: [null, ""] } },
+            ],
+          },
+        },
+        {
+          $project: {
+            resolved: {
+              $cond: [
+                { $and: [{ $ne: ["$marketingMeta.ftMedium", null] }, { $ne: ["$marketingMeta.ftMedium", ""] }] },
+                "$marketingMeta.ftMedium",
+                "$marketingMeta.utmMedium",
+              ],
+            },
+          },
+        },
+        { $match: { resolved: { $nin: [null, ""] } } },
+        { $group: { _id: "$resolved", views: { $sum: 1 } } },
+        { $sort: { views: -1 } },
+        { $limit: 20 },
+      ]),
+      SiteAnalyticsEvent.aggregate([
+        {
+          $match: {
+            ...pv7,
+            $or: [
+              { "marketingMeta.ftContent": { $nin: [null, ""] } },
+              { "marketingMeta.utmContent": { $nin: [null, ""] } },
+            ],
+          },
+        },
+        {
+          $project: {
+            resolved: {
+              $cond: [
+                { $and: [{ $ne: ["$marketingMeta.ftContent", null] }, { $ne: ["$marketingMeta.ftContent", ""] }] },
+                "$marketingMeta.ftContent",
+                "$marketingMeta.utmContent",
+              ],
+            },
+          },
+        },
+        { $match: { resolved: { $nin: [null, ""] } } },
+        { $group: { _id: "$resolved", views: { $sum: 1 } } },
+        { $sort: { views: -1 } },
+        { $limit: 20 },
+      ]),
+      SiteAnalyticsEvent.aggregate([
+        {
+          $match: {
+            ...pv7,
+            $or: [
+              { "marketingMeta.ftTerm": { $nin: [null, ""] } },
+              { "marketingMeta.utmTerm": { $nin: [null, ""] } },
+            ],
+          },
+        },
+        {
+          $project: {
+            resolved: {
+              $cond: [
+                { $and: [{ $ne: ["$marketingMeta.ftTerm", null] }, { $ne: ["$marketingMeta.ftTerm", ""] }] },
+                "$marketingMeta.ftTerm",
+                "$marketingMeta.utmTerm",
+              ],
+            },
+          },
+        },
+        { $match: { resolved: { $nin: [null, ""] } } },
+        { $group: { _id: "$resolved", views: { $sum: 1 } } },
+        { $sort: { views: -1 } },
+        { $limit: 20 },
+      ]),
+      SiteAnalyticsEvent.aggregate([
+        {
+          $match: {
+            ...pv7,
+            "marketingMeta.ftLandingPath": { $nin: [null, ""] },
+          },
+        },
+        { $group: { _id: "$marketingMeta.ftLandingPath", views: { $sum: 1 } } },
+        { $sort: { views: -1 } },
+        { $limit: 20 },
       ]),
       SiteAnalyticsEvent.aggregate([
         { $match: pv7 },
@@ -371,8 +558,16 @@ router.get("/site-analytics/report", protect, async (_req, res) => {
         marketing: {
           taggedPageViews7d,
           utmSources: utmSources.map((r) => ({ source: r._id, views: r.views })),
+          utmMediums: utmMediums.map((r) => ({ medium: r._id, views: r.views })),
           utmCampaigns: utmCampaigns.map((r) => ({ campaign: r._id, views: r.views })),
+          utmContents: utmContents.map((r) => ({ content: r._id, views: r.views })),
+          utmTerms: utmTerms.map((r) => ({ term: r._id, views: r.views })),
           firstTouchCampaigns: ftCampaigns.map((r) => ({ campaign: r._id, views: r.views })),
+          firstTouchSources: ftSources.map((r) => ({ source: r._id, views: r.views })),
+          firstTouchMediums: ftMediums.map((r) => ({ medium: r._id, views: r.views })),
+          firstTouchContents: ftContents.map((r) => ({ content: r._id, views: r.views })),
+          firstTouchTerms: ftTerms.map((r) => ({ term: r._id, views: r.views })),
+          firstTouchLandingPaths: ftLandingPaths.map((r) => ({ path: r._id, views: r.views })),
           devices: deviceMix.map((r) => ({ device: r._id || "unknown", views: r.views })),
           countries: countryMix.map((r) => ({ country: r._id, views: r.views })),
           timeZones: timeZoneMix.map((r) => ({ zone: r._id, views: r.views })),
@@ -407,6 +602,129 @@ router.get("/site-analytics/report", protect, async (_req, res) => {
     });
   } catch (error) {
     console.error("site-analytics report:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+router.get("/site-analytics/events", protect, async (req, res) => {
+  try {
+    const { key: range, fromDate } = fromRange(req.query.range);
+    const page = Math.max(1, Number.parseInt(String(req.query.page || "1"), 10) || 1);
+    const limit = Math.min(100, Math.max(1, Number.parseInt(String(req.query.limit || "50"), 10) || 50));
+    const query = { createdAt: { $gte: fromDate } };
+    const skip = (page - 1) * limit;
+
+    const [rows, total] = await Promise.all([
+      SiteAnalyticsEvent.find(query)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .select("kind sessionId path referrer consentSnapshot userAgent marketingMeta customMeta createdAt")
+        .lean(),
+      SiteAnalyticsEvent.countDocuments(query),
+    ]);
+
+    res.json({
+      success: true,
+      data: rows.map((e) => ({
+        kind: e.kind,
+        sessionId: e.sessionId,
+        path: e.path,
+        referrer: e.referrer,
+        consentSnapshot: e.consentSnapshot,
+        userAgent: e.userAgent,
+        marketingMeta: e.marketingMeta || null,
+        customMeta: e.customMeta || null,
+        createdAt: e.createdAt,
+      })),
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.max(1, Math.ceil(total / limit)),
+      },
+      range,
+    });
+  } catch (error) {
+    console.error("site-analytics events:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+router.get("/site-analytics/events/export", protect, async (req, res) => {
+  try {
+    const { key: range, fromDate } = fromRange(req.query.range);
+    const rows = await SiteAnalyticsEvent.find({ createdAt: { $gte: fromDate } })
+      .sort({ createdAt: -1 })
+      .limit(10000)
+      .select("kind sessionId path referrer consentSnapshot userAgent marketingMeta customMeta createdAt")
+      .lean();
+
+    const xmlRows = rows
+      .map((e) => {
+        const m = e.marketingMeta || {};
+        const c = e.consentSnapshot || {};
+        return `
+        <Row>
+          <Cell><Data ss:Type="String">${xmlEscape(new Date(e.createdAt).toISOString())}</Data></Cell>
+          <Cell><Data ss:Type="String">${xmlEscape(e.kind)}</Data></Cell>
+          <Cell><Data ss:Type="String">${xmlEscape(e.sessionId)}</Data></Cell>
+          <Cell><Data ss:Type="String">${xmlEscape(e.path)}</Data></Cell>
+          <Cell><Data ss:Type="String">${xmlEscape(e.referrer)}</Data></Cell>
+          <Cell><Data ss:Type="String">${xmlEscape(m.utmSource || "")}</Data></Cell>
+          <Cell><Data ss:Type="String">${xmlEscape(m.utmMedium || "")}</Data></Cell>
+          <Cell><Data ss:Type="String">${xmlEscape(m.utmCampaign || "")}</Data></Cell>
+          <Cell><Data ss:Type="String">${xmlEscape(m.utmContent || "")}</Data></Cell>
+          <Cell><Data ss:Type="String">${xmlEscape(m.utmTerm || "")}</Data></Cell>
+          <Cell><Data ss:Type="String">${xmlEscape(m.ftCampaign || "")}</Data></Cell>
+          <Cell><Data ss:Type="String">${xmlEscape(m.country || "")}</Data></Cell>
+          <Cell><Data ss:Type="String">${xmlEscape(m.region || "")}</Data></Cell>
+          <Cell><Data ss:Type="String">${xmlEscape(m.city || "")}</Data></Cell>
+          <Cell><Data ss:Type="String">${xmlEscape(c.analytics ? "1" : "0")}</Data></Cell>
+          <Cell><Data ss:Type="String">${xmlEscape(c.marketing ? "1" : "0")}</Data></Cell>
+          <Cell><Data ss:Type="String">${xmlEscape(e.userAgent || "")}</Data></Cell>
+        </Row>`;
+      })
+      .join("");
+
+    const xml = `<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
+  <Worksheet ss:Name="Site Analytics Events">
+    <Table>
+      <Row>
+        <Cell><Data ss:Type="String">Time (UTC)</Data></Cell>
+        <Cell><Data ss:Type="String">Kind</Data></Cell>
+        <Cell><Data ss:Type="String">Session ID</Data></Cell>
+        <Cell><Data ss:Type="String">Path</Data></Cell>
+        <Cell><Data ss:Type="String">Referrer</Data></Cell>
+        <Cell><Data ss:Type="String">UTM Source</Data></Cell>
+        <Cell><Data ss:Type="String">UTM Medium</Data></Cell>
+        <Cell><Data ss:Type="String">UTM Campaign</Data></Cell>
+        <Cell><Data ss:Type="String">UTM Content</Data></Cell>
+        <Cell><Data ss:Type="String">UTM Term</Data></Cell>
+        <Cell><Data ss:Type="String">FT Campaign</Data></Cell>
+        <Cell><Data ss:Type="String">Country</Data></Cell>
+        <Cell><Data ss:Type="String">Region</Data></Cell>
+        <Cell><Data ss:Type="String">City</Data></Cell>
+        <Cell><Data ss:Type="String">Consent Analytics</Data></Cell>
+        <Cell><Data ss:Type="String">Consent Marketing</Data></Cell>
+        <Cell><Data ss:Type="String">User Agent</Data></Cell>
+      </Row>
+      ${xmlRows}
+    </Table>
+  </Worksheet>
+</Workbook>`;
+
+    const filename = `site-analytics-events-${range}-${new Date().toISOString().slice(0, 10)}.xls`;
+    res.setHeader("Content-Type", "application/vnd.ms-excel; charset=utf-8");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.status(200).send(xml);
+  } catch (error) {
+    console.error("site-analytics events export:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 });

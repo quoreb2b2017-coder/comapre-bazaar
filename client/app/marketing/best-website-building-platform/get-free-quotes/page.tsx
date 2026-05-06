@@ -4,6 +4,7 @@
 import { useState, useEffect, useRef } from 'react';
 import ReCAPTCHA from 'react-google-recaptcha';
 import Link from 'next/link';
+import Head from 'next/head';
 import { 
   CheckCircle, 
   ChevronDown, 
@@ -264,6 +265,16 @@ const WebsiteBuildingGetQuotesForm = () => {
 
   return (
     <>
+      <Head>
+        <link
+          rel="canonical"
+          href="https://www.compare-bazaar.com/marketing/best-website-building-platform/get-free-quotes"
+        />
+        <meta
+          property="og:url"
+          content="https://www.compare-bazaar.com/marketing/best-website-building-platform/get-free-quotes"
+        />
+      </Head>
       {/* Main Content Section - Two Column Layout */}
       <div className="min-h-screen bg-gradient-to-br from-orange-50 via-blue-50 to-purple-50 py-8 md:py-12 relative overflow-hidden">
         {/* Animated Background Elements */}

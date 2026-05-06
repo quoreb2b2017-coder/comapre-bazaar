@@ -8,7 +8,7 @@ import logoIcon from '@/components/icon.png'
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.compare-bazaar.com'),
   title: {
-    default: 'Best Business Software Comparisons & Reviews 2026 | Compare Bazaar',
+    default: 'Best Business Software Reviews 2026 | Compare Bazaar',
     template: '%s | Compare Bazaar',
   },
   description:

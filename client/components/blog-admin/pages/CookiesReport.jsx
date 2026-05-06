@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useOutletContext } from 'react-router-dom'
-import { Cookie, Loader2, Radio } from 'lucide-react'
+import { Cookie, Download, Loader2, Radio } from 'lucide-react'
 import {
   ResponsiveContainer,
   AreaChart,
@@ -90,6 +90,12 @@ export const CookiesReport = () => {
   const { toast } = useOutletContext()
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [eventsRange, setEventsRange] = useState('week')
+  const [eventsPage, setEventsPage] = useState(1)
+  const [eventsRows, setEventsRows] = useState([])
+  const [eventsPagination, setEventsPagination] = useState({ page: 1, pages: 1, total: 0, limit: 50 })
+  const [eventsLoading, setEventsLoading] = useState(false)
+  const [exportLoading, setExportLoading] = useState(false)
 
   useEffect(() => {
     api
@@ -101,6 +107,41 @@ export const CookiesReport = () => {
       .catch((err) => toast.error(err.message || 'Failed to load analytics'))
       .finally(() => setLoading(false))
   }, [])
+
+  useEffect(() => {
+    setEventsLoading(true)
+    api
+      .get('/site-analytics/events', { params: { range: eventsRange, page: eventsPage, limit: 50 } })
+      .then((res) => {
+        if (!res?.success) throw new Error(res?.message || 'Failed to load events')
+        setEventsRows(res.data || [])
+        setEventsPagination(res.pagination || { page: 1, pages: 1, total: 0, limit: 50 })
+      })
+      .catch((err) => toast.error(err.message || 'Failed to load events'))
+      .finally(() => setEventsLoading(false))
+  }, [eventsRange, eventsPage])
+
+  const exportEvents = async () => {
+    setExportLoading(true)
+    try {
+      const blob = await api.get('/site-analytics/events/export', {
+        params: { range: eventsRange },
+        responseType: 'blob',
+      })
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `site-analytics-events-${eventsRange}.xls`
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      window.URL.revokeObjectURL(url)
+    } catch (err) {
+      toast.error(err.message || 'Failed to export events')
+    } finally {
+      setExportLoading(false)
+    }
+  }
 
   const w7 = data?.windows?.last7d
   const daily = data?.dailyPageViews || []
@@ -285,8 +326,32 @@ export const CookiesReport = () => {
               <ReportPanel title="UTM campaigns" description="Session utm_campaign.">
                 <DimTable rows={(mk.utmCampaigns || []).map((r) => ({ label: r.campaign, views: r.views }))} colLabel="Campaign" />
               </ReportPanel>
+              <ReportPanel title="UTM mediums" description="Session utm_medium.">
+                <DimTable rows={(mk.utmMediums || []).map((r) => ({ label: r.medium, views: r.views }))} colLabel="Medium" />
+              </ReportPanel>
+              <ReportPanel title="UTM contents" description="Session utm_content.">
+                <DimTable rows={(mk.utmContents || []).map((r) => ({ label: r.content, views: r.views }))} colLabel="Content" />
+              </ReportPanel>
+              <ReportPanel title="UTM terms" description="Session utm_term.">
+                <DimTable rows={(mk.utmTerms || []).map((r) => ({ label: r.term, views: r.views }))} colLabel="Term" />
+              </ReportPanel>
               <ReportPanel title="First-touch campaigns" description="From cb_attr first landing.">
                 <DimTable rows={(mk.firstTouchCampaigns || []).map((r) => ({ label: r.campaign, views: r.views }))} colLabel="Campaign" />
+              </ReportPanel>
+              <ReportPanel title="First-touch sources" description="First-touch utm_source (cb_attr).">
+                <DimTable rows={(mk.firstTouchSources || []).map((r) => ({ label: r.source, views: r.views }))} colLabel="Source" />
+              </ReportPanel>
+              <ReportPanel title="First-touch mediums" description="First-touch utm_medium (cb_attr).">
+                <DimTable rows={(mk.firstTouchMediums || []).map((r) => ({ label: r.medium, views: r.views }))} colLabel="Medium" />
+              </ReportPanel>
+              <ReportPanel title="First-touch contents" description="First-touch utm_content (cb_attr).">
+                <DimTable rows={(mk.firstTouchContents || []).map((r) => ({ label: r.content, views: r.views }))} colLabel="Content" />
+              </ReportPanel>
+              <ReportPanel title="First-touch terms" description="First-touch utm_term (cb_attr).">
+                <DimTable rows={(mk.firstTouchTerms || []).map((r) => ({ label: r.term, views: r.views }))} colLabel="Term" />
+              </ReportPanel>
+              <ReportPanel title="First-touch landing paths" description="Landing path that set attribution cookie.">
+                <DimTable rows={(mk.firstTouchLandingPaths || []).map((r) => ({ label: r.path, views: r.views }))} colLabel="Path" />
               </ReportPanel>
             </div>
           </section>
@@ -365,8 +430,45 @@ export const CookiesReport = () => {
 
           {/* Recent */}
           <section className="space-y-3">
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Recent events</h2>
-            <ReportPanel title="Latest 80 events" description="Page views and consent saves. Scroll horizontally on small screens.">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Recent events</h2>
+              <div className="flex items-center gap-2">
+                {[
+                  { id: 'today', label: 'Today' },
+                  { id: 'week', label: 'Week' },
+                  { id: 'month', label: 'Month' },
+                ].map((r) => (
+                  <button
+                    key={r.id}
+                    type="button"
+                    onClick={() => {
+                      setEventsRange(r.id)
+                      setEventsPage(1)
+                    }}
+                    className={`px-2.5 py-1.5 rounded-md text-xs font-medium border ${
+                      eventsRange === r.id
+                        ? 'bg-blue-600 text-white border-blue-600'
+                        : 'bg-white text-gray-700 border-gray-200'
+                    }`}
+                  >
+                    {r.label}
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  onClick={exportEvents}
+                  disabled={exportLoading}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium border border-emerald-200 text-emerald-700 bg-emerald-50 hover:bg-emerald-100 disabled:opacity-60"
+                >
+                  {exportLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+                  Download Excel
+                </button>
+              </div>
+            </div>
+            <ReportPanel
+              title={`Latest events (${fmt(eventsPagination.total)} total)`}
+              description="50 records per page. Scroll horizontally on small screens."
+            >
               <div className="overflow-x-auto overscroll-x-contain">
                 <table className="w-full text-[11px] min-w-[1280px]">
                   <thead>
@@ -399,7 +501,14 @@ export const CookiesReport = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                    {(data.recent || []).map((e, i) => (
+                    {eventsLoading ? (
+                      <tr>
+                        <td colSpan={21} className="py-10 text-center text-gray-500">
+                          <Loader2 className="w-4 h-4 animate-spin inline mr-2" /> Loading events...
+                        </td>
+                      </tr>
+                    ) : (eventsRows || []).length ? (
+                      eventsRows.map((e, i) => (
                       <tr key={`${e.createdAt}-${i}`} className="text-gray-700 dark:text-gray-300">
                         <td className="py-2 px-2 whitespace-nowrap text-gray-500">{new Date(e.createdAt).toLocaleString()}</td>
                         <td className="py-2 px-2 font-medium whitespace-nowrap">{e.kind}</td>
@@ -455,9 +564,39 @@ export const CookiesReport = () => {
                           {e.userAgent || '—'}
                         </td>
                       </tr>
-                    ))}
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={21} className="py-10 text-center text-gray-500">
+                          No events in selected window.
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
+              </div>
+              <div className="px-3 sm:px-4 py-2.5 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                <p className="text-xs text-gray-500">
+                  Page {eventsPagination.page} of {eventsPagination.pages}
+                </p>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    disabled={eventsLoading || eventsPagination.page <= 1}
+                    onClick={() => setEventsPage((p) => Math.max(1, p - 1))}
+                    className="px-2.5 py-1.5 rounded-md text-xs font-medium border border-gray-200 text-gray-700 disabled:opacity-50"
+                  >
+                    Previous
+                  </button>
+                  <button
+                    type="button"
+                    disabled={eventsLoading || eventsPagination.page >= eventsPagination.pages}
+                    onClick={() => setEventsPage((p) => Math.min(eventsPagination.pages, p + 1))}
+                    className="px-2.5 py-1.5 rounded-md text-xs font-medium border border-gray-200 text-gray-700 disabled:opacity-50"
+                  >
+                    Next
+                  </button>
+                </div>
               </div>
             </ReportPanel>
           </section>

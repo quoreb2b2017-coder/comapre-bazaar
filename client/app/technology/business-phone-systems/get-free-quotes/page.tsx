@@ -657,13 +657,17 @@ const BusinessPhoneSystemGetQuotesForm = () => {
                   <div className="w-full mb-4">
                     <div className="relative w-full h-[190px] sm:h-[240px] md:h-[280px] overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
                       <img
-                        src="https://images.unsplash.com/photo-1596524430615-b46475ddff6e?auto=format&fit=crop&w=1400&q=80"
+                        src="https://images.unsplash.com/photo-1596524430615-b46475ddff6e?auto=format&fit=crop&w=960&q=80"
+                        srcSet="https://images.unsplash.com/photo-1596524430615-b46475ddff6e?auto=format&fit=crop&w=640&q=80 640w, https://images.unsplash.com/photo-1596524430615-b46475ddff6e?auto=format&fit=crop&w=960&q=80 960w, https://images.unsplash.com/photo-1596524430615-b46475ddff6e?auto=format&fit=crop&w=1400&q=80 1400w"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 700px"
                         alt="Customer support agent using business phone system with headset"
+                        width="1400"
+                        height="840"
                         className="w-full h-full object-cover"
                         loading="eager"
                         onError={(e) => {
                           e.currentTarget.src =
-                            "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1400&q=80";
+                            "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=960&q=80";
                         }}
                       />
                     </div>

@@ -214,7 +214,7 @@ export function CompareBazaarChat() {
         >
           <div className="bg-gradient-to-r from-[#F78230] to-[#D96A08] px-4 py-3 flex items-center gap-3 flex-shrink-0">
             <div className="w-9 h-9 rounded-full bg-[#FCE7D0] flex items-center justify-center flex-shrink-0 overflow-hidden" aria-hidden="true">
-              <Image src={logoIcon} alt="" width={28} height={28} className="w-7 h-7 object-contain" />
+              <Image src={logoIcon} alt="Compare Bazaar logo" width={28} height={28} className="w-7 h-7 object-contain" />
             </div>
             <div className="flex-1">
               <p className="text-white font-semibold text-sm leading-none">Compare Bazaar Assistant</p>
@@ -254,7 +254,7 @@ export function CompareBazaarChat() {
               <div key={msg.id} className={`flex gap-2 items-end ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                 {msg.role === 'bot' && (
                   <div className="w-7 h-7 rounded-full bg-[#FCE7D0] flex items-center justify-center flex-shrink-0 overflow-hidden" aria-hidden="true">
-                    <Image src={logoIcon} alt="" width={22} height={22} className="w-[22px] h-[22px] object-contain" />
+                    <Image src={logoIcon} alt="Compare Bazaar logo" width={22} height={22} className="w-[22px] h-[22px] object-contain" />
                   </div>
                 )}
                 <div className="flex flex-col gap-1 max-w-[82%]">
@@ -309,7 +309,7 @@ export function CompareBazaarChat() {
             {loading && (
               <div className="flex gap-2 items-end">
                 <div className="w-7 h-7 rounded-full bg-[#FCE7D0] flex items-center justify-center flex-shrink-0 overflow-hidden" aria-hidden="true">
-                  <Image src={logoIcon} alt="" width={22} height={22} className="w-[22px] h-[22px] object-contain" />
+                  <Image src={logoIcon} alt="Compare Bazaar logo" width={22} height={22} className="w-[22px] h-[22px] object-contain" />
                 </div>
                 <div className="bg-[#FFF8F2] border border-[#F4D4B5] px-3 py-3 rounded-2xl rounded-bl-sm">
                   <div className="flex gap-1 items-center">
