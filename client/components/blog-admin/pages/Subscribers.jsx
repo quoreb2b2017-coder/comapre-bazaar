@@ -3,6 +3,24 @@ import { useOutletContext } from 'react-router-dom'
 import { Loader2, RefreshCw, Search, Mail, Power, Trash2 } from 'lucide-react'
 import api from '../utils/api'
 
+const topicPrefix = (row) => {
+  const src = `${row?.sourceBlogTitle || ''} ${row?.sourceBlogSlug || ''} ${row?.subscribedFrom || ''}`.toLowerCase()
+  if (src.includes('email')) return 'E'
+  if (src.includes('voip') || src.includes('phone')) return 'V'
+  if (src.includes('crm') || src.includes('sales')) return 'C'
+  if (src.includes('payroll') || src.includes('hr')) return 'H'
+  if (src.includes('project')) return 'P'
+  const first = src.match(/[a-z]/)?.[0] || 'S'
+  return first.toUpperCase()
+}
+
+const shortLabel = (value, max = 28) => {
+  const s = String(value || '').trim()
+  if (!s) return '-'
+  if (s.length <= max) return s
+  return `${s.slice(0, max - 1)}…`
+}
+
 export const Subscribers = () => {
   const { toast } = useOutletContext()
   const [rows, setRows] = useState([])
@@ -109,23 +127,29 @@ export const Subscribers = () => {
                   <td colSpan={8} className="py-12 text-center text-gray-500">No subscribers found.</td>
                 </tr>
               ) : (
-                rows.map((s) => (
+                rows.map((s, idx) => {
+                  const seqNo = (Number(pagination.page || 1) - 1) * Number(pagination.limit || 20) + idx + 101
+                  const prefix = topicPrefix(s)
+                  const shortId = `${prefix}${seqNo}`
+                  const blogText = s.sourceBlogTitle || s.sourceBlogSlug || s.subscribedFrom || '-'
+                  const isActive = !!s.isActive
+                  return (
                   <tr key={s._id} className="hover:bg-gray-50 dark:hover:bg-gray-800/40">
-                    <td className="px-4 py-3 text-xs text-gray-500 dark:text-gray-400 font-mono">{s._id}</td>
+                    <td className="px-4 py-3 text-xs text-gray-600 dark:text-gray-300 font-semibold">{shortId}</td>
                     <td className="px-4 py-3">
                       <span className="inline-flex items-center gap-2 text-sm text-gray-800 dark:text-gray-200">
                         <Mail className="w-3.5 h-3.5 text-gray-400" /> {s.email}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
-                      {s.sourceBlogTitle || s.sourceBlogSlug || s.subscribedFrom || '-'}
+                      <span title={blogText}>{shortLabel(blogText, 42)}</span>
                     </td>
                     <td className="px-4 py-3 text-xs text-gray-500 dark:text-gray-400 font-mono">
-                      {s.sourceBlogId || '-'}
+                      {s.sourceBlogId ? `${prefix}-${String(s.sourceBlogId).slice(-4)}` : `${prefix}-NA`}
                     </td>
                     <td className="px-4 py-3 text-sm">
-                      <span className={`px-2 py-1 rounded-full text-xs font-semibold ${s.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-200 text-gray-700'}`}>
-                        {s.isActive ? 'Active' : 'Paused'}
+                      <span className={`px-2 py-1 rounded-full text-xs font-semibold ${isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-200 text-gray-700'}`}>
+                        {isActive ? 'Active' : 'Unsubscribed'}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">{new Date(s.createdAt).toLocaleDateString()}</td>
@@ -133,12 +157,23 @@ export const Subscribers = () => {
                     <td className="px-4 py-3">
                       <div className="flex justify-end gap-1">
                         <button
-                          className="p-1.5 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50"
-                          title="Toggle active"
+                          className={`px-2.5 py-1.5 rounded-lg text-xs font-medium ${
+                            isActive
+                              ? 'text-amber-700 bg-amber-50 hover:bg-amber-100'
+                              : 'text-emerald-700 bg-emerald-50 hover:bg-emerald-100'
+                          }`}
+                          title={isActive ? 'Unsubscribe' : 'Resubscribe'}
                           onClick={() => toggle(s._id)}
                           disabled={!!actionLoading}
                         >
-                          {actionLoading === `toggle-${s._id}` ? <Loader2 className="w-4 h-4 animate-spin" /> : <Power className="w-4 h-4" />}
+                          {actionLoading === `toggle-${s._id}` ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <span className="inline-flex items-center gap-1">
+                              <Power className="w-3.5 h-3.5" />
+                              {isActive ? 'Unsubscribe' : 'Resubscribe'}
+                            </span>
+                          )}
                         </button>
                         <button
                           className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50"
@@ -151,7 +186,7 @@ export const Subscribers = () => {
                       </div>
                     </td>
                   </tr>
-                ))
+                )})
               )}
             </tbody>
           </table>
