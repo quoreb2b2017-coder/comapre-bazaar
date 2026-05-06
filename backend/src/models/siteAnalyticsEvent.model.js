@@ -66,11 +66,26 @@ const marketingMetaSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const customMetaSchema = new mongoose.Schema(
+  {
+    eventName: { type: String, default: "" },
+    metricCategory: { type: String, default: "" },
+    label: { type: String, default: "" },
+    value: { type: Number, default: 0 },
+    vendor: { type: String, default: "" },
+    placement: { type: String, default: "" },
+    pageType: { type: String, default: "" },
+    elementId: { type: String, default: "" },
+    extra: { type: mongoose.Schema.Types.Mixed, default: null },
+  },
+  { _id: false }
+);
+
 const siteAnalyticsEventSchema = new mongoose.Schema(
   {
     kind: {
       type: String,
-      enum: ["page_view", "consent"],
+      enum: ["page_view", "consent", "custom"],
       required: true,
       index: true,
     },
@@ -80,6 +95,7 @@ const siteAnalyticsEventSchema = new mongoose.Schema(
     consentSnapshot: { type: consentSnapshotSchema, default: () => ({}) },
     userAgent: { type: String, default: "" },
     marketingMeta: { type: marketingMetaSchema },
+    customMeta: { type: customMetaSchema, default: null },
   },
   { timestamps: true }
 );
@@ -89,6 +105,8 @@ siteAnalyticsEventSchema.index({ kind: 1, createdAt: -1 });
 siteAnalyticsEventSchema.index({ "marketingMeta.utmCampaign": 1, createdAt: -1 });
 siteAnalyticsEventSchema.index({ "marketingMeta.timeZone": 1, createdAt: -1 });
 siteAnalyticsEventSchema.index({ "marketingMeta.city": 1, createdAt: -1 });
+siteAnalyticsEventSchema.index({ "customMeta.eventName": 1, createdAt: -1 });
+siteAnalyticsEventSchema.index({ "customMeta.metricCategory": 1, createdAt: -1 });
 siteAnalyticsEventSchema.index({ createdAt: 1 }, { expireAfterSeconds: 15552000 });
 
 module.exports = mongoose.model("SiteAnalyticsEvent", siteAnalyticsEventSchema);

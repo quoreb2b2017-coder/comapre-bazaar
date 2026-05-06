@@ -57,6 +57,31 @@ function sanitizeViewportBucket(v) {
   return ["xs", "sm", "md", "lg", "xl", "2xl"].includes(s) ? s : "";
 }
 
+function sanitizeEventName(v) {
+  const s = sanitizeStr(v, 80).toLowerCase();
+  return s.replace(/[^a-z0-9:_-]/g, "");
+}
+
+function sanitizeMetaCategory(v) {
+  const s = sanitizeStr(v, 64).toLowerCase();
+  return s.replace(/[^a-z0-9:_-]/g, "");
+}
+
+function sanitizeCustomMeta(rawMeta = {}) {
+  const valueNum = Number(rawMeta.value);
+  return {
+    eventName: sanitizeEventName(rawMeta.eventName),
+    metricCategory: sanitizeMetaCategory(rawMeta.metricCategory),
+    label: sanitizeStr(rawMeta.label, 140),
+    value: Number.isFinite(valueNum) ? valueNum : 0,
+    vendor: sanitizeStr(rawMeta.vendor, 120),
+    placement: sanitizeStr(rawMeta.placement, 120),
+    pageType: sanitizeStr(rawMeta.pageType, 80),
+    elementId: sanitizeStr(rawMeta.elementId, 120),
+    extra: rawMeta.extra && typeof rawMeta.extra === "object" ? rawMeta.extra : null,
+  };
+}
+
 function extractEmailDomain(value) {
   let s = String(value ?? "").trim();
   if (!s) return "";
@@ -380,6 +405,39 @@ router.post("/event", ingestLimiter, async (req, res) => {
           marketing: !!body.consent?.marketing,
         },
         userAgent: ua,
+      });
+      return res.json({ success: true });
+    }
+
+    if (kind === "custom") {
+      if (!body.consent?.analytics) {
+        return res.status(400).json({
+          success: false,
+          message: "custom event requires analytics consent",
+        });
+      }
+      const path = sanitizePath(body.path) || "/";
+      const customMeta = sanitizeCustomMeta(body.customMeta || {});
+      if (!customMeta.eventName) {
+        return res.status(400).json({
+          success: false,
+          message: "customMeta.eventName required",
+        });
+      }
+      const marketingMeta = await buildMarketingMeta(body, req, marketingAllowed);
+      await SiteAnalyticsEvent.create({
+        kind: "custom",
+        sessionId,
+        path,
+        referrer: sanitizeReferrer(body.referrer),
+        consentSnapshot: {
+          necessary: true,
+          analytics: true,
+          marketing: marketingAllowed,
+        },
+        userAgent: ua,
+        marketingMeta,
+        customMeta,
       });
       return res.json({ success: true });
     }

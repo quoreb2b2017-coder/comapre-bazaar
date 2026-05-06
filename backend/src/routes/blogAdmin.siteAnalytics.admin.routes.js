@@ -51,6 +51,58 @@ async function windowStats(fromDate) {
   };
 }
 
+async function customEventSummary(fromDate) {
+  const customMatch = { kind: "custom", createdAt: { $gte: fromDate } };
+  const [byEvent, byCategory] = await Promise.all([
+    SiteAnalyticsEvent.aggregate([
+      { $match: customMatch },
+      { $group: { _id: "$customMeta.eventName", count: { $sum: 1 }, valueSum: { $sum: "$customMeta.value" } } },
+      { $sort: { count: -1 } },
+      { $limit: 50 },
+    ]),
+    SiteAnalyticsEvent.aggregate([
+      { $match: customMatch },
+      { $group: { _id: "$customMeta.metricCategory", count: { $sum: 1 }, valueSum: { $sum: "$customMeta.value" } } },
+      { $sort: { count: -1 } },
+      { $limit: 20 },
+    ]),
+  ]);
+
+  const byEventMap = new Map(byEvent.map((r) => [String(r._id || ""), r]));
+  const pickCount = (name) => Number(byEventMap.get(name)?.count || 0);
+  const pickValue = (name) => Number(byEventMap.get(name)?.valueSum || 0);
+
+  return {
+    eventBreakdown: byEvent.map((r) => ({
+      eventName: r._id || "unknown",
+      count: Number(r.count || 0),
+      valueSum: Number(r.valueSum || 0),
+    })),
+    categoryBreakdown: byCategory.map((r) => ({
+      category: r._id || "uncategorized",
+      count: Number(r.count || 0),
+      valueSum: Number(r.valueSum || 0),
+    })),
+    keyMetrics: {
+      scrollDepthEvents: pickCount("scroll_depth"),
+      internalLinkClicks: pickCount("internal_link_click"),
+      affiliateClicks: pickCount("affiliate_click"),
+      sponsoredCtaClicks: pickCount("sponsored_cta_click"),
+      sponsorLogoImpressions: pickCount("sponsor_logo_impression"),
+      emailSignups: pickCount("email_signup"),
+      leadMagnetDownloads: pickCount("lead_magnet_download"),
+      formStarts: pickCount("form_start"),
+      formSubmits: pickCount("form_submit"),
+      formAbandonments: pickCount("form_abandon"),
+      ctaClicks: pickCount("cta_click"),
+      notFoundPageViews: pickCount("page_not_found"),
+      webVitalsLcpTotal: pickValue("web_vitals_lcp"),
+      webVitalsClsTotal: pickValue("web_vitals_cls"),
+      webVitalsInpTotal: pickValue("web_vitals_inp"),
+    },
+  };
+}
+
 router.get("/site-analytics/report", protect, async (_req, res) => {
   try {
     const now = new Date();
@@ -64,6 +116,8 @@ router.get("/site-analytics/report", protect, async (_req, res) => {
       last24h,
       last7d,
       last30d,
+      custom7d,
+      custom30d,
       topPaths,
       dailyPageViews,
       taggedPageViews7d,
@@ -89,6 +143,8 @@ router.get("/site-analytics/report", protect, async (_req, res) => {
       windowStats(d24),
       windowStats(d7),
       windowStats(d30),
+      customEventSummary(d7),
+      customEventSummary(d30),
       SiteAnalyticsEvent.aggregate([
         { $match: pv7 },
         { $group: { _id: "$path", views: { $sum: 1 } } },
@@ -301,7 +357,7 @@ router.get("/site-analytics/report", protect, async (_req, res) => {
       SiteAnalyticsEvent.find({})
         .sort({ createdAt: -1 })
         .limit(80)
-        .select("kind sessionId path referrer consentSnapshot userAgent marketingMeta createdAt")
+        .select("kind sessionId path referrer consentSnapshot userAgent marketingMeta customMeta createdAt")
         .lean(),
     ]);
 
@@ -332,6 +388,10 @@ router.get("/site-analytics/report", protect, async (_req, res) => {
           emailPrefillHits7d,
           emailDomains: emailDomainMix.map((r) => ({ domain: r._id, views: r.views })),
         },
+        setupMetrics: {
+          customEvents7d: custom7d,
+          customEvents30d: custom30d,
+        },
         recent: recent.map((e) => ({
           kind: e.kind,
           sessionId: e.sessionId,
@@ -340,6 +400,7 @@ router.get("/site-analytics/report", protect, async (_req, res) => {
           consentSnapshot: e.consentSnapshot,
           userAgent: e.userAgent,
           marketingMeta: e.marketingMeta || null,
+          customMeta: e.customMeta || null,
           createdAt: e.createdAt,
         })),
       },
