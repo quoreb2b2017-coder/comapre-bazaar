@@ -1,15 +1,13 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { usePathname, useSearchParams } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 
 const MIN_VISIBLE_MS = 650
 const MAX_VISIBLE_MS = 9000
 
 export function RouteLoadingIndicator() {
   const pathname = usePathname()
-  const searchParams = useSearchParams()
-  const routeKey = `${pathname || ''}?${searchParams?.toString() || ''}`
   const [visible, setVisible] = useState(false)
   const startedAtRef = useRef<number>(0)
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -31,7 +29,7 @@ export function RouteLoadingIndicator() {
         activeAnchorRef.current = null
       }
     }, delay)
-  }, [routeKey])
+  }, [pathname])
 
   useEffect(() => {
     const clearTimers = () => {
