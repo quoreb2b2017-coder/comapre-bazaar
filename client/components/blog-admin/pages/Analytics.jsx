@@ -172,32 +172,7 @@ function buildMetricsCatalog(derived) {
       ],
     },
     {
-      category: '5. Audience & Buyer Intent Analytics',
-      metrics: [
-        { name: 'Job title / role breakdown', priority: 'high', status: 'setup' },
-        { name: 'Company size distribution', priority: 'high', status: 'setup' },
-        { name: 'Search intent classification', priority: 'high', status: hasTopPages ? 'partial' : 'setup' },
-        { name: 'Repeat visit patterns', priority: 'medium', status: hasTraffic ? 'partial' : 'setup' },
-        { name: 'Industry vertical split', priority: 'medium', status: 'setup' },
-        { name: 'Email list signups', priority: 'medium', status: hasEmailSignups || hasEmailIntent ? 'partial' : customReadyStatus },
-        { name: 'Lead magnet downloads', priority: 'medium', status: hasLeadDownloads ? 'live' : customReadyStatus },
-        { name: 'Buyer stage mapping', priority: 'advanced', status: 'setup' },
-      ],
-    },
-    {
-      category: '6. Sponsor & Advertiser Analytics',
-      metrics: [
-        { name: 'Sponsor logo impressions', priority: 'high', status: hasSponsorLogos ? 'live' : customReadyStatus },
-        { name: 'Sponsored CTA clicks', priority: 'high', status: hasSponsoredCta ? 'live' : customReadyStatus },
-        { name: 'Sponsor CTR by placement', priority: 'high', status: hasSponsoredCta ? 'partial' : customReadyStatus },
-        { name: 'Revenue per sponsor slot', priority: 'high', status: 'setup' },
-        { name: 'Sponsor renewal rate', priority: 'medium', status: 'setup' },
-        { name: 'Newsletter open / click rate', priority: 'medium', status: 'setup' },
-        { name: 'Sponsored article traffic', priority: 'advanced', status: 'setup' },
-      ],
-    },
-    {
-      category: '7. Technical & UX Analytics',
+      category: '5. Technical & UX Analytics',
       metrics: [
         { name: 'Page load speed', priority: 'high', status: hasWebVitals ? 'partial' : customReadyStatus },
         { name: 'Mobile usability score', priority: 'high', status: hasDevice ? 'partial' : 'setup' },
@@ -208,7 +183,7 @@ function buildMetricsCatalog(derived) {
       ],
     },
     {
-      category: '8. Business Growth Metrics',
+      category: '6. Business Growth Metrics',
       metrics: [
         { name: 'MoM revenue growth %', priority: 'high', status: customReadyStatus },
         { name: 'Customer acquisition cost', priority: 'medium', status: 'setup' },

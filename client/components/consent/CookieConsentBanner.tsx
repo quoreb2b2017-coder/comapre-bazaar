@@ -182,21 +182,21 @@ export function CookieConsentBanner() {
               <button
                 type="button"
                 onClick={rejectNonEssential}
-                className="rounded-xl px-4 py-2.5 text-sm font-semibold border border-[#d97706] bg-[#f59e0b] text-white hover:bg-[#ea8f00] transition-colors"
+                className="rounded-xl px-4 py-2.5 text-sm font-semibold border border-[#dc6b14] bg-gradient-to-br from-[#F58220] via-[#f48930] to-[#ec7416] text-white hover:brightness-105 transition"
               >
                 Reject non-essential
               </button>
               <button
                 type="button"
                 onClick={acceptAll}
-                className="rounded-xl px-4 py-2.5 text-sm font-semibold border border-[#d97706] bg-[#f59e0b] text-white hover:bg-[#ea8f00] transition-colors"
+                className="rounded-xl px-4 py-2.5 text-sm font-semibold border border-[#dc6b14] bg-gradient-to-br from-[#F58220] via-[#f48930] to-[#ec7416] text-white hover:brightness-105 transition"
               >
                 Accept all
               </button>
               <button
                 type="button"
                 onClick={savePreferences}
-                className="rounded-xl px-4 py-2.5 text-sm font-semibold border border-[#d97706] bg-[#f59e0b] text-white hover:bg-[#ea8f00] transition-colors"
+                className="rounded-xl px-4 py-2.5 text-sm font-semibold border border-[#dc6b14] bg-gradient-to-br from-[#F58220] via-[#f48930] to-[#ec7416] text-white hover:brightness-105 transition"
               >
                 Save choices
               </button>
@@ -292,21 +292,21 @@ export function CookieConsentBanner() {
                 <button
                   type="button"
                   onClick={savePreferences}
-                  className="h-12 rounded-md border border-[#d97706] bg-[#f59e0b] px-4 text-[18px] font-semibold text-white transition hover:bg-[#ea8f00]"
+                  className="h-12 rounded-md border border-[#dc6b14] bg-gradient-to-br from-[#F58220] via-[#f48930] to-[#ec7416] px-4 text-[18px] font-semibold text-white transition hover:brightness-105"
                 >
                   Save
                 </button>
                 <button
                   type="button"
                   onClick={acceptAll}
-                  className="h-12 rounded-md border border-[#d97706] bg-[#f59e0b] px-4 text-[18px] font-semibold text-white transition hover:bg-[#ea8f00]"
+                  className="h-12 rounded-md border border-[#dc6b14] bg-gradient-to-br from-[#F58220] via-[#f48930] to-[#ec7416] px-4 text-[18px] font-semibold text-white transition hover:brightness-105"
                 >
                   Accept All
                 </button>
                 <button
                   type="button"
                   onClick={rejectNonEssential}
-                  className="h-12 rounded-md border border-[#d97706] bg-[#f59e0b] px-4 text-[18px] font-semibold text-white transition hover:bg-[#ea8f00]"
+                  className="h-12 rounded-md border border-[#dc6b14] bg-gradient-to-br from-[#F58220] via-[#f48930] to-[#ec7416] px-4 text-[18px] font-semibold text-white transition hover:brightness-105"
                 >
                   Reject All
                 </button>
