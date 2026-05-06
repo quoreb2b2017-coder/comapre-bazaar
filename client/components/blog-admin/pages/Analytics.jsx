@@ -51,6 +51,15 @@ function inferContentCategory(path) {
   return 'General'
 }
 
+function inferKeywordFromPath(path) {
+  return String(path || '')
+    .replace(/^\/+/, '')
+    .replace(/\?.*$/, '')
+    .replace(/[-_/]+/g, ' ')
+    .trim()
+    .slice(0, 42)
+}
+
 export const Analytics = () => {
   const { toast } = useOutletContext()
   const [data, setData] = useState(null)
@@ -126,6 +135,39 @@ export const Analytics = () => {
       traffic: Number(r.views || 0),
     }))
 
+    const keywordFallback = topPages.map((p) => ({
+      keyword: inferKeywordFromPath(p.page) || p.category,
+      traffic: p.visits,
+    }))
+
+    const topSources = (mk.utmSources || []).slice(0, 8).map((s) => ({
+      source: s.source,
+      visits: Number(s.views || 0),
+      share: pct(s.views, last7.pageViews),
+    }))
+
+    const topReferrers = (mk.referrerHosts || []).slice(0, 8).map((r) => ({
+      host: r.host,
+      visits: Number(r.views || 0),
+      share: pct(r.views, last7.pageViews),
+    }))
+
+    const consentByType = (last30.consentBreakdown || []).map((c) => ({
+      label: c.marketing ? 'Marketing ON' : c.analytics ? 'Analytics only' : 'Essential only',
+      count: Number(c.count || 0),
+    }))
+
+    const campaignRows = (mk.utmCampaigns || []).slice(0, 10).map((c) => {
+      const visits = Number(c.views || 0)
+      const emailAssist = Math.round((Number(mk.emailPrefillHits7d || 0) * visits) / Math.max(1, Number(last7.pageViews || 0)))
+      return {
+        campaign: c.campaign,
+        visits,
+        share: pct(visits, last7.pageViews),
+        emailAssist,
+      }
+    })
+
     return {
       last30,
       last7,
@@ -140,6 +182,11 @@ export const Analytics = () => {
       funnelMax,
       topPages,
       keywordOpp,
+      keywordFallback,
+      topSources,
+      topReferrers,
+      consentByType,
+      campaignRows,
     }
   }, [data])
 
@@ -216,6 +263,66 @@ export const Analytics = () => {
         </div>
       </Panel>
 
+      <section className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <Panel title="Campaign performance table (7d)">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 text-gray-600">
+                <tr>
+                  <th className="text-left py-2 px-4">Campaign</th>
+                  <th className="text-left py-2 px-4">Visits</th>
+                  <th className="text-left py-2 px-4">Share</th>
+                  <th className="text-left py-2 px-4">Email assist</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {derived.campaignRows.length ? (
+                  derived.campaignRows.map((row) => (
+                    <tr key={row.campaign}>
+                      <td className="py-2.5 px-4 text-gray-900 max-w-[280px] truncate" title={row.campaign}>
+                        {row.campaign}
+                      </td>
+                      <td className="py-2.5 px-4 tabular-nums text-gray-700">{fmt(row.visits)}</td>
+                      <td className="py-2.5 px-4 text-gray-700">{row.share}</td>
+                      <td className="py-2.5 px-4 tabular-nums text-gray-700">{fmt(row.emailAssist)}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={4} className="py-10 px-4 text-center text-sm text-gray-500">
+                      No UTM campaign data in last 7 days.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </Panel>
+
+        <Panel title="Consent & source quality (7d)">
+          <div className="p-5 grid grid-cols-1 gap-4">
+            <div>
+              <p className="text-xs uppercase tracking-wide text-gray-500 mb-2">Consent mix</p>
+              <div className="flex flex-wrap gap-2">
+                {derived.consentByType.length ? (
+                  derived.consentByType.map((c) => (
+                    <span key={c.label} className="rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-700">
+                      {c.label}: {fmt(c.count)}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-sm text-gray-500">No consent events in selected window.</span>
+                )}
+              </div>
+            </div>
+            <div className="grid sm:grid-cols-2 gap-4">
+              <MiniList title="Top UTM sources" rows={derived.topSources} keyField="source" labelField="source" />
+              <MiniList title="Top referrer hosts" rows={derived.topReferrers} keyField="host" labelField="host" />
+            </div>
+          </div>
+        </Panel>
+      </section>
+
       <Panel title="Top performing content pages">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -246,9 +353,9 @@ export const Analytics = () => {
       <section className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <Panel title="SEO & keyword opportunity tracker (real campaigns)">
           <div className="h-[300px] p-4">
-            {derived.keywordOpp.length ? (
+            {(derived.keywordOpp.length || derived.keywordFallback.length) ? (
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={derived.keywordOpp}>
+                <BarChart data={derived.keywordOpp.length ? derived.keywordOpp : derived.keywordFallback}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                   <XAxis dataKey="keyword" interval={0} angle={-25} textAnchor="end" height={80} />
                   <YAxis />
@@ -260,6 +367,11 @@ export const Analytics = () => {
               <div className="h-full grid place-items-center text-sm text-gray-500">No campaign data yet.</div>
             )}
           </div>
+          {!derived.keywordOpp.length && derived.keywordFallback.length ? (
+            <p className="px-4 pb-4 text-xs text-gray-500">
+              Showing inferred keywords from top content paths (UTM campaigns not available yet).
+            </p>
+          ) : null}
         </Panel>
 
         <Panel title="Growth opportunities (based on live signals)">
@@ -315,6 +427,28 @@ function Opportunity({ title, desc }) {
       <p className="text-base font-semibold text-gray-900">{title}</p>
       <p className="mt-1 text-sm leading-relaxed text-gray-600">{desc}</p>
     </article>
+  )
+}
+
+function MiniList({ title, rows, keyField, labelField }) {
+  return (
+    <div className="rounded-xl border border-gray-200 bg-gray-50 p-3">
+      <p className="text-xs uppercase tracking-wide text-gray-500 mb-2">{title}</p>
+      <ul className="space-y-1.5">
+        {rows?.length ? (
+          rows.slice(0, 5).map((r) => (
+            <li key={r[keyField]} className="flex items-center justify-between gap-3 text-sm">
+              <span className="truncate text-gray-700" title={r[labelField]}>
+                {r[labelField]}
+              </span>
+              <span className="tabular-nums text-gray-500">{r.share || fmt(r.visits)}</span>
+            </li>
+          ))
+        ) : (
+          <li className="text-sm text-gray-500">No data</li>
+        )}
+      </ul>
+    </div>
   )
 }
 
