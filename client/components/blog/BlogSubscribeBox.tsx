@@ -18,7 +18,7 @@ export function BlogSubscribeBox({ slug, compact = false, variant = 'default' }:
   const [ok, setOk] = useState<boolean | null>(null)
   const [isSubscribed, setIsSubscribed] = useState(false)
 
-  const localKey = `cb_subscribed_email_${slug}`
+  const localKey = 'cb_subscribed_email'
 
   useEffect(() => {
     const saved = typeof window !== 'undefined' ? window.localStorage.getItem(localKey) || '' : ''
@@ -26,7 +26,7 @@ export function BlogSubscribeBox({ slug, compact = false, variant = 'default' }:
       setEmail(saved)
       setIsSubscribed(true)
     }
-  }, [localKey])
+  }, [])
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -73,7 +73,7 @@ export function BlogSubscribeBox({ slug, compact = false, variant = 'default' }:
       const res = await fetch('/api/v1/blog-admin/public/blogs/unsubscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: v, sourceSlug: slug }),
+        body: JSON.stringify({ email: v }),
       })
       const data = await res.json()
       if (!res.ok || !data?.success) throw new Error(data?.message || 'Unsubscribe failed')
@@ -124,12 +124,12 @@ export function BlogSubscribeBox({ slug, compact = false, variant = 'default' }:
         />
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || isSubscribed}
           className={`h-11 w-full px-5 text-sm font-semibold text-white transition hover:bg-brand-hover disabled:opacity-60 ${
             editorial ? 'rounded-sm bg-brand' : 'rounded-xl bg-brand'
           }`}
         >
-          {loading ? 'Saving...' : isSubscribed ? 'Resubscribe' : 'Subscribe'}
+          {loading ? 'Saving...' : isSubscribed ? 'Subscribed' : 'Subscribe'}
         </button>
         {isSubscribed ? (
           <button

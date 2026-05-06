@@ -96,21 +96,27 @@ router.post('/subscribe', async (req, res) => {
       ? await Blog.findOne({ slug: source }).select('_id slug title').lean()
       : null
 
-    const subscriber = await BlogSubscriber.findOneAndUpdate(
-      { email: emailRaw },
-      {
-        $set: {
-          email: emailRaw,
-          isActive: true,
-          subscribedFrom: source || '',
-          sourceBlogId: sourceBlog?._id ? String(sourceBlog._id) : '',
-          sourceBlogSlug: sourceBlog?.slug || source || '',
-          sourceBlogTitle: sourceBlog?.title || '',
-        },
-        $setOnInsert: { totalNotifications: 0 },
-      },
-      { upsert: true, new: true, setDefaultsOnInsert: true }
-    )
+    const existing = await BlogSubscriber.findOne({ email: emailRaw })
+    let subscriber
+    if (existing) {
+      existing.isActive = true
+      if (!existing.subscribedFrom) existing.subscribedFrom = source || ''
+      if (!existing.sourceBlogSlug) existing.sourceBlogSlug = sourceBlog?.slug || source || ''
+      if (!existing.sourceBlogTitle) existing.sourceBlogTitle = sourceBlog?.title || ''
+      if (!existing.sourceBlogId) existing.sourceBlogId = sourceBlog?._id ? String(sourceBlog._id) : ''
+      await existing.save()
+      subscriber = existing
+    } else {
+      subscriber = await BlogSubscriber.create({
+        email: emailRaw,
+        isActive: true,
+        subscribedFrom: source || '',
+        sourceBlogId: sourceBlog?._id ? String(sourceBlog._id) : '',
+        sourceBlogSlug: sourceBlog?.slug || source || '',
+        sourceBlogTitle: sourceBlog?.title || '',
+        totalNotifications: 0,
+      })
+    }
 
     res.json({
       success: true,
@@ -131,12 +137,7 @@ router.post('/unsubscribe', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Valid email is required' })
     }
 
-    const source = String(req.body?.sourceSlug || req.body?.source || '').trim().slice(0, 120)
-    const query = source
-      ? { email: emailRaw, $or: [{ sourceBlogSlug: source }, { subscribedFrom: source }] }
-      : { email: emailRaw }
-
-    const subscriber = await BlogSubscriber.findOne(query)
+    const subscriber = await BlogSubscriber.findOne({ email: emailRaw })
     if (!subscriber) {
       return res.status(404).json({ success: false, message: 'Subscription not found for this email' })
     }

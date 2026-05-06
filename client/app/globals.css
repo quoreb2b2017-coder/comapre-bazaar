@@ -392,6 +392,30 @@
   animation: blog-admin-nav-strip-move 0.75s ease-in-out infinite;
 }
 
+@keyframes cb-route-progress-move {
+  0% {
+    transform: translateX(-35%);
+    opacity: 0.75;
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(310%);
+    opacity: 0.9;
+  }
+}
+
+.cb-route-progress {
+  animation: cb-route-progress-move 1.05s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+a.cb-link-pending {
+  opacity: 0.85;
+  transform: translateY(-1px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
 .blog-admin-root .ql-container {
   font-family: 'DM Sans', sans-serif;
   font-size: 15px;
