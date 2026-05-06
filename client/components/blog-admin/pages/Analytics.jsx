@@ -174,21 +174,14 @@ function buildMetricsCatalog(derived) {
     {
       category: '5. Technical & UX Analytics',
       metrics: [
-        { name: 'Page load speed', priority: 'high', status: hasWebVitals ? 'partial' : customReadyStatus },
-        { name: 'Mobile usability score', priority: 'high', status: hasDevice ? 'partial' : 'setup' },
-        { name: '404 error pages', priority: 'medium', status: has404 ? 'live' : customReadyStatus },
-        { name: 'CTA click heatmaps', priority: 'medium', status: customReadyStatus },
-        { name: 'Form abandonment rate', priority: 'medium', status: hasFormAbandon ? 'live' : customReadyStatus },
         { name: 'A/B test results', priority: 'advanced', status: 'setup' },
       ],
     },
     {
       category: '6. Business Growth Metrics',
       metrics: [
-        { name: 'MoM revenue growth %', priority: 'high', status: customReadyStatus },
         { name: 'Customer acquisition cost', priority: 'medium', status: 'setup' },
         { name: 'Lifetime value per category', priority: 'medium', status: 'setup' },
-        { name: 'Content ROI', priority: 'medium', status: customReadyStatus },
         { name: 'Competitor traffic comparison', priority: 'advanced', status: 'setup' },
         { name: 'Brand search volume', priority: 'advanced', status: 'setup' },
       ],
