@@ -102,16 +102,16 @@ export const Subscribers = () => {
 
       <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800">
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full min-w-[1060px] table-fixed">
             <thead>
               <tr className="border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
-                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Subscriber ID</th>
-                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Email</th>
-                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Blog</th>
-                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Status</th>
-                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Subscribed</th>
-                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Notifications</th>
-                <th className="text-right px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Actions</th>
+                <th className="w-[110px] text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Subscriber ID</th>
+                <th className="w-[300px] text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Email</th>
+                <th className="w-[280px] text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Blog</th>
+                <th className="w-[110px] text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Status</th>
+                <th className="w-[120px] text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Subscribed</th>
+                <th className="w-[110px] text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Notifications</th>
+                <th className="w-[170px] text-right px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -134,22 +134,23 @@ export const Subscribers = () => {
                   const isActive = !!s.isActive
                   return (
                   <tr key={s._id} className="hover:bg-gray-50 dark:hover:bg-gray-800/40">
-                    <td className="px-4 py-3 text-xs text-gray-600 dark:text-gray-300 font-semibold">{shortId}</td>
+                    <td className="px-4 py-3 text-xs text-gray-600 dark:text-gray-300 font-semibold whitespace-nowrap">{shortId}</td>
                     <td className="px-4 py-3">
-                      <span className="inline-flex items-center gap-2 text-sm text-gray-800 dark:text-gray-200">
-                        <Mail className="w-3.5 h-3.5 text-gray-400" /> {s.email}
+                      <span className="inline-flex items-center gap-2 text-sm text-gray-800 dark:text-gray-200 min-w-0">
+                        <Mail className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                        <span className="truncate">{s.email}</span>
                       </span>
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
-                      <span title={blogText}>{shortLabel(blogText, 42)}</span>
+                      <span className="block truncate" title={blogText}>{shortLabel(blogText, 42)}</span>
                     </td>
-                    <td className="px-4 py-3 text-sm">
+                    <td className="px-4 py-3 text-sm whitespace-nowrap">
                       <span className={`px-2 py-1 rounded-full text-xs font-semibold ${isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-200 text-gray-700'}`}>
                         {isActive ? 'Active' : 'Unsubscribed'}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">{new Date(s.createdAt).toLocaleDateString()}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">{s.totalNotifications || 0}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">{new Date(s.createdAt).toLocaleDateString()}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">{s.totalNotifications || 0}</td>
                     <td className="px-4 py-3">
                       <div className="flex justify-end gap-1">
                         <button

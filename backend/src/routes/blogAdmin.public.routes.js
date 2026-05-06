@@ -123,4 +123,31 @@ router.post('/subscribe', async (req, res) => {
   }
 })
 
+// @route   POST /api/v1/blog-admin/public/blogs/unsubscribe — unsubscribe from new blog notifications (no auth)
+router.post('/unsubscribe', async (req, res) => {
+  try {
+    const emailRaw = String(req.body?.email || '').trim().toLowerCase()
+    if (!emailRaw || !EMAIL_RE.test(emailRaw) || emailRaw.length > 320) {
+      return res.status(400).json({ success: false, message: 'Valid email is required' })
+    }
+
+    const source = String(req.body?.sourceSlug || req.body?.source || '').trim().slice(0, 120)
+    const query = source
+      ? { email: emailRaw, $or: [{ sourceBlogSlug: source }, { subscribedFrom: source }] }
+      : { email: emailRaw }
+
+    const subscriber = await BlogSubscriber.findOne(query)
+    if (!subscriber) {
+      return res.status(404).json({ success: false, message: 'Subscription not found for this email' })
+    }
+
+    subscriber.isActive = false
+    await subscriber.save()
+
+    res.json({ success: true, message: 'Unsubscribed successfully' })
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message })
+  }
+})
+
 module.exports = router
