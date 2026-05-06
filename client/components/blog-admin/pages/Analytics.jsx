@@ -93,6 +93,24 @@ function buildMetricsCatalog(derived) {
   const hasConsent = (derived?.consentByType || []).length > 0
   const hasReferrer = (derived?.topReferrers || []).length > 0
   const hasEmailIntent = Number(derived?.mk?.emailPrefillHits7d || 0) > 0
+  const setup30 = derived?.setupMetrics?.customEvents30d || {}
+  const setupKeys = setup30.keyMetrics || {}
+  const hasCustomPipeline = !!derived?.setupMetrics?.customEvents30d
+  const hasScrollDepth = Number(setupKeys.scrollDepthEvents || 0) > 0
+  const hasInternalLinkClicks = Number(setupKeys.internalLinkClicks || 0) > 0
+  const hasAffiliateClicks = Number(setupKeys.affiliateClicks || 0) > 0
+  const hasSponsoredCta = Number(setupKeys.sponsoredCtaClicks || 0) > 0
+  const hasSponsorLogos = Number(setupKeys.sponsorLogoImpressions || 0) > 0
+  const hasLeadDownloads = Number(setupKeys.leadMagnetDownloads || 0) > 0
+  const hasEmailSignups = Number(setupKeys.emailSignups || 0) > 0
+  const hasFormAbandon = Number(setupKeys.formAbandonments || 0) > 0
+  const has404 = Number(setupKeys.notFoundPageViews || 0) > 0
+  const hasWebVitals =
+    Number(setupKeys.webVitalsLcpTotal || 0) > 0 ||
+    Number(setupKeys.webVitalsClsTotal || 0) > 0 ||
+    Number(setupKeys.webVitalsInpTotal || 0) > 0
+
+  const customReadyStatus = hasCustomPipeline ? 'partial' : 'setup'
 
   return [
     {
@@ -103,9 +121,9 @@ function buildMetricsCatalog(derived) {
         { name: 'Traffic source breakdown', priority: 'high', status: hasSources ? 'live' : 'setup' },
         { name: 'Top landing pages', priority: 'high', status: hasTopPages ? 'live' : 'setup' },
         { name: 'Bounce rate by page', priority: 'high', status: hasTraffic ? 'partial' : 'setup' },
-        { name: 'Session duration', priority: 'high', status: 'setup' },
+        { name: 'Session duration', priority: 'high', status: hasCustomPipeline ? 'partial' : 'setup' },
         { name: 'Pages per session', priority: 'medium', status: hasTraffic ? 'live' : 'setup' },
-        { name: 'Geographic breakdown', priority: 'medium', status: hasGeo ? 'live' : 'setup' },
+        { name: 'Geographic breakdown', priority: 'medium', status: hasGeo ? 'live' : hasCustomPipeline ? 'partial' : 'setup' },
         { name: 'Device split', priority: 'medium', status: hasDevice ? 'live' : 'setup' },
         { name: 'Hour/day heatmap', priority: 'advanced', status: hasDailyTrend ? 'partial' : 'setup' },
       ],
@@ -114,10 +132,10 @@ function buildMetricsCatalog(derived) {
       category: '2. Content Performance Analytics',
       metrics: [
         { name: 'Top pages by traffic', priority: 'high', status: hasTopPages ? 'live' : 'setup' },
-        { name: 'Avg time on comparison pages', priority: 'high', status: 'setup' },
-        { name: 'Scroll depth %', priority: 'high', status: 'setup' },
+        { name: 'Avg time on comparison pages', priority: 'high', status: customReadyStatus },
+        { name: 'Scroll depth %', priority: 'high', status: hasScrollDepth ? 'live' : customReadyStatus },
         { name: 'Blog post performance', priority: 'high', status: hasTopPages ? 'partial' : 'setup' },
-        { name: 'Internal link clicks', priority: 'medium', status: 'setup' },
+        { name: 'Internal link clicks', priority: 'medium', status: hasInternalLinkClicks ? 'live' : customReadyStatus },
         { name: 'Content freshness score', priority: 'medium', status: hasDailyTrend ? 'partial' : 'setup' },
         { name: 'Exit pages', priority: 'medium', status: hasTopPages ? 'partial' : 'setup' },
         { name: 'Social shares per article', priority: 'advanced', status: 'setup' },
@@ -127,9 +145,9 @@ function buildMetricsCatalog(derived) {
     {
       category: '3. Affiliate & Revenue Analytics',
       metrics: [
-        { name: 'Affiliate clicks by page', priority: 'high', status: 'setup' },
-        { name: 'Click-through rate (CTR)', priority: 'high', status: 'setup' },
-        { name: 'Conversion rate by vendor', priority: 'high', status: 'setup' },
+        { name: 'Affiliate clicks by page', priority: 'high', status: hasAffiliateClicks ? 'live' : customReadyStatus },
+        { name: 'Click-through rate (CTR)', priority: 'high', status: hasAffiliateClicks ? 'partial' : customReadyStatus },
+        { name: 'Conversion rate by vendor', priority: 'high', status: customReadyStatus },
         { name: 'Revenue per visitor (RPV)', priority: 'high', status: 'setup' },
         { name: 'Monthly affiliate revenue', priority: 'high', status: 'setup' },
         { name: 'Revenue by category', priority: 'high', status: 'setup' },
@@ -149,7 +167,7 @@ function buildMetricsCatalog(derived) {
         { name: 'Domain authority trend', priority: 'high', status: 'setup' },
         { name: 'Page 1 vs page 2 keywords', priority: 'high', status: 'setup' },
         { name: 'Featured snippet wins', priority: 'medium', status: 'setup' },
-        { name: 'Core Web Vitals', priority: 'medium', status: 'setup' },
+        { name: 'Core Web Vitals', priority: 'medium', status: hasWebVitals ? 'live' : customReadyStatus },
         { name: 'Competitor keyword gap', priority: 'advanced', status: 'setup' },
       ],
     },
@@ -161,17 +179,17 @@ function buildMetricsCatalog(derived) {
         { name: 'Search intent classification', priority: 'high', status: hasTopPages ? 'partial' : 'setup' },
         { name: 'Repeat visit patterns', priority: 'medium', status: hasTraffic ? 'partial' : 'setup' },
         { name: 'Industry vertical split', priority: 'medium', status: 'setup' },
-        { name: 'Email list signups', priority: 'medium', status: hasEmailIntent ? 'partial' : 'setup' },
-        { name: 'Lead magnet downloads', priority: 'medium', status: 'setup' },
+        { name: 'Email list signups', priority: 'medium', status: hasEmailSignups || hasEmailIntent ? 'partial' : customReadyStatus },
+        { name: 'Lead magnet downloads', priority: 'medium', status: hasLeadDownloads ? 'live' : customReadyStatus },
         { name: 'Buyer stage mapping', priority: 'advanced', status: 'setup' },
       ],
     },
     {
       category: '6. Sponsor & Advertiser Analytics',
       metrics: [
-        { name: 'Sponsor logo impressions', priority: 'high', status: 'setup' },
-        { name: 'Sponsored CTA clicks', priority: 'high', status: 'setup' },
-        { name: 'Sponsor CTR by placement', priority: 'high', status: 'setup' },
+        { name: 'Sponsor logo impressions', priority: 'high', status: hasSponsorLogos ? 'live' : customReadyStatus },
+        { name: 'Sponsored CTA clicks', priority: 'high', status: hasSponsoredCta ? 'live' : customReadyStatus },
+        { name: 'Sponsor CTR by placement', priority: 'high', status: hasSponsoredCta ? 'partial' : customReadyStatus },
         { name: 'Revenue per sponsor slot', priority: 'high', status: 'setup' },
         { name: 'Sponsor renewal rate', priority: 'medium', status: 'setup' },
         { name: 'Newsletter open / click rate', priority: 'medium', status: 'setup' },
@@ -181,21 +199,21 @@ function buildMetricsCatalog(derived) {
     {
       category: '7. Technical & UX Analytics',
       metrics: [
-        { name: 'Page load speed', priority: 'high', status: 'setup' },
+        { name: 'Page load speed', priority: 'high', status: hasWebVitals ? 'partial' : customReadyStatus },
         { name: 'Mobile usability score', priority: 'high', status: hasDevice ? 'partial' : 'setup' },
-        { name: '404 error pages', priority: 'medium', status: 'setup' },
-        { name: 'CTA click heatmaps', priority: 'medium', status: 'setup' },
-        { name: 'Form abandonment rate', priority: 'medium', status: 'setup' },
+        { name: '404 error pages', priority: 'medium', status: has404 ? 'live' : customReadyStatus },
+        { name: 'CTA click heatmaps', priority: 'medium', status: customReadyStatus },
+        { name: 'Form abandonment rate', priority: 'medium', status: hasFormAbandon ? 'live' : customReadyStatus },
         { name: 'A/B test results', priority: 'advanced', status: 'setup' },
       ],
     },
     {
       category: '8. Business Growth Metrics',
       metrics: [
-        { name: 'MoM revenue growth %', priority: 'high', status: 'setup' },
+        { name: 'MoM revenue growth %', priority: 'high', status: customReadyStatus },
         { name: 'Customer acquisition cost', priority: 'medium', status: 'setup' },
         { name: 'Lifetime value per category', priority: 'medium', status: 'setup' },
-        { name: 'Content ROI', priority: 'medium', status: 'setup' },
+        { name: 'Content ROI', priority: 'medium', status: customReadyStatus },
         { name: 'Competitor traffic comparison', priority: 'advanced', status: 'setup' },
         { name: 'Brand search volume', priority: 'advanced', status: 'setup' },
       ],
@@ -321,6 +339,7 @@ export const Analytics = () => {
       campaignRows,
       consentByType,
       topReferrers,
+      setupMetrics: data?.setupMetrics,
     })
     const metricTotals = metricCatalog.reduce(
       (acc, group) => {
