@@ -12,6 +12,7 @@ import {
   Approvals,
   Settings,
   TrendsAssistant,
+  Analytics,
   CookiesReport,
   Subscribers,
 } from './lazyRoutes'
@@ -62,6 +63,7 @@ function AppRoutes() {
           <Route path="approvals" element={<RouteSuspense><Approvals /></RouteSuspense>} />
           <Route path="settings" element={<RouteSuspense><Settings /></RouteSuspense>} />
           <Route path="trends" element={<RouteSuspense><TrendsAssistant /></RouteSuspense>} />
+          <Route path="analytics" element={<RouteSuspense><Analytics /></RouteSuspense>} />
           <Route path="cookies-report" element={<RouteSuspense><CookiesReport /></RouteSuspense>} />
           <Route path="subscribers" element={<RouteSuspense><Subscribers /></RouteSuspense>} />
         </Route>

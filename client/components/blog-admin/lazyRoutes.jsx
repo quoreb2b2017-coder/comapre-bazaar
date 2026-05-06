@@ -24,6 +24,9 @@ export const Settings = lazy(() =>
 export const TrendsAssistant = lazy(() =>
   import(/* webpackChunkName: "blog-admin-trends" */ './pages/TrendsAssistant').then((m) => ({ default: m.TrendsAssistant })),
 )
+export const Analytics = lazy(() =>
+  import(/* webpackChunkName: "blog-admin-analytics" */ './pages/Analytics').then((m) => ({ default: m.Analytics })),
+)
 export const CookiesReport = lazy(() =>
   import(/* webpackChunkName: "blog-admin-cookies" */ './pages/CookiesReport').then((m) => ({ default: m.CookiesReport })),
 )

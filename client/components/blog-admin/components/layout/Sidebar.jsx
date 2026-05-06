@@ -9,6 +9,7 @@ import {
   PenTool,
   LogOut,
   Sparkles,
+  ChartNoAxesCombined,
   Cookie,
   Users,
 } from 'lucide-react'
@@ -20,6 +21,7 @@ const NAV = [
   { to: '/generate', icon: Zap, label: 'Generate Blog' },
   { to: '/approvals', icon: Bell, label: 'Approvals' },
   { to: '/trends', icon: Sparkles, label: 'Trending chat' },
+  { to: '/analytics', icon: ChartNoAxesCombined, label: 'Analytics' },
   { to: '/cookies-report', icon: Cookie, label: 'Cookies & visitors' },
   { to: '/subscribers', icon: Users, label: 'Subscribers' },
   { to: '/settings', icon: Settings, label: 'Settings' },
