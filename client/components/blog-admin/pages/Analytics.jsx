@@ -60,6 +60,12 @@ function inferKeywordFromPath(path) {
     .slice(0, 42)
 }
 
+function shortKeywordLabel(s, max = 20) {
+  const v = String(s || '').trim()
+  if (v.length <= max) return v
+  return `${v.slice(0, max - 1)}…`
+}
+
 export const Analytics = () => {
   const { toast } = useOutletContext()
   const [data, setData] = useState(null)
@@ -352,13 +358,19 @@ export const Analytics = () => {
 
       <section className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <Panel title="SEO & keyword opportunity tracker (real campaigns)">
-          <div className="h-[300px] p-4">
+          <div className="h-[340px] p-4">
             {(derived.keywordOpp.length || derived.keywordFallback.length) ? (
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={derived.keywordOpp.length ? derived.keywordOpp : derived.keywordFallback}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <XAxis dataKey="keyword" interval={0} angle={-25} textAnchor="end" height={80} />
-                  <YAxis />
+                <BarChart
+                  data={(derived.keywordOpp.length ? derived.keywordOpp : derived.keywordFallback)
+                    .slice(0, 8)
+                    .map((x) => ({ ...x, label: shortKeywordLabel(x.keyword, 24) }))}
+                  layout="vertical"
+                  margin={{ top: 8, right: 24, left: 12, bottom: 8 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" horizontal={false} />
+                  <XAxis type="number" />
+                  <YAxis type="category" dataKey="label" width={150} tickLine={false} axisLine={false} />
                   <ChartTooltip />
                   <Bar dataKey="traffic" fill="#ef4444" radius={[4, 4, 0, 0]} />
                 </BarChart>
@@ -372,6 +384,28 @@ export const Analytics = () => {
               Showing inferred keywords from top content paths (UTM campaigns not available yet).
             </p>
           ) : null}
+          <div className="px-4 pb-4">
+            <div className="rounded-lg border border-gray-100 overflow-hidden">
+              <table className="w-full text-xs">
+                <thead className="bg-gray-50 text-gray-600">
+                  <tr>
+                    <th className="text-left py-2 px-3">Keyword / Campaign</th>
+                    <th className="text-right py-2 px-3">Traffic</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {(derived.keywordOpp.length ? derived.keywordOpp : derived.keywordFallback).slice(0, 5).map((r) => (
+                    <tr key={r.keyword}>
+                      <td className="py-2 px-3 text-gray-700 truncate max-w-[320px]" title={r.keyword}>
+                        {r.keyword}
+                      </td>
+                      <td className="py-2 px-3 text-right tabular-nums text-gray-700">{fmt(r.traffic)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </Panel>
 
         <Panel title="Growth opportunities (based on live signals)">
