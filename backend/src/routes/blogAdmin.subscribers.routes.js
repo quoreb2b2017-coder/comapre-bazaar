@@ -1,5 +1,6 @@
 const express = require("express");
 const BlogSubscriber = require("../models/blogSubscriber.model");
+const Blog = require("../models/automationBlog.model");
 const { protect } = require("../middlewares/blogAdminAuth.middleware");
 
 const router = express.Router();
@@ -21,9 +22,33 @@ router.get("/", protect, async (req, res) => {
       BlogSubscriber.countDocuments(query),
     ]);
 
+    const unresolvedSlugs = [...new Set(
+      rows
+        .filter((r) => !r.sourceBlogId && !r.sourceBlogTitle && (r.sourceBlogSlug || r.subscribedFrom))
+        .map((r) => String(r.sourceBlogSlug || r.subscribedFrom || "").trim())
+        .filter(Boolean)
+    )];
+    let blogBySlug = new Map();
+    if (unresolvedSlugs.length) {
+      const blogs = await Blog.find({ slug: { $in: unresolvedSlugs } }).select("_id slug title").lean();
+      blogBySlug = new Map(blogs.map((b) => [String(b.slug || ""), b]));
+    }
+    const enrichedRows = rows.map((r) => {
+      if (r.sourceBlogId || r.sourceBlogTitle) return r;
+      const slug = String(r.sourceBlogSlug || r.subscribedFrom || "").trim();
+      const b = blogBySlug.get(slug);
+      if (!b) return r;
+      return {
+        ...r,
+        sourceBlogId: String(b._id || ""),
+        sourceBlogSlug: b.slug || slug,
+        sourceBlogTitle: b.title || "",
+      };
+    });
+
     res.json({
       success: true,
-      data: rows,
+      data: enrichedRows,
       pagination: {
         total,
         page,

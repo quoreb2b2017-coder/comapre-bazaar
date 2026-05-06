@@ -92,11 +92,21 @@ router.post('/subscribe', async (req, res) => {
     }
 
     const source = String(req.body?.sourceSlug || req.body?.source || '').trim().slice(0, 120)
+    const sourceBlog = source
+      ? await Blog.findOne({ slug: source }).select('_id slug title').lean()
+      : null
 
     const subscriber = await BlogSubscriber.findOneAndUpdate(
       { email: emailRaw },
       {
-        $set: { email: emailRaw, isActive: true, subscribedFrom: source || '' },
+        $set: {
+          email: emailRaw,
+          isActive: true,
+          subscribedFrom: source || '',
+          sourceBlogId: sourceBlog?._id ? String(sourceBlog._id) : '',
+          sourceBlogSlug: sourceBlog?.slug || source || '',
+          sourceBlogTitle: sourceBlog?.title || '',
+        },
         $setOnInsert: { totalNotifications: 0 },
       },
       { upsert: true, new: true, setDefaultsOnInsert: true }

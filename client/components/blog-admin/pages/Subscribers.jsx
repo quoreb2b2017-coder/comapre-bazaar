@@ -87,7 +87,10 @@ export const Subscribers = () => {
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
+                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Subscriber ID</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Email</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Blog</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Blog ID</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Status</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Subscribed</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Notifications</th>
@@ -97,21 +100,28 @@ export const Subscribers = () => {
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="py-12 text-center text-gray-500">
+                  <td colSpan={8} className="py-12 text-center text-gray-500">
                     <Loader2 className="w-5 h-5 animate-spin inline mr-2" /> Loading subscribers...
                   </td>
                 </tr>
               ) : rows.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="py-12 text-center text-gray-500">No subscribers found.</td>
+                  <td colSpan={8} className="py-12 text-center text-gray-500">No subscribers found.</td>
                 </tr>
               ) : (
                 rows.map((s) => (
                   <tr key={s._id} className="hover:bg-gray-50 dark:hover:bg-gray-800/40">
+                    <td className="px-4 py-3 text-xs text-gray-500 dark:text-gray-400 font-mono">{s._id}</td>
                     <td className="px-4 py-3">
                       <span className="inline-flex items-center gap-2 text-sm text-gray-800 dark:text-gray-200">
                         <Mail className="w-3.5 h-3.5 text-gray-400" /> {s.email}
                       </span>
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
+                      {s.sourceBlogTitle || s.sourceBlogSlug || s.subscribedFrom || '-'}
+                    </td>
+                    <td className="px-4 py-3 text-xs text-gray-500 dark:text-gray-400 font-mono">
+                      {s.sourceBlogId || '-'}
                     </td>
                     <td className="px-4 py-3 text-sm">
                       <span className={`px-2 py-1 rounded-full text-xs font-semibold ${s.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-200 text-gray-700'}`}>
