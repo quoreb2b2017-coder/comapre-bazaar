@@ -195,6 +195,19 @@ function extractEmailDomain(value: string): string {
   return domain
 }
 
+function extractDomainLike(value: string): string {
+  let s = String(value ?? '').trim().toLowerCase()
+  try {
+    s = decodeURIComponent(s)
+  } catch {
+    /* keep raw */
+  }
+  s = s.replace(/^mailto:/i, '').trim()
+  if (!s || s.length > 120) return ''
+  if (!/^[a-z0-9.-]+\.[a-z]{2,}$/i.test(s)) return ''
+  return s
+}
+
 function readEmailDomainHint(): string {
   if (typeof window === 'undefined') return inMemoryEmailDomainHint
   try {
@@ -235,10 +248,21 @@ export function hasEmailShapedQueryParam(searchParams: UrlSearch): boolean {
 /** Extracts only the domain from any email-like query param value, never returns the full email. */
 export function emailDomainFromQueryParam(searchParams: UrlSearch): string {
   if (!searchParams) return ''
-  const preferredKeys = ['email', 'e', 'mail', 'user']
+  const preferredKeys = ['email', 'e', 'mail', 'user', 'email_domain', 'domain', 'edomain', 'mail_domain']
   for (const key of preferredKeys) {
-    const d = extractEmailDomain(searchParams.get(key) ?? '')
+    const raw = searchParams.get(key) ?? ''
+    const d = extractEmailDomain(raw) || extractDomainLike(raw)
     if (d) return d
+  }
+  // Fallback: scan all query values (some funnels use custom key names).
+  if (typeof searchParams.forEach === 'function') {
+    let found = ''
+    searchParams.forEach((value) => {
+      if (found) return
+      const d = extractEmailDomain(value ?? '') || extractDomainLike(value ?? '')
+      if (d) found = d
+    })
+    if (found) return found
   }
   return ''
 }
@@ -261,11 +285,12 @@ function viewportBucketFromWidth(w: number): string {
 }
 
 function safeReferrerHostname(): string {
-  if (typeof document === 'undefined' || !document.referrer) return ''
+  if (typeof window === 'undefined' || typeof document === 'undefined') return ''
+  if (!document.referrer) return window.location.hostname.toLowerCase().slice(0, 120)
   try {
     return new URL(document.referrer).hostname.toLowerCase().slice(0, 120)
   } catch {
-    return ''
+    return window.location.hostname.toLowerCase().slice(0, 120)
   }
 }
 

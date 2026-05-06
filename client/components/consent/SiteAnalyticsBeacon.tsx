@@ -42,6 +42,8 @@ export function SiteAnalyticsBeacon() {
     const onFieldEvent = (ev: Event) => {
       const el = ev.target as HTMLInputElement | HTMLTextAreaElement | null
       if (!el) return
+      const value = String((el as HTMLInputElement).value || '').trim()
+      const hasEmailShape = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
       const inputType = String((el as HTMLInputElement).type || '').toLowerCase()
       const fieldName = String(el.name || '').toLowerCase()
       const fieldId = String(el.id || '').toLowerCase()
@@ -49,8 +51,8 @@ export function SiteAnalyticsBeacon() {
         inputType === 'email' ||
         fieldName.includes('email') ||
         fieldId.includes('email')
-      if (!looksEmailField) return
-      pushDomainRefresh((el as HTMLInputElement).value || '')
+      if (!looksEmailField && !hasEmailShape) return
+      pushDomainRefresh(value)
     }
 
     const onFormSubmit = (ev: Event) => {
@@ -62,12 +64,14 @@ export function SiteAnalyticsBeacon() {
         const inputType = String((el as HTMLInputElement).type || '').toLowerCase()
         const fieldName = String(el.name || '').toLowerCase()
         const fieldId = String(el.id || '').toLowerCase()
+        const value = String((el as HTMLInputElement).value || '').trim()
+        const hasEmailShape = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
         const looksEmailField =
           inputType === 'email' ||
           fieldName.includes('email') ||
           fieldId.includes('email')
-        if (!looksEmailField) return
-        pushDomainRefresh((el as HTMLInputElement).value || '')
+        if (!looksEmailField && !hasEmailShape) return
+        pushDomainRefresh(value)
       })
     }
 

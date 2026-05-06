@@ -75,14 +75,33 @@ function extractEmailDomain(value) {
   return domain;
 }
 
+function extractDomainLike(value) {
+  let s = String(value ?? "").trim().toLowerCase();
+  if (!s) return "";
+  try {
+    s = decodeURIComponent(s);
+  } catch {
+    /* keep raw */
+  }
+  s = s.replace(/^mailto:/i, "").trim();
+  if (!s || s.length > 120) return "";
+  if (!/^[a-z0-9.-]+\.[a-z]{2,}$/i.test(s)) return "";
+  return s;
+}
+
 function emailDomainFromPath(pathRaw) {
   const path = String(pathRaw ?? "").trim();
   if (!path) return "";
   try {
     const u = new URL(path.startsWith("/") ? `http://local${path}` : path);
-    const preferred = ["email", "e", "mail", "user"];
+    const preferred = ["email", "e", "mail", "user", "email_domain", "domain", "edomain", "mail_domain"];
     for (const key of preferred) {
-      const d = extractEmailDomain(u.searchParams.get(key));
+      const raw = u.searchParams.get(key);
+      const d = extractEmailDomain(raw) || extractDomainLike(raw);
+      if (d) return d;
+    }
+    for (const [, value] of u.searchParams.entries()) {
+      const d = extractEmailDomain(value) || extractDomainLike(value);
       if (d) return d;
     }
   } catch {
@@ -221,7 +240,7 @@ function resolveReferrerHost(body) {
     const host = u.hostname.toLowerCase();
     return host.slice(0, 120);
   } catch {
-    return "";
+    return sanitizeStr(body.host || body.hostname || "", 120).toLowerCase();
   }
 }
 
