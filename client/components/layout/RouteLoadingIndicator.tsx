@@ -103,13 +103,14 @@ export function RouteLoadingIndicator() {
       aria-live="polite"
       aria-label="Route loading indicator"
     >
-      <div className="absolute inset-0 bg-slate-900/20 backdrop-blur-[1.5px]" />
+      <div className="absolute inset-0 bg-slate-900/26 backdrop-blur-[2px]" />
       <div className="absolute left-0 right-0 top-0 h-[3px] overflow-hidden bg-white/40">
         <div className="cb-route-progress h-full w-[35%] rounded-full bg-gradient-to-r from-[#ff8633] via-[#ff9f55] to-[#ffd2a8]" />
       </div>
-      <div className="relative flex items-center gap-3 rounded-full border border-white/70 bg-white/95 px-5 py-3 shadow-xl">
+      <div className="relative flex items-center gap-3 rounded-full border border-white/70 bg-white/95 px-5 py-3 shadow-[0_18px_42px_-20px_rgba(8,20,60,0.55)]">
         <span className="h-5 w-5 animate-spin rounded-full border-2 border-[#ff8633]/30 border-t-[#ff8633]" />
-        <span className="text-sm font-semibold text-[#000e54]">Opening page...</span>
+        <span className="text-sm font-semibold text-[#000e54]">Opening page</span>
+        <span className="cb-loading-dots" aria-hidden="true" />
       </div>
     </div>
   )

@@ -118,7 +118,7 @@ export default async function HomePage() {
       <JsonLd schema={itemListSchema} />
 
       {/* Trust bar */}
-      <div className="bg-navy text-white/80 text-center py-2.5 px-4">
+      <div className="bg-gradient-to-r from-[#071a57] via-[#0a246d] to-[#071a57] text-white/85 text-center py-2.5 px-4 shadow-[inset_0_-1px_0_rgba(255,255,255,0.08)]">
         <p className="text-xs sm:text-sm">
           Reviewed by <strong className="text-white">independent experts</strong> ·
           No paid placements in rankings ·{' '}
@@ -127,13 +127,14 @@ export default async function HomePage() {
       </div>
 
       {/* Hero */}
-      <header className="bg-[#F58220] py-20 px-4 relative overflow-hidden">
+      <header className="bg-gradient-to-br from-[#F58220] via-[#f48930] to-[#ec7416] py-20 sm:py-24 px-4 relative overflow-hidden">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,rgba(255,255,255,0.25),transparent_45%),radial-gradient(circle_at_80%_85%,rgba(255,215,170,0.35),transparent_45%)]" />
         <div className="max-w-3xl mx-auto text-center relative">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl text-white leading-tight tracking-tight mb-5 drop-shadow-[0_2px_10px_rgba(110,45,0,0.35)]">
             Find the <em className="text-[#FCE7D0] not-italic">right</em> business software,{' '}
             <br className="hidden sm:block" />without the guesswork
           </h1>
-          <p className="text-lg sm:text-xl text-white/85 leading-relaxed mb-8 max-w-xl mx-auto">
+          <p className="text-lg sm:text-xl text-white/90 leading-relaxed mb-8 max-w-xl mx-auto">
             Independent comparisons of CRM, payroll, HR, and marketing software — researched by
             experts, ranked on real criteria, updated for 2026.
           </p>
@@ -147,7 +148,7 @@ export default async function HomePage() {
               <Link
                 key={category.href}
                 href={category.href}
-                className="bg-white/14 hover:bg-white/24 border border-white/30 text-white text-xs px-4 py-2 rounded-full shadow-[0_6px_16px_rgba(110,45,0,0.2)] backdrop-blur-[1px] transition-all"
+                className="bg-white/14 hover:bg-white/26 border border-white/30 text-white text-xs px-4 py-2 rounded-full shadow-[0_8px_18px_rgba(110,45,0,0.22)] backdrop-blur-[1.5px] transition-all duration-300 hover:-translate-y-0.5"
               >
                 {category.label}
               </Link>
@@ -157,7 +158,7 @@ export default async function HomePage() {
       </header>
 
       {/* Methodology bar */}
-      <div className="bg-brand-light border-b border-blue-200 py-3 px-4">
+      <div className="bg-gradient-to-r from-blue-50 via-blue-50 to-indigo-50 border-b border-blue-200 py-3 px-4">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center gap-3">
           <span className="bg-brand text-white text-xs font-bold px-2.5 py-1 rounded uppercase tracking-wide">
             How we review
@@ -172,7 +173,7 @@ export default async function HomePage() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16 space-y-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-20 space-y-20 sm:space-y-24">
 
         {/* Categories */}
         <section aria-labelledby="categories-heading">
@@ -191,7 +192,7 @@ export default async function HomePage() {
               <Link
                 key={cat.href}
                 href={cat.href}
-                className="group block bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-lg hover:border-blue-200 transition-all relative overflow-hidden"
+                className="group block bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-[0_14px_36px_-18px_rgba(14,42,106,0.45)] hover:border-blue-200 transition-all duration-300 relative overflow-hidden hover:-translate-y-0.5"
                 aria-label={`${cat.title} — ${cat.count}`}
               >
                 <div className="absolute top-0 left-0 right-0 h-0.5 bg-brand scale-x-0 group-hover:scale-x-100 transition-transform origin-left" aria-hidden="true" />
@@ -209,36 +210,8 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* Editorial blog */}
-        {recentBlogPosts.length > 0 ? (
-          <section aria-labelledby="blog-preview-heading">
-            <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-brand">Buying guides</p>
-                <h2 id="blog-preview-heading" className="text-3xl sm:text-4xl text-navy tracking-tight">
-                  Latest from our blog
-                </h2>
-                <p className="mt-2 max-w-xl text-gray-500">
-                  Deep dives on payroll, VoIP, CRM, and more—same scoring mindset as our comparison hubs.
-                </p>
-              </div>
-              <Link
-                href="/blog"
-                className="shrink-0 text-sm font-semibold text-brand hover:underline"
-              >
-                View all articles →
-              </Link>
-            </div>
-            <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
-              {recentBlogPosts.map((post, index) => (
-                <BlogHomePreviewCard key={post.slug} post={post} priority={index === 0} />
-              ))}
-            </div>
-          </section>
-        ) : null}
-
         {/* How we review */}
-        <section className="bg-gray-50 border border-gray-200 rounded-3xl p-8 sm:p-12" aria-labelledby="how-heading">
+          <section className="bg-gradient-to-b from-gray-50 to-white border border-gray-200 rounded-3xl p-8 sm:p-12 shadow-[0_10px_34px_-26px_rgba(15,31,61,0.45)]" aria-labelledby="how-heading">
           <p className="text-xs font-semibold uppercase tracking-widest text-brand mb-2">Our methodology</p>
           <h2 id="how-heading" className="text-3xl sm:text-4xl text-navy tracking-tight mb-2">
             How we independently review and rank software
@@ -276,6 +249,34 @@ export default async function HomePage() {
           </Link>
         </section>
 
+        {/* Editorial blog */}
+        {recentBlogPosts.length > 0 ? (
+          <section aria-labelledby="blog-preview-heading">
+            <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-brand">Buying guides</p>
+                <h2 id="blog-preview-heading" className="text-3xl sm:text-4xl text-navy tracking-tight">
+                  Latest from our blog
+                </h2>
+                <p className="mt-2 max-w-xl text-gray-500">
+                  Deep dives on payroll, VoIP, CRM, and more—same scoring mindset as our comparison hubs.
+                </p>
+              </div>
+              <Link
+                href="/blog"
+                className="shrink-0 text-sm font-semibold text-brand hover:underline"
+              >
+                View all articles →
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+              {recentBlogPosts.map((post, index) => (
+                <BlogHomePreviewCard key={post.slug} post={post} priority={index === 0} />
+              ))}
+            </div>
+          </section>
+        ) : null}
+
         {/* Expert team */}
         <section aria-labelledby="team-heading">
           <p className="text-xs font-semibold uppercase tracking-widest text-brand mb-2">Our editorial team</p>
@@ -287,7 +288,7 @@ export default async function HomePage() {
           </p>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {TEAM.map(({ initials, name, role, exp }) => (
-              <div key={name} className="bg-white border border-gray-200 rounded-2xl p-5 text-center">
+              <div key={name} className="bg-white border border-gray-200 rounded-2xl p-5 text-center transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_14px_32px_-22px_rgba(15,31,61,0.5)]">
                 <div
                   className="w-14 h-14 rounded-full bg-brand-light flex items-center justify-center text-brand text-lg font-semibold mx-auto mb-3"
                   aria-hidden="true"
@@ -303,7 +304,9 @@ export default async function HomePage() {
         </section>
 
         {/* Trust stats */}
-        <section className="bg-navy rounded-3xl p-8 sm:p-12 text-center text-white" aria-label="Trust statistics">
+        <section className="relative overflow-hidden bg-gradient-to-br from-[#071a57] via-[#0b2f88] to-[#09236b] rounded-3xl p-8 sm:p-12 text-center text-white shadow-[0_24px_46px_-28px_rgba(8,20,60,0.8)]" aria-label="Trust statistics">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_25%,rgba(255,255,255,0.14),transparent_35%),radial-gradient(circle_at_80%_80%,rgba(255,255,255,0.1),transparent_40%)]" />
+          <div className="relative">
           <h2 className="text-3xl sm:text-4xl tracking-tight mb-3">Trusted by thousands of business buyers</h2>
           <p className="text-white/70 max-w-lg mx-auto mb-10 text-base">
             Our comparison guides help B2B decision-makers cut through vendor marketing and make confident software choices.
@@ -321,12 +324,13 @@ export default async function HomePage() {
               </div>
             ))}
           </div>
+          </div>
         </section>
 
         {/* FAQ */}
         <HomeFaqSection faqs={FAQS} />
 
-        <section className="bg-gray-50 border border-gray-200 rounded-3xl p-6 sm:p-8" aria-label="Additional resources">
+        <section className="bg-gradient-to-b from-gray-50 to-white border border-gray-200 rounded-3xl p-6 sm:p-8 shadow-[0_10px_30px_-24px_rgba(15,31,61,0.5)]" aria-label="Additional resources">
           <h2 className="text-2xl sm:text-3xl text-navy tracking-tight mb-3">Additional Resources</h2>
           <p className="text-sm text-gray-600 mb-4">
             Explore policy pages, planning resources, and company information.
@@ -345,7 +349,7 @@ export default async function HomePage() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="text-sm text-brand border border-brand/30 px-3 py-2 rounded-lg hover:bg-brand-light transition-colors"
+                className="text-sm text-brand border border-brand/30 px-3 py-2 rounded-lg hover:bg-brand-light transition-all duration-200 hover:-translate-y-0.5"
               >
                 {item.label}
               </Link>
