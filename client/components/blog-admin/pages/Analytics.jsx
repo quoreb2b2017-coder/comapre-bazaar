@@ -403,26 +403,30 @@ export const Analytics = () => {
           </div>
 
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-            {derived.metricCatalog.map((group) => (
-              <article key={group.category} className="rounded-xl border border-gray-200 bg-gray-50 p-4">
-                <h4 className="font-semibold text-gray-900">{group.category}</h4>
-                <ul className="mt-3 space-y-2">
-                  {group.metrics.map((metric) => (
-                    <li key={metric.name} className="flex items-start justify-between gap-3">
-                      <p className="text-sm text-gray-700">{metric.name}</p>
-                      <div className="shrink-0 flex items-center gap-1.5">
-                        <span className={`px-2 py-0.5 rounded-full text-xs ${PRIORITY_STYLES[metric.priority]}`}>
-                          {priorityLabel(metric.priority)}
-                        </span>
-                        <span className={`px-2 py-0.5 rounded-full text-xs ${STATUS_STYLES[metric.status]}`}>
-                          {metric.status === 'live' ? 'Live' : metric.status === 'partial' ? 'Partial' : 'Setup needed'}
-                        </span>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </article>
-            ))}
+            {derived.metricCatalog.map((group) => {
+              const visibleMetrics = group.metrics.filter((metric) => metric.status !== 'setup')
+              if (!visibleMetrics.length) return null
+              return (
+                <article key={group.category} className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+                  <h4 className="font-semibold text-gray-900">{group.category}</h4>
+                  <ul className="mt-3 space-y-2">
+                    {visibleMetrics.map((metric) => (
+                      <li key={metric.name} className="flex items-start justify-between gap-3">
+                        <p className="text-sm text-gray-700">{metric.name}</p>
+                        <div className="shrink-0 flex items-center gap-1.5">
+                          <span className={`px-2 py-0.5 rounded-full text-xs ${PRIORITY_STYLES[metric.priority]}`}>
+                            {priorityLabel(metric.priority)}
+                          </span>
+                          <span className={`px-2 py-0.5 rounded-full text-xs ${STATUS_STYLES[metric.status]}`}>
+                            {metric.status === 'live' ? 'Live' : 'Partial'}
+                          </span>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </article>
+              )
+            })}
           </div>
           <p className="text-xs text-gray-500">
             Suggested connectors for remaining metrics: GA4, Search Console, Ahrefs/Semrush, Hotjar/Clarity, affiliate platform API,
