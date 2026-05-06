@@ -108,7 +108,6 @@ export const Subscribers = () => {
                 <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Subscriber ID</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Email</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Blog</th>
-                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Blog ID</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Status</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Subscribed</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Notifications</th>
@@ -118,19 +117,19 @@ export const Subscribers = () => {
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
               {loading ? (
                 <tr>
-                  <td colSpan={8} className="py-12 text-center text-gray-500">
+                  <td colSpan={7} className="py-12 text-center text-gray-500">
                     <Loader2 className="w-5 h-5 animate-spin inline mr-2" /> Loading subscribers...
                   </td>
                 </tr>
               ) : rows.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="py-12 text-center text-gray-500">No subscribers found.</td>
+                  <td colSpan={7} className="py-12 text-center text-gray-500">No subscribers found.</td>
                 </tr>
               ) : (
                 rows.map((s, idx) => {
                   const seqNo = (Number(pagination.page || 1) - 1) * Number(pagination.limit || 20) + idx + 101
                   const prefix = topicPrefix(s)
-                  const shortId = `${prefix}${seqNo}`
+                  const shortId = s.sourceBlogId ? `${prefix}-${String(s.sourceBlogId).slice(-4)}` : `${prefix}${seqNo}`
                   const blogText = s.sourceBlogTitle || s.sourceBlogSlug || s.subscribedFrom || '-'
                   const isActive = !!s.isActive
                   return (
@@ -143,9 +142,6 @@ export const Subscribers = () => {
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
                       <span title={blogText}>{shortLabel(blogText, 42)}</span>
-                    </td>
-                    <td className="px-4 py-3 text-xs text-gray-500 dark:text-gray-400 font-mono">
-                      {s.sourceBlogId ? `${prefix}-${String(s.sourceBlogId).slice(-4)}` : `${prefix}-NA`}
                     </td>
                     <td className="px-4 py-3 text-sm">
                       <span className={`px-2 py-1 rounded-full text-xs font-semibold ${isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-200 text-gray-700'}`}>
