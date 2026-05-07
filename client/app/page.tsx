@@ -148,7 +148,7 @@ export default async function HomePage() {
                 <br className="hidden sm:block" />without the guesswork
               </h1>
               <p className="text-base sm:text-xl text-white/90 leading-relaxed mb-6 sm:mb-8 max-w-xl mx-auto [transform:translateZ(30px)]">
-                Independent comparisons of CRM, payroll, HR, and marketing software — researched by
+                Independent comparisons of CRM, payroll, HR, and marketing software researched by
                 experts, ranked on real criteria, updated for 2026.
               </p>
 

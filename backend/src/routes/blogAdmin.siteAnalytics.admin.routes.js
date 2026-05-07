@@ -665,24 +665,24 @@ router.get("/site-analytics/events/export", protect, async (req, res) => {
         const m = e.marketingMeta || {};
         const c = e.consentSnapshot || {};
         return `
-        <Row>
-          <Cell><Data ss:Type="String">${xmlEscape(new Date(e.createdAt).toISOString())}</Data></Cell>
-          <Cell><Data ss:Type="String">${xmlEscape(e.kind)}</Data></Cell>
-          <Cell><Data ss:Type="String">${xmlEscape(e.sessionId)}</Data></Cell>
-          <Cell><Data ss:Type="String">${xmlEscape(e.path)}</Data></Cell>
-          <Cell><Data ss:Type="String">${xmlEscape(e.referrer)}</Data></Cell>
-          <Cell><Data ss:Type="String">${xmlEscape(m.utmSource || "")}</Data></Cell>
-          <Cell><Data ss:Type="String">${xmlEscape(m.utmMedium || "")}</Data></Cell>
-          <Cell><Data ss:Type="String">${xmlEscape(m.utmCampaign || "")}</Data></Cell>
-          <Cell><Data ss:Type="String">${xmlEscape(m.utmContent || "")}</Data></Cell>
-          <Cell><Data ss:Type="String">${xmlEscape(m.utmTerm || "")}</Data></Cell>
-          <Cell><Data ss:Type="String">${xmlEscape(m.ftCampaign || "")}</Data></Cell>
-          <Cell><Data ss:Type="String">${xmlEscape(m.country || "")}</Data></Cell>
-          <Cell><Data ss:Type="String">${xmlEscape(m.region || "")}</Data></Cell>
-          <Cell><Data ss:Type="String">${xmlEscape(m.city || "")}</Data></Cell>
-          <Cell><Data ss:Type="String">${xmlEscape(c.analytics ? "1" : "0")}</Data></Cell>
-          <Cell><Data ss:Type="String">${xmlEscape(c.marketing ? "1" : "0")}</Data></Cell>
-          <Cell><Data ss:Type="String">${xmlEscape(e.userAgent || "")}</Data></Cell>
+        <Row ss:AutoFitHeight="0" ss:Height="20">
+          <Cell ss:StyleID="sCell"><Data ss:Type="String">${xmlEscape(new Date(e.createdAt).toISOString())}</Data></Cell>
+          <Cell ss:StyleID="sCell"><Data ss:Type="String">${xmlEscape(e.kind)}</Data></Cell>
+          <Cell ss:StyleID="sCell"><Data ss:Type="String">${xmlEscape(e.sessionId)}</Data></Cell>
+          <Cell ss:StyleID="sWrap"><Data ss:Type="String">${xmlEscape(e.path)}</Data></Cell>
+          <Cell ss:StyleID="sWrap"><Data ss:Type="String">${xmlEscape(e.referrer)}</Data></Cell>
+          <Cell ss:StyleID="sCell"><Data ss:Type="String">${xmlEscape(m.utmSource || "")}</Data></Cell>
+          <Cell ss:StyleID="sCell"><Data ss:Type="String">${xmlEscape(m.utmMedium || "")}</Data></Cell>
+          <Cell ss:StyleID="sCell"><Data ss:Type="String">${xmlEscape(m.utmCampaign || "")}</Data></Cell>
+          <Cell ss:StyleID="sCell"><Data ss:Type="String">${xmlEscape(m.utmContent || "")}</Data></Cell>
+          <Cell ss:StyleID="sCell"><Data ss:Type="String">${xmlEscape(m.utmTerm || "")}</Data></Cell>
+          <Cell ss:StyleID="sCell"><Data ss:Type="String">${xmlEscape(m.ftCampaign || "")}</Data></Cell>
+          <Cell ss:StyleID="sCell"><Data ss:Type="String">${xmlEscape(m.country || "")}</Data></Cell>
+          <Cell ss:StyleID="sCell"><Data ss:Type="String">${xmlEscape(m.region || "")}</Data></Cell>
+          <Cell ss:StyleID="sCell"><Data ss:Type="String">${xmlEscape(m.city || "")}</Data></Cell>
+          <Cell ss:StyleID="sCell"><Data ss:Type="String">${xmlEscape(c.analytics ? "1" : "0")}</Data></Cell>
+          <Cell ss:StyleID="sCell"><Data ss:Type="String">${xmlEscape(c.marketing ? "1" : "0")}</Data></Cell>
+          <Cell ss:StyleID="sWrap"><Data ss:Type="String">${xmlEscape(e.userAgent || "")}</Data></Cell>
         </Row>`;
       })
       .join("");
@@ -693,9 +693,42 @@ router.get("/site-analytics/events/export", protect, async (req, res) => {
  xmlns:o="urn:schemas-microsoft-com:office:office"
  xmlns:x="urn:schemas-microsoft-com:office:excel"
  xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
+  <Styles>
+    <Style ss:ID="sHeader">
+      <Font ss:Bold="1" ss:Color="#1F2937" />
+      <Interior ss:Color="#F3F4F6" ss:Pattern="Solid" />
+      <Borders>
+        <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D1D5DB" />
+      </Borders>
+      <Alignment ss:Vertical="Center" ss:Horizontal="Left" ss:WrapText="1" />
+    </Style>
+    <Style ss:ID="sCell">
+      <Alignment ss:Vertical="Center" ss:Horizontal="Left" />
+    </Style>
+    <Style ss:ID="sWrap">
+      <Alignment ss:Vertical="Top" ss:Horizontal="Left" ss:WrapText="1" />
+    </Style>
+  </Styles>
   <Worksheet ss:Name="Site Analytics Events">
-    <Table>
-      <Row>
+    <Table ss:DefaultRowHeight="20">
+      <Column ss:Width="150"/>
+      <Column ss:Width="80"/>
+      <Column ss:Width="180"/>
+      <Column ss:Width="260"/>
+      <Column ss:Width="260"/>
+      <Column ss:Width="110"/>
+      <Column ss:Width="110"/>
+      <Column ss:Width="140"/>
+      <Column ss:Width="130"/>
+      <Column ss:Width="110"/>
+      <Column ss:Width="130"/>
+      <Column ss:Width="80"/>
+      <Column ss:Width="90"/>
+      <Column ss:Width="110"/>
+      <Column ss:Width="110"/>
+      <Column ss:Width="110"/>
+      <Column ss:Width="420"/>
+      <Row ss:StyleID="sHeader" ss:AutoFitHeight="0" ss:Height="24">
         <Cell><Data ss:Type="String">Time (UTC)</Data></Cell>
         <Cell><Data ss:Type="String">Kind</Data></Cell>
         <Cell><Data ss:Type="String">Session ID</Data></Cell>
