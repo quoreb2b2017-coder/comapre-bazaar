@@ -223,7 +223,7 @@ export function CookieConsentBanner() {
               </span>
             </button>
 
-            <div className="flex flex-col gap-3 pr-7 lg:flex-row lg:items-start lg:justify-between lg:gap-6">
+            <div className="flex flex-col gap-3 pr-7">
               <div className="min-w-0 flex-1">
                 <p className="text-[14px] leading-[1.45] text-gray-600 sm:text-[15px]">
                   This website stores data such as cookies to enable essential site functionality, as well as marketing,
@@ -248,32 +248,32 @@ export function CookieConsentBanner() {
                 </p>
               </div>
 
-              <div className="flex w-full shrink-0 flex-row flex-wrap gap-2 lg:w-auto lg:justify-end">
+              <div className="mt-1 flex w-full flex-row flex-wrap gap-2">
                 <button
                   type="button"
                   onClick={savePreferences}
-                  className="h-12 rounded-md border border-[#dc6b14] bg-gradient-to-br from-[#F58220] via-[#f48930] to-[#ec7416] px-4 text-[18px] font-semibold text-white transition hover:brightness-105"
+                  className="h-10 rounded-md border border-[#dc6b14] bg-gradient-to-br from-[#F58220] via-[#f48930] to-[#ec7416] px-3 text-[15px] font-semibold text-white transition hover:brightness-105"
                 >
                   Save
                 </button>
                 <button
                   type="button"
                   onClick={() => setPanel('prefs')}
-                  className="h-12 rounded-md border border-[#dc6b14] bg-gradient-to-br from-[#F58220] via-[#f48930] to-[#ec7416] px-4 text-[18px] font-semibold text-white transition hover:brightness-105"
+                  className="h-10 rounded-md border border-[#dc6b14] bg-gradient-to-br from-[#F58220] via-[#f48930] to-[#ec7416] px-3 text-[15px] font-semibold text-white transition hover:brightness-105"
                 >
                   Customized
                 </button>
                 <button
                   type="button"
                   onClick={acceptAll}
-                  className="h-12 rounded-md border border-[#dc6b14] bg-gradient-to-br from-[#F58220] via-[#f48930] to-[#ec7416] px-4 text-[18px] font-semibold text-white transition hover:brightness-105"
+                  className="h-10 rounded-md border border-[#dc6b14] bg-gradient-to-br from-[#F58220] via-[#f48930] to-[#ec7416] px-3 text-[15px] font-semibold text-white transition hover:brightness-105"
                 >
                   Accept All
                 </button>
                 <button
                   type="button"
                   onClick={rejectNonEssential}
-                  className="h-12 rounded-md border border-[#dc6b14] bg-gradient-to-br from-[#F58220] via-[#f48930] to-[#ec7416] px-4 text-[18px] font-semibold text-white transition hover:brightness-105"
+                  className="h-10 rounded-md border border-[#dc6b14] bg-gradient-to-br from-[#F58220] via-[#f48930] to-[#ec7416] px-3 text-[15px] font-semibold text-white transition hover:brightness-105"
                 >
                   Reject All
                 </button>
