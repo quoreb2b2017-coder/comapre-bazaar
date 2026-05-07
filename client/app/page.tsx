@@ -133,27 +133,27 @@ export default async function HomePage() {
       </div>
 
       {/* Hero */}
-      <header className="bg-gradient-to-br from-[#F58220] via-[#f48930] to-[#ec7416] py-12 sm:py-16 lg:py-20 px-4 relative overflow-hidden [perspective:1400px]">
+      <header className="bg-gradient-to-br from-[#F58220] via-[#f48930] to-[#ec7416] py-12 sm:py-16 lg:py-20 px-4 relative overflow-hidden [perspective:1800px]">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,rgba(255,255,255,0.25),transparent_45%),radial-gradient(circle_at_80%_85%,rgba(255,215,170,0.35),transparent_45%)]" />
         <div className="pointer-events-none absolute -left-20 top-8 h-52 w-52 rounded-full bg-white/20 blur-3xl" />
         <div className="pointer-events-none absolute -right-16 bottom-6 h-44 w-44 rounded-full bg-[#ffd8b0]/35 blur-3xl" />
         <div className="max-w-7xl mx-auto relative">
           <div className="flex justify-center">
             <div className="text-center min-h-[640px] flex flex-col justify-center max-w-4xl [transform-style:preserve-3d]">
-              <div className="mb-5 text-xs font-semibold uppercase tracking-wider text-white/95 [transform:translateZ(18px)]">
+              <div className="mb-5 text-xs font-semibold uppercase tracking-wider text-white/95 [transform:translateZ(26px)]">
                 Independent software reviews
               </div>
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl text-white leading-tight tracking-tight mb-4 sm:mb-5 drop-shadow-[0_8px_22px_rgba(110,45,0,0.4)] [transform:translateZ(30px)]">
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl text-white leading-tight tracking-tight mb-4 sm:mb-5 drop-shadow-[0_10px_26px_rgba(110,45,0,0.45)] [transform:translateZ(46px)]">
                 Find the <em className="text-[#FCE7D0] not-italic">right</em> business software,{' '}
                 <br className="hidden sm:block" />without the guesswork
               </h1>
-              <p className="text-base sm:text-xl text-white/90 leading-relaxed mb-6 sm:mb-8 max-w-xl mx-auto [transform:translateZ(20px)]">
+              <p className="text-base sm:text-xl text-white/90 leading-relaxed mb-6 sm:mb-8 max-w-xl mx-auto [transform:translateZ(30px)]">
                 Independent comparisons of CRM, payroll, HR, and marketing software — researched by
                 experts, ranked on real criteria, updated for 2026.
               </p>
 
-              <div className="cb-hero-tilt cb-hero-float relative mx-auto max-w-3xl rounded-[32px] border border-white/35 bg-white/12 p-1.5 shadow-[0_34px_75px_-30px_rgba(35,18,3,0.72)] backdrop-blur-md [transform-style:preserve-3d] [transform:translateZ(40px)] before:pointer-events-none before:absolute before:inset-0 before:rounded-[32px] before:bg-[linear-gradient(140deg,rgba(255,255,255,0.28),transparent_40%,rgba(255,255,255,0.1))] before:opacity-80 after:pointer-events-none after:absolute after:-bottom-5 after:left-8 after:right-8 after:h-8 after:rounded-full after:bg-black/25 after:blur-xl">
-                <div className="relative rounded-[26px] border border-white/30 bg-gradient-to-b from-white/22 to-white/10 p-5 sm:p-6 [transform:translateZ(20px)]">
+              <div className="cb-hero-tilt cb-hero-float cb-hero-prism relative mx-auto max-w-3xl rounded-[32px] border border-white/35 bg-white/12 p-1.5 shadow-[0_38px_90px_-34px_rgba(35,18,3,0.8)] backdrop-blur-md [transform-style:preserve-3d] [transform:translateZ(58px)] before:pointer-events-none before:absolute before:inset-0 before:rounded-[32px] before:bg-[linear-gradient(140deg,rgba(255,255,255,0.28),transparent_40%,rgba(255,255,255,0.1))] before:opacity-80 after:pointer-events-none after:absolute after:-bottom-5 after:left-8 after:right-8 after:h-8 after:rounded-full after:bg-black/25 after:blur-xl">
+                <div className="relative rounded-[26px] border border-white/40 bg-white p-5 sm:p-6 [transform:translateZ(20px)]">
                   <div className="pointer-events-none absolute -left-8 top-8 h-24 w-24 rounded-full bg-white/25 blur-2xl" />
                   <div className="pointer-events-none absolute -right-10 bottom-6 h-20 w-20 rounded-full bg-[#ffd7b3]/40 blur-2xl" />
                   <div className="[transform:translateZ(26px)]">
@@ -165,7 +165,7 @@ export default async function HomePage() {
                       <Link
                         key={category.href}
                         href={category.href}
-                        className="bg-white/14 hover:bg-white/26 border border-white/30 text-white text-xs px-4 py-2 rounded-full shadow-[0_12px_24px_rgba(110,45,0,0.28)] backdrop-blur-[1.5px] transition-all duration-300 hover:-translate-y-0.5 hover:scale-[1.03]"
+                        className="bg-gradient-to-br from-[#F58220] via-[#f48930] to-[#ec7416] hover:brightness-105 border border-[#f6a057] text-white text-xs px-4 py-2 rounded-full shadow-[0_10px_20px_rgba(110,45,0,0.25)] transition-all duration-300 hover:-translate-y-0.5 hover:scale-[1.03]"
                       >
                         {category.label}
                       </Link>
@@ -181,7 +181,7 @@ export default async function HomePage() {
                     ].map((item) => (
                       <div
                         key={item.label}
-                        className="rounded-xl bg-white/18 px-3.5 py-2.5 text-center text-white border border-white/25 shadow-[0_14px_26px_-14px_rgba(0,0,0,0.72)] transition-transform duration-300 hover:[transform:translateZ(14px)]"
+                        className="rounded-xl bg-gradient-to-br from-[#F58220] via-[#f48930] to-[#ec7416] px-3.5 py-2.5 text-center text-white border border-[#f6a057] shadow-[0_14px_26px_-14px_rgba(0,0,0,0.45)] transition-transform duration-300 hover:[transform:translateZ(14px)]"
                       >
                         <p className="text-[11px] uppercase tracking-wider text-white/80">{item.label}</p>
                         <p className="mt-0.5 text-sm font-semibold">{item.score}</p>
@@ -197,8 +197,8 @@ export default async function HomePage() {
       </header>
 
       {/* Methodology bar */}
-      <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-blue-50 border-b border-blue-200/80 py-3.5 px-4">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center gap-3">
+      <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-blue-50 border-b border-blue-200/80 py-4 px-4">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center gap-3 rounded-2xl border border-blue-200/70 bg-white/75 px-4 py-3 shadow-[0_14px_30px_-24px_rgba(37,99,235,0.45)]">
           <span className="bg-brand text-white text-xs font-bold px-2.5 py-1 rounded uppercase tracking-wide">
             How we review
           </span>
@@ -215,7 +215,7 @@ export default async function HomePage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-20 space-y-24 sm:space-y-28">
 
         {/* Categories */}
-        <section aria-labelledby="categories-heading">
+        <section aria-labelledby="categories-heading" className="relative rounded-3xl border border-gray-200/80 bg-gradient-to-b from-white to-[#fffaf5] p-6 sm:p-8 shadow-[0_22px_44px_-34px_rgba(15,31,61,0.5)]">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand mb-2">
             Software Categories
           </p>
@@ -231,10 +231,11 @@ export default async function HomePage() {
               <Link
                 key={cat.href}
                 href={cat.href}
-                className="group block bg-white border border-gray-200 rounded-2xl p-6 transition-all duration-300 relative overflow-hidden hover:-translate-y-1 hover:shadow-[0_18px_40px_-20px_rgba(14,42,106,0.45)] hover:border-blue-200"
+                className="group block bg-white/95 border border-gray-200 rounded-2xl p-6 transition-all duration-300 relative overflow-hidden hover:-translate-y-1.5 hover:shadow-[0_24px_48px_-22px_rgba(14,42,106,0.5)] hover:border-blue-200"
                 aria-label={`${cat.title} — ${cat.count}`}
               >
-                <div className="absolute top-0 left-0 right-0 h-0.5 bg-brand scale-x-0 group-hover:scale-x-100 transition-transform origin-left" aria-hidden="true" />
+                <div className="absolute inset-x-0 top-0 h-0.5 bg-brand scale-x-0 group-hover:scale-x-100 transition-transform origin-left" aria-hidden="true" />
+                <div className="pointer-events-none absolute -top-12 -right-12 h-28 w-28 rounded-full bg-brand/10 blur-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                 <div>
                   <div className="w-11 h-11 rounded-xl bg-brand-light text-[#F27F25] flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-105" aria-hidden="true">
                     <cat.icon className="w-5 h-5" />
@@ -259,7 +260,7 @@ export default async function HomePage() {
         </section>
 
         {/* How we review */}
-          <section className="bg-gradient-to-b from-gray-50 via-white to-white border border-gray-200 rounded-3xl p-8 sm:p-12 shadow-[0_16px_36px_-24px_rgba(15,31,61,0.45)]" aria-labelledby="how-heading">
+        <section className="bg-gradient-to-b from-gray-50 via-white to-white border border-gray-200 rounded-3xl p-8 sm:p-12 shadow-[0_20px_40px_-24px_rgba(15,31,61,0.5)]" aria-labelledby="how-heading">
           <p className="text-xs font-semibold uppercase tracking-widest text-brand mb-2">Our methodology</p>
           <h2 id="how-heading" className="text-3xl sm:text-4xl text-navy tracking-tight mb-2">
             How we independently review and rank software
@@ -285,7 +286,7 @@ export default async function HomePage() {
                 body: 'Rankings are based on weighted scores across our criteria — vendors cannot pay to improve their ranking. Sponsored placements are always clearly labelled.',
               },
             ].map(({ num, title, body }) => (
-              <div key={num} className="rounded-2xl border border-gray-200/80 bg-white p-5 sm:p-6">
+              <div key={num} className="rounded-2xl border border-gray-200/80 bg-white p-5 sm:p-6 shadow-[0_14px_30px_-24px_rgba(15,31,61,0.5)]">
                 <p className="font-serif text-5xl text-brand leading-none mb-3">{num}</p>
                 <h3 className="font-semibold text-navy mb-2">{title}</h3>
                 <p className="text-sm text-gray-500 leading-relaxed">{body}</p>
@@ -326,7 +327,7 @@ export default async function HomePage() {
         ) : null}
 
         {/* Expert team */}
-        <section aria-labelledby="team-heading">
+        <section aria-labelledby="team-heading" className="rounded-3xl border border-gray-200/80 bg-gradient-to-b from-white to-gray-50/60 p-6 sm:p-8 shadow-[0_18px_38px_-28px_rgba(15,31,61,0.45)]">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand mb-2">Our editorial team</p>
           <h2 id="team-heading" className="text-3xl sm:text-4xl text-navy tracking-tight mb-2">
             Reviews written by verified software experts
@@ -336,7 +337,7 @@ export default async function HomePage() {
           </p>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
             {TEAM.map(({ initials, name, role, exp }) => (
-              <div key={name} className="bg-white border border-gray-200 rounded-2xl p-5 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_36px_-22px_rgba(15,31,61,0.5)]">
+              <div key={name} className="bg-white border border-gray-200 rounded-2xl p-5 text-center transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_22px_40px_-22px_rgba(15,31,61,0.5)]">
                 <div
                   className="w-14 h-14 rounded-full bg-brand-light flex items-center justify-center text-brand text-lg font-semibold mx-auto mb-3"
                   aria-hidden="true"
@@ -378,7 +379,7 @@ export default async function HomePage() {
         {/* FAQ */}
         <HomeFaqSection faqs={FAQS} />
 
-        <section className="bg-gradient-to-b from-gray-50 to-white border border-gray-200 rounded-3xl p-6 sm:p-8 shadow-[0_14px_32px_-24px_rgba(15,31,61,0.5)]" aria-label="Additional resources">
+        <section className="bg-gradient-to-b from-gray-50 to-white border border-gray-200 rounded-3xl p-6 sm:p-8 shadow-[0_18px_36px_-24px_rgba(15,31,61,0.5)]" aria-label="Additional resources">
           <h2 className="text-2xl sm:text-3xl text-navy tracking-tight mb-3">Additional Resources</h2>
           <p className="text-sm text-gray-600 mb-4">
             Explore policy pages, planning resources, and company information.
@@ -397,7 +398,7 @@ export default async function HomePage() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="text-sm text-brand border border-brand/30 px-3 py-2 rounded-lg hover:bg-brand-light transition-all duration-200 hover:-translate-y-0.5"
+                className="text-sm text-brand border border-brand/30 bg-white px-3 py-2 rounded-lg hover:bg-brand-light transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_22px_-14px_rgba(14,42,106,0.35)]"
               >
                 {item.label}
               </Link>

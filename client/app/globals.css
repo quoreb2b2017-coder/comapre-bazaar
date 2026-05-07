@@ -452,15 +452,33 @@ a.cb-link-pending {
 .cb-hero-tilt {
   transform: perspective(1100px) rotateY(0deg) rotateX(0deg) rotateZ(0deg);
   transform-origin: center;
-  transition: transform 0.45s ease, box-shadow 0.45s ease;
+  transition: transform 0.45s ease, box-shadow 0.45s ease, filter 0.45s ease;
 }
 
 .cb-hero-tilt:hover {
-  transform: perspective(1100px) rotateY(-11deg) rotateX(3deg) rotateZ(-1.2deg) translateY(-2px);
+  transform: perspective(1300px) rotateY(-16deg) rotateX(6deg) rotateZ(-1.6deg) translateY(-3px);
+  filter: saturate(1.06) contrast(1.02);
 }
 
 .cb-hero-float {
-  animation: cb-hero-float 4.2s ease-in-out infinite;
+  animation: cb-hero-float 3.6s ease-in-out infinite;
+}
+
+@keyframes cb-hero-prism-move {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.cb-hero-prism::before {
+  background-size: 220% 220% !important;
+  animation: cb-hero-prism-move 7s ease-in-out infinite;
 }
 
 @media (max-width: 1023px) {

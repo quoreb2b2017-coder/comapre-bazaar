@@ -6,6 +6,7 @@ import { ComparisonTable } from '@/components/comparison/ComparisonTable'
 import { FaqAccordion } from '@/components/comparison/FaqAccordion'
 import { ComparisonSidebar } from '@/components/comparison/ComparisonSidebar'
 import { WinnerBanner } from '@/components/comparison/WinnerBanner'
+import { cn } from '@/lib/utils'
 
 interface ComparisonPageProps {
   data: ComparisonPageData
@@ -21,6 +22,19 @@ export function ComparisonPageTemplate({ data }: ComparisonPageProps) {
   const isPayrollPage = data.slug === 'payroll-software'
   const isCallCenterPage = data.slug === 'call-center'
   const isProjectManagementPage = data.slug === 'project-management'
+  const isMarketingTrio = isCrmPage || isEmailMarketingPage || isWebsiteBuilderPage
+  const isTechnologyHub = isVoipPage || isGpsPage
+  const isSalesHub = data.slug === 'sales-crm' || isCallCenterPage || isProjectManagementPage
+  const isHrHub = isEmployeePage || isPayrollPage
+  const smoothVariant: 'default' | 'marketing-smooth' | 'technology-smooth' | 'sales-smooth' | 'hr-smooth' = isMarketingTrio
+    ? 'marketing-smooth'
+    : isTechnologyHub
+      ? 'technology-smooth'
+      : isSalesHub
+        ? 'sales-smooth'
+        : isHrHub
+          ? 'hr-smooth'
+          : 'default'
   const showcaseTitle = isCrmPage
     ? 'CRM quick picks'
     : isEmailMarketingPage
@@ -136,7 +150,19 @@ export function ComparisonPageTemplate({ data }: ComparisonPageProps) {
   return (
     <>
       {/* Page header */}
-      <div className="bg-gray-50 border-b border-gray-200">
+      <div
+        className={
+          smoothVariant === 'marketing-smooth'
+            ? 'bg-gradient-to-br from-[#fff7ef] via-white to-[#fff3e6] border-b border-[#f3d6bd]'
+            : smoothVariant === 'technology-smooth'
+              ? 'bg-gradient-to-br from-[#eef6ff] via-white to-[#ecfeff] border-b border-[#bfdbfe]'
+              : smoothVariant === 'sales-smooth'
+                ? 'bg-gradient-to-br from-[#f3f0ff] via-white to-[#eef2ff] border-b border-[#c7d2fe]'
+                : smoothVariant === 'hr-smooth'
+                  ? 'bg-gradient-to-br from-[#ecfdf5] via-white to-[#effcf9] border-b border-[#a7f3d0]'
+                  : 'bg-gray-50 border-b border-gray-200'
+        }
+      >
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10">
           <Breadcrumb items={data.breadcrumbs} className="mb-4" />
 
@@ -162,9 +188,23 @@ export function ComparisonPageTemplate({ data }: ComparisonPageProps) {
                 {showcaseCards.map((card) => (
                   <article
                     key={card.name}
-                    className="bg-white border border-[#F27F25] rounded-2xl p-3 sm:p-4 shadow-sm h-full flex flex-col"
+                    className={cn(
+                      'rounded-2xl p-3 sm:p-4 h-full flex flex-col transition-all duration-300 hover:-translate-y-0.5',
+                      smoothVariant === 'marketing-smooth'
+                        ? 'bg-gradient-to-br from-white via-[#fff9f3] to-[#fff3e7] border border-[#f3c79b] shadow-[0_18px_34px_-26px_rgba(242,127,37,0.55)]'
+                        : smoothVariant === 'technology-smooth'
+                          ? 'bg-gradient-to-br from-white via-[#f4fbff] to-[#effbff] border border-[#93c5fd] shadow-[0_18px_34px_-26px_rgba(37,99,235,0.45)]'
+                          : smoothVariant === 'sales-smooth'
+                            ? 'bg-gradient-to-br from-white via-[#f7f5ff] to-[#f0efff] border border-[#a5b4fc] shadow-[0_18px_34px_-26px_rgba(79,70,229,0.45)]'
+                            : smoothVariant === 'hr-smooth'
+                              ? 'bg-gradient-to-br from-white via-[#f2fdf7] to-[#ecfdf5] border border-[#86efac] shadow-[0_18px_34px_-26px_rgba(16,185,129,0.4)]'
+                              : 'bg-white border border-[#F27F25] shadow-sm'
+                    )}
                   >
-                    <h3 className="text-xl sm:text-2xl font-semibold text-navy leading-tight mb-1 break-words">
+                    <h3
+                      className="text-lg sm:text-xl font-semibold text-navy leading-tight mb-1 truncate whitespace-nowrap"
+                      title={card.name}
+                    >
                       {card.name}
                     </h3>
                     <p className="text-xs text-gray-500 min-h-[30px] sm:min-h-[34px]">{card.subtitle}</p>
@@ -195,13 +235,26 @@ export function ComparisonPageTemplate({ data }: ComparisonPageProps) {
       </div>
 
       {/* Body */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+      <div
+        className={cn(
+          'max-w-7xl mx-auto px-4 sm:px-6 py-10',
+          smoothVariant === 'marketing-smooth'
+            ? 'bg-gradient-to-b from-white to-[#fffaf5]'
+            : smoothVariant === 'technology-smooth'
+              ? 'bg-gradient-to-b from-white to-[#f6fbff]'
+              : smoothVariant === 'sales-smooth'
+                ? 'bg-gradient-to-b from-white to-[#f7f7ff]'
+                : smoothVariant === 'hr-smooth'
+                  ? 'bg-gradient-to-b from-white to-[#f4fdf8]'
+                  : ''
+        )}
+      >
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-10 items-start">
 
           {/* Main content */}
           <div>
             {/* Winner banner */}
-            <WinnerBanner summary={data.winnerSummary} />
+            <WinnerBanner summary={data.winnerSummary} variant={smoothVariant} />
 
             {/* Products */}
             <section aria-labelledby="picks-heading">
@@ -218,7 +271,11 @@ export function ComparisonPageTemplate({ data }: ComparisonPageProps) {
 
               <div className="space-y-6">
                 {data.products.map((product) => (
-                  <ProductCard key={product.id} product={product} />
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    variant={smoothVariant}
+                  />
                 ))}
               </div>
             </section>

@@ -14,14 +14,37 @@ const EMOJI_REGEX = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu
 
 interface ProductCardProps {
   product: Product
+  variant?: 'default' | 'marketing-smooth' | 'technology-smooth' | 'sales-smooth' | 'hr-smooth'
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, variant = 'default' }: ProductCardProps) {
+  const isMarketingSmooth = variant === 'marketing-smooth'
+  const isTechnologySmooth = variant === 'technology-smooth'
+  const isSalesSmooth = variant === 'sales-smooth'
+  const isHrSmooth = variant === 'hr-smooth'
+
+  const smoothHeaderBg = isMarketingSmooth
+    ? 'bg-gradient-to-r from-[#fff7ef] via-white to-[#fff4e8]'
+    : isTechnologySmooth
+      ? 'bg-gradient-to-r from-[#eef6ff] via-white to-[#ecfeff]'
+      : isSalesSmooth
+        ? 'bg-gradient-to-r from-[#f3f0ff] via-white to-[#eef2ff]'
+        : 'bg-gradient-to-r from-[#eefcf5] via-white to-[#effcf9]'
+
+  const smoothFooterBg = isMarketingSmooth
+    ? 'bg-gradient-to-r from-white to-orange-50/60'
+    : isTechnologySmooth
+      ? 'bg-gradient-to-r from-white to-cyan-50/60'
+      : isSalesSmooth
+        ? 'bg-gradient-to-r from-white to-indigo-50/60'
+        : 'bg-gradient-to-r from-white to-emerald-50/60'
   return (
     <article
       id={product.id}
       className={cn(
-        'border rounded-2xl overflow-hidden transition-shadow hover:shadow-lg',
+        isMarketingSmooth || isTechnologySmooth || isSalesSmooth || isHrSmooth
+          ? 'border rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_24px_44px_-24px_rgba(15,31,61,0.5)] bg-white/95 backdrop-blur-sm'
+          : 'border rounded-2xl overflow-hidden transition-shadow hover:shadow-lg',
         product.isTopPick ? 'border-blue-300' : 'border-gray-200'
       )}
       itemScope
@@ -30,10 +53,18 @@ export function ProductCard({ product }: ProductCardProps) {
       <meta itemProp="applicationCategory" content="BusinessApplication" />
 
       {/* Header */}
-      <div className="bg-gray-50 border-b border-gray-200 px-6 py-5 flex flex-wrap items-center gap-4">
+      <div className={cn(
+        'border-b border-gray-200 px-6 py-5 flex flex-wrap items-center gap-4',
+        isMarketingSmooth || isTechnologySmooth || isSalesSmooth || isHrSmooth ? smoothHeaderBg : 'bg-gray-50'
+      )}>
         {/* Logo */}
         <div
-          className="w-13 h-13 rounded-xl bg-white border border-gray-200 flex items-center justify-center font-bold text-sm text-brand flex-shrink-0"
+          className={cn(
+            'w-13 h-13 rounded-xl border border-gray-200 flex items-center justify-center font-bold text-sm text-brand flex-shrink-0',
+            isMarketingSmooth || isTechnologySmooth || isSalesSmooth || isHrSmooth
+              ? 'bg-gradient-to-br from-white to-gray-50 shadow-sm'
+              : 'bg-white'
+          )}
           aria-hidden="true"
           style={{ width: 52, height: 52 }}
         >
@@ -108,7 +139,10 @@ export function ProductCard({ product }: ProductCardProps) {
       </div>
 
       {/* Footer */}
-      <div className="border-t border-gray-200 px-6 py-4 flex flex-wrap items-center justify-between gap-3">
+      <div className={cn(
+        'border-t border-gray-200 px-6 py-4 flex flex-wrap items-center justify-between gap-3',
+        isMarketingSmooth || isTechnologySmooth || isSalesSmooth || isHrSmooth ? smoothFooterBg : ''
+      )}>
         <div>
           <span className="block text-xs text-gray-400">{product.pricingLabel}</span>
           <span className="text-xl font-bold text-navy">{product.pricingAmount}</span>
