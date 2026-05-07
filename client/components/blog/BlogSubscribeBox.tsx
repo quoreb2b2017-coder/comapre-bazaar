@@ -59,36 +59,6 @@ export function BlogSubscribeBox({ slug, compact = false, variant = 'default' }:
     }
   }
 
-  const unsubscribe = async () => {
-    const v = email.trim().toLowerCase()
-    if (!EMAIL_RE.test(v)) {
-      setOk(false)
-      setMsg('Enter the subscribed email first to unsubscribe.')
-      return
-    }
-    setLoading(true)
-    setMsg('')
-    setOk(null)
-    try {
-      const res = await fetch('/api/v1/blog-admin/public/blogs/unsubscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: v }),
-      })
-      const data = await res.json()
-      if (!res.ok || !data?.success) throw new Error(data?.message || 'Unsubscribe failed')
-      setOk(true)
-      setIsSubscribed(false)
-      setMsg('Unsubscribed successfully.')
-      if (typeof window !== 'undefined') window.localStorage.removeItem(localKey)
-    } catch (err) {
-      setOk(false)
-      setMsg(err instanceof Error ? err.message : 'Unsubscribe failed')
-    } finally {
-      setLoading(false)
-    }
-  }
-
   const editorial = variant === 'editorial'
   const shell =
     editorial && compact
@@ -129,22 +99,8 @@ export function BlogSubscribeBox({ slug, compact = false, variant = 'default' }:
             editorial ? 'rounded-sm bg-brand' : 'rounded-xl bg-brand'
           }`}
         >
-          {loading ? 'Saving...' : isSubscribed ? 'Subscribed' : 'Subscribe'}
+          {loading ? 'Saving...' : isSubscribed ? 'Already Subscribed' : 'Subscribe'}
         </button>
-        {isSubscribed ? (
-          <button
-            type="button"
-            onClick={unsubscribe}
-            disabled={loading}
-            className={`h-11 w-full px-5 text-sm font-semibold transition disabled:opacity-60 ${
-              editorial
-                ? 'rounded-sm border border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100'
-                : 'rounded-xl border border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100'
-            }`}
-          >
-            {loading ? 'Saving...' : 'Unsubscribe'}
-          </button>
-        ) : null}
       </form>
       {msg ? (
         <p className={`mt-3 text-sm ${ok ? 'text-emerald-700' : 'text-red-600'}`}>
