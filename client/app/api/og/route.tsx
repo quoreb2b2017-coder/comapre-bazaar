@@ -1,6 +1,7 @@
 import { ImageResponse } from 'next/og'
 import { blogPosts } from '@/data/blogPosts'
 import { fetchPublishedBlogBySlug, plainBlogExcerpt } from '@/lib/blogCms'
+import { stripGradientForSlug } from '@/lib/blogCms'
 
 export const runtime = 'edge'
 
@@ -22,6 +23,11 @@ export async function GET(req: Request) {
     140
   )
   const category = (cms?.tags && cms.tags[0]) || cms?.topic || fallback?.category || 'Editorial'
+  const strip = fallback
+    ? { stripFrom: fallback.stripFrom, stripTo: fallback.stripTo }
+    : stripGradientForSlug(slug || title.toLowerCase().replace(/\s+/g, '-'))
+  const accentFrom = strip.stripFrom || '#0B2A6F'
+  const accentTo = strip.stripTo || '#F58220'
 
   const image = new ImageResponse(
     (
@@ -33,7 +39,7 @@ export async function GET(req: Request) {
           flexDirection: 'column',
           justifyContent: 'space-between',
           background:
-            'radial-gradient(circle at 0% 0%, #ffe5cc 0%, #fff4e8 30%, #ffffff 68%), linear-gradient(180deg, #ffffff 0%, #fffaf5 100%)',
+            `radial-gradient(circle at 0% 0%, ${accentFrom}22 0%, ${accentTo}1f 30%, #ffffff 68%), linear-gradient(180deg, #ffffff 0%, #fffaf5 100%)`,
           padding: '56px 64px',
           color: '#0f172a',
         }}
@@ -44,9 +50,9 @@ export async function GET(req: Request) {
               display: 'inline-flex',
               borderRadius: 999,
               padding: '8px 16px',
-              background: '#fff3e7',
-              border: '1px solid #f3c79b',
-              color: '#d86e1e',
+              background: `${accentFrom}1a`,
+              border: `1px solid ${accentFrom}66`,
+              color: accentFrom,
               fontSize: 24,
               fontWeight: 700,
             }}
@@ -71,7 +77,7 @@ export async function GET(req: Request) {
             style={{
               fontSize: 22,
               color: '#ffffff',
-              background: '#f27f25',
+              background: `linear-gradient(90deg, ${accentFrom} 0%, ${accentTo} 100%)`,
               borderRadius: 999,
               padding: '8px 16px',
               fontWeight: 700,

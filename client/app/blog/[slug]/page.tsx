@@ -19,6 +19,7 @@ import { BlogSubscribeBox } from '@/components/blog/BlogSubscribeBox'
 import { BlogShareBar } from '@/components/blog/BlogShareBar'
 
 type Props = { params: { slug: string } }
+const SITE_URL = 'https://www.compare-bazaar.com'
 
 export const dynamicParams = true
 
@@ -72,17 +73,41 @@ function addHeadingAnchors(html: string): { html: string; toc: Array<{ id: strin
   return { html: out, toc }
 }
 
+function toAbsoluteMediaUrl(raw: string): string {
+  const v = String(raw || '').trim()
+  if (!v) return ''
+  if (v.startsWith('http://') || v.startsWith('https://')) return v
+  if (v.startsWith('//')) return `https:${v}`
+  return `${SITE_URL}${v.startsWith('/') ? v : `/${v}`}`
+}
+
+function extractHeroBannerImageUrl(html: string): string {
+  const s = String(html || '')
+  if (!s) return ''
+
+  // Prefer explicit <img src="..."> inside CMS hero
+  const imgMatch = s.match(/<img[^>]*\s+src=["']([^"']+)["'][^>]*>/i)
+  if (imgMatch?.[1]) return toAbsoluteMediaUrl(imgMatch[1])
+
+  // Fallback: inline CSS background-image:url(...)
+  const bgMatch = s.match(/background(?:-image)?\s*:\s*url\((['"]?)([^'")]+)\1\)/i)
+  if (bgMatch?.[2]) return toAbsoluteMediaUrl(bgMatch[2])
+
+  return ''
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const cms = await fetchPublishedBlogBySlug(params.slug)
   if (cms) {
     const headline = (cms.metaTitle && cms.metaTitle.trim()) || cms.title
     const rawDesc = cms.metaDescription || cms.excerpt || formatShareDescription(cms.content?.slice(0, 600))
     const kw = [...new Set([...(cms.keywords || []), ...(cms.tags || [])])].slice(0, 24)
+    const bannerOg = extractHeroBannerImageUrl(cms.content)
     return buildBlogShareMetadata({
       title: headline,
       description: rawDesc,
       canonicalPath: `/blog/${cms.slug}`,
-      ogImageUrl: `https://www.compare-bazaar.com/api/og?slug=${encodeURIComponent(cms.slug)}`,
+      ogImageUrl: bannerOg || `https://www.compare-bazaar.com/api/og?slug=${encodeURIComponent(cms.slug)}`,
       publishedAt: cms.publishedAt ?? cms.approvedAt ?? undefined,
       modifiedAt: cms.updatedAt ?? cms.publishedAt ?? cms.approvedAt,
       section: (cms.tags && cms.tags[0]) || cms.topic,
