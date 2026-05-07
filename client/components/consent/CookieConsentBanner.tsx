@@ -225,10 +225,9 @@ export function CookieConsentBanner() {
 
             <div className="flex flex-col gap-3 pr-7">
               <div className="min-w-0 flex-1">
-                <p className="text-[14px] leading-[1.45] text-gray-600 sm:text-[15px]">
-                  This website stores data such as cookies to enable essential site functionality, as well as marketing,
-                  personalization, and analytics. You may change your settings at any time or accept the default
-                  settings. You may close this banner to continue with only essential cookies.{' '}
+                <p className="max-w-4xl text-[14px] leading-[1.45] text-gray-600 sm:text-[15px]">
+                  We use cookies for essential functionality, analytics, and marketing. You can accept all,
+                  reject non-essential cookies, or customize your preferences at any time.{' '}
                   <Link href="/privacy-policy" className="underline underline-offset-2 text-gray-600 hover:text-gray-900">
                     Privacy Policy
                   </Link>
@@ -248,7 +247,7 @@ export function CookieConsentBanner() {
                 </p>
               </div>
 
-              <div className="mt-1 flex w-full flex-row flex-wrap gap-2">
+              <div className="mt-2 flex w-full flex-row flex-wrap items-center justify-center gap-3">
                 <button
                   type="button"
                   onClick={savePreferences}
