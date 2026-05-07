@@ -101,28 +101,28 @@ export function CookieConsentBanner() {
     commit(analyticsOn, marketingOn)
   }, [analyticsOn, marketingOn, commit])
 
-  if (!mounted) return null
-
   const showBar = !stored
   const showPrefsPanel = panel === 'prefs'
 
   useEffect(() => {
-    if (!showBar || showPrefsPanel) {
+    if (!mounted || !showBar || showPrefsPanel) {
       setBarAnimatedIn(false)
       return
     }
     const raf = window.requestAnimationFrame(() => setBarAnimatedIn(true))
     return () => window.cancelAnimationFrame(raf)
-  }, [showBar, showPrefsPanel])
+  }, [mounted, showBar, showPrefsPanel])
 
   useEffect(() => {
-    if (!showPrefsPanel) {
+    if (!mounted || !showPrefsPanel) {
       setPrefsAnimatedIn(false)
       return
     }
     const raf = window.requestAnimationFrame(() => setPrefsAnimatedIn(true))
     return () => window.cancelAnimationFrame(raf)
-  }, [showPrefsPanel])
+  }, [mounted, showPrefsPanel])
+
+  if (!mounted) return null
 
   if (!showBar && !showPrefsPanel) return null
 
