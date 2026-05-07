@@ -457,7 +457,6 @@ export const CookiesReport = () => {
                       </th>
                       <th className="py-2 px-2 font-semibold whitespace-nowrap">A/M</th>
                       <th className="py-2 px-2 font-semibold whitespace-nowrap">Country</th>
-                      <th className="py-2 px-2 font-semibold whitespace-nowrap">Region</th>
                       <th className="py-2 px-2 font-semibold whitespace-nowrap">Pseudonymized IP</th>
                       <th className="py-2 px-2 font-semibold whitespace-nowrap">ISP</th>
                       <th className="py-2 px-2 font-semibold whitespace-nowrap">TZ</th>
@@ -473,7 +472,7 @@ export const CookiesReport = () => {
                   <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                     {eventsLoading ? (
                       <tr>
-                        <td colSpan={18} className="py-10 text-center text-gray-500">
+                        <td colSpan={17} className="py-10 text-center text-gray-500">
                           <Loader2 className="w-4 h-4 animate-spin inline mr-2" /> Loading events...
                         </td>
                       </tr>
@@ -497,9 +496,6 @@ export const CookiesReport = () => {
                             : '—'}
                         </td>
                         <td className="py-2 px-2 whitespace-nowrap">{e.marketingMeta?.country || '—'}</td>
-                        <td className="py-2 px-2 whitespace-nowrap max-w-[72px] truncate" title={e.marketingMeta?.region}>
-                          {e.marketingMeta?.region || '—'}
-                        </td>
                         <td
                           className="py-2 px-2 whitespace-nowrap font-mono text-[10px] max-w-[170px] truncate"
                           title={e.consentSnapshot?.pseudonymizedIp || e.marketingMeta?.ip}
@@ -533,7 +529,7 @@ export const CookiesReport = () => {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={18} className="py-10 text-center text-gray-500">
+                        <td colSpan={17} className="py-10 text-center text-gray-500">
                           No events in selected window.
                         </td>
                       </tr>
