@@ -298,17 +298,11 @@ export const CookiesReport = () => {
               <ReportPanel title="ISP providers" description="Derived from visitor IP lookup.">
                 <DimTable rows={(mk.isps || []).map((r) => ({ label: r.isp, views: r.views }))} colLabel="ISP" />
               </ReportPanel>
-              <ReportPanel title="Connection" description="Network Information API.">
-                <DimTable rows={(mk.connectionTypes || []).map((r) => ({ label: r.type, views: r.views }))} colLabel="Type" />
-              </ReportPanel>
               <ReportPanel title="Email domains" description="Domain only from URL email prefills, no full email stored.">
                 <DimTable rows={(mk.emailDomains || []).map((r) => ({ label: r.domain, views: r.views }))} colLabel="Domain" />
               </ReportPanel>
               <ReportPanel title="Regions (edge)" description="Sub-country region header when present.">
                 <DimTable rows={(mk.regions || []).map((r) => ({ label: r.region, views: r.views }))} colLabel="Region" />
-              </ReportPanel>
-              <ReportPanel title="Cities (edge)" description="City header when present.">
-                <DimTable rows={(mk.cities || []).map((r) => ({ label: r.city, views: r.views }))} colLabel="City" />
               </ReportPanel>
             </div>
           </section>
