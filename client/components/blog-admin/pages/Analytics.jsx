@@ -145,9 +145,6 @@ function buildMetricsCatalog(derived) {
     {
       category: '3. Affiliate & Revenue Analytics',
       metrics: [
-        { name: 'Affiliate clicks by page', priority: 'high', status: hasAffiliateClicks ? 'live' : customReadyStatus },
-        { name: 'Click-through rate (CTR)', priority: 'high', status: hasAffiliateClicks ? 'partial' : customReadyStatus },
-        { name: 'Conversion rate by vendor', priority: 'high', status: customReadyStatus },
         { name: 'Revenue per visitor (RPV)', priority: 'high', status: 'setup' },
         { name: 'Monthly affiliate revenue', priority: 'high', status: 'setup' },
         { name: 'Revenue by category', priority: 'high', status: 'setup' },
@@ -167,7 +164,6 @@ function buildMetricsCatalog(derived) {
         { name: 'Domain authority trend', priority: 'high', status: 'setup' },
         { name: 'Page 1 vs page 2 keywords', priority: 'high', status: 'setup' },
         { name: 'Featured snippet wins', priority: 'medium', status: 'setup' },
-        { name: 'Core Web Vitals', priority: 'medium', status: hasWebVitals ? 'live' : customReadyStatus },
         { name: 'Competitor keyword gap', priority: 'advanced', status: 'setup' },
       ],
     },
