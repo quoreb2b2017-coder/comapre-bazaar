@@ -17,6 +17,12 @@ function postConsentEvent(consent: Pick<ConsentPreferences, 'analytics' | 'marke
   const sessionId = getOrCreateVisitorId()
   if (!sessionId) return
   const url = siteAnalyticsEndpoint()
+  const locale = typeof navigator !== 'undefined' ? navigator.language || '' : ''
+  const timeZone =
+    typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone || '' : ''
+  const primaryLanguage = locale ? locale.split('-')[0] : ''
+  const consentedDomain =
+    typeof window !== 'undefined' ? window.location.hostname || 'www.compare-bazaar.com' : 'www.compare-bazaar.com'
   void fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -28,6 +34,12 @@ function postConsentEvent(consent: Pick<ConsentPreferences, 'analytics' | 'marke
       consent: {
         analytics: consent.analytics,
         marketing: consent.marketing,
+      },
+      consentedDomain,
+      marketing: {
+        locale,
+        timeZone,
+        primaryLanguage,
       },
     }),
     credentials: 'omit',

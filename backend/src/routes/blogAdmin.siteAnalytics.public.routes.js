@@ -267,6 +267,13 @@ function pickRegion(req) {
   return sanitizeStr(v, 48);
 }
 
+function countryFromLocale(localeRaw) {
+  const s = sanitizeStr(localeRaw, 48);
+  if (!s) return "";
+  const m = s.match(/[-_]([A-Za-z]{2})\b/);
+  return m ? m[1].toUpperCase() : "";
+}
+
 function resolveConsentedDomain(req, body = {}) {
   const fromBody = sanitizeStr(body.consentedDomain, 160).toLowerCase();
   if (fromBody) return fromBody;
@@ -308,11 +315,11 @@ async function buildMarketingMeta(body, req, marketingAllowed) {
   const m = body.marketing || {};
   const ip = resolveClientIp(req);
   const ipGeo = await lookupIpGeo(ip);
-  const country = pickCountry(req) || ipGeo.country;
+  const locale = sanitizeStr(m.locale, 48);
+  const country = pickCountry(req) || ipGeo.country || countryFromLocale(locale);
   const cityEdge = pickCity(req) || ipGeo.city;
   const regionEdge = pickRegion(req);
 
-  const locale = sanitizeStr(m.locale, 48);
   const deviceCategory = sanitizeDevice(m.deviceCategory);
   const viewportWidth = clampInt(m.viewportWidth, 0, 8192);
   const timeZone = sanitizeStr(m.timeZone, 64);
