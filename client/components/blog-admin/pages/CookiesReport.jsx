@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useOutletContext } from 'react-router-dom'
-import { Cookie, Download, Loader2, Radio } from 'lucide-react'
+import { Cookie, Download, Loader2 } from 'lucide-react'
 import {
   ResponsiveContainer,
   ComposedChart,
@@ -445,7 +445,7 @@ export const CookiesReport = () => {
               description="50 records per page. Scroll horizontally on small screens."
             >
               <div className="overflow-x-auto overscroll-x-contain">
-                <table className="w-full text-[11px] min-w-[1500px]">
+                <table className="w-full text-[11px] min-w-[1360px]">
                   <thead>
                     <tr className="text-left uppercase tracking-wide text-gray-500 bg-gray-50 dark:bg-gray-800/50 border-b border-gray-100 dark:border-gray-800">
                       <th className="py-2 px-2 font-semibold whitespace-nowrap">Time</th>
@@ -461,7 +461,6 @@ export const CookiesReport = () => {
                       <th className="py-2 px-2 font-semibold whitespace-nowrap">Consented domain</th>
                       <th className="py-2 px-2 font-semibold whitespace-nowrap">Country</th>
                       <th className="py-2 px-2 font-semibold whitespace-nowrap">Region</th>
-                      <th className="py-2 px-2 font-semibold whitespace-nowrap">City</th>
                       <th className="py-2 px-2 font-semibold whitespace-nowrap">Pseudonymized IP</th>
                       <th className="py-2 px-2 font-semibold whitespace-nowrap">ISP</th>
                       <th className="py-2 px-2 font-semibold whitespace-nowrap">TZ</th>
@@ -471,9 +470,6 @@ export const CookiesReport = () => {
                       <th className="py-2 px-2 font-semibold whitespace-nowrap">Email domain</th>
                       <th className="py-2 px-2 font-semibold whitespace-nowrap">Email Δ</th>
                       <th className="py-2 px-2 font-semibold whitespace-nowrap">Dev</th>
-                      <th className="py-2 px-2 font-semibold whitespace-nowrap">
-                        <Radio className="w-3 h-3 inline opacity-60" aria-hidden />
-                      </th>
                       <th className="py-2 px-2 font-semibold">UTM</th>
                       <th className="py-2 px-2 font-semibold">UA</th>
                     </tr>
@@ -481,7 +477,7 @@ export const CookiesReport = () => {
                   <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                     {eventsLoading ? (
                       <tr>
-                        <td colSpan={24} className="py-10 text-center text-gray-500">
+                        <td colSpan={22} className="py-10 text-center text-gray-500">
                           <Loader2 className="w-4 h-4 animate-spin inline mr-2" /> Loading events...
                         </td>
                       </tr>
@@ -518,9 +514,6 @@ export const CookiesReport = () => {
                         <td className="py-2 px-2 whitespace-nowrap max-w-[72px] truncate" title={e.marketingMeta?.region}>
                           {e.marketingMeta?.region || '—'}
                         </td>
-                        <td className="py-2 px-2 whitespace-nowrap max-w-[80px] truncate" title={e.marketingMeta?.city}>
-                          {e.marketingMeta?.city || '—'}
-                        </td>
                         <td
                           className="py-2 px-2 whitespace-nowrap font-mono text-[10px] max-w-[170px] truncate"
                           title={e.consentSnapshot?.pseudonymizedIp || e.marketingMeta?.ip}
@@ -547,7 +540,6 @@ export const CookiesReport = () => {
                         </td>
                         <td className="py-2 px-2 whitespace-nowrap">{e.marketingMeta?.emailPrefillHint ? 'yes' : '—'}</td>
                         <td className="py-2 px-2 whitespace-nowrap">{e.marketingMeta?.deviceCategory || '—'}</td>
-                        <td className="py-2 px-2 whitespace-nowrap text-gray-500">{e.marketingMeta?.connectionEffectiveType || '—'}</td>
                         <td className="py-2 px-2 max-w-[120px] truncate" title={formatSessionUtm(e.marketingMeta)}>
                           {formatSessionUtm(e.marketingMeta)}
                         </td>
@@ -558,7 +550,7 @@ export const CookiesReport = () => {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={24} className="py-10 text-center text-gray-500">
+                        <td colSpan={22} className="py-10 text-center text-gray-500">
                           No events in selected window.
                         </td>
                       </tr>

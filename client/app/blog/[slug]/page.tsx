@@ -198,10 +198,12 @@ function RelatedBlock({
 
 function BlogTitlesRail({
   currentSlug,
+  currentTitle,
   toc,
   latest,
 }: {
   currentSlug: string
+  currentTitle: string
   toc: Array<{ id: string; label: string }>
   latest: Array<{ slug: string; title: string }>
 }) {
@@ -255,6 +257,7 @@ function BlogTitlesRail({
         </Link>
       </div>
       <BlogSubscribeBox slug={currentSlug} compact variant="editorial" />
+      <BlogShareBar title={currentTitle} slug={currentSlug} />
     </aside>
   )
 }
@@ -341,12 +344,10 @@ async function CmsBlogArticle({ cms }: { cms: CmsBlogDetail }) {
               </p>
             ) : null}
             {metaRow}
-            <BlogShareBar title={headline} slug={cms.slug} />
           </header>
         ) : (
           <div className={`${measureClass} ${bodyInsetClass}`}>
             {metaRow}
-            <BlogShareBar title={headline} slug={cms.slug} />
           </div>
         )}
 
@@ -357,7 +358,7 @@ async function CmsBlogArticle({ cms }: { cms: CmsBlogDetail }) {
         ) : null}
 
         <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-[minmax(0,48rem)_minmax(220px,300px)] lg:items-stretch lg:gap-14 xl:gap-16">
-          <article className={`${measureClass} ${bodyInsetClass} flex min-w-0 flex-col`}>
+          <article className={`${measureClass} ${bodyInsetClass} order-2 lg:order-1 flex min-w-0 flex-col`}>
             <div
               className={`blog-cms-html prose prose-lg max-w-none text-gray-700 prose-headings:scroll-mt-28 prose-headings:font-serif prose-headings:tracking-tight prose-headings:text-navy prose-h2:mt-12 prose-h2:border-b prose-h2:border-gray-100 prose-h2:pb-3 prose-h2:text-[1.35rem] prose-h3:text-[1.2rem] prose-p:text-[17px] prose-p:leading-[1.7] prose-li:marker:text-gray-300${hasHeroBanner ? ' blog-cms-after-hero' : ''}`}
               dangerouslySetInnerHTML={{ __html: anchoredBodyHtml }}
@@ -392,8 +393,8 @@ async function CmsBlogArticle({ cms }: { cms: CmsBlogDetail }) {
               </Link>
             </nav>
           </article>
-          <div className="h-full">
-            <BlogTitlesRail currentSlug={cms.slug} toc={toc} latest={latestSidebar} />
+          <div className="order-1 lg:order-2 h-full">
+            <BlogTitlesRail currentSlug={cms.slug} currentTitle={headline} toc={toc} latest={latestSidebar} />
           </div>
         </div>
       </div>
@@ -479,11 +480,10 @@ export default async function BlogPostPage({ params }: Props) {
               <span className="text-gray-300">·</span>
               <span>{post.authorName}</span>
             </div>
-            <BlogShareBar title={post.title} slug={post.slug} />
           </header>
 
           <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-[minmax(0,48rem)_minmax(220px,300px)] lg:items-stretch lg:gap-14 xl:gap-16">
-            <article className="mx-auto min-w-0 w-full max-w-3xl lg:mx-0 lg:max-w-none">
+            <article className="order-2 lg:order-1 mx-auto min-w-0 w-full max-w-3xl lg:mx-0 lg:max-w-none">
               <section className="mb-14 border-b border-gray-100 pb-10">
                 <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-400">Summary</p>
                 <h2 className="mb-5 font-serif text-xl text-navy">Key takeaways</h2>
@@ -534,8 +534,8 @@ export default async function BlogPostPage({ params }: Props) {
               </nav>
             </article>
 
-            <div className="h-full">
-              <BlogTitlesRail currentSlug={post.slug} toc={toc} latest={latestSidebar} />
+            <div className="order-1 lg:order-2 h-full">
+              <BlogTitlesRail currentSlug={post.slug} currentTitle={post.title} toc={toc} latest={latestSidebar} />
             </div>
           </div>
         </div>
