@@ -3,8 +3,8 @@ import { useOutletContext } from 'react-router-dom'
 import { Cookie, Download, Loader2, Radio } from 'lucide-react'
 import {
   ResponsiveContainer,
-  AreaChart,
-  Area,
+  ComposedChart,
+  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -207,13 +207,7 @@ export const CookiesReport = () => {
                 <div className="h-[260px] p-4 pt-2">
                   {chartDaily.length ? (
                     <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={chartDaily} margin={{ top: 8, right: 8, left: -8, bottom: 0 }}>
-                        <defs>
-                          <linearGradient id="cookieViewsGrad2" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#1d4ed8" stopOpacity={0.2} />
-                            <stop offset="95%" stopColor="#1d4ed8" stopOpacity={0} />
-                          </linearGradient>
-                        </defs>
+                      <ComposedChart data={chartDaily} margin={{ top: 8, right: 8, left: -8, bottom: 0 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" opacity={0.9} className="dark:stroke-gray-600" />
                         <XAxis dataKey="day" tick={{ fontSize: 10, fill: '#94a3b8' }} tickLine={false} axisLine={false} />
                         <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} tickLine={false} axisLine={false} allowDecimals={false} width={36} />
@@ -222,9 +216,17 @@ export const CookiesReport = () => {
                           labelFormatter={(l) => `Day ${l}`}
                         />
                         <Legend wrapperStyle={{ fontSize: '11px' }} />
-                        <Area type="monotone" dataKey="views" name="Views" stroke="#1d4ed8" strokeWidth={2} fill="url(#cookieViewsGrad2)" dot={false} />
-                        <Area type="monotone" dataKey="visitors" name="Visitors" stroke="#059669" strokeWidth={1.8} fill="none" dot={false} />
-                      </AreaChart>
+                        <Bar dataKey="views" name="Views" fill="#1d4ed8" radius={[4, 4, 0, 0]} maxBarSize={20} />
+                        <Line
+                          type="monotone"
+                          dataKey="visitors"
+                          name="Visitors"
+                          stroke="#059669"
+                          strokeWidth={2}
+                          dot={{ r: 2 }}
+                          activeDot={{ r: 4 }}
+                        />
+                      </ComposedChart>
                     </ResponsiveContainer>
                   ) : (
                     <div className="h-full flex items-center justify-center text-sm text-gray-500">No daily data.</div>
@@ -322,15 +324,6 @@ export const CookiesReport = () => {
               </ReportPanel>
               <ReportPanel title="UTM contents" description="Session utm_content.">
                 <DimTable rows={(mk.utmContents || []).map((r) => ({ label: r.content, views: r.views }))} colLabel="Content" />
-              </ReportPanel>
-              <ReportPanel title="UTM terms" description="Session utm_term.">
-                <DimTable rows={(mk.utmTerms || []).map((r) => ({ label: r.term, views: r.views }))} colLabel="Term" />
-              </ReportPanel>
-              <ReportPanel title="First-touch campaigns" description="From cb_attr first landing.">
-                <DimTable rows={(mk.firstTouchCampaigns || []).map((r) => ({ label: r.campaign, views: r.views }))} colLabel="Campaign" />
-              </ReportPanel>
-              <ReportPanel title="First-touch sources" description="First-touch utm_source (cb_attr).">
-                <DimTable rows={(mk.firstTouchSources || []).map((r) => ({ label: r.source, views: r.views }))} colLabel="Source" />
               </ReportPanel>
               <ReportPanel title="First-touch landing paths" description="Landing path that set attribution cookie.">
                 <DimTable rows={(mk.firstTouchLandingPaths || []).map((r) => ({ label: r.path, views: r.views }))} colLabel="Path" />
