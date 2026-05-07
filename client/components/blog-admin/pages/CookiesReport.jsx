@@ -301,9 +301,6 @@ export const CookiesReport = () => {
               <ReportPanel title="Email domains" description="Domain only from URL email prefills, no full email stored.">
                 <DimTable rows={(mk.emailDomains || []).map((r) => ({ label: r.domain, views: r.views }))} colLabel="Domain" />
               </ReportPanel>
-              <ReportPanel title="Regions (edge)" description="Sub-country region header when present.">
-                <DimTable rows={(mk.regions || []).map((r) => ({ label: r.region, views: r.views }))} colLabel="Region" />
-              </ReportPanel>
             </div>
           </section>
 
@@ -334,15 +331,6 @@ export const CookiesReport = () => {
               </ReportPanel>
               <ReportPanel title="First-touch sources" description="First-touch utm_source (cb_attr).">
                 <DimTable rows={(mk.firstTouchSources || []).map((r) => ({ label: r.source, views: r.views }))} colLabel="Source" />
-              </ReportPanel>
-              <ReportPanel title="First-touch mediums" description="First-touch utm_medium (cb_attr).">
-                <DimTable rows={(mk.firstTouchMediums || []).map((r) => ({ label: r.medium, views: r.views }))} colLabel="Medium" />
-              </ReportPanel>
-              <ReportPanel title="First-touch contents" description="First-touch utm_content (cb_attr).">
-                <DimTable rows={(mk.firstTouchContents || []).map((r) => ({ label: r.content, views: r.views }))} colLabel="Content" />
-              </ReportPanel>
-              <ReportPanel title="First-touch terms" description="First-touch utm_term (cb_attr).">
-                <DimTable rows={(mk.firstTouchTerms || []).map((r) => ({ label: r.term, views: r.views }))} colLabel="Term" />
               </ReportPanel>
               <ReportPanel title="First-touch landing paths" description="Landing path that set attribution cookie.">
                 <DimTable rows={(mk.firstTouchLandingPaths || []).map((r) => ({ label: r.path, views: r.views }))} colLabel="Path" />
