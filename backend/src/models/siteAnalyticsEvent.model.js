@@ -5,6 +5,10 @@ const consentSnapshotSchema = new mongoose.Schema(
     necessary: { type: Boolean, default: true },
     analytics: { type: Boolean, default: false },
     marketing: { type: Boolean, default: false },
+    consentId: { type: String, default: "" },
+    consentStatus: { type: String, default: "" },
+    consentedDomain: { type: String, default: "" },
+    pseudonymizedIp: { type: String, default: "" },
   },
   { _id: false }
 );

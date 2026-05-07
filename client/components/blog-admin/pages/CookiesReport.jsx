@@ -470,7 +470,7 @@ export const CookiesReport = () => {
               description="50 records per page. Scroll horizontally on small screens."
             >
               <div className="overflow-x-auto overscroll-x-contain">
-                <table className="w-full text-[11px] min-w-[1280px]">
+                <table className="w-full text-[11px] min-w-[1500px]">
                   <thead>
                     <tr className="text-left uppercase tracking-wide text-gray-500 bg-gray-50 dark:bg-gray-800/50 border-b border-gray-100 dark:border-gray-800">
                       <th className="py-2 px-2 font-semibold whitespace-nowrap">Time</th>
@@ -481,10 +481,13 @@ export const CookiesReport = () => {
                         Referrer
                       </th>
                       <th className="py-2 px-2 font-semibold whitespace-nowrap">A/M</th>
+                      <th className="py-2 px-2 font-semibold whitespace-nowrap">Consent status</th>
+                      <th className="py-2 px-2 font-semibold whitespace-nowrap">Consent ID</th>
+                      <th className="py-2 px-2 font-semibold whitespace-nowrap">Consented domain</th>
                       <th className="py-2 px-2 font-semibold whitespace-nowrap">Country</th>
                       <th className="py-2 px-2 font-semibold whitespace-nowrap">Region</th>
                       <th className="py-2 px-2 font-semibold whitespace-nowrap">City</th>
-                      <th className="py-2 px-2 font-semibold whitespace-nowrap">IP</th>
+                      <th className="py-2 px-2 font-semibold whitespace-nowrap">Pseudonymized IP</th>
                       <th className="py-2 px-2 font-semibold whitespace-nowrap">ISP</th>
                       <th className="py-2 px-2 font-semibold whitespace-nowrap">TZ</th>
                       <th className="py-2 px-2 font-semibold whitespace-nowrap">Lang</th>
@@ -503,7 +506,7 @@ export const CookiesReport = () => {
                   <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                     {eventsLoading ? (
                       <tr>
-                        <td colSpan={21} className="py-10 text-center text-gray-500">
+                        <td colSpan={24} className="py-10 text-center text-gray-500">
                           <Loader2 className="w-4 h-4 animate-spin inline mr-2" /> Loading events...
                         </td>
                       </tr>
@@ -526,6 +529,16 @@ export const CookiesReport = () => {
                             ? `${e.consentSnapshot.analytics ? '1' : '0'}/${e.consentSnapshot.marketing ? '1' : '0'}`
                             : '—'}
                         </td>
+                        <td className="py-2 px-2 whitespace-nowrap">{e.consentSnapshot?.consentStatus || '—'}</td>
+                        <td
+                          className="py-2 px-2 whitespace-nowrap font-mono text-[10px] max-w-[210px] truncate"
+                          title={e.consentSnapshot?.consentId}
+                        >
+                          {e.consentSnapshot?.consentId || '—'}
+                        </td>
+                        <td className="py-2 px-2 whitespace-nowrap max-w-[180px] truncate" title={e.consentSnapshot?.consentedDomain}>
+                          {e.consentSnapshot?.consentedDomain || '—'}
+                        </td>
                         <td className="py-2 px-2 whitespace-nowrap">{e.marketingMeta?.country || '—'}</td>
                         <td className="py-2 px-2 whitespace-nowrap max-w-[72px] truncate" title={e.marketingMeta?.region}>
                           {e.marketingMeta?.region || '—'}
@@ -533,8 +546,11 @@ export const CookiesReport = () => {
                         <td className="py-2 px-2 whitespace-nowrap max-w-[80px] truncate" title={e.marketingMeta?.city}>
                           {e.marketingMeta?.city || '—'}
                         </td>
-                        <td className="py-2 px-2 whitespace-nowrap font-mono text-[10px] max-w-[120px] truncate" title={e.marketingMeta?.ip}>
-                          {e.marketingMeta?.ip || '—'}
+                        <td
+                          className="py-2 px-2 whitespace-nowrap font-mono text-[10px] max-w-[170px] truncate"
+                          title={e.consentSnapshot?.pseudonymizedIp || e.marketingMeta?.ip}
+                        >
+                          {e.consentSnapshot?.pseudonymizedIp || e.marketingMeta?.ip || '—'}
                         </td>
                         <td className="py-2 px-2 whitespace-nowrap max-w-[110px] truncate" title={e.marketingMeta?.isp}>
                           {e.marketingMeta?.isp || '—'}
@@ -567,7 +583,7 @@ export const CookiesReport = () => {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={21} className="py-10 text-center text-gray-500">
+                        <td colSpan={24} className="py-10 text-center text-gray-500">
                           No events in selected window.
                         </td>
                       </tr>

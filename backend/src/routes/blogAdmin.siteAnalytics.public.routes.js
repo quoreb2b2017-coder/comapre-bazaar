@@ -1,6 +1,7 @@
 const express = require("express");
 const rateLimit = require("express-rate-limit");
 const axios = require("axios");
+const crypto = require("crypto");
 const SiteAnalyticsEvent = require("../models/siteAnalyticsEvent.model");
 
 const router = express.Router();
@@ -144,6 +145,23 @@ function sanitizeIp(ip) {
   return out.slice(0, 64);
 }
 
+function pseudonymizeIp(ipRaw) {
+  const ip = sanitizeIp(ipRaw);
+  if (!ip) return "";
+  if (ip.includes(".")) {
+    const parts = ip.split(".");
+    if (parts.length === 4) return `${parts[0]}.${parts[1]}.${parts[2]}.0`;
+    return "";
+  }
+  if (ip.includes(":")) {
+    const parts = ip.split(":").filter((p) => p !== "");
+    const first4 = parts.slice(0, 4).map((p) => p || "0");
+    while (first4.length < 4) first4.push("0");
+    return `${first4.join(":")}:0000:0000:0000:0000`;
+  }
+  return "";
+}
+
 function resolveClientIp(req) {
   const trustProxy = !!req.app?.get("trust proxy");
   if (trustProxy) {
@@ -247,6 +265,19 @@ function pickRegion(req) {
     "x-region",
   ]);
   return sanitizeStr(v, 48);
+}
+
+function resolveConsentedDomain(req, body = {}) {
+  const fromBody = sanitizeStr(body.consentedDomain, 160).toLowerCase();
+  if (fromBody) return fromBody;
+  const host = headerFirst(req, ["x-forwarded-host", "host", ":authority"]).toLowerCase();
+  return sanitizeStr(host, 160);
+}
+
+function deriveConsentStatus(analytics, marketing) {
+  if (analytics && marketing) return "Accepted";
+  if (!analytics && !marketing) return "Rejected";
+  return "Partially Accepted";
 }
 
 /**
@@ -394,6 +425,15 @@ router.post("/event", ingestLimiter, async (req, res) => {
 
     if (kind === "consent") {
       const path = sanitizePath(body.path) || "/";
+      const analytics = !!body.consent?.analytics;
+      const marketing = !!body.consent?.marketing;
+      const marketingMeta = await buildMarketingMeta(body, req, false);
+      const consentIdRaw = sanitizeStr(body.consentId, 160);
+      const consentId = consentIdRaw || crypto.randomBytes(24).toString("base64url");
+      const consentedDomain = resolveConsentedDomain(req, body);
+      const consentStatus = deriveConsentStatus(analytics, marketing);
+      const pseudonymizedIp = pseudonymizeIp(marketingMeta?.ip || resolveClientIp(req));
+
       await SiteAnalyticsEvent.create({
         kind: "consent",
         sessionId,
@@ -401,10 +441,15 @@ router.post("/event", ingestLimiter, async (req, res) => {
         referrer: sanitizeReferrer(body.referrer),
         consentSnapshot: {
           necessary: true,
-          analytics: !!body.consent?.analytics,
-          marketing: !!body.consent?.marketing,
+          analytics,
+          marketing,
+          consentId,
+          consentStatus,
+          consentedDomain,
+          pseudonymizedIp,
         },
         userAgent: ua,
+        marketingMeta,
       });
       return res.json({ success: true });
     }
