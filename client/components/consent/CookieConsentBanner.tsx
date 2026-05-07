@@ -243,58 +243,25 @@ export function CookieConsentBanner() {
                   Storage Preferences
                 </button>
 
-                <div className="mt-2 flex flex-nowrap items-center gap-x-4 gap-y-2 overflow-x-auto pb-1 text-gray-600 sm:gap-x-5">
-                  <label className="inline-flex shrink-0 items-center gap-2 text-[14px] sm:text-[15px]">
-                    <span className="relative inline-flex h-6 w-10 items-center">
-                      <input
-                        type="checkbox"
-                        checked={marketingOn}
-                        onChange={(e) => setMarketingOn(e.target.checked)}
-                        className="peer sr-only"
-                      />
-                      <span className="absolute inset-0 rounded-full bg-[#c6bddb] transition-colors peer-checked:bg-[#93EEA8]" />
-                      <span className="absolute left-0.5 h-5 w-5 rounded-full bg-white transition-transform peer-checked:translate-x-4" />
-                    </span>
-                    Marketing
-                  </label>
-
-                  <label className="inline-flex shrink-0 items-center gap-2 text-[14px] sm:text-[15px]">
-                    <span className="relative inline-flex h-6 w-10 items-center">
-                      <input
-                        type="checkbox"
-                        checked={false}
-                        disabled
-                        className="peer sr-only"
-                      />
-                      <span className="absolute inset-0 rounded-full bg-[#c6bddb]" />
-                      <span className="absolute left-0.5 h-5 w-5 rounded-full bg-white" />
-                    </span>
-                    Personalization
-                  </label>
-
-                  <label className="inline-flex shrink-0 items-center gap-2 text-[14px] sm:text-[15px]">
-                    <span className="relative inline-flex h-6 w-10 items-center">
-                      <input
-                        type="checkbox"
-                        checked={analyticsOn}
-                        onChange={(e) => setAnalyticsOn(e.target.checked)}
-                        className="peer sr-only"
-                      />
-                      <span className="absolute inset-0 rounded-full bg-[#c6bddb] transition-colors peer-checked:bg-[#93EEA8]" />
-                      <span className="absolute left-0.5 h-5 w-5 rounded-full bg-white transition-transform peer-checked:translate-x-4" />
-                    </span>
-                    Analytics
-                  </label>
-                </div>
+                <p className="mt-2 text-[13px] text-gray-500 sm:text-[14px]">
+                  Use <strong>Customized</strong> to manage Marketing and Analytics toggles.
+                </p>
               </div>
 
-              <div className="flex w-full shrink-0 flex-col gap-2 sm:w-[260px]">
+              <div className="flex w-full shrink-0 flex-row flex-wrap gap-2 lg:w-auto lg:justify-end">
                 <button
                   type="button"
                   onClick={savePreferences}
                   className="h-12 rounded-md border border-[#dc6b14] bg-gradient-to-br from-[#F58220] via-[#f48930] to-[#ec7416] px-4 text-[18px] font-semibold text-white transition hover:brightness-105"
                 >
                   Save
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPanel('prefs')}
+                  className="h-12 rounded-md border border-[#dc6b14] bg-gradient-to-br from-[#F58220] via-[#f48930] to-[#ec7416] px-4 text-[18px] font-semibold text-white transition hover:brightness-105"
+                >
+                  Customized
                 </button>
                 <button
                   type="button"
