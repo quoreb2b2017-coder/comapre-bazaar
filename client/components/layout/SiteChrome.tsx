@@ -8,7 +8,6 @@ import { SiteFooter } from '@/components/layout/SiteFooter'
 import { DisclosureBanner } from '@/components/layout/DisclosureBanner'
 import { RouteLoadingIndicator } from '@/components/layout/RouteLoadingIndicator'
 import ArrowNavigation from '@/components/ArrowNavigation'
-import { CookieConsentBanner } from '@/components/consent/CookieConsentBanner'
 import { SiteAnalyticsBeacon } from '@/components/consent/SiteAnalyticsBeacon'
 
 const CompareBazaarChat = dynamic(
@@ -34,7 +33,6 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
       <main className="flex-1">{children}</main>
       <ArrowNavigation />
       <CompareBazaarChat />
-      <CookieConsentBanner />
       <Suspense fallback={null}>
         <SiteAnalyticsBeacon />
       </Suspense>
