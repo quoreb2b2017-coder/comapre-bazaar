@@ -456,9 +456,6 @@ export const CookiesReport = () => {
                         Referrer
                       </th>
                       <th className="py-2 px-2 font-semibold whitespace-nowrap">A/M</th>
-                      <th className="py-2 px-2 font-semibold whitespace-nowrap">Consent status</th>
-                      <th className="py-2 px-2 font-semibold whitespace-nowrap">Consent ID</th>
-                      <th className="py-2 px-2 font-semibold whitespace-nowrap">Consented domain</th>
                       <th className="py-2 px-2 font-semibold whitespace-nowrap">Country</th>
                       <th className="py-2 px-2 font-semibold whitespace-nowrap">Region</th>
                       <th className="py-2 px-2 font-semibold whitespace-nowrap">Pseudonymized IP</th>
@@ -470,14 +467,13 @@ export const CookiesReport = () => {
                       <th className="py-2 px-2 font-semibold whitespace-nowrap">Email domain</th>
                       <th className="py-2 px-2 font-semibold whitespace-nowrap">Email Δ</th>
                       <th className="py-2 px-2 font-semibold whitespace-nowrap">Dev</th>
-                      <th className="py-2 px-2 font-semibold">UTM</th>
                       <th className="py-2 px-2 font-semibold">UA</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                     {eventsLoading ? (
                       <tr>
-                        <td colSpan={22} className="py-10 text-center text-gray-500">
+                        <td colSpan={18} className="py-10 text-center text-gray-500">
                           <Loader2 className="w-4 h-4 animate-spin inline mr-2" /> Loading events...
                         </td>
                       </tr>
@@ -499,16 +495,6 @@ export const CookiesReport = () => {
                           {e.consentSnapshot
                             ? `${e.consentSnapshot.analytics ? '1' : '0'}/${e.consentSnapshot.marketing ? '1' : '0'}`
                             : '—'}
-                        </td>
-                        <td className="py-2 px-2 whitespace-nowrap">{e.consentSnapshot?.consentStatus || '—'}</td>
-                        <td
-                          className="py-2 px-2 whitespace-nowrap font-mono text-[10px] max-w-[210px] truncate"
-                          title={e.consentSnapshot?.consentId}
-                        >
-                          {e.consentSnapshot?.consentId || '—'}
-                        </td>
-                        <td className="py-2 px-2 whitespace-nowrap max-w-[180px] truncate" title={e.consentSnapshot?.consentedDomain}>
-                          {e.consentSnapshot?.consentedDomain || '—'}
                         </td>
                         <td className="py-2 px-2 whitespace-nowrap">{e.marketingMeta?.country || '—'}</td>
                         <td className="py-2 px-2 whitespace-nowrap max-w-[72px] truncate" title={e.marketingMeta?.region}>
@@ -540,9 +526,6 @@ export const CookiesReport = () => {
                         </td>
                         <td className="py-2 px-2 whitespace-nowrap">{e.marketingMeta?.emailPrefillHint ? 'yes' : '—'}</td>
                         <td className="py-2 px-2 whitespace-nowrap">{e.marketingMeta?.deviceCategory || '—'}</td>
-                        <td className="py-2 px-2 max-w-[120px] truncate" title={formatSessionUtm(e.marketingMeta)}>
-                          {formatSessionUtm(e.marketingMeta)}
-                        </td>
                         <td className="py-2 px-2 text-gray-500 max-w-[140px] truncate" title={e.userAgent}>
                           {e.userAgent || '—'}
                         </td>
@@ -550,7 +533,7 @@ export const CookiesReport = () => {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={22} className="py-10 text-center text-gray-500">
+                        <td colSpan={18} className="py-10 text-center text-gray-500">
                           No events in selected window.
                         </td>
                       </tr>
