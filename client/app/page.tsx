@@ -362,7 +362,7 @@ export default async function HomePage() {
           </p>
           <div className="flex flex-wrap justify-center gap-12">
             {[
-              { num: '80K+', label: 'Monthly readers' },
+              { num: '20K+', label: 'Monthly readers' },
               { num: '60+', label: 'Platforms reviewed' },
               { num: '12', label: 'Scoring criteria per platform' },
               { num: '100%', label: 'Independent editorial' },
