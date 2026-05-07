@@ -162,18 +162,39 @@ function pseudonymizeIp(ipRaw) {
   return "";
 }
 
+function pickIpFromHeaders(req) {
+  const xff = String(req.headers["x-forwarded-for"] || "").trim();
+  if (xff) {
+    const first = xff
+      .split(",")
+      .map((x) => x.trim())
+      .find(Boolean);
+    const s = sanitizeIp(first);
+    if (s) return s;
+  }
+
+  const direct = [
+    "cf-connecting-ip",
+    "x-real-ip",
+    "x-client-ip",
+    "true-client-ip",
+    "fastly-client-ip",
+    "x-vercel-forwarded-for",
+  ];
+  for (const key of direct) {
+    const raw = String(req.headers[key] || "").trim();
+    const s = sanitizeIp(raw);
+    if (s) return s;
+  }
+  return "";
+}
+
 function resolveClientIp(req) {
+  const headerIp = pickIpFromHeaders(req);
+  if (headerIp) return headerIp;
+
   const trustProxy = !!req.app?.get("trust proxy");
   if (trustProxy) {
-    const xff = String(req.headers["x-forwarded-for"] || "").trim();
-    if (xff) {
-      const first = xff
-        .split(",")
-        .map((x) => x.trim())
-        .find(Boolean);
-      const s = sanitizeIp(first);
-      if (s) return s;
-    }
     const reqIp = sanitizeIp(req.ip);
     if (reqIp) return reqIp;
     const fromIps = Array.isArray(req.ips) ? req.ips.find(Boolean) : "";
@@ -274,6 +295,27 @@ function countryFromLocale(localeRaw) {
   return m ? m[1].toUpperCase() : "";
 }
 
+function countryFromTimeZone(timeZoneRaw) {
+  const tz = sanitizeStr(timeZoneRaw, 64);
+  if (!tz) return "";
+  const map = {
+    "Asia/Kolkata": "IN",
+    "Asia/Calcutta": "IN",
+    "America/New_York": "US",
+    "America/Chicago": "US",
+    "America/Denver": "US",
+    "America/Los_Angeles": "US",
+    "Europe/London": "GB",
+    "Europe/Berlin": "DE",
+    "Europe/Paris": "FR",
+    "Asia/Dubai": "AE",
+    "Asia/Singapore": "SG",
+    "Australia/Sydney": "AU",
+    "Asia/Tokyo": "JP",
+  };
+  return map[tz] || "";
+}
+
 function resolveConsentedDomain(req, body = {}) {
   const fromBody = sanitizeStr(body.consentedDomain, 160).toLowerCase();
   if (fromBody) return fromBody;
@@ -316,13 +358,17 @@ async function buildMarketingMeta(body, req, marketingAllowed) {
   const ip = resolveClientIp(req);
   const ipGeo = await lookupIpGeo(ip);
   const locale = sanitizeStr(m.locale, 48);
-  const country = pickCountry(req) || ipGeo.country || countryFromLocale(locale);
+  const timeZone = sanitizeStr(m.timeZone, 64);
+  const country =
+    pickCountry(req) ||
+    countryFromTimeZone(timeZone) ||
+    ipGeo.country ||
+    countryFromLocale(locale);
   const cityEdge = pickCity(req) || ipGeo.city;
   const regionEdge = pickRegion(req);
 
   const deviceCategory = sanitizeDevice(m.deviceCategory);
   const viewportWidth = clampInt(m.viewportWidth, 0, 8192);
-  const timeZone = sanitizeStr(m.timeZone, 64);
   const languagesLabel = sanitizeStr(m.languagesLabel, 120);
   const connectionEffectiveType = sanitizeStr(m.connectionEffectiveType, 24);
   const emailPrefillDomainClient = sanitizeStr(m.emailPrefillDomain, 120).toLowerCase();

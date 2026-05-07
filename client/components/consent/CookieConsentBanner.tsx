@@ -50,6 +50,8 @@ export function CookieConsentBanner() {
   const [mounted, setMounted] = useState(false)
   const [stored, setStored] = useState<ConsentPreferences | null>(null)
   const [panel, setPanel] = useState<PanelMode>('bar')
+  const [barAnimatedIn, setBarAnimatedIn] = useState(false)
+  const [prefsAnimatedIn, setPrefsAnimatedIn] = useState(false)
   const [analyticsOn, setAnalyticsOn] = useState(true)
   const [marketingOn, setMarketingOn] = useState(false)
 
@@ -104,6 +106,24 @@ export function CookieConsentBanner() {
   const showBar = !stored
   const showPrefsPanel = panel === 'prefs'
 
+  useEffect(() => {
+    if (!showBar || showPrefsPanel) {
+      setBarAnimatedIn(false)
+      return
+    }
+    const raf = window.requestAnimationFrame(() => setBarAnimatedIn(true))
+    return () => window.cancelAnimationFrame(raf)
+  }, [showBar, showPrefsPanel])
+
+  useEffect(() => {
+    if (!showPrefsPanel) {
+      setPrefsAnimatedIn(false)
+      return
+    }
+    const raf = window.requestAnimationFrame(() => setPrefsAnimatedIn(true))
+    return () => window.cancelAnimationFrame(raf)
+  }, [showPrefsPanel])
+
   if (!showBar && !showPrefsPanel) return null
 
   return (
@@ -121,7 +141,11 @@ export function CookieConsentBanner() {
         }`}
       >
         {showPrefsPanel ? (
-          <div className="p-5 sm:p-6 space-y-5">
+          <div
+            className={`p-5 sm:p-6 space-y-5 transition-all duration-300 ease-out ${
+              prefsAnimatedIn ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
+            }`}
+          >
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
               <div>
                 <h2 className="font-serif text-xl font-semibold tracking-tight text-gray-800">Cookie preferences</h2>
@@ -223,7 +247,11 @@ export function CookieConsentBanner() {
             </p>
           </div>
         ) : (
-          <div className="relative bg-transparent p-3 sm:p-4">
+          <div
+            className={`relative bg-transparent p-3 sm:p-4 transition-all duration-300 ease-out ${
+              barAnimatedIn ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
+            }`}
+          >
             <button
               type="button"
               onClick={rejectNonEssential}
