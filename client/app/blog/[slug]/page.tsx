@@ -14,6 +14,7 @@ import {
   stripGradientForSlug,
   type CmsBlogDetail,
 } from '@/lib/blogCms'
+import { pickTopicCoverUrl, resolveBlogCoverUrl } from '@/lib/blogTopicCovers'
 import { BlogViewCounter } from '@/components/blog/BlogViewCounter'
 import { BlogSubscribeBox } from '@/components/blog/BlogSubscribeBox'
 import { BlogShareBar } from '@/components/blog/BlogShareBar'
@@ -102,12 +103,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const headline = (cms.metaTitle && cms.metaTitle.trim()) || cms.title
     const rawDesc = cms.metaDescription || cms.excerpt || formatShareDescription(cms.content?.slice(0, 600))
     const kw = [...new Set([...(cms.keywords || []), ...(cms.tags || [])])].slice(0, 24)
+    const thumbnailOg = await resolveBlogCoverUrl({
+      slug: cms.slug,
+      title: cms.title,
+      topic: cms.topic,
+      tags: cms.tags,
+      keywords: cms.keywords,
+      metaTitle: cms.metaTitle,
+      metaDescription: cms.metaDescription,
+    })
     const bannerOg = extractHeroBannerImageUrl(cms.content)
     return buildBlogShareMetadata({
       title: headline,
       description: rawDesc,
       canonicalPath: `/blog/${cms.slug}`,
-      ogImageUrl: bannerOg || `https://www.compare-bazaar.com/api/og?slug=${encodeURIComponent(cms.slug)}`,
+      ogImageUrl:
+        thumbnailOg || bannerOg || `https://www.compare-bazaar.com/api/og?slug=${encodeURIComponent(cms.slug)}`,
       publishedAt: cms.publishedAt ?? cms.approvedAt ?? undefined,
       modifiedAt: cms.updatedAt ?? cms.publishedAt ?? cms.approvedAt,
       section: (cms.tags && cms.tags[0]) || cms.topic,
@@ -123,11 +134,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       canonical: '/blog',
     })
   }
+  const thumbnailOg = pickTopicCoverUrl({
+    slug: post.slug,
+    title: post.title,
+    topic: post.category,
+  })
   return buildBlogShareMetadata({
     title: post.title,
     description: post.excerpt,
     canonicalPath: `/blog/${post.slug}`,
-    ogImageUrl: `https://www.compare-bazaar.com/api/og?slug=${encodeURIComponent(post.slug)}`,
+    ogImageUrl: thumbnailOg || `https://www.compare-bazaar.com/api/og?slug=${encodeURIComponent(post.slug)}`,
     publishedAt: post.publishedAt,
     section: post.category,
     keywords: [post.category],
