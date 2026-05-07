@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Script from 'next/script'
 import './globals.css'
 import { SiteChrome } from '@/components/layout/SiteChrome'
 import { JsonLd } from '@/components/seo/JsonLd'
@@ -33,6 +34,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <Script
+          id="cookieyes"
+          src="https://cdn-cookieyes.com/client_data/e8b495f87422c0abf8fd79dc4b269d06/script.js"
+          strategy="afterInteractive"
+        />
         <JsonLd schema={buildOrganizationSchema()} />
         <JsonLd schema={buildWebSiteSchema()} />
       </head>
