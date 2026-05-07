@@ -32,7 +32,7 @@ const ArrowNavigation = () => {
       <button
         onClick={handleScroll}
         aria-label={isAtBottom ? "Scroll to top" : "Scroll to bottom"}
-        className="p-3 bg-[#000e54] rounded-full cursor-pointer hover:bg-[#000e54]/90 transition-all duration-200 shadow-lg"
+        className="p-3 rounded-full cursor-pointer bg-gradient-to-r from-[#1d4fd7] to-[#295fdd] hover:from-[#1948c7] hover:to-[#2455ca] transition-all duration-200 shadow-[0_14px_28px_-14px_rgba(37,99,235,0.85)]"
         type="button"
       >
         {isAtBottom ? (

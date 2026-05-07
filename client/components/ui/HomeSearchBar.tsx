@@ -58,7 +58,7 @@ export function HomeSearchBar({ items }: HomeSearchBarProps) {
       />
       <button
         type="submit"
-        className="bg-[#E97A13] hover:bg-[#D86F10] text-white px-5 text-sm font-semibold transition-colors"
+        className="bg-gradient-to-r from-[#1d4fd7] to-[#295fdd] hover:from-[#1948c7] hover:to-[#2455ca] text-white px-5 text-sm font-semibold transition-colors"
       >
         Search
       </button>

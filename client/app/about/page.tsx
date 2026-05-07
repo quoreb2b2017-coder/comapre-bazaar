@@ -9,7 +9,7 @@ export const metadata: Metadata = buildMetadata({
     'Compare Bazaar is a team of former software buyers and industry specialists producing independent business software comparisons and buying guides.',
   canonical: '/about',
 })
-
+    
 export default function AboutPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
