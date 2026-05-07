@@ -137,11 +137,25 @@ function emailDomainFromPath(pathRaw) {
 }
 
 function sanitizeIp(ip) {
-  const raw = String(ip ?? "").trim();
+  const raw = String(ip ?? "")
+    .trim()
+    .replace(/^for=/i, "")
+    .replace(/^"+|"+$/g, "");
   if (!raw) return "";
-  if (raw === "::1" || raw === "127.0.0.1") return "";
-  const v4Mapped = raw.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/i);
-  const out = v4Mapped ? v4Mapped[1] : raw;
+  let candidate = raw;
+
+  // RFC 7239 can send: for="[2001:db8::1]:1234"
+  const bracketed = candidate.match(/^\[([^[\]]+)\](?::\d+)?$/);
+  if (bracketed) candidate = bracketed[1];
+
+  // IPv4 with port: 203.0.113.8:12345
+  if (/^\d+\.\d+\.\d+\.\d+:\d+$/.test(candidate)) {
+    candidate = candidate.split(":")[0];
+  }
+
+  if (candidate === "::1" || candidate === "127.0.0.1") return "";
+  const v4Mapped = candidate.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/i);
+  const out = v4Mapped ? v4Mapped[1] : candidate;
   return out.slice(0, 64);
 }
 
@@ -163,14 +177,15 @@ function pseudonymizeIp(ipRaw) {
 }
 
 function pickIpFromHeaders(req) {
-  const xff = String(req.headers["x-forwarded-for"] || "").trim();
-  if (xff) {
-    const first = xff
+  const listHeaders = ["x-forwarded-for", "x-vercel-forwarded-for", "forwarded"];
+  for (const key of listHeaders) {
+    const raw = String(req.headers[key] || "").trim();
+    if (!raw) continue;
+    const candidate = raw
       .split(",")
-      .map((x) => x.trim())
-      .find(Boolean);
-    const s = sanitizeIp(first);
-    if (s) return s;
+      .map((x) => sanitizeIp(x))
+      .find((ip) => ip && !isLocalOrPrivateIp(ip));
+    if (candidate) return candidate;
   }
 
   const direct = [
@@ -179,12 +194,11 @@ function pickIpFromHeaders(req) {
     "x-client-ip",
     "true-client-ip",
     "fastly-client-ip",
-    "x-vercel-forwarded-for",
   ];
   for (const key of direct) {
     const raw = String(req.headers[key] || "").trim();
     const s = sanitizeIp(raw);
-    if (s) return s;
+    if (s && !isLocalOrPrivateIp(s)) return s;
   }
   return "";
 }
@@ -235,7 +249,23 @@ async function lookupIpGeo(ip) {
       isp: sanitizeStr(data.connection?.isp || data.connection?.org, 120),
     };
   } catch {
-    return { ip: cleanIp, city: "", country: "", isp: "" };
+    // fallback provider for better resilience when ipwho.is is rate-limited/unavailable
+    try {
+      const { data } = await axios.get(`https://ipapi.co/${encodeURIComponent(cleanIp)}/json/`, {
+        timeout: 2500,
+      });
+      if (!data || data.error) {
+        return { ip: cleanIp, city: "", country: "", isp: "" };
+      }
+      return {
+        ip: cleanIp,
+        city: sanitizeStr(data.city, 80),
+        country: sanitizeStr(data.country_code || data.country, 80),
+        isp: sanitizeStr(data.org || data.asn, 120),
+      };
+    } catch {
+      return { ip: cleanIp, city: "", country: "", isp: "" };
+    }
   }
 }
 

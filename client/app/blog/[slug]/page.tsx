@@ -16,6 +16,7 @@ import {
 } from '@/lib/blogCms'
 import { BlogViewCounter } from '@/components/blog/BlogViewCounter'
 import { BlogSubscribeBox } from '@/components/blog/BlogSubscribeBox'
+import { BlogShareBar } from '@/components/blog/BlogShareBar'
 
 type Props = { params: { slug: string } }
 
@@ -81,6 +82,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: headline,
       description: rawDesc,
       canonicalPath: `/blog/${cms.slug}`,
+      ogImageUrl: `https://www.compare-bazaar.com/api/og?slug=${encodeURIComponent(cms.slug)}`,
       publishedAt: cms.publishedAt ?? cms.approvedAt ?? undefined,
       modifiedAt: cms.updatedAt ?? cms.publishedAt ?? cms.approvedAt,
       section: (cms.tags && cms.tags[0]) || cms.topic,
@@ -100,6 +102,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: post.title,
     description: post.excerpt,
     canonicalPath: `/blog/${post.slug}`,
+    ogImageUrl: `https://www.compare-bazaar.com/api/og?slug=${encodeURIComponent(post.slug)}`,
     publishedAt: post.publishedAt,
     section: post.category,
     keywords: [post.category],
@@ -297,9 +300,13 @@ async function CmsBlogArticle({ cms }: { cms: CmsBlogDetail }) {
               </p>
             ) : null}
             {metaRow}
+            <BlogShareBar title={headline} slug={cms.slug} />
           </header>
         ) : (
-          <div className={`${measureClass} ${bodyInsetClass}`}>{metaRow}</div>
+          <div className={`${measureClass} ${bodyInsetClass}`}>
+            {metaRow}
+            <BlogShareBar title={headline} slug={cms.slug} />
+          </div>
         )}
 
         {hasHeroBanner && heroHtml ? (
@@ -431,6 +438,7 @@ export default async function BlogPostPage({ params }: Props) {
               <span className="text-gray-300">·</span>
               <span>{post.authorName}</span>
             </div>
+            <BlogShareBar title={post.title} slug={post.slug} />
           </header>
 
           <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-[minmax(0,48rem)_minmax(220px,300px)] lg:items-stretch lg:gap-14 xl:gap-16">

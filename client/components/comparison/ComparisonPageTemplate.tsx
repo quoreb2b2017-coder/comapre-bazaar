@@ -153,21 +153,21 @@ export function ComparisonPageTemplate({ data }: ComparisonPageProps) {
       <div
         className={
           smoothVariant === 'marketing-smooth'
-            ? 'bg-gradient-to-br from-[#fff7ef] via-white to-[#fff3e6] border-b border-[#f3d6bd]'
+            ? 'bg-[radial-gradient(120%_120%_at_10%_0%,#ffe7cf_0%,#fff8f0_35%,#ffffff_70%)] border-b border-[#f3d6bd]'
             : smoothVariant === 'technology-smooth'
-              ? 'bg-gradient-to-br from-[#eef6ff] via-white to-[#ecfeff] border-b border-[#bfdbfe]'
+              ? 'bg-[radial-gradient(120%_120%_at_10%_0%,#dbeafe_0%,#f3f9ff_35%,#ffffff_72%)] border-b border-[#bfdbfe]'
               : smoothVariant === 'sales-smooth'
-                ? 'bg-gradient-to-br from-[#f3f0ff] via-white to-[#eef2ff] border-b border-[#c7d2fe]'
+                ? 'bg-[radial-gradient(120%_120%_at_10%_0%,#e9e5ff_0%,#f5f3ff_35%,#ffffff_72%)] border-b border-[#c7d2fe]'
                 : smoothVariant === 'hr-smooth'
-                  ? 'bg-gradient-to-br from-[#ecfdf5] via-white to-[#effcf9] border-b border-[#a7f3d0]'
+                  ? 'bg-[radial-gradient(120%_120%_at_10%_0%,#d1fae5_0%,#f0fdf8_35%,#ffffff_72%)] border-b border-[#a7f3d0]'
                   : 'bg-gray-50 border-b border-gray-200'
         }
       >
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
           <Breadcrumb items={data.breadcrumbs} className="mb-4" />
 
           {/* H1 — exact target keyword */}
-          <h1 className="text-2xl sm:text-3xl lg:text-[36px] text-navy leading-tight tracking-tight mb-4">
+          <h1 className="text-2xl sm:text-3xl lg:text-[40px] text-navy leading-tight tracking-tight mb-4">
             {data.h1}
           </h1>
 
@@ -189,7 +189,7 @@ export function ComparisonPageTemplate({ data }: ComparisonPageProps) {
                   <article
                     key={card.name}
                     className={cn(
-                      'rounded-2xl p-3 sm:p-4 h-full flex flex-col transition-all duration-300 hover:-translate-y-0.5',
+                      'rounded-2xl p-3 sm:p-4 h-full flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_42px_-24px_rgba(16,24,40,0.45)]',
                       smoothVariant === 'marketing-smooth'
                         ? 'bg-gradient-to-br from-white via-[#fff9f3] to-[#fff3e7] border border-[#f3c79b] shadow-[0_18px_34px_-26px_rgba(242,127,37,0.55)]'
                         : smoothVariant === 'technology-smooth'
@@ -208,20 +208,20 @@ export function ComparisonPageTemplate({ data }: ComparisonPageProps) {
                       {card.name}
                     </h3>
                     <p className="text-xs text-gray-500 min-h-[30px] sm:min-h-[34px]">{card.subtitle}</p>
-                    <div className="mt-3 rounded-lg border border-gray-200 bg-gray-50 p-3 sm:min-h-[116px]">
+                    <div className="mt-3 rounded-xl border border-gray-200/90 bg-white/80 backdrop-blur-sm p-3 sm:min-h-[116px]">
                       <p className="text-xs text-gray-500">Starts at {card.price}</p>
                       <p className="text-xs text-gray-600 mt-2 leading-relaxed">{card.note}</p>
                     </div>
                     <div className="mt-auto pt-4 space-y-2">
                       <a
                         href={data.ctaSlug}
-                        className="block text-center bg-[#F27F25] hover:bg-[#E97A13] text-white text-sm font-semibold py-2 rounded-lg transition-colors"
+                        className="block text-center bg-[#F27F25] hover:bg-[#E97A13] text-white text-sm font-semibold py-2 rounded-xl transition-colors"
                       >
                         Compare Quotes
                       </a>
                       <span
                         aria-disabled="true"
-                        className="block text-center border border-[#F27F25] text-[#F27F25] text-sm font-semibold py-2 rounded-lg opacity-60 cursor-not-allowed select-none"
+                        className="block text-center border border-[#F27F25] text-[#F27F25] text-sm font-semibold py-2 rounded-xl opacity-60 cursor-not-allowed select-none"
                       >
                         Visit Site
                       </span>

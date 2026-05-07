@@ -5,7 +5,7 @@ const SITE_NAME = 'Compare Bazaar'
 
 /** Default Open Graph / WhatsApp preview image (absolute URL). Override via NEXT_PUBLIC_OG_IMAGE_PATH or replace asset at /images/logo.png */
 export function defaultOgImageUrl(): string {
-  const path = process.env.NEXT_PUBLIC_OG_IMAGE_PATH || '/images/logo.png'
+  const path = process.env.NEXT_PUBLIC_OG_IMAGE_PATH || '/api/og'
   if (path.startsWith('http')) return path
   return `${SITE_URL}${path.startsWith('/') ? path : `/${path}`}`
 }
