@@ -237,8 +237,7 @@ export default function BusinessPhoneSystemGetQuotesForm() {
 
   if (!mounted) return null;
 
-  const stepLabel =
-    step === 1 ? "Your contact details" : step === 2 ? "Phone project scope" : "Submit & preferences";
+  const stepLabel = step === 1 ? "Your contact details" : "Phone project scope & submit";
 
   return (
     <>
@@ -364,17 +363,17 @@ export default function BusinessPhoneSystemGetQuotesForm() {
                         </div>
                         <p>Business phone system proposals matched within a day</p>
                         <div className="pbar">
-                          {[1, 2, 3].map((s) => (
+                          {[1, 2].map((s) => (
                             <div key={s} className={`pseg ${s < step ? "done" : s === step ? "active" : ""}`} />
                           ))}
                         </div>
                         <div className="step-dots" aria-hidden>
-                          {[1, 2, 3].map((s) => (
+                          {[1, 2].map((s) => (
                             <span key={s} className={`sdot ${s === step ? "on" : ""} ${s < step ? "done" : ""}`} />
                           ))}
                         </div>
                         <div className="plabel">
-                          Step <b>{step} of 3</b> — {stepLabel}
+                          Step <b>{step} of 2</b> — {stepLabel}
                         </div>
                       </div>
 
@@ -544,17 +543,6 @@ export default function BusinessPhoneSystemGetQuotesForm() {
                               </select>
                               {errors.phonesNeeded ? <p className="field-err">{errors.phonesNeeded}</p> : null}
                             </div>
-                            <button type="button" className="btnp" onClick={() => validateStep2() && setStep(3)}>
-                              Continue to Step 3 →
-                            </button>
-                            <button type="button" className="btnback" onClick={() => setStep(1)}>
-                              ← Back to Step 1
-                            </button>
-                          </>
-                        )}
-
-                        {step === 3 && (
-                          <>
                             <label className="chk-row">
                               <input
                                 type="checkbox"
@@ -588,8 +576,8 @@ export default function BusinessPhoneSystemGetQuotesForm() {
                             >
                               {isSubmitting ? <span className="btn-load"><span className="btn-spin" aria-hidden /> Submitting...</span> : "Get My Phone Quotes"}
                             </button>
-                            <button type="button" className="btnback" onClick={() => setStep(2)}>
-                              ← Back to Step 2
+                            <button type="button" className="btnback" onClick={() => setStep(1)}>
+                              ← Back to Step 1
                             </button>
                             <p className="consent">
                               By submitting, you agree to our <a href="/terms-of-use">Terms of Use</a> and{" "}
