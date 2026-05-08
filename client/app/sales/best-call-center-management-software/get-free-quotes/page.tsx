@@ -1,1054 +1,750 @@
-// @ts-nocheck
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
-import ReCAPTCHA from 'react-google-recaptcha';
-import Link from 'next/link';
-import { 
-  CheckCircle, 
-  ChevronDown, 
-  Phone, 
-  Shield, 
-  Zap, 
-  TrendingUp, 
-  BarChart3, 
-  Clock, 
-  ArrowRight,
-  Target,
-  Users,
-  Star,
-  Award,
-  Sparkles,
-  Headphones,
+import Head from "next/head";
+import { useEffect, useRef, useState } from "react";
+import ReCAPTCHA from "react-google-recaptcha";
+import {
   Activity,
-  Video,
+  BarChart3,
+  CheckCircle2,
+  Headphones,
+  MessageCircle,
   MessageSquare,
-  Rocket,
-  Heart,
-  Gift,
   Monitor,
-  Calendar
-} from 'lucide-react';
+  Phone,
+  Shield,
+  ShieldCheck,
+  Sparkles,
+  Star,
+  Users,
+  Zap,
+  type LucideIcon,
+} from "lucide-react";
+import { quoteLandingPageCss } from "@/lib/quoteLandingPageCss";
 
-const CallCenterGetQuotesForm = () => {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    companyName: '',
-    email: '',
-    phoneNumber: '',
-    zipCode: '',
-    employeeCount: '',
-    agentCount: '',
-    currentSystem: '',
-    monthlyCallVolume: '',
-    importantFeatures: [],
-    industry: '',
-    emailUpdates: false
-  });
-  const [errors, setErrors] = useState({});
+const VENDORS = [
+  { name: "GoTo", dot: "#6D4AFF" },
+  { name: "RingCentral", dot: "#FF8800" },
+  { name: "GoAnswer", dot: "#0EA5E9" },
+  { name: "Twilio", dot: "#F22F46" },
+  { name: "Salesforce", dot: "#00A1E0" },
+  { name: "Talkdesk", dot: "#4F46E5" },
+];
+
+interface FormData {
+  firstName: string;
+  lastName: string;
+  companyName: string;
+  email: string;
+  phoneNumber: string;
+  zipCode: string;
+  employeeCount: string;
+  agentCount: string;
+  currentSystem: string;
+  monthlyCallVolume: string;
+  industry: string;
+  importantFeatures: string[];
+  emailUpdates: boolean;
+}
+
+const EMPLOYEE_OPTIONS = ["1 - 10", "11 - 50", "51 - 200", "201 - 500", "500+"];
+const AGENT_COUNTS = [
+  { value: "1 - 5", label: "1 - 5 agents" },
+  { value: "6 - 10", label: "6 - 10 agents" },
+  { value: "11 - 25", label: "11 - 25 agents" },
+  { value: "26 - 50", label: "26 - 50 agents" },
+  { value: "50+", label: "50+ agents" },
+];
+const CURRENT_SYSTEM = [
+  "No system currently",
+  "Using basic phone system",
+  "Have call center software but want to switch",
+  "Looking to upgrade current system",
+];
+const MONTHLY_VOLUME = [
+  { value: "0 - 500 calls", label: "0 - 500 calls/month" },
+  { value: "501 - 1,000 calls", label: "501 - 1,000 calls/month" },
+  { value: "1,001 - 5,000 calls", label: "1,001 - 5,000 calls/month" },
+  { value: "5,001 - 10,000 calls", label: "5,001 - 10,000 calls/month" },
+  { value: "10,000+ calls", label: "10,000+ calls/month" },
+];
+const INDUSTRIES = [
+  "Customer Service",
+  "Sales",
+  "Healthcare",
+  "Finance",
+  "Technology",
+  "Retail",
+  "Other",
+];
+
+const FEATURE_ITEMS: { id: string; label: string; icon: LucideIcon }[] = [
+  { id: "ivr", label: "IVR & Call Routing", icon: Phone },
+  { id: "recording", label: "Call Recording & Monitoring", icon: Monitor },
+  { id: "analytics", label: "Real-time Analytics", icon: BarChart3 },
+  { id: "omnichannel", label: "Omnichannel Support", icon: MessageSquare },
+  { id: "workforce", label: "Workforce Management", icon: Users },
+  { id: "integrations", label: "CRM & Integrations", icon: Activity },
+];
+
+const TESTIMONIALS = [
+  {
+    name: "Priya Shah",
+    role: "CX Director",
+    company: "LumenCare Health",
+    result: "RingCentral vs Genesys clarity in days",
+    body: "Agent counts plus monthly volume narrowed AI QA stacks vs budget SMB tiers without vendor noise.",
+    initials: "PS",
+    avatarBg: "#DBEAFE",
+    avatarText: "#1D4ED8",
+  },
+  {
+    name: "Devon Reyes",
+    role: "Operations",
+    company: "CopperPeak Retail",
+    result: "Omnichannel pilot scoped correctly",
+    body: "We flagged upgrade path from basic phones — responders quoted Talkdesk-esque depth only where warranted.",
+    initials: "DR",
+    avatarBg: "#DCFCE7",
+    avatarText: "#16A34A",
+  },
+  {
+    name: "Kate Liang",
+    role: "IT Lead",
+    company: "Horizon SaaS Support",
+    result: "API-first Twilio option alongside turnkey CC",
+    body: "Engineering-led roadmap needed programmable voice — comparisons surfaced both build and buy bundles.",
+    initials: "KL",
+    avatarBg: "#FEF3C7",
+    avatarText: "#D97706",
+  },
+];
+
+const WHY_ITEMS: { icon: LucideIcon; title: string; body: string }[] = [
+  {
+    icon: Headphones,
+    title: "Channel-aware routing",
+    body: "Agent totals + volume tiers steer proposals toward SMB ease, inbound-heavy CC, or API-first builds.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Same brands we test",
+    body: "Editorial roster includes GoTo, RingCentral, GoAnswer, Twilio, Salesforce Service Cloud, Talkdesk, Genesys, Freshdesk.",
+  },
+  {
+    icon: Zap,
+    title: "Faster procurement",
+    body: "One structured brief replaces duplicated vendor screening calls.",
+  },
+  {
+    icon: MessageCircle,
+    title: "Guidance when unclear",
+    body: "Inbound vs outsourced vs omnichannel expansions decoded before you demo.",
+  },
+];
+
+const emptyForm = (): FormData => ({
+  firstName: "",
+  lastName: "",
+  companyName: "",
+  email: "",
+  phoneNumber: "",
+  zipCode: "",
+  employeeCount: "",
+  agentCount: "",
+  currentSystem: "",
+  monthlyCallVolume: "",
+  industry: "",
+  importantFeatures: [],
+  emailUpdates: false,
+});
+
+export default function CallCenterGetQuotesPage() {
+  const [mounted, setMounted] = useState(false);
+  const [step, setStep] = useState(1);
+  const [submitted, setSubmitted] = useState(false);
+  const [form, setForm] = useState<FormData>(emptyForm());
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [captchaToken, setCaptchaToken] = useState("");
+  const [submitError, setSubmitError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [captchaValue, setCaptchaValue] = useState(null);
-  const captchaRef = useRef(null);
-  const [focusedField, setFocusedField] = useState(null);
 
-  useEffect(() => {
-    let timer;
-    if (showSuccess) {
-      timer = setTimeout(() => {
-        setShowSuccess(false);
-      }, 3000);
-    }
-    return () => clearTimeout(timer);
-  }, [showSuccess]);
+  const captchaRef = useRef<ReCAPTCHA | null>(null);
+  const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "";
+  const web3formsAccessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY || "";
+  const canSubmitWithConfig = Boolean(recaptchaSiteKey && web3formsAccessKey);
 
-  useEffect(() => {
-    document.title = "Get Call Center Management Software Quotes | Compare-Bazaar";
-  }, []);
+  const setField = (k: keyof FormData, v: string | boolean | string[]) =>
+    setForm((f) => ({ ...f, [k]: v as never }));
 
-  const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === 'checkbox' ? checked : value
+  const clearErr = (key: string) =>
+    setErrors((e) => {
+      if (!e[key]) return e;
+      const next = { ...e };
+      delete next[key];
+      return next;
     });
-    if (errors[name]) {
-      setErrors({
-        ...errors,
-        [name]: ''
-      });
-    }
-  };
 
-  const handleCheckboxChange = (feature) => {
-    setFormData({
-      ...formData,
-      importantFeatures: formData.importantFeatures.includes(feature)
-        ? formData.importantFeatures.filter(f => f !== feature)
-        : [...formData.importantFeatures, feature]
+  const toggleFeat = (id: string) =>
+    setForm((f) => ({
+      ...f,
+      importantFeatures: f.importantFeatures.includes(id)
+        ? f.importantFeatures.filter((x) => x !== id)
+        : [...f.importantFeatures, id],
+    }));
+
+  const validateStep1 = (): boolean => {
+    const e: Record<string, string> = {};
+    if (!form.firstName.trim()) e.firstName = "Please complete this required field.";
+    if (!form.lastName.trim()) e.lastName = "Please complete this required field.";
+    if (!form.companyName.trim()) e.companyName = "Please complete this required field.";
+    if (!form.email.trim()) e.email = "Please complete this required field.";
+    else if (!/\S+@\S+\.\S+/.test(form.email)) e.email = "Please enter a valid email address.";
+    if (!form.phoneNumber.trim()) e.phoneNumber = "Please complete this required field.";
+    if (!form.zipCode.trim()) e.zipCode = "Please complete this required field.";
+    else if (!/^\d{5}$/.test(form.zipCode)) e.zipCode = "Please enter a valid 5-digit zip code.";
+    setErrors((prev) => {
+      const next = { ...prev };
+      ["firstName", "lastName", "companyName", "email", "phoneNumber", "zipCode"].forEach((k) => delete next[k]);
+      return { ...next, ...e };
     });
+    return Object.keys(e).length === 0;
   };
 
-  const handleSelectChange = (name, value) => {
-    setFormData({
-      ...formData,
-      [name]: value
+  const validateStep2 = (): boolean => {
+    const er: Record<string, string> = {};
+    if (!form.employeeCount) er.employeeCount = "Please complete this required field.";
+    if (!form.agentCount) er.agentCount = "Please complete this required field.";
+    if (!form.currentSystem) er.currentSystem = "Please complete this required field.";
+    if (!form.monthlyCallVolume) er.monthlyCallVolume = "Please complete this required field.";
+    if (!form.industry) er.industry = "Please complete this required field.";
+    setErrors((prev) => {
+      const next = { ...prev };
+      ["employeeCount", "agentCount", "currentSystem", "monthlyCallVolume", "industry"].forEach((k) => delete next[k]);
+      return { ...next, ...er };
     });
-    if (errors[name]) {
-      setErrors({
-        ...errors,
-        [name]: ''
-      });
-    }
+    return Object.keys(er).length === 0;
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-    
-    if (!formData.firstName.trim()) {
-      newErrors.firstName = 'Please complete this required field.';
-    }
-    if (!formData.lastName.trim()) {
-      newErrors.lastName = 'Please complete this required field.';
-    }
-    if (!formData.companyName.trim()) {
-      newErrors.companyName = 'Please complete this required field.';
-    }
-    if (!formData.email.trim()) {
-      newErrors.email = 'Please complete this required field.';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address.';
-    }
-    if (!formData.phoneNumber.trim()) {
-      newErrors.phoneNumber = 'Please complete this required field.';
-    }
-    if (!formData.zipCode.trim()) {
-      newErrors.zipCode = 'Please complete this required field.';
-    } else if (!/^\d{5}$/.test(formData.zipCode)) {
-      newErrors.zipCode = 'Please enter a valid 5-digit zip code.';
-    }
-    if (!formData.employeeCount) {
-      newErrors.employeeCount = 'Please complete this required field.';
-    }
-    if (!formData.agentCount) {
-      newErrors.agentCount = 'Please complete this required field.';
-    }
-    if (!formData.currentSystem) {
-      newErrors.currentSystem = 'Please complete this required field.';
-    }
-    if (!formData.monthlyCallVolume) {
-      newErrors.monthlyCallVolume = 'Please complete this required field.';
-    }
-    if (!formData.industry) {
-      newErrors.industry = 'Please complete this required field.';
-    }
-    // reCAPTCHA is always required
-    if (!captchaValue) {
-      newErrors.captcha = 'Please verify that you\'re not a robot.';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    // Explicit check: reCAPTCHA must be completed
-    if (!captchaValue) {
-      setErrors({
-        ...errors,
-        captcha: 'Please verify that you\'re not a robot.'
-      });
+  const handleFinalSubmit = async () => {
+    if (isSubmitting || !canSubmitWithConfig) {
+      if (!canSubmitWithConfig) setSubmitError("Form setup is incomplete. Please contact support.");
       return;
     }
-    
-    if (!validateForm()) {
-      const firstErrorField = Object.keys(errors)[0];
-      if (firstErrorField) {
-        document.querySelector(`[name="${firstErrorField}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
+    if (!captchaToken) {
+      setSubmitError("Please complete reCAPTCHA before submitting.");
+      setErrors((prev) => ({ ...prev, captcha: "Please verify that you're not a robot." }));
       return;
     }
+    setSubmitError("");
+    setErrors((prev) => {
+      const n = { ...prev };
+      delete n.captcha;
+      return n;
+    });
 
     setIsSubmitting(true);
-    
     try {
-      const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY;
-      if (!accessKey) {
-        alert('Form submission is not configured. Please contact support.');
-        setIsSubmitting(false);
-        return;
-      }
-      
-      const submissionData = {
-        access_key: accessKey,
-        subject: 'Call Center Management Software Quote Request - Compare-Bazaar',
-        from_name: `${formData.firstName} ${formData.lastName}`,
-        email: formData.email,
-        company_name: formData.companyName,
-        phone: formData.phoneNumber,
-        zip_code: formData.zipCode,
-        employee_count: formData.employeeCount,
-        agent_count: formData.agentCount,
-        current_system: formData.currentSystem,
-        monthly_call_volume: formData.monthlyCallVolume,
-        important_features: formData.importantFeatures.join(', '),
-        industry: formData.industry,
-        email_updates: formData.emailUpdates ? 'Yes' : 'No',
-        form_source: 'Call Center Management Software - Get Quotes (Compare-Bazaar)',
-        captcha_token: captchaValue
+      const payload = {
+        access_key: web3formsAccessKey,
+        subject: "Call Center Management Software Quote Request - Compare-Bazaar",
+        from_name: `${form.firstName} ${form.lastName}`.trim(),
+        email: form.email,
+        company_name: form.companyName,
+        phone: form.phoneNumber,
+        zip_code: form.zipCode,
+        employee_count: form.employeeCount,
+        agent_count: form.agentCount,
+        current_system: form.currentSystem,
+        monthly_call_volume: form.monthlyCallVolume,
+        important_features: form.importantFeatures.join(", "),
+        industry: form.industry,
+        email_updates: form.emailUpdates ? "Yes" : "No",
+        form_source: "Call Center Management Software - Get Quotes (Compare-Bazaar)",
+        captcha_token: captchaToken,
       };
 
-      const response = await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify(submissionData)
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(payload),
       });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setShowSuccess(true);
-        setFormData({
-          firstName: '',
-          lastName: '',
-          companyName: '',
-          email: '',
-          phoneNumber: '',
-          zipCode: '',
-          employeeCount: '',
-          agentCount: '',
-          currentSystem: '',
-          monthlyCallVolume: '',
-          importantFeatures: [],
-          industry: '',
-          emailUpdates: false
-        });
-        setCaptchaValue(null);
-        if (captchaRef.current) {
-          captchaRef.current.reset();
-        }
-        setErrors({});
-      } else {
-        alert('Sorry, there was a problem submitting your information. Please try again later.');
-      }
-    } catch (error) {
-      console.error('Form submission error:', error);
-      alert('Sorry, there was a problem submitting your information. Please try again later.');
+      const result = await response.json();
+      if (!response.ok || !result?.success) throw new Error(result?.message || "Submission failed");
+      setSubmitted(true);
+      setForm(emptyForm());
+      setCaptchaToken("");
+      captchaRef.current?.reset();
+      setErrors({});
+    } catch (err) {
+      console.error("Call center quote submit failed:", err);
+      setSubmitError("Could not submit right now. Please try again.");
+      setCaptchaToken("");
+      captchaRef.current?.reset();
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const importantFeatures = [
-    { id: 'ivr', label: 'IVR & Call Routing', icon: <Phone className="w-5 h-5" /> },
-    { id: 'recording', label: 'Call Recording & Monitoring', icon: <Monitor className="w-5 h-5" /> },
-    { id: 'analytics', label: 'Real-time Analytics & Reporting', icon: <BarChart3 className="w-5 h-5" /> },
-    { id: 'omnichannel', label: 'Omnichannel Support', icon: <MessageSquare className="w-5 h-5" /> },
-    { id: 'workforce', label: 'Workforce Management', icon: <Users className="w-5 h-5" /> },
-    { id: 'integrations', label: 'CRM & Third-party Integrations', icon: <Activity className="w-5 h-5" /> }
-  ];
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
+  const stepLabel = step === 1 ? "Your contact details" : step === 2 ? "Contact center profile" : "Features & submit";
 
   return (
     <>
-      {/* Main Content Section - Two Column Layout */}
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-blue-50 to-purple-50 py-8 md:py-12 relative overflow-hidden">
-        {/* Animated Background Elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-[#ff8633]/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#000e54]/10 rounded-full blur-3xl animate-pulse delay-500"></div>
+      <Head>
+        <title>Get Call Center Software Quotes | Compare Bazaar</title>
+        <meta name="robots" content="index,follow" />
+        <link rel="canonical" href="https://www.compare-bazaar.com/sales/best-call-center-management-software/get-free-quotes" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+      </Head>
+
+      <style suppressHydrationWarning dangerouslySetInnerHTML={{ __html: quoteLandingPageCss }} />
+
+      <div className="bc">
+        <div className="ct">
+          <div className="bc-row">
+            <a href="https://www.compare-bazaar.com">Home</a>
+            <span className="bc-sep">›</span>
+            <a href="https://www.compare-bazaar.com/sales">Sales</a>
+            <span className="bc-sep">›</span>
+            <a href="https://www.compare-bazaar.com/sales/best-call-center-management-software">
+              Best Call Center Software
+            </a>
+            <span className="bc-sep">›</span>
+            <span className="bc-cur">Get Free Quotes</span>
+          </div>
         </div>
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-start lg:items-stretch">
-            
-            {/* Left Side - Form */}
-            <div className="order-1 lg:order-1 flex">
-              <div className="bg-white rounded-3xl shadow-2xl p-6 md:p-8 lg:p-10 border border-gray-100 backdrop-blur-sm transform transition-all duration-300 hover:shadow-3xl w-full flex flex-col h-full">
-                {/* Header Section */}
-                <div className="mb-6 pb-4 border-b border-gray-200">
-                  <div className="inline-block mb-4">
-                    <span className="bg-gradient-to-r from-[#ff8633] to-orange-600 text-white px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wide shadow-lg">
-                      Get Free Quotes
-                    </span>
-                  </div>
-                  <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-                    Find Your Perfect Call Center Solution
-                  </h1>
-                  <p className="text-base text-gray-600 leading-relaxed">
-                    Connect with top call center management providers. Compare features, pricing, and find the ideal call center software to enhance customer service and boost agent productivity.
-                  </p>
+      </div>
+
+      <div className="hero-shell">
+        <div className="hero">
+          <div className="ct">
+            <div className="hg">
+              <div>
+                <div className="eyebrow">
+                  <span className="edot" />
+                  Contact center quotes
+                </div>
+                <h1>
+                  Compare Call Center Quotes
+                  <br />
+                  <span className="acc">Sized to Agents & Channels</span>
+                </h1>
+                <p className="hdesc">
+                  Capture org size, live agent counts, incumbent stack, and call volume bands once — then receive proposals
+                  aligned with GoTo, RingCentral, Twilio, Salesforce, Talkdesk, Freshdesk CC, and the rest of our tested
+                  roster.
+                </p>
+                <ul className="trust-ul">
+                  {[
+                    "Free quotes · no obligation",
+                    "SMB through enterprise CX",
+                    "Independent methodology",
+                    "Fast routing",
+                  ].map((t) => (
+                    <li key={t} className="trust-li">
+                      <span className="chk">✓</span>
+                      {t}
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="stats">
+                  {[
+                    { n: "9+", l: "Platforms Tested" },
+                    { n: "IVR+", l: "Omnichannel mixes" },
+                    { n: "AI QA", l: "Enterprise depth" },
+                    { n: "4.4★", l: "Inbound pick (RingCentral)" },
+                  ].map((s) => (
+                    <div key={s.l} className="sc">
+                      <div className="sn">{s.n}</div>
+                      <div className="sl">{s.l}</div>
+                    </div>
+                  ))}
                 </div>
 
-                {showSuccess && (
-                  <div className="mb-6 bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 rounded-xl p-4 shadow-lg animate-fadeIn">
-                    <div className="flex items-start">
-                      <div className="flex-shrink-0">
-                        <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                          <CheckCircle className="h-5 w-5 text-white" />
-                        </div>
+                <div className="vrow">
+                  <div className="vlabel">Featured vendors from our call center comparison</div>
+                  <div className="vpills">
+                    {VENDORS.map((v) => (
+                      <div key={v.name} className="vp">
+                        <span className="vdot" style={{ background: v.dot }} />
+                        {v.name}
                       </div>
-                      <div className="ml-3">
-                        <h3 className="text-base font-semibold text-green-800">Thank you!</h3>
-                        <p className="mt-1 text-sm text-green-700">
-                          Your submission has been received. We will get back to you soon with your free quotes.
-                        </p>
-                      </div>
-                    </div>
+                    ))}
                   </div>
-                )}
-
-                <form onSubmit={handleSubmit} className="space-y-5 flex-1 flex flex-col">
-                  {/* First Name and Last Name in One Row */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="group">
-                      <label htmlFor="firstName" className="block text-sm font-bold text-gray-800 mb-2 transition-colors group-focus-within:text-[#ff8633]">
-                        First Name <span className="text-red-500">*</span>
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          id="firstName"
-                          name="firstName"
-                          value={formData.firstName}
-                          onChange={handleInputChange}
-                          onFocus={() => setFocusedField('firstName')}
-                          onBlur={() => setFocusedField(null)}
-                          className={`w-full px-4 py-3.5 border-2 rounded-xl text-gray-900 placeholder-gray-400 
-                            bg-white transition-all duration-300 ease-in-out
-                            focus:outline-none focus:ring-4 focus:ring-[#ff8633]/20 focus:border-[#ff8633] 
-                            hover:border-gray-400 hover:shadow-md
-                            ${errors.firstName 
-                              ? 'border-red-500 bg-red-50 focus:ring-red-200 focus:border-red-500' 
-                              : 'border-gray-300'
-                            }
-                            ${focusedField === 'firstName' ? 'shadow-lg scale-[1.01]' : ''}
-                          `}
-                          placeholder="John"
-                        />
-                        {focusedField === 'firstName' && !errors.firstName && (
-                          <div className="absolute inset-0 rounded-xl border-2 border-[#ff8633] pointer-events-none animate-pulse-border"></div>
-                        )}
-                      </div>
-                      {errors.firstName && (
-                        <p className="mt-1.5 text-sm text-red-600 font-medium animate-slideDown flex items-center">
-                          <span className="mr-1">⚠</span> {errors.firstName}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="group">
-                      <label htmlFor="lastName" className="block text-sm font-bold text-gray-800 mb-2 transition-colors group-focus-within:text-[#ff8633]">
-                        Last Name <span className="text-red-500">*</span>
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          id="lastName"
-                          name="lastName"
-                          value={formData.lastName}
-                          onChange={handleInputChange}
-                          onFocus={() => setFocusedField('lastName')}
-                          onBlur={() => setFocusedField(null)}
-                          className={`w-full px-4 py-3.5 border-2 rounded-xl text-gray-900 placeholder-gray-400 
-                            bg-white transition-all duration-300 ease-in-out
-                            focus:outline-none focus:ring-4 focus:ring-[#ff8633]/20 focus:border-[#ff8633] 
-                            hover:border-gray-400 hover:shadow-md
-                            ${errors.lastName 
-                              ? 'border-red-500 bg-red-50 focus:ring-red-200 focus:border-red-500' 
-                              : 'border-gray-300'
-                            }
-                            ${focusedField === 'lastName' ? 'shadow-lg scale-[1.01]' : ''}
-                          `}
-                          placeholder="Doe"
-                        />
-                        {focusedField === 'lastName' && !errors.lastName && (
-                          <div className="absolute inset-0 rounded-xl border-2 border-[#ff8633] pointer-events-none animate-pulse-border"></div>
-                        )}
-                      </div>
-                      {errors.lastName && (
-                        <p className="mt-1.5 text-sm text-red-600 font-medium animate-slideDown flex items-center">
-                          <span className="mr-1">⚠</span> {errors.lastName}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Company Name */}
-                  <div className="group">
-                    <label htmlFor="companyName" className="block text-sm font-bold text-gray-800 mb-2 transition-colors group-focus-within:text-[#ff8633]">
-                      Company Name <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        id="companyName"
-                        name="companyName"
-                        value={formData.companyName}
-                        onChange={handleInputChange}
-                        onFocus={() => setFocusedField('companyName')}
-                        onBlur={() => setFocusedField(null)}
-                        className={`w-full px-4 py-3.5 border-2 rounded-xl text-gray-900 placeholder-gray-400 
-                          bg-white transition-all duration-300 ease-in-out
-                          focus:outline-none focus:ring-4 focus:ring-[#ff8633]/20 focus:border-[#ff8633] 
-                          hover:border-gray-400 hover:shadow-md
-                          ${errors.companyName 
-                            ? 'border-red-500 bg-red-50 focus:ring-red-200 focus:border-red-500' 
-                            : 'border-gray-300'
-                          }
-                          ${focusedField === 'companyName' ? 'shadow-lg scale-[1.01]' : ''}
-                        `}
-                        placeholder="Enter your company name"
-                      />
-                      {focusedField === 'companyName' && !errors.companyName && (
-                        <div className="absolute inset-0 rounded-xl border-2 border-[#ff8633] pointer-events-none animate-pulse-border"></div>
-                      )}
-                    </div>
-                    {errors.companyName && (
-                      <p className="mt-1.5 text-sm text-red-600 font-medium animate-slideDown flex items-center">
-                        <span className="mr-1">⚠</span> {errors.companyName}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Business Email */}
-                  <div className="group">
-                    <label htmlFor="email" className="block text-sm font-bold text-gray-800 mb-2 transition-colors group-focus-within:text-[#ff8633]">
-                      Business Email <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        onFocus={() => setFocusedField('email')}
-                        onBlur={() => setFocusedField(null)}
-                        className={`w-full px-4 py-3.5 border-2 rounded-xl text-gray-900 placeholder-gray-400 
-                          bg-white transition-all duration-300 ease-in-out
-                          focus:outline-none focus:ring-4 focus:ring-[#ff8633]/20 focus:border-[#ff8633] 
-                          hover:border-gray-400 hover:shadow-md
-                          ${errors.email 
-                            ? 'border-red-500 bg-red-50 focus:ring-red-200 focus:border-red-500' 
-                            : 'border-gray-300'
-                          }
-                          ${focusedField === 'email' ? 'shadow-lg scale-[1.01]' : ''}
-                        `}
-                        placeholder="john.doe@company.com"
-                      />
-                      {focusedField === 'email' && !errors.email && (
-                        <div className="absolute inset-0 rounded-xl border-2 border-[#ff8633] pointer-events-none animate-pulse-border"></div>
-                      )}
-                    </div>
-                    {errors.email && (
-                      <p className="mt-1.5 text-sm text-red-600 font-medium animate-slideDown flex items-center">
-                        <span className="mr-1">⚠</span> {errors.email}
-                      </p>
-                    )}
-                    <p className="mt-2 text-xs text-gray-500 leading-relaxed">
-                      By entering your email above, you consent to receive marketing emails from compare-bazaar.com
-                    </p>
-                  </div>
-
-                  {/* Phone Number and Zip Code in One Row */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="group">
-                      <label htmlFor="phoneNumber" className="block text-sm font-bold text-gray-800 mb-2 transition-colors group-focus-within:text-[#ff8633]">
-                      Contact Detail <span className="text-red-500">*</span>
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="tel"
-                          id="phoneNumber"
-                          name="phoneNumber"
-                          value={formData.phoneNumber}
-                          onChange={handleInputChange}
-                          onFocus={() => setFocusedField('phoneNumber')}
-                          onBlur={() => setFocusedField(null)}
-                          className={`w-full px-4 py-3.5 border-2 rounded-xl text-gray-900 placeholder-gray-400 
-                            bg-white transition-all duration-300 ease-in-out
-                            focus:outline-none focus:ring-4 focus:ring-[#ff8633]/20 focus:border-[#ff8633] 
-                            hover:border-gray-400 hover:shadow-md
-                            ${errors.phoneNumber 
-                              ? 'border-red-500 bg-red-50 focus:ring-red-200 focus:border-red-500' 
-                              : 'border-gray-300'
-                            }
-                            ${focusedField === 'phoneNumber' ? 'shadow-lg scale-[1.01]' : ''}
-                          `}
-                          placeholder="Enter contact detail"
-                        />
-                        {focusedField === 'phoneNumber' && !errors.phoneNumber && (
-                          <div className="absolute inset-0 rounded-xl border-2 border-[#ff8633] pointer-events-none animate-pulse-border"></div>
-                        )}
-                      </div>
-                      {errors.phoneNumber && (
-                        <p className="mt-1.5 text-sm text-red-600 font-medium animate-slideDown flex items-center">
-                          <span className="mr-1">⚠</span> {errors.phoneNumber}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="group">
-                      <label htmlFor="zipCode" className="block text-sm font-bold text-gray-800 mb-2 transition-colors group-focus-within:text-[#ff8633]">
-                        Business Zip Code <span className="text-red-500">*</span>
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          id="zipCode"
-                          name="zipCode"
-                          value={formData.zipCode}
-                          onChange={handleInputChange}
-                          onFocus={() => setFocusedField('zipCode')}
-                          onBlur={() => setFocusedField(null)}
-                          maxLength="5"
-                          className={`w-full px-4 py-3.5 border-2 rounded-xl text-gray-900 placeholder-gray-400 
-                            bg-white transition-all duration-300 ease-in-out
-                            focus:outline-none focus:ring-4 focus:ring-[#ff8633]/20 focus:border-[#ff8633] 
-                            hover:border-gray-400 hover:shadow-md
-                            ${errors.zipCode 
-                              ? 'border-red-500 bg-red-50 focus:ring-red-200 focus:border-red-500' 
-                              : 'border-gray-300'
-                            }
-                            ${focusedField === 'zipCode' ? 'shadow-lg scale-[1.01]' : ''}
-                          `}
-                          placeholder="12345"
-                        />
-                        {focusedField === 'zipCode' && !errors.zipCode && (
-                          <div className="absolute inset-0 rounded-xl border-2 border-[#ff8633] pointer-events-none animate-pulse-border"></div>
-                        )}
-                      </div>
-                      {errors.zipCode && (
-                        <p className="mt-1.5 text-sm text-red-600 font-medium animate-slideDown flex items-center">
-                          <span className="mr-1">⚠</span> {errors.zipCode}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Number of Employees and Agent Count */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="group">
-                      <label htmlFor="employeeCount" className="block text-sm font-bold text-gray-800 mb-2 transition-colors group-focus-within:text-[#ff8633]">
-                        Number of Employees <span className="text-red-500">*</span>
-                      </label>
-                      <div className="relative">
-                        <select
-                          id="employeeCount"
-                          name="employeeCount"
-                          value={formData.employeeCount}
-                          onChange={(e) => handleSelectChange('employeeCount', e.target.value)}
-                          onFocus={() => setFocusedField('employeeCount')}
-                          onBlur={() => setFocusedField(null)}
-                          className={`w-full px-4 py-3.5 pr-12 border-2 rounded-xl text-gray-900 bg-white 
-                            transition-all duration-300 ease-in-out cursor-pointer
-                            focus:outline-none focus:ring-4 focus:ring-[#ff8633]/20 focus:border-[#ff8633] 
-                            hover:border-gray-400 hover:shadow-md
-                            appearance-none
-                            ${errors.employeeCount 
-                              ? 'border-red-500 bg-red-50 focus:ring-red-200 focus:border-red-500' 
-                              : 'border-gray-300'
-                            }
-                            ${focusedField === 'employeeCount' ? 'shadow-lg scale-[1.01]' : ''}
-                          `}
-                        >
-                          <option value="">Select number of employees</option>
-                          <option value="1 - 10">1 - 10</option>
-                          <option value="11 - 50">11 - 50</option>
-                          <option value="51 - 200">51 - 200</option>
-                          <option value="201 - 500">201 - 500</option>
-                          <option value="500+">500+</option>
-                        </select>
-                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                          <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${focusedField === 'employeeCount' ? 'text-[#ff8633] rotate-180' : ''}`} />
-                        </div>
-                      </div>
-                      {errors.employeeCount && (
-                        <p className="mt-1.5 text-sm text-red-600 font-medium animate-slideDown flex items-center">
-                          <span className="mr-1">⚠</span> {errors.employeeCount}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="group">
-                      <label htmlFor="agentCount" className="block text-sm font-bold text-gray-800 mb-2 transition-colors group-focus-within:text-[#ff8633]">
-                        Number of Call Center Agents <span className="text-red-500">*</span>
-                      </label>
-                      <div className="relative">
-                        <select
-                          id="agentCount"
-                          name="agentCount"
-                          value={formData.agentCount}
-                          onChange={(e) => handleSelectChange('agentCount', e.target.value)}
-                          onFocus={() => setFocusedField('agentCount')}
-                          onBlur={() => setFocusedField(null)}
-                          className={`w-full px-4 py-3.5 pr-12 border-2 rounded-xl text-gray-900 bg-white 
-                            transition-all duration-300 ease-in-out cursor-pointer
-                            focus:outline-none focus:ring-4 focus:ring-[#ff8633]/20 focus:border-[#ff8633] 
-                            hover:border-gray-400 hover:shadow-md
-                            appearance-none
-                            ${errors.agentCount 
-                              ? 'border-red-500 bg-red-50 focus:ring-red-200 focus:border-red-500' 
-                              : 'border-gray-300'
-                            }
-                            ${focusedField === 'agentCount' ? 'shadow-lg scale-[1.01]' : ''}
-                          `}
-                        >
-                          <option value="">Select number of agents</option>
-                          <option value="1 - 5">1 - 5 agents</option>
-                          <option value="6 - 10">6 - 10 agents</option>
-                          <option value="11 - 25">11 - 25 agents</option>
-                          <option value="26 - 50">26 - 50 agents</option>
-                          <option value="50+">50+ agents</option>
-                        </select>
-                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                          <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${focusedField === 'agentCount' ? 'text-[#ff8633] rotate-180' : ''}`} />
-                        </div>
-                      </div>
-                      {errors.agentCount && (
-                        <p className="mt-1.5 text-sm text-red-600 font-medium animate-slideDown flex items-center">
-                          <span className="mr-1">⚠</span> {errors.agentCount}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Current System and Monthly Call Volume */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="group">
-                      <label htmlFor="currentSystem" className="block text-sm font-bold text-gray-800 mb-2 transition-colors group-focus-within:text-[#ff8633]">
-                        Current Call Center System <span className="text-red-500">*</span>
-                      </label>
-                      <div className="relative">
-                        <select
-                          id="currentSystem"
-                          name="currentSystem"
-                          value={formData.currentSystem}
-                          onChange={(e) => handleSelectChange('currentSystem', e.target.value)}
-                          onFocus={() => setFocusedField('currentSystem')}
-                          onBlur={() => setFocusedField(null)}
-                          className={`w-full px-4 py-3.5 pr-12 border-2 rounded-xl text-gray-900 bg-white 
-                            transition-all duration-300 ease-in-out cursor-pointer
-                            focus:outline-none focus:ring-4 focus:ring-[#ff8633]/20 focus:border-[#ff8633] 
-                            hover:border-gray-400 hover:shadow-md
-                            appearance-none
-                            ${errors.currentSystem 
-                              ? 'border-red-500 bg-red-50 focus:ring-red-200 focus:border-red-500' 
-                              : 'border-gray-300'
-                            }
-                            ${focusedField === 'currentSystem' ? 'shadow-lg scale-[1.01]' : ''}
-                          `}
-                        >
-                          <option value="">Select option</option>
-                          <option value="No system currently">No system currently</option>
-                          <option value="Using basic phone system">Using basic phone system</option>
-                          <option value="Have call center software but want to switch">Have call center software but want to switch</option>
-                          <option value="Looking to upgrade current system">Looking to upgrade current system</option>
-                        </select>
-                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                          <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${focusedField === 'currentSystem' ? 'text-[#ff8633] rotate-180' : ''}`} />
-                        </div>
-                      </div>
-                      {errors.currentSystem && (
-                        <p className="mt-1.5 text-sm text-red-600 font-medium animate-slideDown flex items-center">
-                          <span className="mr-1">⚠</span> {errors.currentSystem}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="group">
-                      <label htmlFor="monthlyCallVolume" className="block text-sm font-bold text-gray-800 mb-2 transition-colors group-focus-within:text-[#ff8633]">
-                        Monthly Call Volume <span className="text-red-500">*</span>
-                      </label>
-                      <div className="relative">
-                        <select
-                          id="monthlyCallVolume"
-                          name="monthlyCallVolume"
-                          value={formData.monthlyCallVolume}
-                          onChange={(e) => handleSelectChange('monthlyCallVolume', e.target.value)}
-                          onFocus={() => setFocusedField('monthlyCallVolume')}
-                          onBlur={() => setFocusedField(null)}
-                          className={`w-full px-4 py-3.5 pr-12 border-2 rounded-xl text-gray-900 bg-white 
-                            transition-all duration-300 ease-in-out cursor-pointer
-                            focus:outline-none focus:ring-4 focus:ring-[#ff8633]/20 focus:border-[#ff8633] 
-                            hover:border-gray-400 hover:shadow-md
-                            appearance-none
-                            ${errors.monthlyCallVolume 
-                              ? 'border-red-500 bg-red-50 focus:ring-red-200 focus:border-red-500' 
-                              : 'border-gray-300'
-                            }
-                            ${focusedField === 'monthlyCallVolume' ? 'shadow-lg scale-[1.01]' : ''}
-                          `}
-                        >
-                          <option value="">Select range</option>
-                          <option value="0 - 500 calls">0 - 500 calls/month</option>
-                          <option value="501 - 1,000 calls">501 - 1,000 calls/month</option>
-                          <option value="1,001 - 5,000 calls">1,001 - 5,000 calls/month</option>
-                          <option value="5,001 - 10,000 calls">5,001 - 10,000 calls/month</option>
-                          <option value="10,000+ calls">10,000+ calls/month</option>
-                        </select>
-                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                          <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${focusedField === 'monthlyCallVolume' ? 'text-[#ff8633] rotate-180' : ''}`} />
-                        </div>
-                      </div>
-                      {errors.monthlyCallVolume && (
-                        <p className="mt-1.5 text-sm text-red-600 font-medium animate-slideDown flex items-center">
-                          <span className="mr-1">⚠</span> {errors.monthlyCallVolume}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Industry */}
-                  <div className="group">
-                    <label htmlFor="industry" className="block text-sm font-bold text-gray-800 mb-2 transition-colors group-focus-within:text-[#ff8633]">
-                      Industry <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <select
-                        id="industry"
-                        name="industry"
-                        value={formData.industry}
-                        onChange={(e) => handleSelectChange('industry', e.target.value)}
-                        onFocus={() => setFocusedField('industry')}
-                        onBlur={() => setFocusedField(null)}
-                        className={`w-full px-4 py-3.5 pr-12 border-2 rounded-xl text-gray-900 bg-white 
-                          transition-all duration-300 ease-in-out cursor-pointer
-                          focus:outline-none focus:ring-4 focus:ring-[#ff8633]/20 focus:border-[#ff8633] 
-                          hover:border-gray-400 hover:shadow-md
-                          appearance-none
-                          ${errors.industry 
-                            ? 'border-red-500 bg-red-50 focus:ring-red-200 focus:border-red-500' 
-                            : 'border-gray-300'
-                          }
-                          ${focusedField === 'industry' ? 'shadow-lg scale-[1.01]' : ''}
-                        `}
-                      >
-                        <option value="">Select your industry</option>
-                        <option value="Customer Service">Customer Service</option>
-                        <option value="Sales">Sales</option>
-                        <option value="Healthcare">Healthcare</option>
-                        <option value="Finance">Finance</option>
-                        <option value="Technology">Technology</option>
-                        <option value="Retail">Retail</option>
-                        <option value="Other">Other</option>
-                      </select>
-                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                        <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${focusedField === 'industry' ? 'text-[#ff8633] rotate-180' : ''}`} />
-                      </div>
-                    </div>
-                    {errors.industry && (
-                      <p className="mt-1.5 text-sm text-red-600 font-medium animate-slideDown flex items-center">
-                        <span className="mr-1">⚠</span> {errors.industry}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Important Features */}
-                  <div className="group">
-                    <label className="block text-sm font-bold text-gray-800 mb-3 transition-colors group-focus-within:text-[#ff8633]">
-                      Important Features (Select all that apply)
-                    </label>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {importantFeatures.map((feature) => (
-                        <label
-                          key={feature.id}
-                          className={`relative flex items-start p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
-                            formData.importantFeatures.includes(feature.id)
-                              ? 'border-[#ff8633] bg-orange-50 shadow-lg'
-                              : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
-                          }`}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={formData.importantFeatures.includes(feature.id)}
-                            onChange={() => handleCheckboxChange(feature.id)}
-                            className="sr-only"
-                          />
-                          <div className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center mr-3 mt-0.5 ${
-                            formData.importantFeatures.includes(feature.id)
-                              ? 'border-[#ff8633] bg-[#ff8633]'
-                              : 'border-gray-300'
-                          }`}>
-                            {formData.importantFeatures.includes(feature.id) && (
-                              <CheckCircle className="w-3 h-3 text-white" />
-                            )}
-                          </div>
-                          <div className="flex-1">
-                            <div className={`inline-flex p-2 rounded-lg mb-2 ${
-                              formData.importantFeatures.includes(feature.id)
-                                ? 'bg-gradient-to-r from-[#ff8633] to-orange-600 text-white'
-                                : 'bg-gray-100 text-gray-600'
-                            }`}>
-                              {feature.icon}
-                            </div>
-                            <p className={`text-xs font-semibold ${
-                              formData.importantFeatures.includes(feature.id)
-                                ? 'text-gray-900'
-                                : 'text-gray-700'
-                            }`}>
-                              {feature.label}
-                            </p>
-                          </div>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Email Updates Checkbox */}
-                  <div className="flex items-start gap-3 p-4 bg-gradient-to-r from-orange-50 to-blue-50 rounded-xl border border-orange-200">
-                    <input
-                      type="checkbox"
-                      id="emailUpdates"
-                      name="emailUpdates"
-                      checked={formData.emailUpdates}
-                      onChange={handleInputChange}
-                      className="mt-1 w-5 h-5 text-[#ff8633] border-gray-300 rounded focus:ring-[#ff8633] cursor-pointer"
-                    />
-                    <label htmlFor="emailUpdates" className="text-sm text-gray-700 cursor-pointer">
-                      I'd like to receive email updates about call center solutions and best practices.
-                    </label>
-                  </div>
-
-                  {/* reCAPTCHA */}
-                  <div className="pt-2">
-                    <div className="flex justify-start">
-                      <ReCAPTCHA
-                        ref={captchaRef}
-                        sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'}
-                        onChange={(value) => setCaptchaValue(value)}
-                      />
-                    </div>
-                    {errors.captcha && (
-                      <p className="mt-2 text-sm text-red-600 font-medium text-left">{errors.captcha}</p>
-                    )}
-                  </div>
-
-                  {/* Consent Text */}
-                  <div className="pt-2">
-                    <p className="text-xs text-gray-600 leading-relaxed">
-                      By clicking "Get Free Quotes" below, I consent to receive from compare-bazaar.com at any time SMS text messages and I also consent to receive from compare-bazaar.com and up to five service providers at any time emails, telemarketing calls using auto-dialer, artificial voices or pre-recordings, which could result in wireless charges, at the number provided above. I understand that consent is not a condition of purchase. I also agree to the{' '}
-                      <Link href="/terms-of-use" className="text-[#ff8633] hover:underline font-semibold">Terms & Conditions</Link>
-                      {' '}and{' '}
-                      <Link href="/privacy-policy" className="text-[#ff8633] hover:underline font-semibold">Privacy Policy</Link>
-                      , which are also linked at the bottom of the page.
-                    </p>
-                  </div>
-
-                  {/* Submit Button */}
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full py-4 px-6 bg-gradient-to-r from-[#ff8633] to-orange-600 text-white font-bold text-base rounded-xl hover:shadow-2xl hover:scale-[1.02] transform transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2 mt-3"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        Submitting...
-                      </>
-                    ) : (
-                      <>
-                        Get Free Quotes
-                        <ArrowRight className="w-5 h-5" />
-                      </>
-                    )}
-                  </button>
-                </form>
+                </div>
               </div>
-            </div>
 
-            {/* Right Side - Enhanced Dashboard with Brand Colors */}
-            <div className="order-2 lg:order-2 flex">
-              <div className="bg-gradient-to-br from-[#000e54] via-blue-900 to-[#000e54] rounded-3xl shadow-2xl p-6 md:p-8 lg:p-10 border border-blue-800/30 backdrop-blur-sm w-full flex flex-col h-full text-white relative overflow-hidden">
-                {/* Decorative Elements */}
-                <div className="absolute top-0 right-0 w-96 h-96 bg-[#ff8633]/10 rounded-full blur-3xl -mr-48 -mt-48 animate-pulse"></div>
-                <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl -ml-48 -mb-48 animate-pulse delay-1000"></div>
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#000e54]/20 rounded-full blur-3xl"></div>
-                
-                <div className="relative z-10 flex flex-col h-full">
-                  {/* Header */}
-                  <div className="mb-6">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#ff8633] to-orange-600 rounded-2xl mb-4 shadow-xl">
-                      <Headphones className="w-8 h-8" />
-                    </div>
-                    <h2 className="text-2xl md:text-3xl font-bold mb-3 leading-tight">
-                      Transform Your Call Center Operations
-                    </h2>
-                    <p className="text-blue-200 text-sm leading-relaxed">
-                      Discover powerful call center management platforms that help you improve customer satisfaction, reduce handle times, and boost agent productivity with advanced features.
-                    </p>
-                  </div>
-
-                  {/* Key Benefits Section */}
-                  <div className="bg-gradient-to-r from-[#ff8633]/20 to-orange-600/20 rounded-xl p-4 mb-5 border border-[#ff8633]/30">
-                    <h3 className="text-lg font-bold mb-3 text-white flex items-center gap-2">
-                      <Sparkles className="w-5 h-5" />
-                      Why Choose Compare Bazaar?
-                    </h3>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-[#ff8633]"></div>
-                        <p className="text-sm text-blue-100">Compare 20+ top call center software providers</p>
+              <div>
+                <div className="fc">
+                  {submitted ? (
+                    <div className="succ">
+                      <div className="succ-icon">
+                        <CheckCircle2 aria-hidden />
                       </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-[#ff8633]"></div>
-                        <p className="text-sm text-blue-100">Get personalized recommendations based on your call volume</p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-[#ff8633]"></div>
-                        <p className="text-sm text-blue-100">Free quotes with no obligation to purchase</p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-[#ff8633]"></div>
-                        <p className="text-sm text-blue-100">Expert guidance from call center specialists</p>
-                      </div>
+                      <h3>Request received!</h3>
+                      <p>
+                        CC specialists are aligning vendors to your queues. Expect comparative quotes within{" "}
+                        <strong style={{ color: "var(--blue)" }}>24 hours</strong>.
+                      </p>
+                      <ul className="succ-steps">
+                        {[
+                          "We ingest agent totals, incumbent stack, and channel goals",
+                          "You receive bundles sized to realistic seat + usage models",
+                          "Pilot only finalists you nominate",
+                        ].map((s, i) => (
+                          <li key={i} className="ss">
+                            <span className="ssn">{i + 1}</span>
+                            <span className="sst">{s}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                  </div>
-
-                  {/* Stats Grid */}
-                  <div className="grid grid-cols-2 gap-3 mb-5">
-                    <div className="bg-white/15 backdrop-blur-md rounded-xl p-3 border border-white/20 hover:bg-white/20 transition-all duration-300">
-                      <div className="text-2xl font-bold text-[#ff8633] mb-1">1,800+</div>
-                      <div className="text-xs text-blue-200">Call Centers Served</div>
-                    </div>
-                    <div className="bg-white/15 backdrop-blur-md rounded-xl p-3 border border-white/20 hover:bg-white/20 transition-all duration-300">
-                      <div className="text-2xl font-bold text-[#ff8633] mb-1">97%</div>
-                      <div className="text-xs text-blue-200">Satisfaction Rate</div>
-                    </div>
-                    <div className="bg-white/15 backdrop-blur-md rounded-xl p-3 border border-white/20 hover:bg-white/20 transition-all duration-300">
-                      <div className="text-2xl font-bold text-[#ff8633] mb-1">20+</div>
-                      <div className="text-xs text-blue-200">Software Options</div>
-                    </div>
-                    <div className="bg-white/15 backdrop-blur-md rounded-xl p-3 border border-white/20 hover:bg-white/20 transition-all duration-300">
-                      <div className="text-2xl font-bold text-[#ff8633] mb-1">24/7</div>
-                      <div className="text-xs text-blue-200">Expert Support</div>
-                    </div>
-                  </div>
-
-                  {/* Top Call Center Features */}
-                  <div className="mb-5">
-                    <h3 className="text-lg font-bold mb-3 text-white">Top Call Center Features</h3>
-                    <div className="space-y-2">
-                      {[
-                        { icon: <Phone className="w-5 h-5" />, text: 'IVR & Smart Routing', benefit: 'Route calls efficiently', color: 'from-blue-400 to-cyan-500' },
-                        { icon: <Monitor className="w-5 h-5" />, text: 'Call Recording', benefit: 'Monitor quality 100%', color: 'from-purple-400 to-pink-500' },
-                        { icon: <BarChart3 className="w-5 h-5" />, text: 'Real-time Analytics', benefit: 'Track performance metrics', color: 'from-green-400 to-emerald-500' },
-                        { icon: <MessageSquare className="w-5 h-5" />, text: 'Omnichannel Support', benefit: 'Email, chat, phone unified', color: 'from-yellow-400 to-orange-500' },
-                        { icon: <Users className="w-5 h-5" />, text: 'Workforce Management', benefit: 'Optimize agent schedules', color: 'from-red-400 to-pink-500' },
-                        { icon: <Activity className="w-5 h-5" />, text: 'CRM Integrations', benefit: 'Seamless data sync', color: 'from-indigo-400 to-blue-500' }
-                      ].map((feature, index) => (
-                        <div 
-                          key={index}
-                          className="flex items-center gap-3 p-3 bg-white/10 rounded-xl border border-white/15 hover:bg-white/15 transition-all duration-300 group"
-                        >
-                          <div className={`flex-shrink-0 p-2 rounded-lg bg-gradient-to-r ${feature.color} shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                            {feature.icon}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm text-white font-semibold">{feature.text}</p>
-                            <p className="text-xs text-blue-300">{feature.benefit}</p>
-                          </div>
+                  ) : (
+                    <>
+                      <div className="fh">
+                        <div className="fh-top">
+                          <h2>Get Free CC Quotes</h2>
+                          <span className="fbadge">Free · No Obligation</span>
                         </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* How It Works */}
-                  <div className="mb-5">
-                    <h3 className="text-lg font-bold mb-3 text-white flex items-center gap-2">
-                      <Rocket className="w-5 h-5 text-[#ff8633]" />
-                      How It Works
-                    </h3>
-                    <div className="space-y-2.5">
-                      <div className="flex items-start gap-3 p-3 bg-gradient-to-r from-[#ff8633]/20 to-orange-600/20 rounded-lg border border-[#ff8633]/30">
-                        <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-r from-[#ff8633] to-orange-600 flex items-center justify-center text-sm font-bold">1</div>
-                        <div>
-                          <p className="text-sm text-white font-semibold mb-1">Submit Your Requirements</p>
-                          <p className="text-xs text-blue-200">Tell us about your call center needs and current operations</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-3 p-3 bg-gradient-to-r from-blue-600/20 to-blue-500/20 rounded-lg border border-blue-500/30">
-                        <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center text-sm font-bold">2</div>
-                        <div>
-                          <p className="text-sm text-white font-semibold mb-1">Get Matched Instantly</p>
-                          <p className="text-xs text-blue-200">Our system matches you with 3-5 perfect call center software providers</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-3 p-3 bg-gradient-to-r from-green-500/20 to-green-600/20 rounded-lg border border-green-500/30">
-                        <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center text-sm font-bold">3</div>
-                        <div>
-                          <p className="text-sm text-white font-semibold mb-1">Compare & Choose</p>
-                          <p className="text-xs text-blue-200">Review personalized quotes and select the best platform for your team</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Success Stories */}
-                  <div className="mb-5">
-                    <h3 className="text-lg font-bold mb-3 text-white flex items-center gap-2">
-                      <Heart className="w-5 h-5 text-[#ff8633]" />
-                      Success Stories
-                    </h3>
-                    <div className="space-y-3">
-                      <div className="bg-white/10 rounded-xl p-3 border border-white/15">
-                        <p className="text-sm text-blue-100 italic mb-2">"Switched to a better call center platform and reduced our average handle time by 35%! Customer satisfaction scores improved dramatically."</p>
-                        <p className="text-sm text-[#ff8633] font-semibold">- Robert K., Call Center Manager</p>
-                      </div>
-                      <div className="bg-white/10 rounded-xl p-3 border border-white/15">
-                        <p className="text-sm text-blue-100 italic mb-2">"The comparison tool helped us find a platform that fits our budget perfectly. Saved us $400/month and improved our analytics capabilities."</p>
-                        <p className="text-sm text-[#ff8633] font-semibold">- Maria L., Operations Director</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Trust Badge & Rating */}
-                  <div className="mt-auto pt-4 border-t border-white/20">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-2">
-                        <div className="flex -space-x-2">
-                          {[1, 2, 3, 4, 5].map((i) => (
-                            <div key={i} className="w-8 h-8 rounded-full bg-gradient-to-br from-[#ff8633] to-orange-600 border-2 border-[#000e54] flex items-center justify-center text-xs font-bold">
-                              {String.fromCharCode(64 + i)}
-                            </div>
+                        <p>Contact center stacks matched quickly</p>
+                        <div className="pbar">
+                          {[1, 2, 3].map((s) => (
+                            <div key={s} className={`pseg ${s < step ? "done" : s === step ? "active" : ""}`} />
                           ))}
                         </div>
-                        <div className="ml-2">
-                          <div className="flex items-center gap-0.5 mb-0.5">
-                            {[1, 2, 3, 4, 5].map((i) => (
-                              <Star key={i} className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
-                            ))}
-                          </div>
-                          <p className="text-xs text-blue-300">4.9/5 from 1,800+ reviews</p>
+                        <div className="step-dots" aria-hidden>
+                          {[1, 2, 3].map((s) => (
+                            <span key={s} className={`sdot ${s === step ? "on" : ""} ${s < step ? "done" : ""}`} />
+                          ))}
+                        </div>
+                        <div className="plabel">
+                          Step <b>{step} of 3</b> — {stepLabel}
                         </div>
                       </div>
-                    </div>
-                    <div className="bg-gradient-to-r from-white/15 to-white/10 backdrop-blur-md rounded-xl p-3 border border-white/20">
-                      <div className="flex items-start gap-2">
-                        <Shield className="w-5 h-5 text-[#ff8633] flex-shrink-0 mt-0.5" />
-                        <div>
-                          <p className="text-sm text-white leading-relaxed font-semibold mb-1">100% Secure & Confidential</p>
-                          <p className="text-xs text-blue-200 leading-relaxed">
-                            Your information is encrypted and never shared with third parties.
-                          </p>
-                        </div>
+
+                      <div className="fb">
+                        {step === 1 && (
+                          <>
+                            <div className="fr">
+                              <div>
+                                <label>
+                                  First Name<span className="req">*</span>
+                                </label>
+                                <input
+                                  value={form.firstName}
+                                  className={errors.firstName ? "input-err" : undefined}
+                                  onChange={(e) => {
+                                    setField("firstName", e.target.value);
+                                    clearErr("firstName");
+                                  }}
+                                  placeholder="Priya"
+                                />
+                                {errors.firstName ? <p className="field-err">{errors.firstName}</p> : null}
+                              </div>
+                              <div>
+                                <label>
+                                  Last Name<span className="req">*</span>
+                                </label>
+                                <input
+                                  value={form.lastName}
+                                  className={errors.lastName ? "input-err" : undefined}
+                                  onChange={(e) => {
+                                    setField("lastName", e.target.value);
+                                    clearErr("lastName");
+                                  }}
+                                  placeholder="Shah"
+                                />
+                                {errors.lastName ? <p className="field-err">{errors.lastName}</p> : null}
+                              </div>
+                            </div>
+                            <div className="ff">
+                              <label>
+                                Business Email<span className="req">*</span>
+                              </label>
+                              <input
+                                type="email"
+                                value={form.email}
+                                className={errors.email ? "input-err" : undefined}
+                                onChange={(e) => {
+                                  setField("email", e.target.value);
+                                  clearErr("email");
+                                }}
+                                placeholder="you@company.com"
+                              />
+                              {errors.email ? <p className="field-err">{errors.email}</p> : null}
+                              <p className="hint">Marketing emails from compare-bazaar.com may follow this address.</p>
+                            </div>
+                            <div className="ff">
+                              <label>
+                                Company<span className="req">*</span>
+                              </label>
+                              <input
+                                value={form.companyName}
+                                className={errors.companyName ? "input-err" : undefined}
+                                onChange={(e) => {
+                                  setField("companyName", e.target.value);
+                                  clearErr("companyName");
+                                }}
+                                placeholder="LumenCare"
+                              />
+                              {errors.companyName ? <p className="field-err">{errors.companyName}</p> : null}
+                            </div>
+                            <div className="fr">
+                              <div>
+                                <label>
+                                  Phone<span className="req">*</span>
+                                </label>
+                                <input
+                                  type="tel"
+                                  value={form.phoneNumber}
+                                  className={errors.phoneNumber ? "input-err" : undefined}
+                                  onChange={(e) => {
+                                    setField("phoneNumber", e.target.value);
+                                    clearErr("phoneNumber");
+                                  }}
+                                  placeholder="+1 555 000 0000"
+                                />
+                                {errors.phoneNumber ? <p className="field-err">{errors.phoneNumber}</p> : null}
+                              </div>
+                              <div>
+                                <label>
+                                  ZIP<span className="req">*</span>
+                                </label>
+                                <input
+                                  value={form.zipCode}
+                                  className={errors.zipCode ? "input-err" : undefined}
+                                  onChange={(e) => {
+                                    setField("zipCode", e.target.value);
+                                    clearErr("zipCode");
+                                  }}
+                                  placeholder="10001"
+                                />
+                                {errors.zipCode ? <p className="field-err">{errors.zipCode}</p> : null}
+                              </div>
+                            </div>
+                            <button type="button" className="btnp" onClick={() => validateStep1() && setStep(2)}>
+                              Continue to Step 2 →
+                            </button>
+                            <div className="ftrust">
+                              <span className="tbadge">
+                                <Shield className="tb-ico" aria-hidden />
+                                SSL Encrypted
+                              </span>
+                              <span className="tbadge">
+                                <Sparkles className="tb-ico" aria-hidden />
+                                No spam
+                              </span>
+                            </div>
+                          </>
+                        )}
+
+                        {step === 2 && (
+                          <>
+                            <div className="fr">
+                              <div>
+                                <label>
+                                  Company Employees<span className="req">*</span>
+                                </label>
+                                <select
+                                  value={form.employeeCount}
+                                  className={errors.employeeCount ? "input-err" : undefined}
+                                  onChange={(e) => {
+                                    setField("employeeCount", e.target.value);
+                                    clearErr("employeeCount");
+                                  }}
+                                >
+                                  <option value="">Select number of employees</option>
+                                  {EMPLOYEE_OPTIONS.map((o) => (
+                                    <option key={o} value={o}>
+                                      {o}
+                                    </option>
+                                  ))}
+                                </select>
+                                {errors.employeeCount ? <p className="field-err">{errors.employeeCount}</p> : null}
+                              </div>
+                              <div>
+                                <label>
+                                  Agents<span className="req">*</span>
+                                </label>
+                                <select
+                                  value={form.agentCount}
+                                  className={errors.agentCount ? "input-err" : undefined}
+                                  onChange={(e) => {
+                                    setField("agentCount", e.target.value);
+                                    clearErr("agentCount");
+                                  }}
+                                >
+                                  <option value="">Select number of agents</option>
+                                  {AGENT_COUNTS.map((o) => (
+                                    <option key={o.value} value={o.value}>
+                                      {o.label}
+                                    </option>
+                                  ))}
+                                </select>
+                                {errors.agentCount ? <p className="field-err">{errors.agentCount}</p> : null}
+                              </div>
+                            </div>
+                            <div className="ff">
+                              <label>
+                                Current Stack<span className="req">*</span>
+                              </label>
+                              <select
+                                value={form.currentSystem}
+                                className={errors.currentSystem ? "input-err" : undefined}
+                                onChange={(e) => {
+                                  setField("currentSystem", e.target.value);
+                                  clearErr("currentSystem");
+                                }}
+                              >
+                                <option value="">Select option</option>
+                                {CURRENT_SYSTEM.map((o) => (
+                                  <option key={o} value={o}>
+                                    {o}
+                                  </option>
+                                ))}
+                              </select>
+                              {errors.currentSystem ? <p className="field-err">{errors.currentSystem}</p> : null}
+                            </div>
+                            <div className="ff">
+                              <label>
+                                Monthly Call Volume<span className="req">*</span>
+                              </label>
+                              <select
+                                value={form.monthlyCallVolume}
+                                className={errors.monthlyCallVolume ? "input-err" : undefined}
+                                onChange={(e) => {
+                                  setField("monthlyCallVolume", e.target.value);
+                                  clearErr("monthlyCallVolume");
+                                }}
+                              >
+                                <option value="">Select range</option>
+                                {MONTHLY_VOLUME.map((o) => (
+                                  <option key={o.value} value={o.value}>
+                                    {o.label}
+                                  </option>
+                                ))}
+                              </select>
+                              {errors.monthlyCallVolume ? <p className="field-err">{errors.monthlyCallVolume}</p> : null}
+                            </div>
+                            <div className="ff">
+                              <label>
+                                Industry Focus<span className="req">*</span>
+                              </label>
+                              <select
+                                value={form.industry}
+                                className={errors.industry ? "input-err" : undefined}
+                                onChange={(e) => {
+                                  setField("industry", e.target.value);
+                                  clearErr("industry");
+                                }}
+                              >
+                                <option value="">Select your industry</option>
+                                {INDUSTRIES.map((o) => (
+                                  <option key={o} value={o}>
+                                    {o}
+                                  </option>
+                                ))}
+                              </select>
+                              {errors.industry ? <p className="field-err">{errors.industry}</p> : null}
+                            </div>
+                            <button type="button" className="btnp" onClick={() => validateStep2() && setStep(3)}>
+                              Continue to Step 3 →
+                            </button>
+                            <button type="button" className="btnback" onClick={() => setStep(1)}>
+                              ← Back to Step 1
+                            </button>
+                          </>
+                        )}
+
+                        {step === 3 && (
+                          <>
+                            <div className="ff">
+                              <label>
+                                Feature priorities{" "}
+                                <span style={{ fontWeight: 400, color: "var(--gray-400)" }}>— optional</span>
+                              </label>
+                              <div className="cgrid">
+                                {FEATURE_ITEMS.map((f) => {
+                                  const Icon = f.icon;
+                                  const sel = form.importantFeatures.includes(f.id);
+                                  return (
+                                    <div
+                                      key={f.id}
+                                      role="button"
+                                      tabIndex={0}
+                                      className={`chip ${sel ? "sel" : ""}`}
+                                      onClick={() => toggleFeat(f.id)}
+                                      onKeyDown={(ev) => {
+                                        if (ev.key === "Enter" || ev.key === " ") {
+                                          ev.preventDefault();
+                                          toggleFeat(f.id);
+                                        }
+                                      }}
+                                    >
+                                      <span className="cchk">{sel ? "✓" : ""}</span>
+                                      <Icon className="fico" aria-hidden />
+                                      {f.label}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                            <label className="chk-row">
+                              <input
+                                type="checkbox"
+                                checked={form.emailUpdates}
+                                onChange={(e) => setField("emailUpdates", e.target.checked)}
+                              />
+                              <span>CX tooling updates from Compare Bazaar (optional).</span>
+                            </label>
+                            <div className="cap-wrap">
+                              <ReCAPTCHA
+                                ref={captchaRef}
+                                sitekey={recaptchaSiteKey}
+                                onChange={(token) => {
+                                  setCaptchaToken(token || "");
+                                  if (token) {
+                                    setSubmitError("");
+                                    clearErr("captcha");
+                                  }
+                                }}
+                                onExpired={() => setCaptchaToken("")}
+                              />
+                            </div>
+                            {!canSubmitWithConfig ? (
+                              <p className="cap-err">Form setup is incomplete. Please contact support.</p>
+                            ) : null}
+                            {errors.captcha ? <p className="cap-err">{errors.captcha}</p> : null}
+                            {submitError ? <p className="cap-err">{submitError}</p> : null}
+                            <button
+                              type="button"
+                              className="btnp"
+                              disabled={isSubmitting || !canSubmitWithConfig}
+                              onClick={handleFinalSubmit}
+                            >
+                              {isSubmitting ? <span className="btn-load"><span className="btn-spin" aria-hidden /> Submitting...</span> : "Get My Call Center Quotes"}
+                            </button>
+                            <button type="button" className="btnback" onClick={() => setStep(2)}>
+                              ← Back to Step 2
+                            </button>
+                            <p className="consent">
+                              By submitting, you agree to our <a href="/terms-of-use">Terms of Use</a> and{" "}
+                              <a href="/privacy-policy">Privacy Policy</a>.
+                            </p>
+                          </>
+                        )}
                       </div>
-                    </div>
-                    <div className="mt-3 bg-gradient-to-r from-[#ff8633]/20 to-orange-600/20 rounded-lg p-3 border border-[#ff8633]/30">
-                      <p className="text-sm text-white font-semibold mb-1 flex items-center gap-1">
-                        <Gift className="w-4 h-4 text-[#ff8633]" />
-                        Quick Match Guarantee
-                      </p>
-                      <p className="text-xs text-blue-100">Get matched with 3-5 perfect call center software providers within 24 hours</p>
-                    </div>
-                  </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -1056,54 +752,121 @@ const CallCenterGetQuotesForm = () => {
         </div>
       </div>
 
-      <style jsx>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.5s ease-out;
-        }
-        @keyframes slideDown {
-          from {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-slideDown {
-          animation: slideDown 0.3s ease-out;
-        }
-        @keyframes pulse-border {
-          0%, 100% {
-            opacity: 1;
-          }
-          50% {
-            opacity: 0.5;
-          }
-        }
-        .animate-pulse-border {
-          animation: pulse-border 2s ease-in-out infinite;
-        }
-        .delay-1000 {
-          animation-delay: 1s;
-        }
-        .delay-500 {
-          animation-delay: 0.5s;
-        }
-      `}</style>
+      <div className="sec-alt">
+        <section className="sec" style={{ paddingTop: 48, paddingBottom: 56 }}>
+          <div className="ct">
+            <div className="stag">How It Works</div>
+            <h2 className="sh">Contact center sourcing in three steps</h2>
+            <p className={"s" + "sub"}>Operations truth → scoped vendors → demos with finalists only.</p>
+            <div className="howg">
+              {[
+                {
+                  tag: "3 min",
+                  num: "01",
+                  title: "Quantify workloads",
+                  body: "Agents, incumbent telephony, and monthly volume anchors realistic seat + consumption pricing.",
+                },
+                {
+                  tag: "~24h",
+                  num: "02",
+                  title: "Matched vendors respond",
+                  body: "Proposals cite platforms from Compare Bazaar testing — SMB through AI-heavy enterprise suites.",
+                },
+                {
+                  tag: "Pilot",
+                  num: "03",
+                  title: "Compare & negotiate",
+                  body: "IVR depth, QA, integrations, omnichannel parity — weighed side-by-side.",
+                },
+              ].map((c) => (
+                <div key={c.num} className="hc">
+                  <span className="howt">{c.tag}</span>
+                  <div className="hwn">{c.num}</div>
+                  <h3>{c.title}</h3>
+                  <p>{c.body}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <section className="sec">
+        <div className="ct">
+          <div className="stag">Buyer Stories</div>
+          <h2 className="sh">Teams that stabilized CX procurements</h2>
+          <p className={"s" + "sub"}>Support leaders comparing turnkey CCaaS versus programmable stacks.</p>
+          <div className="tg">
+            {TESTIMONIALS.map((t) => (
+              <div key={t.name} className="tc">
+                <span className="rtag">✓ {t.result}</span>
+                <div className="tstars" aria-label="5 out of 5 stars">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} size={15} fill="#FBBF24" color="#FBBF24" strokeWidth={0} aria-hidden />
+                  ))}
+                </div>
+                <p className="tbody">&ldquo;{t.body}&rdquo;</p>
+                <div className="ta">
+                  <div className="av" style={{ background: t.avatarBg, color: t.avatarText }}>
+                    {t.initials}
+                  </div>
+                  <div>
+                    <div className="an">{t.name}</div>
+                    <div className="ar">
+                      {t.role}, {t.company}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <div className="sec-alt">
+        <section className="sec" style={{ paddingTop: 48, paddingBottom: 56 }}>
+          <div className="ct">
+            <div className="stag">Why Compare Bazaar</div>
+            <h2 className="sh">CX tech without vendor bingo</h2>
+            <p className={"s" + "sub"}>Editorially scored platforms — placements follow fit, not sponsorship.</p>
+            <div className="whyg">
+              {WHY_ITEMS.map((w) => {
+                const Icon = w.icon;
+                return (
+                  <div key={w.title} className="wc">
+                    <div className="wi">
+                      <Icon aria-hidden />
+                    </div>
+                    <div>
+                      <h4>{w.title}</h4>
+                      <p>{w.body}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div className="ct">
+        <div className="cta-band">
+          <div style={{ position: "relative", zIndex: 1 }}>
+            <h2>Need call center vendor quotes?</h2>
+            <p>Jump to the sticky form — we’ll mirror the stacks we already benchmarked.</p>
+          </div>
+          <a
+            href="#"
+            className="btn-wh"
+            onClick={(e) => {
+              e.preventDefault();
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+          >
+            Get Free Quotes →
+          </a>
+        </div>
+      </div>
     </>
   );
-};
-
-export default CallCenterGetQuotesForm;
-
+}

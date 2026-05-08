@@ -1,811 +1,606 @@
-// @ts-nocheck
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
-import ReCAPTCHA from 'react-google-recaptcha';
-import Head from 'next/head';
-import Link from 'next/link';
-import { CheckCircle, Phone, Shield, Zap, TrendingUp, Users, BarChart3, PhoneCall, MessageSquare, Video, DollarSign, Clock, CheckCircle2, Star, ArrowRight } from 'lucide-react';
+import Head from "next/head";
+import { useEffect, useRef, useState } from "react";
+import ReCAPTCHA from "react-google-recaptcha";
+import {
+  CheckCircle2,
+  MessageCircle,
+  Shield,
+  ShieldCheck,
+  Sparkles,
+  Star,
+  Target,
+  Zap,
+  type LucideIcon,
+} from "lucide-react";
+import { quoteLandingPageCss } from "@/lib/quoteLandingPageCss";
 
-const BusinessPhoneSystemGetQuotesForm = () => {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    companyName: '',
-    email: '',
-    phoneNumber: '',
-    zipCode: '',
-    phoneSystemNeeds: '',
-    phonesNeeded: '',
-    emailUpdates: false
-  });
-  const [errors, setErrors] = useState({});
+/** VoIP platforms from `business-phone-systems` comparison page */
+const VENDORS = [
+  { name: "Ooma Office", dot: "#003087" },
+  { name: "800.com", dot: "#FF6B35" },
+  { name: "Zoom", dot: "#2D8CFF" },
+  { name: "Nextiva", dot: "#FF6900" },
+  { name: "Vonage", dot: "#00AEEF" },
+  { name: "RingCentral", dot: "#FF8800" },
+];
+
+interface FormData {
+  firstName: string;
+  lastName: string;
+  companyName: string;
+  email: string;
+  phoneNumber: string;
+  zipCode: string;
+  phoneSystemNeeds: string;
+  phonesNeeded: string;
+  emailUpdates: boolean;
+}
+
+const PHONE_SYSTEM_NEEDS = [
+  "Installing new phone system",
+  "Replacing existing phone system",
+  "Expanding existing phone system",
+];
+const PHONES_NEEDED = [
+  { value: "1-10", label: "1-10 phones" },
+  { value: "11-25", label: "11-25 phones" },
+  { value: "26-50", label: "26-50 phones" },
+  { value: "50+", label: "50+ phones" },
+];
+
+const TESTIMONIALS = [
+  {
+    name: "Lin Zhao",
+    role: "IT Manager",
+    company: "Atlas Dental Group",
+    result: "Cut Telco bill 22% after VoIP bake-off",
+    body: "We flagged replacing legacy PBX plus hybrid Zoom usage — proposals referenced Nextiva and Ooma tiers that matched desk + softphone split.",
+    initials: "LZ",
+    avatarBg: "#DBEAFE",
+    avatarText: "#1D4ED8",
+  },
+  {
+    name: "Marcus Webb",
+    role: "COO",
+    company: "BrightLine Legal",
+    result: "Ported numbers inside SLA",
+    body: "Teams feared downtime; matched RingCentral + Vonage quotes spelled cutover windows explicitly.",
+    initials: "MW",
+    avatarBg: "#DCFCE7",
+    avatarText: "#16A34A",
+  },
+  {
+    name: "Valeria Ortiz",
+    role: "Rev Ops",
+    company: "Pulse CX Studio",
+    result: "Unified UCaaS trial in 10 days",
+    body: "Quote grid compared unlimited domestic calling vs bolt-on international — matched how we actually operate.",
+    initials: "VO",
+    avatarBg: "#FEF3C7",
+    avatarText: "#D97706",
+  },
+];
+
+const WHY_ITEMS: { icon: LucideIcon; title: string; body: string }[] = [
+  {
+    icon: Target,
+    title: "Scenario-aware routing",
+    body: "Whether you are installing, replacing, or expanding, vendors tailor UCaaS bundles instead of generic seat counts.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Same brands we review",
+    body: "Quick picks on Compare Bazaar — Ooma Office, 800.com, Zoom Phone, Nextiva, Vonage — anchor matched outreach.",
+  },
+  {
+    icon: Zap,
+    title: "Quotes within ~24 hours",
+    body: "Single intake replaces repetitive screening calls when procurement windows are tight.",
+  },
+  {
+    icon: MessageCircle,
+    title: "Guidance on integrations",
+    body: "Need Teams handoff or CRM click-to-dial depth? Specialists decode proposal differences.",
+  },
+];
+
+const emptyForm = (): FormData => ({
+  firstName: "",
+  lastName: "",
+  companyName: "",
+  email: "",
+  phoneNumber: "",
+  zipCode: "",
+  phoneSystemNeeds: "",
+  phonesNeeded: "",
+  emailUpdates: false,
+});
+
+export default function BusinessPhoneSystemGetQuotesForm() {
+  const [mounted, setMounted] = useState(false);
+  const [step, setStep] = useState(1);
+  const [submitted, setSubmitted] = useState(false);
+  const [form, setForm] = useState<FormData>(emptyForm());
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [captchaToken, setCaptchaToken] = useState("");
+  const [submitError, setSubmitError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [captchaValue, setCaptchaValue] = useState(null);
-  const captchaRef = useRef(null);
-  const [focusedField, setFocusedField] = useState(null);
 
-  useEffect(() => {
-    let timer: ReturnType<typeof setTimeout> | undefined;
-    if (showSuccess) {
-      timer = setTimeout(() => {
-        setShowSuccess(false);
-      }, 3000);
-    }
-    return () => clearTimeout(timer);
-  }, [showSuccess]);
+  const captchaRef = useRef<ReCAPTCHA | null>(null);
+  const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "";
+  const web3formsAccessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY || "";
+  const canSubmitWithConfig = Boolean(recaptchaSiteKey && web3formsAccessKey);
 
-  // Update document title
-  useEffect(() => {
-    document.title = "Get Business Phone System Quotes | Compare-Bazaar";
-  }, []);
+  const setField = (k: keyof FormData, v: string | boolean) =>
+    setForm((f) => ({ ...f, [k]: v as never }));
 
-  const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === 'checkbox' ? checked : value
+  const clearErr = (key: string) =>
+    setErrors((e) => {
+      if (!e[key]) return e;
+      const next = { ...e };
+      delete next[key];
+      return next;
     });
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors({
-        ...errors,
-        [name]: ''
-      });
-    }
-  };
 
-  const handleSelectChange = (name, value) => {
-    setFormData({
-      ...formData,
-      [name]: value
+  const validateStep1 = (): boolean => {
+    const e: Record<string, string> = {};
+    if (!form.firstName.trim()) e.firstName = "Please complete this required field.";
+    if (!form.lastName.trim()) e.lastName = "Please complete this required field.";
+    if (!form.companyName.trim()) e.companyName = "Please complete this required field.";
+    if (!form.email.trim()) e.email = "Please complete this required field.";
+    else if (!/\S+@\S+\.\S+/.test(form.email)) e.email = "Please enter a valid email address.";
+    if (!form.phoneNumber.trim()) e.phoneNumber = "Please complete this required field.";
+    if (!form.zipCode.trim()) e.zipCode = "Please complete this required field.";
+    else if (!/^\d{5}$/.test(form.zipCode)) e.zipCode = "Please enter a valid 5-digit zip code.";
+    setErrors((prev) => {
+      const next = { ...prev };
+      ["firstName", "lastName", "companyName", "email", "phoneNumber", "zipCode"].forEach((k) => delete next[k]);
+      return { ...next, ...e };
     });
-    if (errors[name]) {
-      setErrors({
-        ...errors,
-        [name]: ''
-      });
-    }
+    return Object.keys(e).length === 0;
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-    
-    if (!formData.firstName.trim()) {
-      newErrors.firstName = 'Please complete this required field.';
-    }
-    if (!formData.lastName.trim()) {
-      newErrors.lastName = 'Please complete this required field.';
-    }
-    if (!formData.companyName.trim()) {
-      newErrors.companyName = 'Please complete this required field.';
-    }
-    if (!formData.email.trim()) {
-      newErrors.email = 'Please complete this required field.';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address.';
-    }
-    if (!formData.phoneNumber.trim()) {
-      newErrors.phoneNumber = 'Please complete this required field.';
-    }
-    if (!formData.zipCode.trim()) {
-      newErrors.zipCode = 'Please complete this required field.';
-    } else if (!/^\d{5}$/.test(formData.zipCode)) {
-      newErrors.zipCode = 'Please enter a valid 5-digit zip code.';
-    }
-    if (!formData.phoneSystemNeeds) {
-      newErrors.phoneSystemNeeds = 'Please complete this required field.';
-    }
-    if (!formData.phonesNeeded) {
-      newErrors.phonesNeeded = 'Please complete this required field.';
-    }
-    // reCAPTCHA is always required
-    if (!captchaValue) {
-      newErrors.captcha = 'Please verify that you\'re not a robot.';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const validateStep2 = (): boolean => {
+    const e: Record<string, string> = {};
+    if (!form.phoneSystemNeeds) e.phoneSystemNeeds = "Please complete this required field.";
+    if (!form.phonesNeeded) e.phonesNeeded = "Please complete this required field.";
+    setErrors((prev) => {
+      const next = { ...prev };
+      ["phoneSystemNeeds", "phonesNeeded"].forEach((k) => delete next[k]);
+      return { ...next, ...e };
+    });
+    return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    // Explicit check: reCAPTCHA must be completed
-    if (!captchaValue) {
-      setErrors({
-        ...errors,
-        captcha: 'Please verify that you\'re not a robot.'
-      });
+  const handleFinalSubmit = async () => {
+    if (isSubmitting) return;
+    if (!canSubmitWithConfig) {
+      setSubmitError("Form setup is incomplete. Please contact support.");
       return;
     }
-    
-    if (!validateForm()) {
-      // Scroll to first error
-      const firstErrorField = Object.keys(errors)[0];
-      if (firstErrorField) {
-        document.querySelector(`[name="${firstErrorField}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
+    if (!captchaToken) {
+      setSubmitError("Please complete reCAPTCHA before submitting.");
+      setErrors((prev) => ({ ...prev, captcha: "Please verify that you're not a robot." }));
       return;
     }
+    setSubmitError("");
+    setErrors((prev) => {
+      const n = { ...prev };
+      delete n.captcha;
+      return n;
+    });
 
     setIsSubmitting(true);
-    
     try {
-      const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY;
-      if (!accessKey) {
-        alert('Form submission is not configured. Please contact support.');
-        setIsSubmitting(false);
-        return;
-      }
-      
-      const submissionData = {
-        access_key: accessKey,
-        subject: 'Business Phone System Quote Request - Compare-Bazaar',
-        from_name: `${formData.firstName} ${formData.lastName}`,
-        email: formData.email,
-        company_name: formData.companyName,
-        phone: formData.phoneNumber,
-        zip_code: formData.zipCode,
-        phone_system_needs: formData.phoneSystemNeeds,
-        phones_needed: formData.phonesNeeded,
-        email_updates: formData.emailUpdates ? 'Yes' : 'No',
-        form_source: 'Business Phone System - Get Quotes (Compare-Bazaar)',
-        captcha_token: captchaValue
+      const payload = {
+        access_key: web3formsAccessKey,
+        subject: "Business Phone System Quote Request - Compare-Bazaar",
+        from_name: `${form.firstName} ${form.lastName}`.trim(),
+        email: form.email,
+        company_name: form.companyName,
+        phone: form.phoneNumber,
+        zip_code: form.zipCode,
+        phone_system_needs: form.phoneSystemNeeds,
+        phones_needed: form.phonesNeeded,
+        email_updates: form.emailUpdates ? "Yes" : "No",
+        form_source: "Business Phone System - Get Quotes (Compare-Bazaar)",
+        captcha_token: captchaToken,
       };
 
-      const response = await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify(submissionData)
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(payload),
       });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setShowSuccess(true);
-        setFormData({
-          firstName: '',
-          lastName: '',
-          companyName: '',
-          email: '',
-          phoneNumber: '',
-          zipCode: '',
-          phoneSystemNeeds: '',
-          phonesNeeded: '',
-          emailUpdates: false
-        });
-        setCaptchaValue(null);
-        if (captchaRef.current) {
-          captchaRef.current.reset();
-        }
-        setErrors({});
-      } else {
-        alert('Sorry, there was a problem submitting your information. Please try again later.');
-      }
-    } catch (error) {
-      console.error('Form submission error:', error);
-      alert('Sorry, there was a problem submitting your information. Please try again later.');
+      const result = await response.json();
+      if (!response.ok || !result?.success) throw new Error(result?.message || "Submission failed");
+      setSubmitted(true);
+      setForm(emptyForm());
+      setCaptchaToken("");
+      captchaRef.current?.reset();
+      setErrors({});
+    } catch (err) {
+      console.error("Business phone quote submit failed:", err);
+      setSubmitError("Could not submit right now. Please try again.");
+      setCaptchaToken("");
+      captchaRef.current?.reset();
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
+  const stepLabel =
+    step === 1 ? "Your contact details" : step === 2 ? "Phone project scope" : "Submit & preferences";
+
   return (
     <>
       <Head>
-        <title>Get Business Phone System Quotes | Compare-Bazaar</title>
-        <meta name="description" content="Get free, no-obligation quotes from top business phone system providers. Compare VoIP solutions and find the best fit for your business." />
+        <title>Get Business Phone System Quotes | Compare Bazaar</title>
+        <meta
+          name="description"
+          content="Get free, no-obligation quotes from top business phone system providers. Compare VoIP solutions and find the best fit for your business."
+        />
         <link rel="canonical" href="https://www.compare-bazaar.com/technology/business-phone-systems/get-free-quotes" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       </Head>
-      
-      {/* Main Content Section - Two Column Layout */}
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100 py-8 md:py-12 relative overflow-hidden">
-        {/* Animated Background Elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-[#ff8633]/5 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl delay-1000"></div>
+
+      <style suppressHydrationWarning dangerouslySetInnerHTML={{ __html: quoteLandingPageCss }} />
+
+      <div className="bc">
+        <div className="ct">
+          <div className="bc-row">
+            <a href="https://www.compare-bazaar.com">Home</a>
+            <span className="bc-sep">›</span>
+            <a href="https://www.compare-bazaar.com/technology">Technology</a>
+            <span className="bc-sep">›</span>
+            <a href="https://www.compare-bazaar.com/technology/business-phone-systems">Business Phone Systems</a>
+            <span className="bc-sep">›</span>
+            <span className="bc-cur">Get Free Quotes</span>
+          </div>
         </div>
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-6 items-start lg:items-stretch">
-            
-            {/* Left Side - Form */}
-            <div className="order-1 lg:order-1 flex">
-              <div className="bg-white rounded-3xl shadow-2xl p-6 md:p-8 lg:p-10 border border-gray-100 backdrop-blur-sm transform transition-all duration-300 hover:shadow-3xl w-full flex flex-col h-full">
-                {/* Header Section */}
-                <div className="mb-8 pb-6 border-b border-gray-200">
-                  <div className="inline-block mb-4">
-                    <span className="bg-gradient-to-r from-[#ff8633] to-orange-600 text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide shadow-md">
-                      Get Free Quotes
-                    </span>
-                  </div>
-                  <h1 className="text-2xl md:text-3xl lg:text-2xl font-bold text-gray-900 mb-4 leading-tight bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-                    Connect Your Business with Modern Communication
-                  </h1>
-                  <p className="text-base md:text-base text-gray-600 leading-relaxed">
-                    Fill out the form to get customized quotes from top business phone system providers and find the perfect solution for your needs.
-                  </p>
+      </div>
+
+      <div className="hero-shell">
+        <div className="hero">
+          <div className="ct">
+            <div className="hg">
+              <div>
+                <div className="eyebrow">
+                  <span className="edot" />
+                  VoIP & UCaaS quotes
+                </div>
+                <h1>
+                  Compare Business Phone Quotes
+                  <br />
+                  <span className="acc">Same UC Brands We Test</span>
+                </h1>
+                <p className="hdesc">
+                  Describe installs vs replacements, handset counts, and collaboration habits once. Matched quotes align with
+                  our editorial shortlist — Ooma Office, 800.com, Zoom Phone, Nextiva, Vonage, RingCentral — plus comparable
+                  alternatives when helpful.
+                </p>
+                <ul className="trust-ul">
+                  {[
+                    "Free quotes — no obligation",
+                    "SMB-friendly & mid-market UCaaS",
+                    "Independent methodology",
+                    "~24 hour vendor routing",
+                  ].map((t) => (
+                    <li key={t} className="trust-li">
+                      <span className="chk">✓</span>
+                      {t}
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="stats">
+                  {[
+                    { n: "8+", l: "Platforms Compared" },
+                    { n: "99.999%", l: "SLA leaders" },
+                    { n: "UCaaS", l: "Voice + meetings" },
+                    { n: "4.3★", l: "Top SMB ease (Ooma)" },
+                  ].map((s) => (
+                    <div key={s.l} className="sc">
+                      <div className="sn">{s.n}</div>
+                      <div className="sl">{s.l}</div>
+                    </div>
+                  ))}
                 </div>
 
-                {showSuccess && (
-                  <div className="mb-6 bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 rounded-xl p-4 shadow-lg animate-fadeIn">
-                    <div className="flex items-start">
-                      <div className="flex-shrink-0">
-                        <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                          <CheckCircle className="h-5 w-5 text-white" />
-                        </div>
+                <div className="vrow">
+                  <div className="vlabel">Featured VoIP platforms on Compare Bazaar</div>
+                  <div className="vpills">
+                    {VENDORS.map((v) => (
+                      <div key={v.name} className="vp">
+                        <span className="vdot" style={{ background: v.dot }} />
+                        {v.name}
                       </div>
-                      <div className="ml-3">
-                        <h3 className="text-base font-semibold text-green-800">Thank you!</h3>
-                        <p className="mt-1 text-sm text-green-700">
-                          Your submission has been received. We will get back to you soon with your free quotes.
-                        </p>
-                      </div>
-                    </div>
+                    ))}
                   </div>
-                )}
-
-                <form onSubmit={handleSubmit} className="space-y-6 flex-1 flex flex-col">
-                  {/* First Name and Last Name in One Row */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="group">
-                      <label htmlFor="firstName" className="block text-sm font-bold text-gray-800 mb-2 transition-colors group-focus-within:text-[#ff8633]">
-                        First Name <span className="text-red-500">*</span>
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          id="firstName"
-                          name="firstName"
-                          value={formData.firstName}
-                          onChange={handleInputChange}
-                          onFocus={() => setFocusedField('firstName')}
-                          onBlur={() => setFocusedField(null)}
-                          className={`w-full px-4 py-3.5 border-2 rounded-xl text-gray-900 placeholder-gray-400 
-                            bg-white transition-all duration-300 ease-in-out
-                            focus:outline-none focus:ring-4 focus:ring-[#ff8633]/20 focus:border-[#ff8633] 
-                            hover:border-gray-400 hover:shadow-md
-                            ${errors.firstName 
-                              ? 'border-red-500 bg-red-50 focus:ring-red-200 focus:border-red-500' 
-                              : 'border-gray-300'
-                            }
-                            ${focusedField === 'firstName' ? 'shadow-lg scale-[1.01]' : ''}
-                          `}
-                          placeholder="John"
-                        />
-                        {focusedField === 'firstName' && !errors.firstName && (
-                          <div className="absolute inset-0 rounded-xl border-2 border-[#ff8633] pointer-events-none animate-pulse-border"></div>
-                        )}
-                      </div>
-                      {errors.firstName && (
-                        <p className="mt-1.5 text-sm text-red-600 font-medium animate-slideDown flex items-center">
-                          <span className="mr-1">⚠</span> {errors.firstName}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="group">
-                      <label htmlFor="lastName" className="block text-sm font-bold text-gray-800 mb-2 transition-colors group-focus-within:text-[#ff8633]">
-                        Last Name <span className="text-red-500">*</span>
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          id="lastName"
-                          name="lastName"
-                          value={formData.lastName}
-                          onChange={handleInputChange}
-                          onFocus={() => setFocusedField('lastName')}
-                          onBlur={() => setFocusedField(null)}
-                          className={`w-full px-4 py-3.5 border-2 rounded-xl text-gray-900 placeholder-gray-400 
-                            bg-white transition-all duration-300 ease-in-out
-                            focus:outline-none focus:ring-4 focus:ring-[#ff8633]/20 focus:border-[#ff8633] 
-                            hover:border-gray-400 hover:shadow-md
-                            ${errors.lastName 
-                              ? 'border-red-500 bg-red-50 focus:ring-red-200 focus:border-red-500' 
-                              : 'border-gray-300'
-                            }
-                            ${focusedField === 'lastName' ? 'shadow-lg scale-[1.01]' : ''}
-                          `}
-                          placeholder="Doe"
-                        />
-                        {focusedField === 'lastName' && !errors.lastName && (
-                          <div className="absolute inset-0 rounded-xl border-2 border-[#ff8633] pointer-events-none animate-pulse-border"></div>
-                        )}
-                      </div>
-                      {errors.lastName && (
-                        <p className="mt-1.5 text-sm text-red-600 font-medium animate-slideDown flex items-center">
-                          <span className="mr-1">⚠</span> {errors.lastName}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                  {/* Company Name */}
-                  <div className="group">
-                    <label htmlFor="companyName" className="block text-sm font-bold text-gray-800 mb-2 transition-colors group-focus-within:text-[#ff8633]">
-                      Company Name <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        id="companyName"
-                        name="companyName"
-                        value={formData.companyName}
-                        onChange={handleInputChange}
-                        onFocus={() => setFocusedField('companyName')}
-                        onBlur={() => setFocusedField(null)}
-                        className={`w-full px-4 py-3.5 border-2 rounded-xl text-gray-900 placeholder-gray-400 
-                          bg-white transition-all duration-300 ease-in-out
-                          focus:outline-none focus:ring-4 focus:ring-[#ff8633]/20 focus:border-[#ff8633] 
-                          hover:border-gray-400 hover:shadow-md
-                          ${errors.companyName 
-                            ? 'border-red-500 bg-red-50 focus:ring-red-200 focus:border-red-500' 
-                            : 'border-gray-300'
-                          }
-                          ${focusedField === 'companyName' ? 'shadow-lg scale-[1.01]' : ''}
-                        `}
-                        placeholder="Acme Corporation"
-                      />
-                      {focusedField === 'companyName' && !errors.companyName && (
-                        <div className="absolute inset-0 rounded-xl border-2 border-[#ff8633] pointer-events-none animate-pulse-border"></div>
-                      )}
-                    </div>
-                    {errors.companyName && (
-                      <p className="mt-1.5 text-sm text-red-600 font-medium animate-slideDown flex items-center">
-                        <span className="mr-1">⚠</span> {errors.companyName}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Email */}
-                  <div className="group">
-                    <label htmlFor="email" className="block text-sm font-bold text-gray-800 mb-2 transition-colors group-focus-within:text-[#ff8633]">
-                      Email Address <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        onFocus={() => setFocusedField('email')}
-                        onBlur={() => setFocusedField(null)}
-                        className={`w-full px-4 py-3.5 border-2 rounded-xl text-gray-900 placeholder-gray-400 
-                          bg-white transition-all duration-300 ease-in-out
-                          focus:outline-none focus:ring-4 focus:ring-[#ff8633]/20 focus:border-[#ff8633] 
-                          hover:border-gray-400 hover:shadow-md
-                          ${errors.email 
-                            ? 'border-red-500 bg-red-50 focus:ring-red-200 focus:border-red-500' 
-                            : 'border-gray-300'
-                          }
-                          ${focusedField === 'email' ? 'shadow-lg scale-[1.01]' : ''}
-                        `}
-                        placeholder="john.doe@company.com"
-                      />
-                      {focusedField === 'email' && !errors.email && (
-                        <div className="absolute inset-0 rounded-xl border-2 border-[#ff8633] pointer-events-none animate-pulse-border"></div>
-                      )}
-                    </div>
-                    {errors.email && (
-                      <p className="mt-1.5 text-sm text-red-600 font-medium animate-slideDown flex items-center">
-                        <span className="mr-1">⚠</span> {errors.email}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Phone Number */}
-                  <div className="group">
-                    <label htmlFor="phoneNumber" className="block text-sm font-bold text-gray-800 mb-2 transition-colors group-focus-within:text-[#ff8633]">
-                      Contact Detail <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="tel"
-                        id="phoneNumber"
-                        name="phoneNumber"
-                        value={formData.phoneNumber}
-                        onChange={handleInputChange}
-                        onFocus={() => setFocusedField('phoneNumber')}
-                        onBlur={() => setFocusedField(null)}
-                        className={`w-full px-4 py-3.5 border-2 rounded-xl text-gray-900 placeholder-gray-400 
-                          bg-white transition-all duration-300 ease-in-out
-                          focus:outline-none focus:ring-4 focus:ring-[#ff8633]/20 focus:border-[#ff8633] 
-                          hover:border-gray-400 hover:shadow-md
-                          ${errors.phoneNumber 
-                            ? 'border-red-500 bg-red-50 focus:ring-red-200 focus:border-red-500' 
-                            : 'border-gray-300'
-                          }
-                          ${focusedField === 'phoneNumber' ? 'shadow-lg scale-[1.01]' : ''}
-                        `}
-                        placeholder="Enter contact detail"
-                      />
-                      {focusedField === 'phoneNumber' && !errors.phoneNumber && (
-                        <div className="absolute inset-0 rounded-xl border-2 border-[#ff8633] pointer-events-none animate-pulse-border"></div>
-                      )}
-                    </div>
-                    {errors.phoneNumber && (
-                      <p className="mt-1.5 text-sm text-red-600 font-medium animate-slideDown flex items-center">
-                        <span className="mr-1">⚠</span> {errors.phoneNumber}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Zip Code */}
-                  <div className="group">
-                    <label htmlFor="zipCode" className="block text-sm font-bold text-gray-800 mb-2 transition-colors group-focus-within:text-[#ff8633]">
-                      Zip Code <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        id="zipCode"
-                        name="zipCode"
-                        value={formData.zipCode}
-                        onChange={handleInputChange}
-                        onFocus={() => setFocusedField('zipCode')}
-                        onBlur={() => setFocusedField(null)}
-                        maxLength={5}
-                        className={`w-full px-4 py-3.5 border-2 rounded-xl text-gray-900 placeholder-gray-400 
-                          bg-white transition-all duration-300 ease-in-out
-                          focus:outline-none focus:ring-4 focus:ring-[#ff8633]/20 focus:border-[#ff8633] 
-                          hover:border-gray-400 hover:shadow-md
-                          ${errors.zipCode 
-                            ? 'border-red-500 bg-red-50 focus:ring-red-200 focus:border-red-500' 
-                            : 'border-gray-300'
-                          }
-                          ${focusedField === 'zipCode' ? 'shadow-lg scale-[1.01]' : ''}
-                        `}
-                        placeholder="12345"
-                      />
-                      {focusedField === 'zipCode' && !errors.zipCode && (
-                        <div className="absolute inset-0 rounded-xl border-2 border-[#ff8633] pointer-events-none animate-pulse-border"></div>
-                      )}
-                    </div>
-                    {errors.zipCode && (
-                      <p className="mt-1.5 text-sm text-red-600 font-medium animate-slideDown flex items-center">
-                        <span className="mr-1">⚠</span> {errors.zipCode}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Phone System Needs */}
-                  <div className="group">
-                    <label htmlFor="phoneSystemNeeds" className="block text-sm font-bold text-gray-800 mb-2 transition-colors group-focus-within:text-[#ff8633]">
-                      Phone System Needs <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <select
-                        id="phoneSystemNeeds"
-                        name="phoneSystemNeeds"
-                        value={formData.phoneSystemNeeds}
-                        onChange={handleInputChange}
-                        onFocus={() => setFocusedField('phoneSystemNeeds')}
-                        onBlur={() => setFocusedField(null)}
-                        className={`w-full px-4 py-3.5 border-2 rounded-xl text-gray-900 
-                          bg-white transition-all duration-300 ease-in-out
-                          focus:outline-none focus:ring-4 focus:ring-[#ff8633]/20 focus:border-[#ff8633] 
-                          hover:border-gray-400 hover:shadow-md
-                          ${errors.phoneSystemNeeds 
-                            ? 'border-red-500 bg-red-50 focus:ring-red-200 focus:border-red-500' 
-                            : 'border-gray-300'
-                          }
-                          ${focusedField === 'phoneSystemNeeds' ? 'shadow-lg scale-[1.01]' : ''}
-                        `}
-                      >
-                        <option value="">Select an option</option>
-                        <option value="Installing new phone system">Installing new phone system</option>
-                        <option value="Replacing existing phone system">Replacing existing phone system</option>
-                        <option value="Expanding existing phone system">Expanding existing phone system</option>
-                      </select>
-                    </div>
-                    {errors.phoneSystemNeeds && (
-                      <p className="mt-1.5 text-sm text-red-600 font-medium animate-slideDown flex items-center">
-                        <span className="mr-1">⚠</span> {errors.phoneSystemNeeds}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Phones Needed */}
-                  <div className="group">
-                    <label htmlFor="phonesNeeded" className="block text-sm font-bold text-gray-800 mb-2 transition-colors group-focus-within:text-[#ff8633]">
-                      Number of Phones Needed <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <select
-                        id="phonesNeeded"
-                        name="phonesNeeded"
-                        value={formData.phonesNeeded}
-                        onChange={handleInputChange}
-                        onFocus={() => setFocusedField('phonesNeeded')}
-                        onBlur={() => setFocusedField(null)}
-                        className={`w-full px-4 py-3.5 border-2 rounded-xl text-gray-900 
-                          bg-white transition-all duration-300 ease-in-out
-                          focus:outline-none focus:ring-4 focus:ring-[#ff8633]/20 focus:border-[#ff8633] 
-                          hover:border-gray-400 hover:shadow-md
-                          ${errors.phonesNeeded 
-                            ? 'border-red-500 bg-red-50 focus:ring-red-200 focus:border-red-500' 
-                            : 'border-gray-300'
-                          }
-                          ${focusedField === 'phonesNeeded' ? 'shadow-lg scale-[1.01]' : ''}
-                        `}
-                      >
-                        <option value="">Select an option</option>
-                        <option value="1-10">1-10 phones</option>
-                        <option value="11-25">11-25 phones</option>
-                        <option value="26-50">26-50 phones</option>
-                        <option value="50+">50+ phones</option>
-                      </select>
-                    </div>
-                    {errors.phonesNeeded && (
-                      <p className="mt-1.5 text-sm text-red-600 font-medium animate-slideDown flex items-center">
-                        <span className="mr-1">⚠</span> {errors.phonesNeeded}
-                      </p>
-                    )}
-                  </div>
-                  </div>
-
-                  {/* Email Updates Checkbox */}
-                  <div className="flex items-start">
-                    <div className="flex items-center h-5">
-                      <input
-                        id="emailUpdates"
-                        name="emailUpdates"
-                        type="checkbox"
-                        checked={formData.emailUpdates}
-                        onChange={handleInputChange}
-                        className="w-4 h-4 text-[#ff8633] border-gray-300 rounded focus:ring-[#ff8633] focus:ring-2"
-                      />
-                    </div>
-                    <div className="ml-3 text-sm">
-                      <label htmlFor="emailUpdates" className="font-medium text-gray-700">
-                        I would like to receive email updates about phone system solutions
-                      </label>
-                    </div>
-                  </div>
-
-                  {/* reCAPTCHA */}
-                  <div className="flex flex-col items-start">
-                    <ReCAPTCHA
-                      ref={captchaRef}
-                      sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
-                      onChange={(value) => {
-                        setCaptchaValue(value);
-                        if (errors.captcha) {
-                          setErrors({
-                            ...errors,
-                            captcha: ''
-                          });
-                        }
-                      }}
-                    />
-                  </div>
-                  {errors.captcha && (
-                    <p className="mt-2 text-sm text-red-600 font-medium animate-slideDown flex items-center">
-                      <span className="mr-1">⚠</span> {errors.captcha}
-                    </p>
-                  )}
-
-                  {/* Consent Text */}
-                  <div className="pt-3">
-                    <p className="text-xs text-gray-600 leading-relaxed">
-                      By clicking &quot;Compare Prices&quot; below, I consent to receive from compare-bazaar.com at any time SMS text messages and I also consent to receive from compare-bazaar.com and up to five service providers at any time emails, telemarketing calls using auto-dialer, artificial voices or pre-recordings, which could result in wireless charges, at the number provided above. I understand that consent is not a condition of purchase. I also agree to the{' '}
-                      <Link href="/terms-of-use" className="text-[#ff8633] hover:text-orange-600 underline font-semibold transition-colors">
-                        Terms &amp; Conditions
-                      </Link>
-                      {' '}and{' '}
-                      <Link href="/privacy-policy" className="text-[#ff8633] hover:text-orange-600 underline font-semibold transition-colors">
-                        Privacy Policy
-                      </Link>
-                      , which are also linked at the bottom of the page.
-                    </p>
-                  </div>
-
-                  {/* Submit Button */}
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className={`w-full py-4 px-6 rounded-xl font-bold text-white text-lg mt-auto
-                      transition-all duration-300 ease-in-out transform relative overflow-hidden
-                      ${isSubmitting
-                        ? 'bg-gray-400 cursor-not-allowed'
-                        : 'bg-gradient-to-r from-[#ff8633] to-orange-600 hover:from-orange-600 hover:to-[#ff8633] shadow-lg hover:shadow-2xl hover:scale-[1.02] active:scale-[0.98]'
-                      }`}
-                  >
-                    <span className="relative z-10 flex items-center justify-center">
-                      {isSubmitting ? (
-                        <>
-                          <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                          </svg>
-                          Submitting...
-                        </>
-                      ) : (
-                        'Compare Prices'
-                      )}
-                    </span>
-                    {!isSubmitting && (
-                      <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 transform -skew-x-12 -translate-x-full hover:translate-x-full transition-transform duration-1000"></div>
-                    )}
-                  </button>
-                </form>
+                </div>
               </div>
-            </div>
 
-            {/* Right Side - Product Demo/Content */}
-            <div className="order-2 lg:order-2 flex">
-              <div className="lg:sticky lg:top-4 bg-white rounded-l-none lg:rounded-r-3xl rounded-3xl shadow-2xl p-0 flex flex-col border-0 lg:border-l border-gray-200 relative overflow-hidden w-full h-auto">
-                <div className="flex flex-col">
-                  <div className="mb-4 text-center px-4 sm:px-6 pt-4 sm:pt-6">
-                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">
-                      Experience Business Phone Systems
-                    </h2>
-                    <p className="text-gray-600 text-sm">
-                      See how our platform simplifies business communication
-                    </p>
-                  </div>
-
-                  {/* BPS Image */}
-                  <div className="w-full mb-4">
-                    <div className="relative w-full h-[190px] sm:h-[240px] md:h-[280px] overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-                      <img
-                        src="https://images.unsplash.com/photo-1596524430615-b46475ddff6e?auto=format&fit=crop&w=960&q=80"
-                        srcSet="https://images.unsplash.com/photo-1596524430615-b46475ddff6e?auto=format&fit=crop&w=640&q=80 640w, https://images.unsplash.com/photo-1596524430615-b46475ddff6e?auto=format&fit=crop&w=960&q=80 960w, https://images.unsplash.com/photo-1596524430615-b46475ddff6e?auto=format&fit=crop&w=1400&q=80 1400w"
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 700px"
-                        alt="Customer support agent using business phone system with headset"
-                        width="1400"
-                        height="840"
-                        className="w-full h-full object-cover"
-                        loading="eager"
-                        onError={(e) => {
-                          e.currentTarget.src =
-                            "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=960&q=80";
-                        }}
-                      />
+              <div>
+                <div className="fc">
+                  {submitted ? (
+                    <div className="succ">
+                      <div className="succ-icon">
+                        <CheckCircle2 aria-hidden />
+                      </div>
+                      <h3>Request received!</h3>
+                      <p>
+                        UCaaS specialists are pairing vendors to your rollout scenario. Expect comparable quotes within{" "}
+                        <strong style={{ color: "var(--blue)" }}>24 hours</strong>.
+                      </p>
+                      <ul className="succ-steps">
+                        {[
+                          "We translate install vs expansion context into bundle tiers",
+                          "You receive proposals referencing desk phones + soft clients",
+                          "Schedule pilots only with finalists you choose",
+                        ].map((s, i) => (
+                          <li key={i} className="ss">
+                            <span className="ssn">{i + 1}</span>
+                            <span className="sst">{s}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                  </div>
-
-                  {/* Stats Banner */}
-                  <div className="mb-4 bg-gradient-to-r from-[#ff8633] via-orange-500 to-[#ff8633] rounded-xl p-3 shadow-lg relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer"></div>
-                    <div className="relative grid grid-cols-3 gap-3 text-center">
-                      <div>
-                        <div className="text-white text-xl sm:text-2xl font-bold mb-0.5">10K+</div>
-                        <div className="text-orange-100 text-[10px] sm:text-xs font-medium">Businesses</div>
-                      </div>
-                      <div className="border-l border-orange-300/50"></div>
-                      <div>
-                        <div className="text-white text-xl sm:text-2xl font-bold mb-0.5 flex items-center justify-center gap-1">
-                          <Star className="w-4 h-4 fill-yellow-300 text-yellow-300" />
-                          4.8
+                  ) : (
+                    <>
+                      <div className="fh">
+                        <div className="fh-top">
+                          <h2>Get Free VoIP Quotes</h2>
+                          <span className="fbadge">Free · No Obligation</span>
                         </div>
-                        <div className="text-orange-100 text-[10px] sm:text-xs font-medium">Rating</div>
-                      </div>
-                      <div className="border-l border-orange-300/50"></div>
-                      <div>
-                        <div className="text-white text-xl sm:text-2xl font-bold mb-0.5">24/7</div>
-                        <div className="text-orange-100 text-[10px] sm:text-xs font-medium">Support</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Key Benefits Section */}
-                  <div className="mb-4">
-                    <h3 className="text-base font-bold text-gray-900 mb-3 flex items-center">
-                      <Star className="w-4 h-4 text-[#ff8633] mr-2" />
-                      Why Choose Our Platform?
-                    </h3>
-                    <div className="space-y-2">
-                      <div className="flex items-start space-x-2 p-2.5 bg-gradient-to-r from-blue-50 to-blue-100/50 rounded-lg border border-blue-200 hover:shadow-md transition-all">
-                        <div className="flex-shrink-0 mt-0.5">
-                          <div className="w-7 h-7 bg-blue-600 rounded-full flex items-center justify-center">
-                            <CheckCircle2 className="w-4 h-4 text-white" />
-                          </div>
+                        <p>Business phone system proposals matched within a day</p>
+                        <div className="pbar">
+                          {[1, 2, 3].map((s) => (
+                            <div key={s} className={`pseg ${s < step ? "done" : s === step ? "active" : ""}`} />
+                          ))}
                         </div>
-                        <div>
-                          <h4 className="font-semibold text-gray-900 text-xs mb-0.5">Compare Top Providers</h4>
-                          <p className="text-[11px] text-gray-700 leading-tight">Get quotes from leading business phone system providers all in one place</p>
+                        <div className="step-dots" aria-hidden>
+                          {[1, 2, 3].map((s) => (
+                            <span key={s} className={`sdot ${s === step ? "on" : ""} ${s < step ? "done" : ""}`} />
+                          ))}
+                        </div>
+                        <div className="plabel">
+                          Step <b>{step} of 3</b> — {stepLabel}
                         </div>
                       </div>
 
-                      <div className="flex items-start space-x-2 p-2.5 bg-gradient-to-r from-green-50 to-green-100/50 rounded-lg border border-green-200 hover:shadow-md transition-all">
-                        <div className="flex-shrink-0 mt-0.5">
-                          <div className="w-7 h-7 bg-green-600 rounded-full flex items-center justify-center">
-                            <Clock className="w-4 h-4 text-white" />
-                          </div>
-                        </div>
-                        <div>
-                          <h4 className="font-semibold text-gray-900 text-xs mb-0.5">Save Time & Money</h4>
-                          <p className="text-[11px] text-gray-700 leading-tight">Compare pricing and features in minutes, not hours</p>
-                        </div>
-                      </div>
+                      <div className="fb">
+                        {step === 1 && (
+                          <>
+                            <div className="fr">
+                              <div>
+                                <label>
+                                  First Name<span className="req">*</span>
+                                </label>
+                                <input
+                                  type="text"
+                                  placeholder="Lin"
+                                  value={form.firstName}
+                                  className={errors.firstName ? "input-err" : undefined}
+                                  onChange={(e) => {
+                                    setField("firstName", e.target.value);
+                                    clearErr("firstName");
+                                  }}
+                                />
+                                {errors.firstName ? <p className="field-err">{errors.firstName}</p> : null}
+                              </div>
+                              <div>
+                                <label>
+                                  Last Name<span className="req">*</span>
+                                </label>
+                                <input
+                                  type="text"
+                                  placeholder="Zhao"
+                                  value={form.lastName}
+                                  className={errors.lastName ? "input-err" : undefined}
+                                  onChange={(e) => {
+                                    setField("lastName", e.target.value);
+                                    clearErr("lastName");
+                                  }}
+                                />
+                                {errors.lastName ? <p className="field-err">{errors.lastName}</p> : null}
+                              </div>
+                            </div>
+                            <div className="ff">
+                              <label>
+                                Business Email<span className="req">*</span>
+                              </label>
+                              <input
+                                type="email"
+                                placeholder="you@company.com"
+                                value={form.email}
+                                className={errors.email ? "input-err" : undefined}
+                                onChange={(e) => {
+                                  setField("email", e.target.value);
+                                  clearErr("email");
+                                }}
+                              />
+                              {errors.email ? <p className="field-err">{errors.email}</p> : null}
+                              <p className="hint">
+                                By entering your email, you consent to receive marketing emails from compare-bazaar.com.
+                              </p>
+                            </div>
+                            <div className="ff">
+                              <label>
+                                Company Name<span className="req">*</span>
+                              </label>
+                              <input
+                                type="text"
+                                placeholder="Atlas Dental Group"
+                                value={form.companyName}
+                                className={errors.companyName ? "input-err" : undefined}
+                                onChange={(e) => {
+                                  setField("companyName", e.target.value);
+                                  clearErr("companyName");
+                                }}
+                              />
+                              {errors.companyName ? <p className="field-err">{errors.companyName}</p> : null}
+                            </div>
+                            <div className="fr">
+                              <div>
+                                <label>
+                                  Phone<span className="req">*</span>
+                                </label>
+                                <input
+                                  type="tel"
+                                  placeholder="+1 555 000 0000"
+                                  value={form.phoneNumber}
+                                  className={errors.phoneNumber ? "input-err" : undefined}
+                                  onChange={(e) => {
+                                    setField("phoneNumber", e.target.value);
+                                    clearErr("phoneNumber");
+                                  }}
+                                />
+                                {errors.phoneNumber ? <p className="field-err">{errors.phoneNumber}</p> : null}
+                              </div>
+                              <div>
+                                <label>
+                                  ZIP Code<span className="req">*</span>
+                                </label>
+                                <input
+                                  type="text"
+                                  placeholder="10001"
+                                  value={form.zipCode}
+                                  className={errors.zipCode ? "input-err" : undefined}
+                                  onChange={(e) => {
+                                    setField("zipCode", e.target.value);
+                                    clearErr("zipCode");
+                                  }}
+                                />
+                                {errors.zipCode ? <p className="field-err">{errors.zipCode}</p> : null}
+                              </div>
+                            </div>
+                            <button type="button" className="btnp" onClick={() => validateStep1() && setStep(2)}>
+                              Continue to Step 2 →
+                            </button>
+                            <div className="ftrust">
+                              <span className="tbadge">
+                                <Shield className="tb-ico" aria-hidden />
+                                SSL Encrypted
+                              </span>
+                              <span className="tbadge">
+                                <Sparkles className="tb-ico" aria-hidden />
+                                No spam
+                              </span>
+                            </div>
+                          </>
+                        )}
 
-                      <div className="flex items-start space-x-2 p-2.5 bg-gradient-to-r from-orange-50 to-orange-100/50 rounded-lg border border-orange-200 hover:shadow-md transition-all">
-                        <div className="flex-shrink-0 mt-0.5">
-                          <div className="w-7 h-7 bg-[#ff8633] rounded-full flex items-center justify-center">
-                            <Shield className="w-4 h-4 text-white" />
-                          </div>
-                        </div>
-                        <div>
-                          <h4 className="font-semibold text-gray-900 text-xs mb-0.5">Expert Guidance</h4>
-                          <p className="text-[11px] text-gray-700 leading-tight">Our team helps you find the perfect solution for your business needs</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                        {step === 2 && (
+                          <>
+                            <div className="ff">
+                              <label>
+                                Phone System Scenario<span className="req">*</span>
+                              </label>
+                              <select
+                                value={form.phoneSystemNeeds}
+                                className={errors.phoneSystemNeeds ? "input-err" : undefined}
+                                onChange={(e) => {
+                                  setField("phoneSystemNeeds", e.target.value);
+                                  clearErr("phoneSystemNeeds");
+                                }}
+                              >
+                                <option value="">Select an option</option>
+                                {PHONE_SYSTEM_NEEDS.map((o) => (
+                                  <option key={o} value={o}>
+                                    {o}
+                                  </option>
+                                ))}
+                              </select>
+                              {errors.phoneSystemNeeds ? <p className="field-err">{errors.phoneSystemNeeds}</p> : null}
+                            </div>
+                            <div className="ff">
+                              <label>
+                                Phones Needed<span className="req">*</span>
+                              </label>
+                              <select
+                                value={form.phonesNeeded}
+                                className={errors.phonesNeeded ? "input-err" : undefined}
+                                onChange={(e) => {
+                                  setField("phonesNeeded", e.target.value);
+                                  clearErr("phonesNeeded");
+                                }}
+                              >
+                                <option value="">Select an option</option>
+                                {PHONES_NEEDED.map((o) => (
+                                  <option key={o.value} value={o.value}>
+                                    {o.label}
+                                  </option>
+                                ))}
+                              </select>
+                              {errors.phonesNeeded ? <p className="field-err">{errors.phonesNeeded}</p> : null}
+                            </div>
+                            <button type="button" className="btnp" onClick={() => validateStep2() && setStep(3)}>
+                              Continue to Step 3 →
+                            </button>
+                            <button type="button" className="btnback" onClick={() => setStep(1)}>
+                              ← Back to Step 1
+                            </button>
+                          </>
+                        )}
 
-                  {/* Features Grid */}
-                  <div className="mb-4">
-                    <h3 className="text-base font-bold text-gray-900 mb-3 flex items-center">
-                      <Zap className="w-4 h-4 text-[#ff8633] mr-2" />
-                      Key Features
-                    </h3>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded-lg border border-gray-200 hover:border-[#ff8633] hover:bg-orange-50 transition-all group">
-                        <Phone className="w-3.5 h-3.5 text-[#ff8633] group-hover:scale-110 transition-transform" />
-                        <span className="text-[11px] font-medium text-gray-700 group-hover:text-gray-900">VoIP & Cloud PBX</span>
+                        {step === 3 && (
+                          <>
+                            <label className="chk-row">
+                              <input
+                                type="checkbox"
+                                checked={form.emailUpdates}
+                                onChange={(e) => setField("emailUpdates", e.target.checked)}
+                              />
+                              <span>Send UCaaS tips & Compare Bazaar updates (optional).</span>
+                            </label>
+                            <div className="cap-wrap">
+                              <ReCAPTCHA
+                                ref={captchaRef}
+                                sitekey={recaptchaSiteKey}
+                                onChange={(token) => {
+                                  setCaptchaToken(token || "");
+                                  if (token) {
+                                    setSubmitError("");
+                                    clearErr("captcha");
+                                  }
+                                }}
+                                onExpired={() => setCaptchaToken("")}
+                              />
+                            </div>
+                            {!canSubmitWithConfig ? <p className="cap-err">Form setup is incomplete. Please contact support.</p> : null}
+                            {errors.captcha ? <p className="cap-err">{errors.captcha}</p> : null}
+                            {submitError ? <p className="cap-err">{submitError}</p> : null}
+                            <button
+                              type="button"
+                              className="btnp"
+                              disabled={isSubmitting || !canSubmitWithConfig}
+                              onClick={handleFinalSubmit}
+                            >
+                              {isSubmitting ? <span className="btn-load"><span className="btn-spin" aria-hidden /> Submitting...</span> : "Get My Phone Quotes"}
+                            </button>
+                            <button type="button" className="btnback" onClick={() => setStep(2)}>
+                              ← Back to Step 2
+                            </button>
+                            <p className="consent">
+                              By submitting, you agree to our <a href="/terms-of-use">Terms of Use</a> and{" "}
+                              <a href="/privacy-policy">Privacy Policy</a>. We may share your details with matched VoIP / UCaaS
+                              vendors. You can opt out anytime.
+                            </p>
+                          </>
+                        )}
                       </div>
-                      <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded-lg border border-gray-200 hover:border-[#ff8633] hover:bg-orange-50 transition-all group">
-                        <Video className="w-3.5 h-3.5 text-[#ff8633] group-hover:scale-110 transition-transform" />
-                        <span className="text-[11px] font-medium text-gray-700 group-hover:text-gray-900">Video Conferencing</span>
-                      </div>
-                      <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded-lg border border-gray-200 hover:border-[#ff8633] hover:bg-orange-50 transition-all group">
-                        <MessageSquare className="w-3.5 h-3.5 text-[#ff8633] group-hover:scale-110 transition-transform" />
-                        <span className="text-[11px] font-medium text-gray-700 group-hover:text-gray-900">Unified Messaging</span>
-                      </div>
-                      <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded-lg border border-gray-200 hover:border-[#ff8633] hover:bg-orange-50 transition-all group">
-                        <BarChart3 className="w-3.5 h-3.5 text-[#ff8633] group-hover:scale-110 transition-transform" />
-                        <span className="text-[11px] font-medium text-gray-700 group-hover:text-gray-900">Call Analytics</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Additional Content Section */}
-                  <div className="pt-4 border-t border-gray-200">
-                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-3 mb-3 border border-blue-200">
-                      <div className="flex items-start space-x-2">
-                        <div className="flex-shrink-0">
-                          <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                            <CheckCircle className="w-5 h-5 text-white" />
-                          </div>
-                        </div>
-                        <div>
-                          <h4 className="font-bold text-gray-900 text-xs mb-1">100% Free Service</h4>
-                          <p className="text-[10px] text-gray-700 leading-tight">No hidden fees. Compare quotes from verified providers at no cost to you.</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-2 mb-3">
-                      <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-2.5 border border-green-200 text-center hover:shadow-md transition-all group">
-                        <TrendingUp className="w-5 h-5 text-green-600 mx-auto mb-1 group-hover:scale-110 transition-transform" />
-                        <div className="text-xs font-bold text-gray-900">Save Up to 40%</div>
-                        <div className="text-[10px] text-gray-600">On Phone Systems</div>
-                      </div>
-                      <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-2.5 border border-purple-200 text-center hover:shadow-md transition-all group">
-                        <Users className="w-5 h-5 text-purple-600 mx-auto mb-1 group-hover:scale-110 transition-transform" />
-                        <div className="text-xs font-bold text-gray-900">Expert Help</div>
-                        <div className="text-[10px] text-gray-600">Dedicated Support</div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-center space-x-1 text-yellow-400 mb-2">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="w-3.5 h-3.5 fill-current" />
-                      ))}
-                    </div>
-                    <p className="text-[10px] text-gray-600 text-center font-medium">
-                      Trusted by thousands of businesses nationwide
-                    </p>
-                  </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -813,92 +608,121 @@ const BusinessPhoneSystemGetQuotesForm = () => {
         </div>
       </div>
 
-      <style>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        @keyframes slideDown {
-          from {
-            opacity: 0;
-            transform: translateY(-5px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        @keyframes pulse-border {
-          0%, 100% {
-            opacity: 0.5;
-          }
-          50% {
-            opacity: 1;
-          }
-        }
-        @keyframes shimmer {
-          0% {
-            transform: translateX(-100%);
-          }
-          100% {
-            transform: translateX(100%);
-          }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.5s ease-out;
-        }
-        .animate-slideDown {
-          animation: slideDown 0.3s ease-out;
-        }
-        .animate-pulse-border {
-          animation: pulse-border 2s ease-in-out infinite;
-        }
-        .animate-shimmer {
-          animation: shimmer 3s ease-in-out infinite;
-        }
-        select {
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        select:focus {
-          transform: scale(1.01);
-        }
-        select option {
-          padding: 12px;
-          background: white;
-          color: #1f2937;
-          transition: background-color 0.2s;
-        }
-        select option:hover {
-          background-color: #f3f4f6;
-        }
-        select option:checked {
-          background-color: #ff8633;
-          color: white;
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(0, 0, 0, 0.1);
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #ff8633;
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #ff6b00;
-        }
-      `}</style>
+      <div className="sec-alt">
+        <section className="sec" style={{ paddingTop: 48, paddingBottom: 56 }}>
+          <div className="ct">
+            <div className="stag">How It Works</div>
+            <h2 className="sh">Modern calling procurement in three beats</h2>
+            <p className={"s" + "sub"}>Scenario clarity → aligned UC bundles → pilots without redundant vendor theater.</p>
+            <div className="howg">
+              {[
+                {
+                  tag: "2 minutes",
+                  num: "01",
+                  title: "Frame your rollout",
+                  body: "Install vs swap vs expansion sets vendor expectations for hardware leases and managed cutovers.",
+                },
+                {
+                  tag: "Within 24 hours",
+                  num: "02",
+                  title: "Tailored UC quotes",
+                  body: "Responses emphasize Compare Bazaar editorial picks — Ooma, Nextiva, Zoom Phone, Vonage, RingCentral.",
+                },
+                {
+                  tag: "Ops-led",
+                  num: "03",
+                  title: "Pick winners quickly",
+                  body: "Compare unlimited domestic tiers, fax survivability, and CRM integrations side-by-side.",
+                },
+              ].map((c) => (
+                <div key={c.num} className="hc">
+                  <span className="howt">{c.tag}</span>
+                  <div className="hwn">{c.num}</div>
+                  <h3>{c.title}</h3>
+                  <p>{c.body}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <section className="sec">
+        <div className="ct">
+          <div className="stag">Buyer Stories</div>
+          <h2 className="sh">Teams that accelerated VoIP decisions</h2>
+          <p className={"s" + "sub"}>Hybrid workforce operators pairing Zoom ecosystems with PSTN reliability.</p>
+          <div className="tg">
+            {TESTIMONIALS.map((t) => (
+              <div key={t.name} className="tc">
+                <span className="rtag">✓ {t.result}</span>
+                <div className="tstars" aria-label="5 out of 5 stars">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} size={15} fill="#FBBF24" color="#FBBF24" strokeWidth={0} aria-hidden />
+                  ))}
+                </div>
+                <p className="tbody">&ldquo;{t.body}&rdquo;</p>
+                <div className="ta">
+                  <div className="av" style={{ background: t.avatarBg, color: t.avatarText }}>
+                    {t.initials}
+                  </div>
+                  <div>
+                    <div className="an">{t.name}</div>
+                    <div className="ar">
+                      {t.role}, {t.company}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <div className="sec-alt">
+        <section className="sec" style={{ paddingTop: 48, paddingBottom: 56 }}>
+          <div className="ct">
+            <div className="stag">Why Compare Bazaar</div>
+            <h2 className="sh">Independent VoIP guidance</h2>
+            <p className={"s" + "sub"}>Hands-on testing drives shortlists — not vendor sponsorship lanes.</p>
+            <div className="whyg">
+              {WHY_ITEMS.map((w) => {
+                const Icon = w.icon;
+                return (
+                  <div key={w.title} className="wc">
+                    <div className="wi">
+                      <Icon aria-hidden />
+                    </div>
+                    <div>
+                      <h4>{w.title}</h4>
+                      <p>{w.body}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div className="ct">
+        <div className="cta-band">
+          <div style={{ position: "relative", zIndex: 1 }}>
+            <h2>Ready for VoIP quotes?</h2>
+            <p>Jump back up — three steps connect you with UC vendors matching our editorial roster.</p>
+          </div>
+          <a
+            href="#"
+            className="btn-wh"
+            onClick={(e) => {
+              e.preventDefault();
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+          >
+            Get Free Quotes →
+          </a>
+        </div>
+      </div>
     </>
   );
-};
-
-export default BusinessPhoneSystemGetQuotesForm;
-
+}

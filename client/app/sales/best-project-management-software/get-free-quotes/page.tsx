@@ -1,223 +1,795 @@
-// @ts-nocheck
 "use client";
 
-import { useState, useRef } from 'react';
-import Link from 'next/link';
-import ReCAPTCHA from 'react-google-recaptcha';
-import { CheckCircle, Clock3, KanbanSquare, ShieldCheck, Sparkles, Users } from 'lucide-react';
+import Head from "next/head";
+import { useEffect, useRef, useState } from "react";
+import ReCAPTCHA from "react-google-recaptcha";
+import {
+  CheckCircle2,
+  KanbanSquare,
+  Layers,
+  MessageCircle,
+  Shield,
+  ShieldCheck,
+  Sparkles,
+  Star,
+  Zap,
+  type LucideIcon,
+} from "lucide-react";
+import { quoteLandingPageCss } from "@/lib/quoteLandingPageCss";
 
-const FEATURE_OPTIONS = [
-  'Task dependencies',
-  'Gantt charts',
-  'Automation rules',
-  'Team workload view',
-  'Client collaboration',
-  'Time tracking',
+const VENDORS = [
+  { name: "Monday.com", dot: "#FF3D57" },
+  { name: "ClickUp", dot: "#7B68EE" },
+  { name: "Asana", dot: "#F06A6A" },
+  { name: "Notion", dot: "#111827" },
+  { name: "Jira", dot: "#0052CC" },
+  { name: "Trello", dot: "#0079BF" },
 ];
 
+const FEATURE_OPTS = [
+  "Task dependencies",
+  "Gantt charts",
+  "Automation rules",
+  "Team workload view",
+  "Client collaboration",
+  "Time tracking",
+];
+
+const TEAM_SIZES = ["1-10", "11-50", "51-200", "200+"];
+const PROJECT_TYPES = ["Marketing", "Product", "Software Development", "Operations", "Mixed"];
+const BUDGET_RANGES = ["Under $100/mo", "$100-$500/mo", "$500-$1500/mo", "$1500+/mo"];
+const TIMELINES = ["Immediately", "Within 30 days", "1-3 months", "Exploring options"];
+
+interface FormData {
+  firstName: string;
+  lastName: string;
+  companyName: string;
+  email: string;
+  phoneNumber: string;
+  teamSize: string;
+  projectType: string;
+  budgetRange: string;
+  timeline: string;
+  currentTool: string;
+  features: string[];
+  notes: string;
+}
+
+const TESTIMONIALS = [
+  {
+    name: "Sophie Brennan",
+    role: "PMO Lead",
+    company: "Helio Renewables",
+    result: "Monday vs ClickUp decision in two sprints",
+    body: "Automation + workload truth captured once — demos stopped rehashing basic Kanban fluff.",
+    initials: "SB",
+    avatarBg: "#DBEAFE",
+    avatarText: "#1D4ED8",
+  },
+  {
+    name: "Ravi Kapoor",
+    role: "Engineering Manager",
+    company: "Tidal Payments",
+    result: "Jira stack validated against hybrid ClickUp pilots",
+    body: "Quotes respected agile reporting depth instead of forcing generic PM fluff on dev teams.",
+    initials: "RK",
+    avatarBg: "#DCFCE7",
+    avatarText: "#16A34A",
+  },
+  {
+    name: "Maya Owens",
+    role: "Marketing Ops",
+    company: "Northwind Content",
+    result: "Notion + Asana hybrids priced fairly",
+    body: "Cross-functional approvals needed transparency — responders mapped doc + task workflows clearly.",
+    initials: "MO",
+    avatarBg: "#FEF3C7",
+    avatarText: "#D97706",
+  },
+];
+
+const WHY_ITEMS: { icon: LucideIcon; title: string; body: string }[] = [
+  {
+    icon: KanbanSquare,
+    title: "Workflow-aware routing",
+    body: "Team size, workload views, automation appetite, and doc habits steer PM stack recommendations.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Same roster we publish",
+    body: "Monday.com, ClickUp, Asana, Notion, Jira, Smartsheet, Trello anchor buyer expectations.",
+  },
+  {
+    icon: Zap,
+    title: "Fast benchmarking",
+    body: "One intake beats vendor-by-vendor datasheet scavenger hunts.",
+  },
+  {
+    icon: MessageCircle,
+    title: "Clarity before trials",
+    body: "Gantt, automation tiers, integrations — surfaced before you sink weeks into POCs.",
+  },
+];
+
+const emptyForm = (): FormData => ({
+  firstName: "",
+  lastName: "",
+  companyName: "",
+  email: "",
+  phoneNumber: "",
+  teamSize: "",
+  projectType: "",
+  budgetRange: "",
+  timeline: "",
+  currentTool: "",
+  features: [],
+  notes: "",
+});
+
 export default function ProjectManagementGetQuotesPage() {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    companyName: '',
-    email: '',
-    phoneNumber: '',
-    teamSize: '',
-    projectType: '',
-    budgetRange: '',
-    timeline: '',
-    currentTool: '',
-    features: [],
-    notes: '',
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [step, setStep] = useState(1);
   const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState('');
-  const [captchaValue, setCaptchaValue] = useState(null);
-  const captchaRef = useRef(null);
+  const [form, setForm] = useState<FormData>(emptyForm());
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [captchaToken, setCaptchaToken] = useState("");
+  const [submitError, setSubmitError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const onChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  const captchaRef = useRef<ReCAPTCHA | null>(null);
+  const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "";
+  const web3formsAccessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY || "";
+  const canSubmitWithConfig = Boolean(recaptchaSiteKey && web3formsAccessKey);
 
-  const onFeatureToggle = (feature) => {
-    setFormData((prev) => ({
+  const setField = (k: keyof FormData, v: string | string[]) =>
+    setForm((f) => ({ ...f, [k]: v as never }));
+
+  const toggleFeature = (f: string) =>
+    setForm((prev) => ({
       ...prev,
-      features: prev.features.includes(feature)
-        ? prev.features.filter((f) => f !== feature)
-        : [...prev.features, feature],
+      features: prev.features.includes(f) ? prev.features.filter((x) => x !== f) : [...prev.features, f],
     }));
+
+  const clearErr = (key: string) =>
+    setErrors((e) => {
+      if (!e[key]) return e;
+      const n = { ...e };
+      delete n[key];
+      return n;
+    });
+
+  const validateStep1 = (): boolean => {
+    const e: Record<string, string> = {};
+    if (!form.firstName.trim()) e.firstName = "Please complete this required field.";
+    if (!form.lastName.trim()) e.lastName = "Please complete this required field.";
+    if (!form.companyName.trim()) e.companyName = "Please complete this required field.";
+    if (!form.email.trim()) e.email = "Please complete this required field.";
+    else if (!/\S+@\S+\.\S+/.test(form.email)) e.email = "Please enter a valid email address.";
+    if (!form.phoneNumber.trim()) e.phoneNumber = "Please complete this required field.";
+    setErrors((prev) => {
+      const next = { ...prev };
+      ["firstName", "lastName", "companyName", "email", "phoneNumber"].forEach((k) => delete next[k]);
+      return { ...next, ...e };
+    });
+    return Object.keys(e).length === 0;
   };
 
-  const onSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    if (!captchaValue) return setError("Please verify you're not a robot.");
+  const validateStep2 = (): boolean => {
+    const er: Record<string, string> = {};
+    if (!form.teamSize) er.teamSize = "Please complete this required field.";
+    if (!form.projectType) er.projectType = "Please complete this required field.";
+    if (!form.budgetRange) er.budgetRange = "Please complete this required field.";
+    if (!form.timeline) er.timeline = "Please complete this required field.";
+    setErrors((prev) => {
+      const next = { ...prev };
+      ["teamSize", "projectType", "budgetRange", "timeline"].forEach((k) => delete next[k]);
+      return { ...next, ...er };
+    });
+    return Object.keys(er).length === 0;
+  };
+
+  const handleFinalSubmit = async () => {
+    if (isSubmitting || !canSubmitWithConfig) {
+      if (!canSubmitWithConfig) setSubmitError("Form setup is incomplete. Please contact support.");
+      return;
+    }
+    if (!captchaToken) {
+      setSubmitError("Please complete reCAPTCHA before submitting.");
+      setErrors((prev) => ({ ...prev, captcha: "Please verify that you're not a robot." }));
+      return;
+    }
+    setSubmitError("");
+    setErrors((prev) => {
+      const n = { ...prev };
+      delete n.captcha;
+      return n;
+    });
 
     setIsSubmitting(true);
     try {
-      const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY;
-      if (!accessKey) throw new Error('Web3Forms key missing');
-
       const payload = {
-        access_key: accessKey,
-        subject: 'Project Management Software Quote Request - Compare Bazaar',
-        from_name: `${formData.firstName} ${formData.lastName}`,
-        email: formData.email,
-        phone: formData.phoneNumber,
-        company_name: formData.companyName,
-        team_size: formData.teamSize,
-        project_type: formData.projectType,
-        budget_range: formData.budgetRange,
-        timeline: formData.timeline,
-        current_tool: formData.currentTool,
-        must_have_features: formData.features.join(', '),
-        notes: formData.notes,
-        form_source: 'Sales > Best Project Management Software > Get Free Quotes',
-        captcha_token: captchaValue,
+        access_key: web3formsAccessKey,
+        subject: "Project Management Software Quote Request - Compare Bazaar",
+        from_name: `${form.firstName} ${form.lastName}`.trim(),
+        email: form.email,
+        phone: form.phoneNumber,
+        company_name: form.companyName,
+        team_size: form.teamSize,
+        project_type: form.projectType,
+        budget_range: form.budgetRange,
+        timeline: form.timeline,
+        current_tool: form.currentTool,
+        must_have_features: form.features.join(", "),
+        notes: form.notes,
+        form_source: "Sales > Best Project Management Software > Get Free Quotes",
+        captcha_token: captchaToken,
       };
 
-      const res = await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify(payload),
       });
-      const data = await res.json();
-      if (!data.success) throw new Error('Submission failed');
-
+      const result = await response.json();
+      if (!response.ok || !result?.success) throw new Error(result?.message || "Submission failed");
       setSubmitted(true);
-      setFormData({
-        firstName: '', lastName: '', companyName: '', email: '', phoneNumber: '',
-        teamSize: '', projectType: '', budgetRange: '', timeline: '', currentTool: '', features: [], notes: '',
-      });
-      setCaptchaValue(null);
+      setForm(emptyForm());
+      setCaptchaToken("");
       captchaRef.current?.reset();
-    } catch {
-      setError('Something went wrong. Please try again.');
+      setErrors({});
+    } catch (err) {
+      console.error("PM quote submit failed:", err);
+      setSubmitError("Could not submit right now. Please try again.");
+      setCaptchaToken("");
+      captchaRef.current?.reset();
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
+  const stepLabel = step === 1 ? "Contact" : step === 2 ? "Team & workflow" : "Features & notes";
+
   return (
-    <main className="min-h-screen bg-gradient-to-b from-[#fff7ef] via-white to-white py-8 sm:py-10 px-4">
-      <div className="max-w-6xl mx-auto">
-        <Link href="/sales/best-project-management-software" className="text-sm text-[#b45309] hover:underline">
-          ← Back to Project Management comparison
-        </Link>
+    <>
+      <Head>
+        <title>Get Project Management Software Quotes | Compare Bazaar</title>
+        <meta name="robots" content="index,follow" />
+        <link rel="canonical" href="https://www.compare-bazaar.com/sales/best-project-management-software/get-free-quotes" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+      </Head>
 
-        <section className="mt-4 rounded-3xl overflow-hidden border border-[#f1dcc8] bg-white shadow-sm">
-          <div className="relative px-6 sm:px-8 py-8 bg-gradient-to-r from-[#F78230] via-[#EC7A22] to-[#D96A08] text-white">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_80%_10%,rgba(255,255,255,0.2),transparent_55%)]" />
-            <div className="relative">
-              <p className="text-xs uppercase tracking-[0.18em] text-white/75 mb-2">Get Free Quotes</p>
-              <h1 className="text-3xl sm:text-4xl font-semibold leading-tight">
-                Find the right project management platform for your team
-              </h1>
-              <p className="mt-3 text-white/90 max-w-3xl">
-                Compare pricing and capabilities across Monday, ClickUp, Asana, Jira, and more with expert-guided vendor matching.
-              </p>
-              <div className="mt-4 flex flex-wrap gap-2 text-xs">
-                <span className="px-3 py-1 rounded-full bg-white/20 border border-white/30">No commitment</span>
-                <span className="px-3 py-1 rounded-full bg-white/20 border border-white/30">Independent recommendations</span>
-                <span className="px-3 py-1 rounded-full bg-white/20 border border-white/30">Fast response</span>
-              </div>
-            </div>
+      <style suppressHydrationWarning dangerouslySetInnerHTML={{ __html: quoteLandingPageCss }} />
+
+      <div className="bc">
+        <div className="ct">
+          <div className="bc-row">
+            <a href="https://www.compare-bazaar.com">Home</a>
+            <span className="bc-sep">›</span>
+            <a href="https://www.compare-bazaar.com/sales">Sales</a>
+            <span className="bc-sep">›</span>
+            <a href="https://www.compare-bazaar.com/sales/best-project-management-software">
+              Best Project Management Software
+            </a>
+            <span className="bc-sep">›</span>
+            <span className="bc-cur">Get Free Quotes</span>
           </div>
+        </div>
+      </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-[1.55fr_1fr]">
-            <div className="p-6 sm:p-8">
-              {submitted && (
-                <div className="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
-                  Thank you! Your request has been submitted. We will share matched options shortly.
+      <div className="hero-shell">
+        <div className="hero">
+          <div className="ct">
+            <div className="hg">
+              <div>
+                <div className="eyebrow">
+                  <span className="edot" />
+                  PM software quotes
                 </div>
-              )}
-              {error && (
-                <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
-              )}
+                <h1>
+                  Compare PM Tool Quotes
+                  <br />
+                  <span className="acc">Aligned to Workflow Depth</span>
+                </h1>
+                <p className="hdesc">
+                  Tell us team size, work style, timeline, and must-have automation once — then receive vendor matches anchored
+                  to Monday.com, ClickUp, Asana, Notion, Jira, and the platforms in our comparison guide.
+                </p>
+                <ul className="trust-ul">
+                  {[
+                    "Free quotes · no obligation",
+                    "SMB through scaling programs",
+                    "Independent methodology",
+                    "Fast turnaround",
+                  ].map((t) => (
+                    <li key={t} className="trust-li">
+                      <span className="chk">✓</span>
+                      {t}
+                    </li>
+                  ))}
+                </ul>
 
-              <form onSubmit={onSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <input name="firstName" value={formData.firstName} onChange={onChange} required placeholder="First name" className="border border-gray-300 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-[#FCE7D0] focus:border-[#F27F25] outline-none" />
-                <input name="lastName" value={formData.lastName} onChange={onChange} required placeholder="Last name" className="border border-gray-300 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-[#FCE7D0] focus:border-[#F27F25] outline-none" />
-                <input name="companyName" value={formData.companyName} onChange={onChange} required placeholder="Company name" className="sm:col-span-2 border border-gray-300 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-[#FCE7D0] focus:border-[#F27F25] outline-none" />
-                <input type="email" name="email" value={formData.email} onChange={onChange} required placeholder="Work email" className="border border-gray-300 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-[#FCE7D0] focus:border-[#F27F25] outline-none" />
-                <input name="phoneNumber" value={formData.phoneNumber} onChange={onChange} required placeholder="Phone number" className="border border-gray-300 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-[#FCE7D0] focus:border-[#F27F25] outline-none" />
+                <div className="stats">
+                  {[
+                    { n: "9+", l: "PM apps tested" },
+                    { n: "Gantt+", l: "Multi-view stacks" },
+                    { n: "Auto", l: "Rules-heavy paths" },
+                    { n: "4.5★", l: "Flexible pick (Monday)" },
+                  ].map((s) => (
+                    <div key={s.l} className="sc">
+                      <div className="sn">{s.n}</div>
+                      <div className="sl">{s.l}</div>
+                    </div>
+                  ))}
+                </div>
 
-                <select name="teamSize" value={formData.teamSize} onChange={onChange} required className="border border-gray-300 bg-white rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-[#FCE7D0] focus:border-[#F27F25] outline-none">
-                  <option value="">Team size</option><option>1-10</option><option>11-50</option><option>51-200</option><option>200+</option>
-                </select>
-                <select name="projectType" value={formData.projectType} onChange={onChange} required className="border border-gray-300 bg-white rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-[#FCE7D0] focus:border-[#F27F25] outline-none">
-                  <option value="">Primary project type</option><option>Marketing</option><option>Product</option><option>Software Development</option><option>Operations</option><option>Mixed</option>
-                </select>
-                <select name="budgetRange" value={formData.budgetRange} onChange={onChange} required className="border border-gray-300 bg-white rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-[#FCE7D0] focus:border-[#F27F25] outline-none">
-                  <option value="">Budget range</option><option>Under $100/mo</option><option>$100-$500/mo</option><option>$500-$1500/mo</option><option>$1500+/mo</option>
-                </select>
-                <select name="timeline" value={formData.timeline} onChange={onChange} required className="border border-gray-300 bg-white rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-[#FCE7D0] focus:border-[#F27F25] outline-none">
-                  <option value="">Implementation timeline</option><option>Immediately</option><option>Within 30 days</option><option>1-3 months</option><option>Exploring options</option>
-                </select>
-
-                <input name="currentTool" value={formData.currentTool} onChange={onChange} placeholder="Current tool (optional)" className="sm:col-span-2 border border-gray-300 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-[#FCE7D0] focus:border-[#F27F25] outline-none" />
-
-                <div className="sm:col-span-2">
-                  <p className="text-sm font-medium text-gray-700 mb-2">Must-have features</p>
-                  <div className="flex flex-wrap gap-2">
-                    {FEATURE_OPTIONS.map((feature) => (
-                      <button
-                        type="button"
-                        key={feature}
-                        onClick={() => onFeatureToggle(feature)}
-                        className={`px-3 py-1.5 rounded-full text-xs border transition-colors ${
-                          formData.features.includes(feature)
-                            ? 'bg-[#F27F25] text-white border-[#F27F25]'
-                            : 'bg-white text-gray-600 border-gray-300 hover:border-[#F2B582]'
-                        }`}
-                      >
-                        {feature}
-                      </button>
+                <div className="vrow">
+                  <div className="vlabel">Top platforms from Compare Bazaar reviews</div>
+                  <div className="vpills">
+                    {VENDORS.map((v) => (
+                      <div key={v.name} className="vp">
+                        <span className="vdot" style={{ background: v.dot }} />
+                        {v.name}
+                      </div>
                     ))}
                   </div>
                 </div>
-
-                <textarea name="notes" value={formData.notes} onChange={onChange} placeholder="Anything specific to your workflow?" className="sm:col-span-2 border border-gray-300 rounded-lg px-3 py-2.5 min-h-24 focus:ring-2 focus:ring-[#FCE7D0] focus:border-[#F27F25] outline-none" />
-
-                <div className="sm:col-span-2">
-                  <ReCAPTCHA sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY} onChange={setCaptchaValue} ref={captchaRef} />
-                </div>
-
-                <button type="submit" disabled={isSubmitting} className="sm:col-span-2 bg-gradient-to-r from-[#F78230] to-[#D96A08] text-white font-semibold rounded-lg py-3.5 hover:opacity-95 disabled:opacity-60 transition-all shadow-sm">
-                  {isSubmitting ? 'Submitting...' : 'Get Free Quotes'}
-                </button>
-              </form>
-            </div>
-
-            <aside className="border-t lg:border-t-0 lg:border-l border-[#f1dcc8] bg-[#fffaf5] p-6 sm:p-8">
-              <h2 className="text-lg font-semibold text-[#1f2937]">Why this form works</h2>
-              <div className="mt-4 space-y-3">
-                <div className="rounded-xl border border-[#f1dcc8] bg-white p-4">
-                  <div className="flex items-center gap-2 text-[#9C4302] mb-1"><KanbanSquare className="w-4 h-4" /><span className="text-xs font-semibold uppercase">Smart Match</span></div>
-                  <p className="text-sm text-gray-700">We shortlist vendors based on workflow complexity, team size, and budget.</p>
-                </div>
-                <div className="rounded-xl border border-[#f1dcc8] bg-white p-4">
-                  <div className="flex items-center gap-2 text-[#9C4302] mb-1"><Clock3 className="w-4 h-4" /><span className="text-xs font-semibold uppercase">Save Time</span></div>
-                  <p className="text-sm text-gray-700">Avoid manual research and compare the right platforms faster.</p>
-                </div>
               </div>
 
-              <ul className="mt-5 space-y-2 text-sm text-gray-700">
-                <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-[#F27F25] mt-0.5" />Independent recommendations</li>
-                <li className="flex items-start gap-2"><ShieldCheck className="w-4 h-4 text-[#F27F25] mt-0.5" />No hidden charges for matching</li>
-                <li className="flex items-start gap-2"><Users className="w-4 h-4 text-[#F27F25] mt-0.5" />Support for SMB to enterprise teams</li>
-                <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-[#F27F25] mt-0.5" />Updated vendor benchmarks</li>
-              </ul>
+              <div>
+                <div className="fc">
+                  {submitted ? (
+                    <div className="succ">
+                      <div className="succ-icon">
+                        <CheckCircle2 aria-hidden />
+                      </div>
+                      <h3>Submitted!</h3>
+                      <p>
+                        We&apos;re lining up PM vendors to your workload pattern. Expect follow-up shortly with matched
+                        options.
+                      </p>
+                      <ul className="succ-steps">
+                        {[
+                          "We translate team size & workflow style into credible shortlists",
+                          "Quotes reflect automation + reporting depth you signalled",
+                          "Trials kick off only with winners you elevate",
+                        ].map((s, i) => (
+                          <li key={i} className="ss">
+                            <span className="ssn">{i + 1}</span>
+                            <span className="sst">{s}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="fh">
+                        <div className="fh-top">
+                          <h2>Get Free PM Quotes</h2>
+                          <span className="fbadge">Free · No Obligation</span>
+                        </div>
+                        <p>Three-step intake · Matched vendors</p>
+                        <div className="pbar">
+                          {[1, 2, 3].map((s) => (
+                            <div key={s} className={`pseg ${s < step ? "done" : s === step ? "active" : ""}`} />
+                          ))}
+                        </div>
+                        <div className="step-dots" aria-hidden>
+                          {[1, 2, 3].map((s) => (
+                            <span key={s} className={`sdot ${s === step ? "on" : ""} ${s < step ? "done" : ""}`} />
+                          ))}
+                        </div>
+                        <div className="plabel">
+                          Step <b>{step} of 3</b> — {stepLabel}
+                        </div>
+                      </div>
 
-              <p className="mt-6 text-xs text-gray-500 leading-relaxed">
-                By submitting this form, you agree to our <Link href="/privacy-policy" className="underline hover:text-[#9C4302]">Privacy Policy</Link> and <Link href="/terms-of-use" className="underline hover:text-[#9C4302]">Terms of Use</Link>.
-              </p>
-            </aside>
+                      <div className="fb">
+                        {step === 1 && (
+                          <>
+                            <div className="fr">
+                              <div>
+                                <label>
+                                  First Name<span className="req">*</span>
+                                </label>
+                                <input
+                                  value={form.firstName}
+                                  className={errors.firstName ? "input-err" : undefined}
+                                  onChange={(e) => {
+                                    setField("firstName", e.target.value);
+                                    clearErr("firstName");
+                                  }}
+                                  placeholder="Sophie"
+                                />
+                                {errors.firstName ? <p className="field-err">{errors.firstName}</p> : null}
+                              </div>
+                              <div>
+                                <label>
+                                  Last Name<span className="req">*</span>
+                                </label>
+                                <input
+                                  value={form.lastName}
+                                  className={errors.lastName ? "input-err" : undefined}
+                                  onChange={(e) => {
+                                    setField("lastName", e.target.value);
+                                    clearErr("lastName");
+                                  }}
+                                  placeholder="Brennan"
+                                />
+                                {errors.lastName ? <p className="field-err">{errors.lastName}</p> : null}
+                              </div>
+                            </div>
+                            <div className="ff">
+                              <label>
+                                Work Email<span className="req">*</span>
+                              </label>
+                              <input
+                                type="email"
+                                value={form.email}
+                                className={errors.email ? "input-err" : undefined}
+                                onChange={(e) => {
+                                  setField("email", e.target.value);
+                                  clearErr("email");
+                                }}
+                                placeholder="you@company.com"
+                              />
+                              {errors.email ? <p className="field-err">{errors.email}</p> : null}
+                              <p className="hint">We may email matched vendor options here.</p>
+                            </div>
+                            <div className="ff">
+                              <label>
+                                Company<span className="req">*</span>
+                              </label>
+                              <input
+                                value={form.companyName}
+                                className={errors.companyName ? "input-err" : undefined}
+                                onChange={(e) => {
+                                  setField("companyName", e.target.value);
+                                  clearErr("companyName");
+                                }}
+                                placeholder="Helio Renewables"
+                              />
+                              {errors.companyName ? <p className="field-err">{errors.companyName}</p> : null}
+                            </div>
+                            <div className="ff">
+                              <label>
+                                Phone<span className="req">*</span>
+                              </label>
+                              <input
+                                type="tel"
+                                value={form.phoneNumber}
+                                className={errors.phoneNumber ? "input-err" : undefined}
+                                onChange={(e) => {
+                                  setField("phoneNumber", e.target.value);
+                                  clearErr("phoneNumber");
+                                }}
+                                placeholder="+1 555 000 0000"
+                              />
+                              {errors.phoneNumber ? <p className="field-err">{errors.phoneNumber}</p> : null}
+                            </div>
+                            <button type="button" className="btnp" onClick={() => validateStep1() && setStep(2)}>
+                              Continue to Step 2 →
+                            </button>
+                            <div className="ftrust">
+                              <span className="tbadge">
+                                <Shield className="tb-ico" aria-hidden />
+                                SSL Encrypted
+                              </span>
+                              <span className="tbadge">
+                                <Sparkles className="tb-ico" aria-hidden />
+                                Independent match
+                              </span>
+                            </div>
+                          </>
+                        )}
+
+                        {step === 2 && (
+                          <>
+                            <div className="fr">
+                              <div>
+                                <label>
+                                  Team Size<span className="req">*</span>
+                                </label>
+                                <select
+                                  value={form.teamSize}
+                                  className={errors.teamSize ? "input-err" : undefined}
+                                  onChange={(e) => {
+                                    setField("teamSize", e.target.value);
+                                    clearErr("teamSize");
+                                  }}
+                                >
+                                  <option value="">Team size</option>
+                                  {TEAM_SIZES.map((o) => (
+                                    <option key={o} value={o}>
+                                      {o}
+                                    </option>
+                                  ))}
+                                </select>
+                                {errors.teamSize ? <p className="field-err">{errors.teamSize}</p> : null}
+                              </div>
+                              <div>
+                                <label>
+                                  Primary workflow<span className="req">*</span>
+                                </label>
+                                <select
+                                  value={form.projectType}
+                                  className={errors.projectType ? "input-err" : undefined}
+                                  onChange={(e) => {
+                                    setField("projectType", e.target.value);
+                                    clearErr("projectType");
+                                  }}
+                                >
+                                  <option value="">Primary project type</option>
+                                  {PROJECT_TYPES.map((o) => (
+                                    <option key={o} value={o}>
+                                      {o}
+                                    </option>
+                                  ))}
+                                </select>
+                                {errors.projectType ? <p className="field-err">{errors.projectType}</p> : null}
+                              </div>
+                            </div>
+                            <div className="fr">
+                              <div>
+                                <label>
+                                  Budget range<span className="req">*</span>
+                                </label>
+                                <select
+                                  value={form.budgetRange}
+                                  className={errors.budgetRange ? "input-err" : undefined}
+                                  onChange={(e) => {
+                                    setField("budgetRange", e.target.value);
+                                    clearErr("budgetRange");
+                                  }}
+                                >
+                                  <option value="">Budget range</option>
+                                  {BUDGET_RANGES.map((o) => (
+                                    <option key={o} value={o}>
+                                      {o}
+                                    </option>
+                                  ))}
+                                </select>
+                                {errors.budgetRange ? <p className="field-err">{errors.budgetRange}</p> : null}
+                              </div>
+                              <div>
+                                <label>
+                                  Timeline<span className="req">*</span>
+                                </label>
+                                <select
+                                  value={form.timeline}
+                                  className={errors.timeline ? "input-err" : undefined}
+                                  onChange={(e) => {
+                                    setField("timeline", e.target.value);
+                                    clearErr("timeline");
+                                  }}
+                                >
+                                  <option value="">Implementation timeline</option>
+                                  {TIMELINES.map((o) => (
+                                    <option key={o} value={o}>
+                                      {o}
+                                    </option>
+                                  ))}
+                                </select>
+                                {errors.timeline ? <p className="field-err">{errors.timeline}</p> : null}
+                              </div>
+                            </div>
+                            <div className="ff">
+                              <label>Current tool (optional)</label>
+                              <input
+                                value={form.currentTool}
+                                onChange={(e) => setField("currentTool", e.target.value)}
+                                placeholder="e.g. spreadsheets, legacy PM"
+                              />
+                            </div>
+                            <button type="button" className="btnp" onClick={() => validateStep2() && setStep(3)}>
+                              Continue to Step 3 →
+                            </button>
+                            <button type="button" className="btnback" onClick={() => setStep(1)}>
+                              ← Back to Step 1
+                            </button>
+                          </>
+                        )}
+
+                        {step === 3 && (
+                          <>
+                            <div className="ff">
+                              <label>
+                                Must-have features <span style={{ fontWeight: 400, color: "var(--gray-400)" }}>— optional</span>
+                              </label>
+                              <div className="cgrid">
+                                {FEATURE_OPTS.map((f) => {
+                                  const sel = form.features.includes(f);
+                                  return (
+                                    <button
+                                      type="button"
+                                      key={f}
+                                      className={`chip ${sel ? "sel" : ""}`}
+                                      onClick={() => toggleFeature(f)}
+                                    >
+                                      <span className="cchk">{sel ? "✓" : ""}</span>
+                                      <Layers className="fico" aria-hidden />
+                                      {f}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                            <div className="ff">
+                              <label>Workflow notes (optional)</label>
+                              <textarea
+                                value={form.notes}
+                                onChange={(e) => setField("notes", e.target.value)}
+                                placeholder="Anything specific to approvals, tooling, integrations…"
+                              />
+                            </div>
+                            <div className="cap-wrap">
+                              <ReCAPTCHA
+                                ref={captchaRef}
+                                sitekey={recaptchaSiteKey}
+                                onChange={(token) => {
+                                  setCaptchaToken(token || "");
+                                  if (token) {
+                                    setSubmitError("");
+                                    clearErr("captcha");
+                                  }
+                                }}
+                                onExpired={() => setCaptchaToken("")}
+                              />
+                            </div>
+                            {!canSubmitWithConfig ? (
+                              <p className="cap-err">Form setup is incomplete. Please contact support.</p>
+                            ) : null}
+                            {errors.captcha ? <p className="cap-err">{errors.captcha}</p> : null}
+                            {submitError ? <p className="cap-err">{submitError}</p> : null}
+                            <button
+                              type="button"
+                              className="btnp"
+                              disabled={isSubmitting || !canSubmitWithConfig}
+                              onClick={handleFinalSubmit}
+                            >
+                              {isSubmitting ? <span className="btn-load"><span className="btn-spin" aria-hidden /> Submitting...</span> : "Get Free Quotes"}
+                            </button>
+                            <button type="button" className="btnback" onClick={() => setStep(2)}>
+                              ← Back to Step 2
+                            </button>
+                            <p className="consent">
+                              By submitting, you agree to our <a href="/terms-of-use">Terms of Use</a> and{" "}
+                              <a href="/privacy-policy">Privacy Policy</a>.
+                            </p>
+                          </>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="sec-alt">
+        <section className="sec" style={{ paddingTop: 48, paddingBottom: 56 }}>
+          <div className="ct">
+            <div className="stag">How It Works</div>
+            <h2 className="sh">Project tooling without spreadsheet chaos</h2>
+            <p className={"s" + "sub"}>Facts → credible shortlists → trials with vendors that mirror your workloads.</p>
+            <div className="howg">
+              {[
+                {
+                  tag: "Fast",
+                  num: "01",
+                  title: "Quantify teamwork",
+                  body: "Sizing, workflows, timelines, budgets — distilled once for vendor alignment.",
+                },
+                {
+                  tag: "Matched",
+                  num: "02",
+                  title: "PM vendors respond",
+                  body: "Proposals cite stacks from Compare Bazaar testing — Monday, ClickUp, Asana, Jira, etc.",
+                },
+                {
+                  tag: "Decide",
+                  num: "03",
+                  title: "Pilot with confidence",
+                  body: "Skip shelfware demos; negotiate with finalists that fit automation + visibility needs.",
+                },
+              ].map((c) => (
+                <div key={c.num} className="hc">
+                  <span className="howt">{c.tag}</span>
+                  <div className="hwn">{c.num}</div>
+                  <h3>{c.title}</h3>
+                  <p>{c.body}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
       </div>
-    </main>
+
+      <section className="sec">
+        <div className="ct">
+          <div className="stag">Buyer Stories</div>
+          <h2 className="sh">Teams shipping PM decisions faster</h2>
+          <p className={"s" + "sub"}>Ops & eng leaders balancing Gantt fidelity with doc-light collaboration.</p>
+          <div className="tg">
+            {TESTIMONIALS.map((t) => (
+              <div key={t.name} className="tc">
+                <span className="rtag">✓ {t.result}</span>
+                <div className="tstars" aria-label="5 out of 5 stars">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} size={15} fill="#FBBF24" color="#FBBF24" strokeWidth={0} aria-hidden />
+                  ))}
+                </div>
+                <p className="tbody">&ldquo;{t.body}&rdquo;</p>
+                <div className="ta">
+                  <div className="av" style={{ background: t.avatarBg, color: t.avatarText }}>
+                    {t.initials}
+                  </div>
+                  <div>
+                    <div className="an">{t.name}</div>
+                    <div className="ar">
+                      {t.role}, {t.company}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <div className="sec-alt">
+        <section className="sec" style={{ paddingTop: 48, paddingBottom: 56 }}>
+          <div className="ct">
+            <div className="stag">Why Compare Bazaar</div>
+            <h2 className="sh">Editorially grounded PM picks</h2>
+            <p className={"s" + "sub"}>Hands-on scoring keeps vendor routing honest.</p>
+            <div className="whyg">
+              {WHY_ITEMS.map((w) => {
+                const Icon = w.icon;
+                return (
+                  <div key={w.title} className="wc">
+                    <div className="wi">
+                      <Icon aria-hidden />
+                    </div>
+                    <div>
+                      <h4>{w.title}</h4>
+                      <p>{w.body}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div className="ct">
+        <div className="cta-band">
+          <div style={{ position: "relative", zIndex: 1 }}>
+            <h2>Need PM vendor quotes?</h2>
+            <p>Jump up and finish three quick steps — we mirror the stacks we benchmark.</p>
+          </div>
+          <a
+            href="#"
+            className="btn-wh"
+            onClick={(e) => {
+              e.preventDefault();
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+          >
+            Get Free Quotes →
+          </a>
+        </div>
+      </div>
+    </>
   );
 }
