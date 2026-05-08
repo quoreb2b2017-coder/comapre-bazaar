@@ -95,19 +95,23 @@ const TEAM = [
 const FAQS = [
   {
     q: 'How does Compare Bazaar make money?',
-    a: 'Compare Bazaar earns affiliate commissions when readers purchase software through our links. This never affects our editorial rankings — sponsored placements are clearly marked "Advertisement."',
+    a: 'Compare Bazaar earns affiliate commissions when readers purchase software through our links. Some vendors also pay for clearly labeled sponsored placements. Neither of these arrangements influences our editorial rankings. Our scoring is based on hands on testing and structured criteria. You can read full details on our Advertising Disclosure page.',
   },
   {
     q: 'How often are your software reviews updated?',
-    a: 'Our high-traffic comparison pages are reviewed at least every 90 days, or immediately when a vendor makes major pricing or feature changes.',
+    a: 'Most of our software reviews are updated monthly to reflect pricing changes, new features, and shifts in the competitive landscape. Pricing data is verified directly with vendors and dated on each review page so you can see how current the information is. Categories with faster moving markets like CRM and email marketing are reviewed more frequently.',
   },
   {
     q: 'Can vendors pay to be ranked higher in your comparisons?',
-    a: 'No. Organic rankings are determined entirely by our scoring methodology. Vendors can purchase clearly labelled "Featured Partner" placements displayed separately from editorial content.',
+    a: 'No. Vendor payments have zero influence on rankings. Every platform is scored using a weighted methodology across 12 or more criteria such as features, pricing, ease of use, and integrations. Some vendors have affiliate relationships with us, but this does not affect score or position in any comparison. Sponsored placements are clearly labeled and kept separate from editorial rankings.',
   },
   {
     q: 'What criteria do you use to score software?',
-    a: 'We evaluate software across 12 standardised criteria including pricing, ease of use, core feature depth, customer support quality, integrations, mobile experience, and security.',
+    a: 'Every platform is evaluated across 12 or more criteria by a subject matter expert. Core criteria include ease of use, feature depth, pricing transparency, integration options, customer support quality, and scalability for different business sizes. Scoring is category specific. For example, payroll tools are judged on tax compliance and contractor support, while CRM tools are scored on pipeline management and automation. You can read our complete scoring framework on the Editorial Process page.',
+  },
+  {
+    q: 'How do you verify software pricing?',
+    a: 'We contact vendors directly to confirm pricing before publishing. All pricing data is clearly dated on each review so you know when it was last verified. We also flag hidden fees, per user charges, and contract requirements that may not be obvious from headline pricing.',
   },
 ]
 
