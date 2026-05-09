@@ -3,12 +3,23 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useState } from 'react'
+import { ChevronRight } from 'lucide-react'
 import logoIcon from '../icon.png'
 
-const NAV_ITEMS = [
+type NavChild = { label: string; href: string; description: string }
+type NavItem = {
+  label: string
+  href: string
+  dropdownTitle?: string
+  dropdownWide?: boolean
+  children?: NavChild[]
+}
+
+const NAV_ITEMS: NavItem[] = [
   {
     label: 'Marketing',
     href: '/marketing',
+    dropdownTitle: 'Marketing hub',
     children: [
       { label: 'Best CRM Software', href: '/marketing/best-crm-software', description: 'Sales and pipeline tools' },
       { label: 'Best Email Marketing', href: '/marketing/best-email-marketing-services', description: 'Automation and campaigns' },
@@ -18,6 +29,7 @@ const NAV_ITEMS = [
   {
     label: 'Technology',
     href: '/technology',
+    dropdownTitle: 'Technology hub',
     children: [
       { label: 'Best Payroll Software', href: '/human-resources/best-payroll-software', description: 'Tax and compliance tools' },
       { label: 'Best VoIP Systems', href: '/technology/business-phone-systems', description: 'Cloud calling platforms' },
@@ -28,6 +40,7 @@ const NAV_ITEMS = [
   {
     label: 'Sales',
     href: '/sales',
+    dropdownTitle: 'Sales hub',
     children: [
       { label: 'Best Sales CRM', href: '/sales/best-crm-software', description: 'Lead and deal workflows' },
       { label: 'Call Centre Software', href: '/sales/best-call-center-management-software', description: 'Customer support systems' },
@@ -37,6 +50,7 @@ const NAV_ITEMS = [
   {
     label: 'HR Software',
     href: '/human-resources',
+    dropdownTitle: 'HR software hub',
     children: [
       { label: 'Best Employee Management', href: '/human-resources/best-employee-management-software', description: 'People and HR workflows' },
       { label: 'Best Payroll Software', href: '/human-resources/best-payroll-software', description: 'Payroll and benefits' },
@@ -45,9 +59,13 @@ const NAV_ITEMS = [
   {
     label: 'Resources',
     href: '/resources',
+    dropdownTitle: 'Guides & research',
+    dropdownWide: true,
     children: [
-      { label: 'Our Blogs', href: '/blog', description: 'Latest software buying guides' },
-      { label: 'Whitepaper', href: '/resources/whitepaper', description: 'In-depth research reports' },
+      { label: 'Blog', href: '/blog', description: 'Buying guides & practical comparisons' },
+      { label: 'Whitepapers', href: '/resources/whitepaper', description: 'Downloadable research for buyers' },
+      { label: 'Editorial process', href: '/editorial-process', description: 'How we test and rank vendors' },
+      { label: 'Browse all software', href: '/browse-all-software', description: 'Jump into any comparison hub' },
     ],
   },
 ]
@@ -116,19 +134,49 @@ export function SiteNav() {
 
                 {item.children && openDropdown === item.label && (
                   <div className="absolute top-full left-0 pt-2 z-50">
-                    <div className="w-[20rem] bg-white border border-gray-200 rounded-lg shadow-lg py-2">
-                      <p className="px-4 pt-1 pb-2 text-[11px] font-semibold tracking-wider uppercase text-[#9C4302] border-b border-gray-100">
-                        {item.label} Services
+                    <div
+                      className={`bg-white border border-gray-200/90 rounded-xl shadow-xl shadow-gray-900/8 ring-1 ring-black/[0.03] overflow-hidden ${
+                        item.dropdownWide ? 'w-[min(22rem,calc(100vw-2rem))]' : 'w-[min(20rem,calc(100vw-2rem))]'
+                      }`}
+                      role="menu"
+                      aria-label={`${item.label} links`}
+                    >
+                      <p className="px-4 pt-3 pb-2 text-[11px] font-semibold tracking-[0.14em] uppercase text-[#9C4302] bg-gradient-to-r from-[#FFF8F2] to-white border-b border-gray-100">
+                        {item.dropdownTitle ?? `${item.label} hub`}
                       </p>
-                      {item.children.map((child) => (
+                      <div className="py-1">
+                        {item.children.map((child) => (
+                          <Link
+                            key={child.href}
+                            href={child.href}
+                            role="menuitem"
+                            className="group flex items-start gap-3 px-4 py-3 hover:bg-[#FFF8F2] transition-colors border-b border-gray-50 last:border-b-0 focus-visible:outline-none focus-visible:bg-[#FFF8F2] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#F58220]/35"
+                          >
+                            <span className="min-w-0 flex-1">
+                              <span className="block text-sm font-medium text-navy leading-snug group-hover:text-[#9C4302]">
+                                {child.label}
+                              </span>
+                              <span className="block text-[12px] text-gray-500 mt-0.5 leading-snug">
+                                {child.description}
+                              </span>
+                            </span>
+                            <ChevronRight
+                              className="mt-1 h-4 w-4 shrink-0 text-gray-300 opacity-60 transition-all group-hover:translate-x-0.5 group-hover:text-[#F58220] group-hover:opacity-100"
+                              aria-hidden
+                            />
+                          </Link>
+                        ))}
+                      </div>
+                      {item.label === 'Resources' ? (
                         <Link
-                          key={child.href}
-                          href={child.href}
-                          className="block px-4 py-2.5 hover:bg-[#FFF8F2] transition-colors border-b border-gray-50 last:border-b-0"
+                          href="/resources"
+                          role="menuitem"
+                          className="flex items-center justify-between gap-2 px-4 py-3 text-xs font-semibold text-[#9C4302] bg-gradient-to-r from-[#FFF8F2] to-gray-50/80 border-t border-amber-100/80 hover:from-[#FFF4E8] hover:to-[#FFF8F2] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#F58220]/40"
                         >
-                          <span className="block text-sm text-gray-700 hover:text-[#9C4302]">{child.label}</span>
+                          View all resources
+                          <ChevronRight className="h-4 w-4 shrink-0 opacity-80" aria-hidden />
                         </Link>
-                      ))}
+                      ) : null}
                     </div>
                   </div>
                 )}
@@ -207,10 +255,11 @@ export function SiteNav() {
                 <Link
                   key={child.href}
                   href={child.href}
-                  className="block px-9 py-2.5 text-sm text-gray-600 border-b border-gray-50 hover:bg-[#FFF8F2] hover:text-[#9C4302] transition-colors"
+                  className="block px-9 py-3 text-sm border-b border-gray-50 hover:bg-[#FFF8F2] transition-colors"
                   onClick={() => setMobileOpen(false)}
                 >
-                  <span className="block">{child.label}</span>
+                  <span className="block font-medium text-navy">{child.label}</span>
+                  <span className="block text-xs text-gray-500 mt-0.5 leading-snug">{child.description}</span>
                 </Link>
               ))}
             </div>
