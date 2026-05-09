@@ -195,7 +195,7 @@ export function CookieConsentBanner() {
                   <p className="font-semibold text-sm text-gray-800">Marketing / affiliate</p>
                   <p className="text-xs text-gray-600 mt-1">
                     Link campaign tags (UTM source/medium/campaign), first landing stored in{' '}
-                    <code className="text-gray-700">cb_attr</code> (~90 days), plus referral clicks — only if enabled.
+                    <code className="text-gray-700">cb_attr</code> (~90 days), plus referral clicks, only if enabled.
                   </p>
                 </div>
                 <label className="inline-flex items-center gap-2 cursor-pointer shrink-0">

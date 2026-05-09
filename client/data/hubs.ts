@@ -5,18 +5,18 @@ export const hubPages: HubPageData[] = [
     slug: 'marketing',
     title: 'Marketing Software Comparisons & Buying Guides (2026) | Compare Bazaar',
     metaDescription:
-      'Expert-reviewed comparisons of the best marketing software for 2026 — CRM, email marketing, website builders, and more. Independent, updated monthly.',
+      'Expert-reviewed comparisons of the best marketing software for 2026, CRM, email marketing, website builders, and more. Independent, updated monthly.',
     canonical: '/marketing',
     h1: 'Marketing software comparisons & buying guides',
     subtitle:
-      'Expert-tested tools for growing your business — from CRM to email marketing to website builders. Every platform independently reviewed.',
+      'Expert-tested tools for growing your business, from CRM to email marketing to website builders. Every platform independently reviewed.',
     breadcrumbs: [{ label: 'Home', href: '/' }, { label: 'Marketing' }],
     cards: [
       {
         href: '/marketing/best-crm-software',
         icon: 'handshake',
         title: 'Best CRM Software (2026)',
-        description: 'HubSpot vs Zoho vs Salesforce — 11 platforms compared on pipeline, automation, and pricing.',
+        description: 'HubSpot vs Zoho vs Salesforce, 11 platforms compared on pipeline, automation, and pricing.',
         meta: '11 platforms reviewed',
       },
       {
@@ -39,11 +39,11 @@ export const hubPages: HubPageData[] = [
     slug: 'technology',
     title: 'Business Technology Software Reviews (2026) | Compare Bazaar',
     metaDescription:
-      'Expert comparisons of the best business technology tools — payroll, VoIP, fleet management, employee management software. Updated for 2026.',
+      'Expert comparisons of the best business technology tools, payroll, VoIP, fleet management, employee management software. Updated for 2026.',
     canonical: '/technology',
     h1: 'Business technology software comparisons',
     subtitle:
-      'From payroll to VoIP to fleet management — unbiased comparisons to help you choose the right tools.',
+      'From payroll to VoIP to fleet management, unbiased comparisons to help you choose the right tools.',
     breadcrumbs: [{ label: 'Home', href: '/' }, { label: 'Technology' }],
     cards: [
       {
@@ -80,11 +80,11 @@ export const hubPages: HubPageData[] = [
     slug: 'sales',
     title: 'Sales Software Comparisons & Buying Guides (2026) | Compare Bazaar',
     metaDescription:
-      'Expert comparisons of the best sales software — CRM, call centre, project management. Tested and ranked for 2026.',
+      'Expert comparisons of the best sales software, CRM, call centre, project management. Tested and ranked for 2026.',
     canonical: '/sales',
     h1: 'Sales software comparisons & buying guides',
     subtitle:
-      'CRM, call centre, and project management tools — tested and ranked to help your team close more.',
+      'CRM, call centre, and project management tools, tested and ranked to help your team close more.',
     breadcrumbs: [{ label: 'Home', href: '/' }, { label: 'Sales' }],
     cards: [
       {
@@ -114,11 +114,11 @@ export const hubPages: HubPageData[] = [
     slug: 'human-resources',
     title: 'Best HR Software Comparisons & Reviews (2026) | Compare Bazaar',
     metaDescription:
-      'Expert-reviewed HR software comparisons — employee management, payroll, onboarding tools. Updated for 2026.',
+      'Expert-reviewed HR software comparisons, employee management, payroll, onboarding tools. Updated for 2026.',
     canonical: '/human-resources',
     h1: 'HR software comparisons & buying guides',
     subtitle:
-      'Employee management, payroll, and HR tools — tested by experts with real HR backgrounds.',
+      'Employee management, payroll, and HR tools, tested by experts with real HR backgrounds.',
     breadcrumbs: [{ label: 'Home', href: '/' }, { label: 'HR Software' }],
     cards: [
       {

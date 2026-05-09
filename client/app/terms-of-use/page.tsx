@@ -5,7 +5,7 @@ import { Breadcrumb } from '@/components/ui/Breadcrumb'
 
 export const metadata: Metadata = buildMetadata({
   title: 'Terms of Use | Compare Bazaar',
-  description: 'Terms of use for Compare Bazaar — the rules and conditions governing your use of our business software comparison platform.',
+  description: 'Terms of use for Compare Bazaar, the rules and conditions governing your use of our business software comparison platform.',
   canonical: '/terms-of-use',
 })
 
@@ -41,14 +41,14 @@ export default function TermsOfUsePage() {
         </ul>
 
         <h2>3. Intellectual Property</h2>
-        <p>All content on the Site — including text, graphics, logos, images, data compilations, software, and the overall &ldquo;look and feel&rdquo; — is the property of Compare Bazaar or its content suppliers and is protected by applicable intellectual property laws. You may not reproduce, modify, distribute, or create derivative works from our content without express written permission.</p>
+        <p>All content on the Site, including text, graphics, logos, images, data compilations, software, and the overall &ldquo;look and feel&rdquo;, is the property of Compare Bazaar or its content suppliers and is protected by applicable intellectual property laws. You may not reproduce, modify, distribute, or create derivative works from our content without express written permission.</p>
         <p>Limited permission is granted to access and display content on the Site solely for your personal, non-commercial use, provided you do not modify the content and retain all copyright and proprietary notices.</p>
 
         <h2>4. Affiliate Relationships and Advertising</h2>
         <p>Compare Bazaar participates in affiliate marketing programmes. We may earn a commission when you click certain links on our Site and subsequently purchase a product or service. Affiliate relationships do not influence our editorial rankings or recommendations. All paid placements are clearly labelled. For full details, see our <Link href="/advertising-disclosure">Advertising Disclosure</Link>.</p>
 
         <h2>5. Accuracy of Information</h2>
-        <p>We strive to ensure the information on this Site — including software reviews, pricing, and feature comparisons — is accurate and up to date. However, we make no warranties or representations of any kind regarding the completeness, accuracy, reliability, suitability, or availability of any information on the Site. Pricing, features, and availability of third-party software products may change without notice.</p>
+        <p>We strive to ensure the information on this Site, including software reviews, pricing, and feature comparisons, is accurate and up to date. However, we make no warranties or representations of any kind regarding the completeness, accuracy, reliability, suitability, or availability of any information on the Site. Pricing, features, and availability of third-party software products may change without notice.</p>
         <p>Always verify critical information directly with the relevant software vendor before making a purchase decision. Nothing on the Site constitutes professional legal, financial, or technical advice.</p>
 
         <h2>6. Third-Party Links and Services</h2>

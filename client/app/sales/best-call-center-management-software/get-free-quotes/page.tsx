@@ -20,6 +20,7 @@ import {
   Zap,
   type LucideIcon,
 } from "lucide-react";
+import { QuoteFormScrollBody } from "@/components/quotes/QuoteFormScrollBody";
 import { quoteLandingPageCss } from "@/lib/quoteLandingPageCss";
 
 const VENDORS = [
@@ -103,7 +104,7 @@ const TESTIMONIALS = [
     role: "Operations",
     company: "CopperPeak Retail",
     result: "Omnichannel pilot scoped correctly",
-    body: "We flagged upgrade path from basic phones — responders quoted Talkdesk-esque depth only where warranted.",
+    body: "We flagged upgrade path from basic phones, and responders quoted Talkdesk-esque depth only where warranted.",
     initials: "DR",
     avatarBg: "#DCFCE7",
     avatarText: "#16A34A",
@@ -113,7 +114,7 @@ const TESTIMONIALS = [
     role: "IT Lead",
     company: "Horizon SaaS Support",
     result: "API-first Twilio option alongside turnkey CC",
-    body: "Engineering-led roadmap needed programmable voice — comparisons surfaced both build and buy bundles.",
+    body: "Engineering-led roadmap needed programmable voice, comparisons surfaced both build and buy bundles.",
     initials: "KL",
     avatarBg: "#FEF3C7",
     avatarText: "#D97706",
@@ -338,7 +339,7 @@ export default function CallCenterGetQuotesPage() {
                   <span className="acc">Sized to Agents & Channels</span>
                 </h1>
                 <p className="hdesc">
-                  Capture org size, live agent counts, incumbent stack, and call volume bands once — then receive proposals
+                  Capture org size, live agent counts, incumbent stack, and call volume bands once, then receive proposals
                   aligned with GoTo, RingCentral, Twilio, Salesforce, Talkdesk, Freshdesk CC, and the rest of our tested
                   roster.
                 </p>
@@ -427,11 +428,11 @@ export default function CallCenterGetQuotesPage() {
                           ))}
                         </div>
                         <div className="plabel">
-                          Step <b>{step} of 3</b> — {stepLabel}
+                          Step <b>{step} of 3</b>: {stepLabel}
                         </div>
                       </div>
 
-                      <div className="fb">
+                      <QuoteFormScrollBody step={step}>
                         {step === 1 && (
                           <>
                             <div className="fr">
@@ -670,7 +671,7 @@ export default function CallCenterGetQuotesPage() {
                             <div className="ff">
                               <label>
                                 Feature priorities{" "}
-                                <span style={{ fontWeight: 400, color: "var(--gray-400)" }}>— optional</span>
+                                <span style={{ fontWeight: 400, color: "var(--gray-400)" }}>(optional)</span>
                               </label>
                               <div className="cgrid">
                                 {FEATURE_ITEMS.map((f) => {
@@ -742,7 +743,7 @@ export default function CallCenterGetQuotesPage() {
                             </p>
                           </>
                         )}
-                      </div>
+                      </QuoteFormScrollBody>
                     </>
                   )}
                 </div>
@@ -770,13 +771,13 @@ export default function CallCenterGetQuotesPage() {
                   tag: "~24h",
                   num: "02",
                   title: "Matched vendors respond",
-                  body: "Proposals cite platforms from Compare Bazaar testing — SMB through AI-heavy enterprise suites.",
+                  body: "Proposals cite platforms from Compare Bazaar testing, SMB through AI-heavy enterprise suites.",
                 },
                 {
                   tag: "Pilot",
                   num: "03",
                   title: "Compare & negotiate",
-                  body: "IVR depth, QA, integrations, omnichannel parity — weighed side-by-side.",
+                  body: "IVR depth, QA, integrations, omnichannel parity, weighed side-by-side.",
                 },
               ].map((c) => (
                 <div key={c.num} className="hc">
@@ -828,7 +829,7 @@ export default function CallCenterGetQuotesPage() {
           <div className="ct">
             <div className="stag">Why Compare Bazaar</div>
             <h2 className="sh">CX tech without vendor bingo</h2>
-            <p className={"s" + "sub"}>Editorially scored platforms — placements follow fit, not sponsorship.</p>
+            <p className={"s" + "sub"}>Editorially scored platforms, placements follow fit, not sponsorship.</p>
             <div className="whyg">
               {WHY_ITEMS.map((w) => {
                 const Icon = w.icon;
@@ -853,7 +854,7 @@ export default function CallCenterGetQuotesPage() {
         <div className="cta-band">
           <div style={{ position: "relative", zIndex: 1 }}>
             <h2>Need call center vendor quotes?</h2>
-            <p>Jump to the sticky form — we’ll mirror the stacks we already benchmarked.</p>
+            <p>Jump to the sticky form, we’ll mirror the stacks we already benchmarked.</p>
           </div>
           <a
             href="#"

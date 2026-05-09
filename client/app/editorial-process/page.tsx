@@ -6,19 +6,19 @@ import { Breadcrumb } from '@/components/ui/Breadcrumb'
 export const metadata: Metadata = buildMetadata({
   title: 'Our Editorial Process & Review Methodology | Compare Bazaar',
   description:
-    'How Compare Bazaar independently tests and ranks business software — our 12-point scoring framework, team credentials, and independence commitment.',
+    'How Compare Bazaar independently tests and ranks business software: our 12-point scoring framework, team credentials, and independence commitment.',
   canonical: '/editorial-process',
 })
 
 const CRITERIA = [
   { title: 'Pricing & value', body: 'Starting price, price per user at 10/50/100 seats, hidden fees, and free trial availability.' },
   { title: 'Ease of use', body: 'Time-to-first-value in our hands-on test, UI clarity score, onboarding quality.' },
-  { title: 'Core features', body: 'Whether the platform delivers on its primary category promise — e.g., pipeline management for a CRM.' },
+  { title: 'Core features', body: 'Whether the platform delivers on its primary category promise (e.g., pipeline management for a CRM).' },
   { title: 'Advanced features', body: 'Power-user capabilities: automation depth, reporting flexibility, AI features.' },
   { title: 'Customer support', body: 'Support channels, hours, response times tested directly by our team.' },
   { title: 'Integration ecosystem', body: 'Number and quality of native integrations with tools businesses actually use.' },
   { title: 'Mobile experience', body: 'iOS and Android app quality and feature parity with desktop.' },
-  { title: 'Scalability', body: 'Whether the platform grows with you — pricing cliffs, feature limitations at scale.' },
+  { title: 'Scalability', body: 'Whether the platform grows with you, including pricing cliffs and feature limitations at scale.' },
   { title: 'Security & compliance', body: 'SOC 2, GDPR, SSO, role-based access, audit logs.' },
   { title: 'User reviews', body: 'Aggregated ratings from verified users on G2 and Capterra, weighted for recency.' },
   { title: 'Vendor transparency', body: 'Pricing clarity, honest trial terms, no dark patterns in onboarding.' },
@@ -86,7 +86,7 @@ export default function EditorialProcessPage() {
 
         <h3>1. Account creation and initial setup</h3>
         <p>
-          Our reviewer creates a real account using our own business details — no vendor demo
+          Our reviewer creates a real account using our own business details, not vendor demo
           accounts. We document time-to-setup and any friction in the onboarding process.
         </p>
 

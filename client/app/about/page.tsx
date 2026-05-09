@@ -4,7 +4,7 @@ import { buildMetadata } from '@/lib/seo'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
 
 export const metadata: Metadata = buildMetadata({
-  title: 'About Compare Bazaar — Independent Business Software Reviews',
+  title: 'About Compare Bazaar | Independent Business Software Reviews',
   description:
     'Compare Bazaar is a team of former software buyers and industry specialists producing independent business software comparisons and buying guides.',
   canonical: '/about',
@@ -31,12 +31,12 @@ export default function AboutPage() {
         <h2>Our mission</h2>
         <p>
           Compare Bazaar&apos;s mission is to help business owners and decision-makers find the right
-          software with confidence — without spending weeks in vendor demos or reading marketing copy
+          software with confidence, without spending weeks in vendor demos or reading marketing copy
           disguised as reviews.
         </p>
         <p>
           We do this by testing software ourselves, scoring it against a published framework, and
-          writing about what we actually found — good and bad.
+          writing about what we actually found, good and bad.
         </p>
 
         <h2>Who we serve</h2>
@@ -51,7 +51,7 @@ export default function AboutPage() {
         <p>
           Compare Bazaar earns affiliate commissions when readers purchase software through our
           links, and revenue from clearly labelled &ldquo;Featured Partner&rdquo; placements. Our
-          editorial rankings are never influenced by commercial relationships — see our full{' '}
+          editorial rankings are never influenced by commercial relationships; see our full{' '}
           <Link href="/editorial-process">editorial process</Link> and{' '}
           <Link href="/advertising-disclosure">advertising disclosure</Link>.
         </p>

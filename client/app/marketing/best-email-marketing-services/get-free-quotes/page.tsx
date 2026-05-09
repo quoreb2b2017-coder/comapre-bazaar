@@ -19,6 +19,7 @@ import {
   Zap,
   type LucideIcon,
 } from "lucide-react";
+import { QuoteFormScrollBody } from "@/components/quotes/QuoteFormScrollBody";
 import { quoteLandingPageCss } from "@/lib/quoteLandingPageCss";
 
 interface FormData {
@@ -87,7 +88,7 @@ const TESTIMONIALS = [
     role: "Marketing Director",
     company: "Northwind Goods",
     result: "Cut ESP spend 28% after comparing quotes",
-    body: "We outlined list size and automation needs once. Within a day we had four platforms that actually matched deliverability requirements — not random cold outreach.",
+    body: "We outlined list size and automation needs once. Within a day we had four platforms that actually matched deliverability requirements, not random cold outreach.",
     initials: "EV",
     avatarBg: "#DBEAFE",
     avatarText: "#1D4ED8",
@@ -107,7 +108,7 @@ const TESTIMONIALS = [
     role: "CRM & Lifecycle Lead",
     company: "UrbanFit Co.",
     result: "Found an ESP that scales past 50k contacts",
-    body: "Subscriber growth made pricing unpredictable. The matched vendors understood segmentation and campaign frequency — saved hours of demo scheduling.",
+    body: "Subscriber growth made pricing unpredictable. The matched vendors understood segmentation and campaign frequency, saved hours of demo scheduling.",
     initials: "DB",
     avatarBg: "#FEF3C7",
     avatarText: "#D97706",
@@ -118,7 +119,7 @@ const WHY_ITEMS = [
   {
     icon: Target,
     title: "Matched to list size & cadence",
-    body: "We route your profile against platforms that fit subscriber counts, sending volume, and automation depth — not generic bulk lists.",
+    body: "We route your profile against platforms that fit subscriber counts, sending volume, and automation depth, not generic bulk lists.",
   },
   {
     icon: ShieldCheck,
@@ -341,11 +342,11 @@ export default function EmailMarketingQuotePage() {
                 </h1>
                 <p className="hdesc">
                   Share list size, sending cadence, and automation needs once. Within 24 hours we match you with platforms
-                  that fit deliverability, templates, and pricing — free and no obligation.
+                  that fit deliverability, templates, and pricing, free and no obligation.
                 </p>
                 <ul className="trust-ul">
                   {[
-                    "Free quotes — no credit card",
+                    "Free quotes, no credit card",
                     "Matched options within 24 hours",
                     "30+ ESPs & suites in our network",
                     "Independent recommendations",
@@ -400,7 +401,7 @@ export default function EmailMarketingQuotePage() {
                         {[
                           "We're matching your list size, cadence, and feature picks to suitable ESPs",
                           "You'll receive several comparable quotes you can review side-by-side",
-                          "Request demos only from vendors you like — no pressure",
+                          "Request demos only from vendors you like, no pressure",
                         ].map((s, i) => (
                           <li key={i} className="ss">
                             <span className="ssn">{i + 1}</span>
@@ -428,11 +429,11 @@ export default function EmailMarketingQuotePage() {
                           ))}
                         </div>
                         <div className="plabel">
-                          Step <b>{step} of 3</b> — {stepLabel}
+                          Step <b>{step} of 3</b>: {stepLabel}
                         </div>
                       </div>
 
-                      <div className="fb">
+                      <QuoteFormScrollBody step={step}>
                         {step === 1 && (
                           <>
                             <div className="fr">
@@ -685,7 +686,7 @@ export default function EmailMarketingQuotePage() {
                             <div className="ff">
                               <label>
                                 Important features{" "}
-                                <span style={{ fontWeight: 400, color: "var(--gray-400)" }}>— select all that apply</span>
+                                <span style={{ fontWeight: 400, color: "var(--gray-400)" }}>(select all that apply)</span>
                               </label>
                               <div className="cgrid">
                                 {FEATURE_ITEMS.map((f) => {
@@ -756,7 +757,7 @@ export default function EmailMarketingQuotePage() {
                             </p>
                           </>
                         )}
-                      </div>
+                      </QuoteFormScrollBody>
                     </>
                   )}
                 </div>

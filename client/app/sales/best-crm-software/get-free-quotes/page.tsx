@@ -19,6 +19,7 @@ import {
   Zap,
   type LucideIcon,
 } from "lucide-react";
+import { QuoteFormScrollBody } from "@/components/quotes/QuoteFormScrollBody";
 import { quoteLandingPageCss } from "@/lib/quoteLandingPageCss";
 
 const VENDORS = [
@@ -76,7 +77,7 @@ const TESTIMONIALS = [
     role: "Sales Director",
     company: "Nimbus SaaS",
     result: "Pipedrive + HubSpot shortlisted same week",
-    body: "We stated pipeline maturity and integrations once. Responses referenced the same stacks we saw on Compare Bazaar — fewer junk vendors.",
+    body: "We stated pipeline maturity and integrations once. Responses referenced the same stacks we saw on Compare Bazaar, fewer junk vendors.",
     initials: "JB",
     avatarBg: "#DBEAFE",
     avatarText: "#1D4ED8",
@@ -96,7 +97,7 @@ const TESTIMONIALS = [
     role: "Founder",
     company: "Coastline Creatives",
     result: "HoneyBook-aligned proposal for creative ops",
-    body: "Proposal-to-pay workflows mattered — matched vendors respected that nuance versus generic CRM blasts.",
+    body: "Proposal-to-pay workflows mattered, matched vendors respected that nuance versus generic CRM blasts.",
     initials: "ML",
     avatarBg: "#FEF3C7",
     avatarText: "#D97706",
@@ -112,7 +113,7 @@ const WHY_ITEMS: { icon: LucideIcon; title: string; body: string }[] = [
   {
     icon: ShieldCheck,
     title: "Editorial roster",
-    body: "Pills mirror our sales CRM methodology — Zoho, Creatio, HubSpot, Pipedrive, Salesforce, HoneyBook.",
+    body: "Pills mirror our sales CRM methodology, Zoho, Creatio, HubSpot, Pipedrive, Salesforce, HoneyBook.",
   },
   {
     icon: Zap,
@@ -315,11 +316,11 @@ export default function SalesCRMGetQuotesPage() {
                 </h1>
                 <p className="hdesc">
                   Share headcount, current CRM stance, and must-have capability chips once. Quotes align with the same vendors
-                  we review for sales teams — Zoho CRM, HubSpot Sales Hub, Pipedrive, Creatio, Salesforce, HoneyBook, and peers.
+                  we review for sales teams, Zoho CRM, HubSpot Sales Hub, Pipedrive, Creatio, Salesforce, HoneyBook, and peers.
                 </p>
                 <ul className="trust-ul">
                   {[
-                    "Free quotes — no obligation",
+                    "Free quotes, no obligation",
                     "Pipeline-first vendor routing",
                     "Independent rankings",
                     "Fast turnaround",
@@ -402,11 +403,11 @@ export default function SalesCRMGetQuotesPage() {
                           ))}
                         </div>
                         <div className="plabel">
-                          Step <b>{step} of 3</b> — {stepLabel}
+                          Step <b>{step} of 3</b>: {stepLabel}
                         </div>
                       </div>
 
-                      <div className="fb">
+                      <QuoteFormScrollBody step={step}>
                         {step === 1 && (
                           <>
                             <div className="fr">
@@ -603,7 +604,7 @@ export default function SalesCRMGetQuotesPage() {
                             <div className="ff">
                               <label>
                                 Important Features{" "}
-                                <span style={{ fontWeight: 400, color: "var(--gray-400)" }}>— optional, select any</span>
+                                <span style={{ fontWeight: 400, color: "var(--gray-400)" }}>(optional, select any)</span>
                               </label>
                               <div className="cgrid">
                                 {FEATURE_ITEMS.map((f) => {
@@ -675,7 +676,7 @@ export default function SalesCRMGetQuotesPage() {
                             </p>
                           </>
                         )}
-                      </div>
+                      </QuoteFormScrollBody>
                     </>
                   )}
                 </div>
@@ -694,7 +695,7 @@ export default function SalesCRMGetQuotesPage() {
             <div className="howg">
               {[
                 { tag: "2 min", num: "01", title: "Capture team + stack", body: "Headcount, CRM posture, and industry anchor fit-based routing." },
-                { tag: "24h", num: "02", title: "Align vendors", body: "Responses reference tools from our comparison — Pipedrive, HubSpot, Zoho, Salesforce, etc." },
+                { tag: "24h", num: "02", title: "Align vendors", body: "Responses reference tools from our comparison, Pipedrive, HubSpot, Zoho, Salesforce, etc." },
                 { tag: "You choose", num: "03", title: "Compare & pilot", body: "Review proposals in parallel; engage only winners you shortlist." },
               ].map((c) => (
                 <div key={c.num} className="hc">
@@ -746,7 +747,7 @@ export default function SalesCRMGetQuotesPage() {
           <div className="ct">
             <div className="stag">Why Compare Bazaar</div>
             <h2 className="sh">Buyer-first sales tech</h2>
-            <p className={"s" + "sub"}>Editorial testing — not pay-to-rank vendor blasts.</p>
+            <p className={"s" + "sub"}>Editorial testing, not pay-to-rank vendor blasts.</p>
             <div className="whyg">
               {WHY_ITEMS.map((w) => {
                 const Icon = w.icon;
@@ -771,7 +772,7 @@ export default function SalesCRMGetQuotesPage() {
         <div className="cta-band">
           <div style={{ position: "relative", zIndex: 1 }}>
             <h2>Ready to compare sales CRMs?</h2>
-            <p>Jump to the form — three steps to aligned vendor quotes.</p>
+            <p>Jump to the form, three steps to aligned vendor quotes.</p>
           </div>
           <a
             href="#"

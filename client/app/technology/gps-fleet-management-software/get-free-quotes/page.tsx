@@ -14,6 +14,7 @@ import {
   Zap,
   type LucideIcon,
 } from "lucide-react";
+import { QuoteFormScrollBody } from "@/components/quotes/QuoteFormScrollBody";
 import { quoteLandingPageCss } from "@/lib/quoteLandingPageCss";
 
 /** Platforms from `gps-fleet-management` comparison page */
@@ -33,7 +34,7 @@ interface FormData {
   email: string;
   phoneNumber: string;
   zipCode: string;
-  /** Fleet size — submitted as employee_count for Web3Forms compatibility */
+  /** Fleet size, submitted as employee_count for Web3Forms compatibility */
   employeeCount: string;
   vehicleTypes: string;
   emailUpdates: boolean;
@@ -56,7 +57,7 @@ const TESTIMONIALS = [
     role: "Fleet Director",
     company: "Summit Freight Co.",
     result: "ELD + GPS quotes aligned to lane mix",
-    body: "We described rigs versus vans once — responders quoted hardware bundles that matched duty cycles instead of generic per-seat SaaS.",
+    body: "We described rigs versus vans once, and responders quoted hardware bundles that matched duty cycles instead of generic per-seat SaaS.",
     initials: "GD",
     avatarBg: "#DBEAFE",
     avatarText: "#1D4ED8",
@@ -76,7 +77,7 @@ const TESTIMONIALS = [
     role: "VP Ops",
     company: "Desert Bulk Transport",
     result: "Safety scoring surfaced comparable dashboards",
-    body: "We needed coaching visibility across two terminals — proposals referenced tools like Samsara and Motive without guesswork.",
+    body: "We needed coaching visibility across two terminals, and proposals referenced tools like Samsara and Motive without guesswork.",
     initials: "OH",
     avatarBg: "#FEF3C7",
     avatarText: "#D97706",
@@ -92,7 +93,7 @@ const WHY_ITEMS: { icon: LucideIcon; title: string; body: string }[] = [
   {
     icon: ShieldCheck,
     title: "Independent Compare Bazaar picks",
-    body: "Vendor rankings follow editorial testing — placements here mirror Motive, Verizon Connect, Samsara, Fleetio, and peers from our guide.",
+    body: "Vendor rankings follow editorial testing, placements here mirror Motive, Verizon Connect, Samsara, Fleetio, and peers from our guide.",
   },
   {
     icon: Zap,
@@ -290,7 +291,7 @@ export default function GPSFleetGetQuotesForm() {
                 </p>
                 <ul className="trust-ul">
                   {[
-                    "Free quotes — no obligation",
+                    "Free quotes, no obligation",
                     "Real-time GPS + safety stacks",
                     "Editorially independent methodology",
                     "~24 hour vendor alignment",
@@ -373,11 +374,11 @@ export default function GPSFleetGetQuotesForm() {
                           ))}
                         </div>
                         <div className="plabel">
-                          Step <b>{step} of 3</b> — {stepLabel}
+                          Step <b>{step} of 3</b>: {stepLabel}
                         </div>
                       </div>
 
-                      <div className="fb">
+                      <QuoteFormScrollBody step={step}>
                         {step === 1 && (
                           <>
                             <div className="fr">
@@ -597,7 +598,7 @@ export default function GPSFleetGetQuotesForm() {
                             </p>
                           </>
                         )}
-                      </div>
+                      </QuoteFormScrollBody>
                     </>
                   )}
                 </div>
@@ -627,7 +628,7 @@ export default function GPSFleetGetQuotesForm() {
                   tag: "Same-day routing",
                   num: "02",
                   title: "Matched telematics stacks",
-                  body: "Responses emphasize platforms from our comparison matrix — Samsara, Motive, Verizon Connect, Fleetio, etc.",
+                  body: "Responses emphasize platforms from our comparison matrix, Samsara, Motive, Verizon Connect, Fleetio, etc.",
                 },
                 {
                   tag: "Ops-led",
@@ -685,7 +686,7 @@ export default function GPSFleetGetQuotesForm() {
           <div className="ct">
             <div className="stag">Why Compare Bazaar</div>
             <h2 className="sh">Fleet-grade independence</h2>
-            <p className={"s" + "sub"}>Hands-on telematics scoring informs who enters your quote pool — not sponsorship slots.</p>
+            <p className={"s" + "sub"}>Hands-on telematics scoring informs who enters your quote pool, not sponsorship slots.</p>
             <div className="whyg">
               {WHY_ITEMS.map((w) => {
                 const Icon = w.icon;

@@ -28,7 +28,7 @@ const LEGAL_LINKS = [
 
 const STANDARDS = [
   { iconKey: 'semantic', title: 'Semantic HTML', body: 'We use semantic HTML5 elements (headings, lists, landmarks, nav, main, footer) to create a clear document structure that assistive technologies can parse accurately.' },
-  { iconKey: 'keyboard', title: 'Keyboard navigation', body: 'All interactive elements — navigation menus, links, buttons, form fields, and accordion components — are fully operable via keyboard alone, with visible focus indicators.' },
+  { iconKey: 'keyboard', title: 'Keyboard navigation', body: 'All interactive elements (navigation menus, links, buttons, form fields, and accordion components) are fully operable via keyboard alone, with visible focus indicators.' },
   { iconKey: 'palette', title: 'Colour contrast', body: 'We maintain a minimum contrast ratio of 4.5:1 for normal text and 3:1 for large text, meeting WCAG 2.1 AA requirements. Critical information is never conveyed by colour alone.' },
   { iconKey: 'fileText', title: 'Alternative text', body: 'All meaningful images include descriptive alt text. Decorative images use empty alt attributes so screen readers skip them correctly.' },
   { iconKey: 'text', title: 'Scalable text', body: 'Text can be resized up to 200% using browser controls without loss of content or functionality. We use relative font units (rem/em) throughout.' },

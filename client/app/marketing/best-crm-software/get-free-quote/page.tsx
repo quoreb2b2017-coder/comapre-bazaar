@@ -1,11 +1,11 @@
 "use client";
 
 /**
- * Compare Bazaar — CRM Free Quote Landing Page
+ * Compare Bazaar, CRM Free Quote Landing Page
  * Design system matched to compare-bazaar.com:
- *   Font:       Inter (Google Fonts — consistent with the site's Next.js/Tailwind build)
- *   Blue:       #1D4ED8  (primary — nav, headings, progress, links)
- *   Orange:     #EA580C  (CTA buttons — action-driving accent)
+ *   Font:       Inter (Google Fonts, consistent with the site's Next.js/Tailwind build)
+ *   Blue:       #1D4ED8  (primary, nav, headings, progress, links)
+ *   Orange:     #EA580C  (CTA buttons, action-driving accent)
  *   White bg:   #FFFFFF  (page body)
  *   Alt bg:     #F9FAFB  (alternating sections, cards)
  *   Text dark:  #111827  (headings)
@@ -14,12 +14,13 @@
  *   Border:     #E5E7EB  (cards, inputs)
  *   Green:      #16A34A  (success, trust, checkmarks)
  *   Layout:     max-width 1200px, 24px gutters, sticky form card on desktop
- *   Content:    100% original — no copy from the original page
+ *   Content:    100% original, no copy from the original page
  */
 
 import Head from "next/head";
 import { useEffect, useRef, useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
+import { QuoteFormScrollBody } from "@/components/quotes/QuoteFormScrollBody";
 import { quoteLandingPageCss } from "@/lib/quoteLandingPageCss";
 import {
   BarChart3,
@@ -52,7 +53,7 @@ interface FormData {
 // ─── Static data ─────────────────────────────────────────────────────────────
 const TEAM_SIZES   = ["1–10", "11–50", "51–200", "201–500", "500+"];
 const INDUSTRIES   = ["Technology","Finance","Healthcare","Retail","Manufacturing","Real Estate","Education","Professional Services","Other"];
-const CRM_STATUS   = ["No CRM yet — evaluating for the first time","Using a CRM — want to switch","Using a CRM — want to add another tool"];
+const CRM_STATUS   = ["No CRM yet, evaluating for the first time","Using a CRM, want to switch","Using a CRM, want to add another tool"];
 const TIMELINES    = ["Ready to decide now","Within the next 30 days","1–3 months from now","Just gathering information"];
 const FEATURES     = [
   {id:"pipeline",    label:"Sales Pipeline & Deals",       icon:BarChart3},
@@ -76,13 +77,13 @@ const TESTIMONIALS = [
   {
     name:"Priya Mehta", role:"VP of Sales", company:"NovaTech Solutions",
     result:"Reduced CRM spend by $1,100/month",
-    body:"We had spent weeks evaluating tools on our own and were going in circles. The matching process here was fast and relevant — we signed with Pipedrive within a week of receiving our quotes.",
+    body:"We had spent weeks evaluating tools on our own and were going in circles. The matching process here was fast and relevant; we signed with Pipedrive within a week of receiving our quotes.",
     initials:"PM", avatarBg:"#DBEAFE", avatarText:"#1D4ED8",
   },
   {
     name:"James Okafor", role:"CEO", company:"BrightLeaf Retail",
     result:"Pipeline visibility up 35% in 60 days",
-    body:"I was sceptical — these quote forms usually generate spam. Instead, I received four properly tailored vendor quotes within 24 hours. The side-by-side comparison made the final decision straightforward.",
+    body:"I was sceptical because these quote forms usually generate spam. Instead, I received four properly tailored vendor quotes within 24 hours. The side-by-side comparison made the final decision straightforward.",
     initials:"JO", avatarBg:"#DCFCE7", avatarText:"#16A34A",
   },
   {
@@ -93,9 +94,9 @@ const TESTIMONIALS = [
   },
 ];
 const WHY_ITEMS = [
-  {icon:Target, title:"Matched, not just listed",       body:"We compare your profile against 50+ CRM vendors and filter down to the 3–5 that genuinely suit your team size, industry, and budget — not whoever paid to appear first."},
+  {icon:Target, title:"Matched, not just listed",       body:"We compare your profile against 50+ CRM vendors and filter down to the 3–5 that genuinely suit your team size, industry, and budget, not whoever paid to appear first."},
   {icon:ShieldCheck, title:"Editorially independent",   body:"Every vendor ranking is built on hands-on expert testing and a published scoring methodology. No CRM provider can buy a better position."},
-  {icon:Zap, title:"Quotes within 24 hours",            body:"Submit once. Our specialists do the legwork. Expect 3–5 personalised quotes in your inbox the same business day — no sales calls needed upfront."},
+  {icon:Zap, title:"Quotes within 24 hours",            body:"Submit once. Our specialists do the legwork. Expect 3–5 personalised quotes in your inbox the same business day, with no sales calls needed upfront."},
   {icon:MessageCircle, title:"Free specialist support", body:"Unsure which features matter for your use case? Our CRM specialists will walk through the options with you at no cost and with no obligation to proceed."},
 ];
 
@@ -201,10 +202,10 @@ export default function CRMQuotePage() {
   return (
     <>
       <Head>
-        <title>Get Free CRM Software Quotes — Compare 50+ Providers | Compare Bazaar</title>
-        <meta name="description" content="Describe your CRM requirements once. Receive 3–5 matched, free quotes from Salesforce, HubSpot, Zoho, Pipedrive and more — within 24 hours. Independent, no-obligation." />
+        <title>Get Free CRM Software Quotes, Compare 50+ Providers | Compare Bazaar</title>
+        <meta name="description" content="Describe your CRM requirements once. Receive 3–5 matched, free quotes from Salesforce, HubSpot, Zoho, Pipedrive and more, within 24 hours. Independent, no-obligation." />
         <meta name="keywords"    content="CRM software comparison, free CRM quotes, best CRM 2026, HubSpot vs Salesforce, Zoho CRM, small business CRM, compare CRM pricing" />
-        <meta property="og:title"       content="Free CRM Quotes — Compare Bazaar" />
+        <meta property="og:title"       content="Free CRM Quotes, Compare Bazaar" />
         <meta property="og:description" content="3–5 personalised CRM quotes delivered in 24 hours. Free, no obligation, no spam." />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://www.compare-bazaar.com/marketing/best-crm-software/get-free-quote" />
@@ -250,10 +251,10 @@ export default function CRMQuotePage() {
               <p className="hdesc">
                 Describe your requirements once. Within 24 hours, we'll match you with
                 3–5 CRM vendors whose features, pricing, and industry experience genuinely
-                suit your team — completely free, no obligation.
+                suit your team, completely free, no obligation.
               </p>
               <ul className="trust-ul">
-                {["Free quotes — no credit card needed","Matched results within 24 hours","50+ vetted CRM vendors in our network","Independent recommendations — no pay-to-rank"].map(t=>(
+                {["Free quotes, no credit card needed","Matched results within 24 hours","50+ vetted CRM vendors in our network","Independent recommendations, no pay-to-rank"].map(t=>(
                   <li key={t} className="trust-li"><span className="chk">✓</span>{t}</li>
                 ))}
               </ul>
@@ -280,7 +281,7 @@ export default function CRMQuotePage() {
               </div>
             </div>
 
-            {/* Right column — form */}
+            {/* Right column, form */}
             <div>
               <div className="fc">
                 {submitted ? (
@@ -316,12 +317,12 @@ export default function CRMQuotePage() {
                         ))}
                       </div>
                       <div className="plabel">
-                        Step <b>{step} of 3</b> —{" "}
+                        Step <b>{step} of 3</b>:{" "}
                         {step===1?"Your contact details":step===2?"Your business context":"Your priorities"}
                       </div>
                     </div>
 
-                    <div className="fb">
+                    <QuoteFormScrollBody step={step}>
                       {/* Step 1 */}
                       {step===1&&(
                         <>
@@ -373,7 +374,7 @@ export default function CRMQuotePage() {
                       {step===3&&(
                         <>
                           <div className="ff">
-                            <label>Must-Have Features<span className="req">*</span> <span style={{fontWeight:400,color:"var(--gray-400)"}}>— select all that apply</span></label>
+                            <label>Must-Have Features<span className="req">*</span> <span style={{fontWeight:400,color:"var(--gray-400)"}}>(select all that apply)</span></label>
                             <div className="cgrid">
                               {FEATURES.map(f=>{
                                 const Icon = f.icon as LucideIcon;
@@ -417,7 +418,7 @@ export default function CRMQuotePage() {
                           </p>
                         </>
                       )}
-                    </div>
+                    </QuoteFormScrollBody>
                   </>
                 )}
               </div>

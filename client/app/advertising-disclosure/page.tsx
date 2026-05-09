@@ -44,7 +44,7 @@ export default function AdvertisingDisclosurePage() {
       <div className="prose-editorial max-w-none">
         <p>
           Compare Bazaar is reader-supported. When you purchase software through links on our site,
-          we may earn a commission from the vendor — at no additional cost to you.
+          we may earn a commission from the vendor, at no additional cost to you.
         </p>
         <h2>How we make money</h2>
         <p>

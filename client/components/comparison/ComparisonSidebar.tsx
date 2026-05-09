@@ -50,7 +50,7 @@ export function ComparisonSidebar({ tocItems, ctaTitle, ctaBody, ctaSlug }: Side
         </p>
         <ul className="space-y-2">
           {[
-            'Independent editorial — no pay-to-rank',
+            'Independent editorial, no pay-to-rank',
             'Hands-on testing by named experts',
             'Pricing verified April 2026',
             'Updated every 90 days',

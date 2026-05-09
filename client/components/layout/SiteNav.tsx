@@ -79,7 +79,7 @@ export function SiteNav() {
           <Link
             href="/"
             className="inline-flex items-center gap-0.5 font-serif text-[24px] text-navy tracking-tight"
-            aria-label="Compare Bazaar — Home"
+            aria-label="Compare Bazaar home"
           >
             <Image
               src={logoIcon}

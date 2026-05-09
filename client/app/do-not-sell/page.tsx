@@ -62,7 +62,7 @@ export default function DoNotSellPage() {
 
         <h2>Do we sell or share personal information?</h2>
         <p>
-          Compare Bazaar does not sell personal information in the traditional sense — we do not exchange your data for money with third parties. However, under the broad definitions in certain state privacy laws (including the CCPA/CPRA), some of our activities may constitute &ldquo;sharing&rdquo; of personal information, including:
+          Compare Bazaar does not sell personal information in the traditional sense; we do not exchange your data for money with third parties. However, under the broad definitions in certain state privacy laws (including the CCPA/CPRA), some of our activities may constitute &ldquo;sharing&rdquo; of personal information, including:
         </p>
         <ul>
           <li><strong>Affiliate tracking:</strong> When you click vendor links on our Site, we use affiliate tracking technologies that may share certain browsing data with our affiliate network partners for commission attribution and advertising measurement purposes.</li>

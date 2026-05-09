@@ -14,6 +14,7 @@ import {
   Zap,
   type LucideIcon,
 } from "lucide-react";
+import { QuoteFormScrollBody } from "@/components/quotes/QuoteFormScrollBody";
 import { quoteLandingPageCss } from "@/lib/quoteLandingPageCss";
 
 /** Vendor pills aligned with `payroll-software` comparison page picks */
@@ -105,7 +106,7 @@ const WHY_ITEMS: { icon: LucideIcon; title: string; body: string }[] = [
   {
     icon: ShieldCheck,
     title: "Editorially independent",
-    body: "Rankings follow Compare Bazaar methodology — vendors cannot buy placement in your matched quotes.",
+    body: "Rankings follow Compare Bazaar methodology, vendors cannot buy placement in your matched quotes.",
   },
   {
     icon: Zap,
@@ -306,11 +307,11 @@ export default function PayrollGetQuotesForm() {
                 </h1>
                 <p className="hdesc">
                   Share headcount, pay frequency, and preferred platforms once. Get aligned quotes from providers like ADP,
-                  OnPay, QuickBooks Payroll, and Gusto — free and no obligation.
+                  OnPay, QuickBooks Payroll, and Gusto, free and no obligation.
                 </p>
                 <ul className="trust-ul">
                   {[
-                    "Free quotes — no credit card",
+                    "Free quotes, no credit card",
                     "SMB through multi-state complexity",
                     "Independent methodology",
                     "Responses within ~24 hours",
@@ -393,11 +394,11 @@ export default function PayrollGetQuotesForm() {
                           ))}
                         </div>
                         <div className="plabel">
-                          Step <b>{step} of 3</b> — {stepLabel}
+                          Step <b>{step} of 3</b>: {stepLabel}
                         </div>
                       </div>
 
-                      <div className="fb">
+                      <QuoteFormScrollBody step={step}>
                         {step === 1 && (
                           <>
                             <div className="fr">
@@ -659,7 +660,7 @@ export default function PayrollGetQuotesForm() {
                             </p>
                           </>
                         )}
-                      </div>
+                      </QuoteFormScrollBody>
                     </>
                   )}
                 </div>
@@ -695,7 +696,7 @@ export default function PayrollGetQuotesForm() {
                   tag: "Your pace",
                   num: "03",
                   title: "Choose or walk away",
-                  body: "Book demos only with payroll stacks that fit — no obligation.",
+                  body: "Book demos only with payroll stacks that fit, no obligation.",
                 },
               ].map((c) => (
                 <div key={c.num} className="hc">
@@ -747,7 +748,7 @@ export default function PayrollGetQuotesForm() {
           <div className="ct">
             <div className="stag">Why Compare Bazaar</div>
             <h2 className="sh">Buyer-first payroll matching</h2>
-            <p className="ssub">Independent rankings plus structured quote routing — not pay-to-rank placements.</p>
+            <p className="ssub">Independent rankings plus structured quote routing, not pay-to-rank placements.</p>
             <div className="whyg">
               {WHY_ITEMS.map((w) => {
                 const Icon = w.icon;
@@ -772,7 +773,7 @@ export default function PayrollGetQuotesForm() {
         <div className="cta-band">
           <div style={{ position: "relative", zIndex: 1 }}>
             <h2>Ready to compare payroll platforms?</h2>
-            <p>Jump back to the form — quotes tailored to your headcount and pay cycle.</p>
+            <p>Jump back to the form, quotes tailored to your headcount and pay cycle.</p>
           </div>
           <a
             href="#"

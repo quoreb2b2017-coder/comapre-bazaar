@@ -78,7 +78,7 @@ export function BlogSubscribeBox({ slug, compact = false, variant = 'default' }:
         New guides in your inbox
       </h3>
       <p className={`${compact ? 'text-[13px]' : 'text-[15px]'} mt-2 max-w-[52ch] leading-relaxed text-gray-600`}>
-        One signup—each new article lands in your email when we publish.
+        One signup: each new article lands in your email when we publish.
       </p>
       <form onSubmit={submit} className={`mt-4 flex flex-col gap-3 ${editorial && !compact ? 'sm:max-w-md' : ''}`}>
         <input

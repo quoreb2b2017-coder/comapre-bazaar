@@ -166,7 +166,7 @@ export function ComparisonPageTemplate({ data }: ComparisonPageProps) {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
           <Breadcrumb items={data.breadcrumbs} className="mb-4" />
 
-          {/* H1 — exact target keyword */}
+          {/* H1, exact target keyword */}
           <h1 className="text-2xl sm:text-3xl lg:text-[40px] text-navy leading-tight tracking-tight mb-4">
             {data.h1}
           </h1>
@@ -175,7 +175,7 @@ export function ComparisonPageTemplate({ data }: ComparisonPageProps) {
             {data.intro}
           </p>
 
-          {/* Author bar — E-E-A-T */}
+          {/* Author bar, E-E-A-T */}
           <AuthorBar
             author={data.author}
             reviewer={data.reviewer}
@@ -293,7 +293,7 @@ export function ComparisonPageTemplate({ data }: ComparisonPageProps) {
               </p>
               <ComparisonTable
                 data={data.table}
-                caption={`${data.h1} — pricing and feature comparison, ${data.lastReviewed}`}
+                caption={`${data.h1}, pricing and feature comparison, ${data.lastReviewed}`}
               />
             </section>
 

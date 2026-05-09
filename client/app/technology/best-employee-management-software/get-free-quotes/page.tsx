@@ -14,6 +14,7 @@ import {
   Zap,
   type LucideIcon,
 } from "lucide-react";
+import { QuoteFormScrollBody } from "@/components/quotes/QuoteFormScrollBody";
 import { quoteLandingPageCss } from "@/lib/quoteLandingPageCss";
 
 /** Brands from `employee-management` comparison page */
@@ -74,7 +75,7 @@ const TESTIMONIALS = [
     role: "HR Director",
     company: "Evergreen Clinics",
     result: "Compliance-forward workflows surfaced faster",
-    body: "Policy-heavy onboarding needed structured demos — not generic HR suites. The routing reflected that.",
+    body: "Policy-heavy onboarding needed structured demos, not generic HR suites. The routing reflected that.",
     initials: "MS",
     avatarBg: "#FEF3C7",
     avatarText: "#D97706",
@@ -85,12 +86,12 @@ const WHY_ITEMS: { icon: LucideIcon; title: string; body: string }[] = [
   {
     icon: Target,
     title: "Matched to HR maturity",
-    body: "Headcount + stated management needs route you toward HRIS, analytics, or monitoring-fit stacks — not one generic list.",
+    body: "Headcount + stated management needs route you toward HRIS, analytics, or monitoring-fit stacks, not one generic list.",
   },
   {
     icon: ShieldCheck,
     title: "Independent rankings",
-    body: "Our employee-management methodology is editorial — placements in quotes are fit-based, not sponsored slots.",
+    body: "Our employee-management methodology is editorial, placements in quotes are fit-based, not sponsored slots.",
   },
   {
     icon: Zap,
@@ -289,13 +290,13 @@ export default function EmployeeManagementGetQuotesForm() {
                   <span className="acc">Aligned to Your HR Stack</span>
                 </h1>
                 <p className="hdesc">
-                  Outline headcount and priorities — time tracking, performance cycles, onboarding, or all-in-one HR. Get
+                  Outline headcount and priorities, time tracking, performance cycles, onboarding, or all-in-one HR. Get
                   matched quotes referencing the same platforms we review: Teramind, ActivTrak, Hubstaff, BambooHR,
                   Intelogos, Rippling, and more.
                 </p>
                 <ul className="trust-ul">
                   {[
-                    "Free quotes — no obligation",
+                    "Free quotes, no obligation",
                     "SMB through scaling teams",
                     "Independent Compare Bazaar methodology",
                     "Fast vendor alignment",
@@ -378,11 +379,11 @@ export default function EmployeeManagementGetQuotesForm() {
                           ))}
                         </div>
                         <div className="plabel">
-                          Step <b>{step} of 3</b> — {stepLabel}
+                          Step <b>{step} of 3</b>: {stepLabel}
                         </div>
                       </div>
 
-                      <div className="fb">
+                      <QuoteFormScrollBody step={step}>
                         {step === 1 && (
                           <>
                             <div className="fr">
@@ -602,7 +603,7 @@ export default function EmployeeManagementGetQuotesForm() {
                             </p>
                           </>
                         )}
-                      </div>
+                      </QuoteFormScrollBody>
                     </>
                   )}
                 </div>
@@ -632,7 +633,7 @@ export default function EmployeeManagementGetQuotesForm() {
                   tag: "Within 24 hours",
                   num: "02",
                   title: "We route HR-fit vendors",
-                  body: "Shortlists reflect Compare Bazaar editorial picks — Teramind, ActivTrak, Hubstaff, BambooHR, and peers.",
+                  body: "Shortlists reflect Compare Bazaar editorial picks, Teramind, ActivTrak, Hubstaff, BambooHR, and peers.",
                 },
                 {
                   tag: "Your pace",
@@ -690,7 +691,7 @@ export default function EmployeeManagementGetQuotesForm() {
           <div className="ct">
             <div className="stag">Why Compare Bazaar</div>
             <h2 className="sh">Buyer-centric workforce matching</h2>
-            <p className="ssub">Editorial testing plus transparent routing — not pay-for-placement quote spam.</p>
+            <p className="ssub">Editorial testing plus transparent routing, not pay-for-placement quote spam.</p>
             <div className="whyg">
               {WHY_ITEMS.map((w) => {
                 const Icon = w.icon;
@@ -715,7 +716,7 @@ export default function EmployeeManagementGetQuotesForm() {
         <div className="cta-band">
           <div style={{ position: "relative", zIndex: 1 }}>
             <h2>Ready to compare employee management platforms?</h2>
-            <p>Tell us headcount and priorities once — get structured vendor quotes back quickly.</p>
+            <p>Tell us headcount and priorities once, get structured vendor quotes back quickly.</p>
           </div>
           <a
             href="#"

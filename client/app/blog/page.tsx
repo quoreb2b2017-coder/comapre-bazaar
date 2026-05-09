@@ -56,7 +56,7 @@ export default async function BlogIndexPage() {
                     Blog
                   </h1>
                   <p className="mt-6 max-w-[54ch] text-[17px] leading-[1.7] text-gray-600 sm:text-[1.125rem]">
-                    Independent buying guides for business software—structured research, clear trade-offs, and practical
+                    Independent buying guides for business software: structured research, clear trade-offs, and practical
                     shortlists.
                   </p>
                 </div>
@@ -102,7 +102,7 @@ export default async function BlogIndexPage() {
                         </h2>
                       </div>
                       <p className="max-w-[42ch] text-[14px] leading-relaxed text-gray-500">
-                        Same criteria we use in product comparisons—written for teams choosing vendors under time pressure.
+                        Same criteria we use in product comparisons, written for teams choosing vendors under time pressure.
                       </p>
                     </div>
                     <ul className="divide-y divide-gray-100">
@@ -136,7 +136,7 @@ export default async function BlogIndexPage() {
                   ))}
                 </ul>
               ) : (
-                <p className="text-sm text-gray-500">—</p>
+                <p className="text-sm text-gray-500">No topics yet.</p>
               )}
             </div>
             <div>
@@ -145,7 +145,7 @@ export default async function BlogIndexPage() {
               </h3>
               <ul className="space-y-5 text-[14px] leading-[1.65] text-gray-600">
                 <li className="border-l-2 border-gray-200 pl-4 leading-snug">
-                  Structured criteria and repeatable scoring—not sponsored blurbs.
+                  Structured criteria and repeatable scoring, not sponsored blurbs.
                 </li>
                 <li className="border-l-2 border-gray-200 pl-4 leading-snug">
                   Written for operators making purchase decisions under time pressure.

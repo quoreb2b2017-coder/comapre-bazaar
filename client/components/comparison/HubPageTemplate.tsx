@@ -76,7 +76,7 @@ export function HubPageTemplate({ data }: HubPageTemplateProps) {
               key={card.href}
               href={card.href}
               className="group block bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-lg hover:border-blue-200 transition-all"
-              aria-label={`${card.title} — ${card.meta}`}
+              aria-label={`${card.title}. ${card.meta}`}
             >
               <div className="mb-4" aria-hidden="true">{getCardIcon(card.icon)}</div>
               <h3 className="font-semibold text-navy mb-2 group-hover:text-brand transition-colors">

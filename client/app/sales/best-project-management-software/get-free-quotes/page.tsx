@@ -15,6 +15,7 @@ import {
   Zap,
   type LucideIcon,
 } from "lucide-react";
+import { QuoteFormScrollBody } from "@/components/quotes/QuoteFormScrollBody";
 import { quoteLandingPageCss } from "@/lib/quoteLandingPageCss";
 
 const VENDORS = [
@@ -61,7 +62,7 @@ const TESTIMONIALS = [
     role: "PMO Lead",
     company: "Helio Renewables",
     result: "Monday vs ClickUp decision in two sprints",
-    body: "Automation + workload truth captured once — demos stopped rehashing basic Kanban fluff.",
+    body: "Automation + workload truth captured once, demos stopped rehashing basic Kanban fluff.",
     initials: "SB",
     avatarBg: "#DBEAFE",
     avatarText: "#1D4ED8",
@@ -81,7 +82,7 @@ const TESTIMONIALS = [
     role: "Marketing Ops",
     company: "Northwind Content",
     result: "Notion + Asana hybrids priced fairly",
-    body: "Cross-functional approvals needed transparency — responders mapped doc + task workflows clearly.",
+    body: "Cross-functional approvals needed transparency, responders mapped doc + task workflows clearly.",
     initials: "MO",
     avatarBg: "#FEF3C7",
     avatarText: "#D97706",
@@ -107,7 +108,7 @@ const WHY_ITEMS: { icon: LucideIcon; title: string; body: string }[] = [
   {
     icon: MessageCircle,
     title: "Clarity before trials",
-    body: "Gantt, automation tiers, integrations — surfaced before you sink weeks into POCs.",
+    body: "Gantt, automation tiers, integrations, surfaced before you sink weeks into POCs.",
   },
 ];
 
@@ -299,7 +300,7 @@ export default function ProjectManagementGetQuotesPage() {
                   <span className="acc">Aligned to Workflow Depth</span>
                 </h1>
                 <p className="hdesc">
-                  Tell us team size, work style, timeline, and must-have automation once — then receive vendor matches anchored
+                  Tell us team size, work style, timeline, and must-have automation once, then receive vendor matches anchored
                   to Monday.com, ClickUp, Asana, Notion, Jira, and the platforms in our comparison guide.
                 </p>
                 <ul className="trust-ul">
@@ -387,11 +388,11 @@ export default function ProjectManagementGetQuotesPage() {
                           ))}
                         </div>
                         <div className="plabel">
-                          Step <b>{step} of 3</b> — {stepLabel}
+                          Step <b>{step} of 3</b>: {stepLabel}
                         </div>
                       </div>
 
-                      <div className="fb">
+                      <QuoteFormScrollBody step={step}>
                         {step === 1 && (
                           <>
                             <div className="fr">
@@ -601,7 +602,7 @@ export default function ProjectManagementGetQuotesPage() {
                           <>
                             <div className="ff">
                               <label>
-                                Must-have features <span style={{ fontWeight: 400, color: "var(--gray-400)" }}>— optional</span>
+                                Must-have features <span style={{ fontWeight: 400, color: "var(--gray-400)" }}>(optional)</span>
                               </label>
                               <div className="cgrid">
                                 {FEATURE_OPTS.map((f) => {
@@ -665,7 +666,7 @@ export default function ProjectManagementGetQuotesPage() {
                             </p>
                           </>
                         )}
-                      </div>
+                      </QuoteFormScrollBody>
                     </>
                   )}
                 </div>
@@ -687,13 +688,13 @@ export default function ProjectManagementGetQuotesPage() {
                   tag: "Fast",
                   num: "01",
                   title: "Quantify teamwork",
-                  body: "Sizing, workflows, timelines, budgets — distilled once for vendor alignment.",
+                  body: "Sizing, workflows, timelines, budgets, distilled once for vendor alignment.",
                 },
                 {
                   tag: "Matched",
                   num: "02",
                   title: "PM vendors respond",
-                  body: "Proposals cite stacks from Compare Bazaar testing — Monday, ClickUp, Asana, Jira, etc.",
+                  body: "Proposals cite stacks from Compare Bazaar testing, Monday, ClickUp, Asana, Jira, etc.",
                 },
                 {
                   tag: "Decide",
@@ -776,7 +777,7 @@ export default function ProjectManagementGetQuotesPage() {
         <div className="cta-band">
           <div style={{ position: "relative", zIndex: 1 }}>
             <h2>Need PM vendor quotes?</h2>
-            <p>Jump up and finish three quick steps — we mirror the stacks we benchmark.</p>
+            <p>Jump up and finish three quick steps, we mirror the stacks we benchmark.</p>
           </div>
           <a
             href="#"

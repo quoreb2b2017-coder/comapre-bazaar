@@ -16,7 +16,7 @@ export function formatShareDescription(raw: string | undefined | null, maxLen = 
     .replace(/<[^>]*>/g, ' ')
     .replace(/\s+/g, ' ')
     .trim()
-  if (!plain) return `${SITE_NAME} — software buying guides and comparisons.`
+  if (!plain) return `${SITE_NAME}: software buying guides and comparisons.`
   return plain.length <= maxLen ? plain : `${plain.slice(0, maxLen - 1)}…`
 }
 
@@ -60,7 +60,7 @@ export function buildMetadata({
   }
 }
 
-/** Rich previews for WhatsApp, LinkedIn, Facebook, Slack — article type + dates + large image. */
+/** Rich previews for WhatsApp, LinkedIn, Facebook, Slack (article type + dates + large image). */
 export function buildBlogShareMetadata(opts: {
   title: string
   description: string

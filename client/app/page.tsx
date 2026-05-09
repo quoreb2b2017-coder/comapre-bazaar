@@ -18,7 +18,7 @@ import {
 export const metadata: Metadata = buildMetadata({
   title: 'Best Business Software Comparisons & Reviews 2026 | Compare Bazaar',
   description:
-    'Compare the best CRM, payroll, email marketing, and HR software for your business. Independent reviews, side-by-side pricing comparisons, and expert recommendations — updated for 2026.',
+    'Compare the best CRM, payroll, email marketing, and HR software for your business. Independent reviews, side-by-side pricing comparisons, and expert recommendations, updated for 2026.',
   canonical: '/',
 })
 
@@ -208,7 +208,7 @@ export default async function HomePage() {
           </span>
           <p className="text-sm text-blue-800">
             Every comparison is based on hands-on testing, pricing verification, and structured scoring
-            across 12+ criteria — never influenced by vendor payments.{' '}
+            across 12+ criteria, never influenced by vendor payments.{' '}
             <Link href="/editorial-process" className="font-semibold underline">
               Read our editorial process →
             </Link>
@@ -236,7 +236,7 @@ export default async function HomePage() {
                 key={cat.href}
                 href={cat.href}
                 className="group block bg-white/95 border border-gray-200 rounded-2xl p-6 transition-all duration-300 relative overflow-hidden hover:-translate-y-1.5 hover:shadow-[0_24px_48px_-22px_rgba(14,42,106,0.5)] hover:border-blue-200"
-                aria-label={`${cat.title} — ${cat.count}`}
+                aria-label={`${cat.title}, ${cat.count}`}
               >
                 <div className="absolute inset-x-0 top-0 h-0.5 bg-brand scale-x-0 group-hover:scale-x-100 transition-transform origin-left" aria-hidden="true" />
                 <div className="pointer-events-none absolute -top-12 -right-12 h-28 w-28 rounded-full bg-brand/10 blur-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
@@ -282,12 +282,12 @@ export default async function HomePage() {
               {
                 num: '02',
                 title: 'Verified pricing',
-                body: 'We contact vendors directly to confirm pricing and flag hidden fees. All pricing data is dated — we note when prices were last confirmed.',
+                body: 'We contact vendors directly to confirm pricing and flag hidden fees. All pricing data is dated, we note when prices were last confirmed.',
               },
               {
                 num: '03',
                 title: 'Independent scoring',
-                body: 'Rankings are based on weighted scores across our criteria — vendors cannot pay to improve their ranking. Sponsored placements are always clearly labelled.',
+                body: 'Rankings are based on weighted scores across our criteria, vendors cannot pay to improve their ranking. Sponsored placements are always clearly labelled.',
               },
             ].map(({ num, title, body }) => (
               <div key={num} className="rounded-2xl border border-gray-200/80 bg-white p-5 sm:p-6 shadow-[0_14px_30px_-24px_rgba(15,31,61,0.5)]">
@@ -312,7 +312,7 @@ export default async function HomePage() {
                   Latest from our blog
                 </h2>
                 <p className="mt-2 max-w-xl text-gray-500">
-                  Deep dives on payroll, VoIP, CRM, and more—same scoring mindset as our comparison hubs.
+                  Deep dives on payroll, VoIP, CRM, and more, with the same scoring mindset as our comparison hubs.
                 </p>
               </div>
               <Link

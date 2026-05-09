@@ -14,6 +14,7 @@ import {
   Zap,
   type LucideIcon,
 } from "lucide-react";
+import { QuoteFormScrollBody } from "@/components/quotes/QuoteFormScrollBody";
 import { quoteLandingPageCss } from "@/lib/quoteLandingPageCss";
 
 /** VoIP platforms from `business-phone-systems` comparison page */
@@ -56,7 +57,7 @@ const TESTIMONIALS = [
     role: "IT Manager",
     company: "Atlas Dental Group",
     result: "Cut Telco bill 22% after VoIP bake-off",
-    body: "We flagged replacing legacy PBX plus hybrid Zoom usage — proposals referenced Nextiva and Ooma tiers that matched desk + softphone split.",
+    body: "We flagged replacing legacy PBX plus hybrid Zoom usage, and proposals referenced Nextiva and Ooma tiers that matched desk + softphone split.",
     initials: "LZ",
     avatarBg: "#DBEAFE",
     avatarText: "#1D4ED8",
@@ -76,7 +77,7 @@ const TESTIMONIALS = [
     role: "Rev Ops",
     company: "Pulse CX Studio",
     result: "Unified UCaaS trial in 10 days",
-    body: "Quote grid compared unlimited domestic calling vs bolt-on international — matched how we actually operate.",
+    body: "Quote grid compared unlimited domestic calling vs bolt-on international, which matched how we actually operate.",
     initials: "VO",
     avatarBg: "#FEF3C7",
     avatarText: "#D97706",
@@ -92,7 +93,7 @@ const WHY_ITEMS: { icon: LucideIcon; title: string; body: string }[] = [
   {
     icon: ShieldCheck,
     title: "Same brands we review",
-    body: "Quick picks on Compare Bazaar — Ooma Office, 800.com, Zoom Phone, Nextiva, Vonage — anchor matched outreach.",
+    body: "Quick picks on Compare Bazaar (Ooma Office, 800.com, Zoom Phone, Nextiva, Vonage) anchor matched outreach.",
   },
   {
     icon: Zap,
@@ -285,12 +286,12 @@ export default function BusinessPhoneSystemGetQuotesForm() {
                 </h1>
                 <p className="hdesc">
                   Describe installs vs replacements, handset counts, and collaboration habits once. Matched quotes align with
-                  our editorial shortlist — Ooma Office, 800.com, Zoom Phone, Nextiva, Vonage, RingCentral — plus comparable
+                  our editorial shortlist (Ooma Office, 800.com, Zoom Phone, Nextiva, Vonage, RingCentral), plus comparable
                   alternatives when helpful.
                 </p>
                 <ul className="trust-ul">
                   {[
-                    "Free quotes — no obligation",
+                    "Free quotes, no obligation",
                     "SMB-friendly & mid-market UCaaS",
                     "Independent methodology",
                     "~24 hour vendor routing",
@@ -373,11 +374,11 @@ export default function BusinessPhoneSystemGetQuotesForm() {
                           ))}
                         </div>
                         <div className="plabel">
-                          Step <b>{step} of 2</b> — {stepLabel}
+                          Step <b>{step} of 2</b>: {stepLabel}
                         </div>
                       </div>
 
-                      <div className="fb">
+                      <QuoteFormScrollBody step={step}>
                         {step === 1 && (
                           <>
                             <div className="fr">
@@ -586,7 +587,7 @@ export default function BusinessPhoneSystemGetQuotesForm() {
                             </p>
                           </>
                         )}
-                      </div>
+                      </QuoteFormScrollBody>
                     </>
                   )}
                 </div>
@@ -614,7 +615,7 @@ export default function BusinessPhoneSystemGetQuotesForm() {
                   tag: "Within 24 hours",
                   num: "02",
                   title: "Tailored UC quotes",
-                  body: "Responses emphasize Compare Bazaar editorial picks — Ooma, Nextiva, Zoom Phone, Vonage, RingCentral.",
+                  body: "Responses emphasize Compare Bazaar editorial picks, Ooma, Nextiva, Zoom Phone, Vonage, RingCentral.",
                 },
                 {
                   tag: "Ops-led",
@@ -672,7 +673,7 @@ export default function BusinessPhoneSystemGetQuotesForm() {
           <div className="ct">
             <div className="stag">Why Compare Bazaar</div>
             <h2 className="sh">Independent VoIP guidance</h2>
-            <p className={"s" + "sub"}>Hands-on testing drives shortlists — not vendor sponsorship lanes.</p>
+            <p className={"s" + "sub"}>Hands-on testing drives shortlists, not vendor sponsorship lanes.</p>
             <div className="whyg">
               {WHY_ITEMS.map((w) => {
                 const Icon = w.icon;
@@ -697,7 +698,7 @@ export default function BusinessPhoneSystemGetQuotesForm() {
         <div className="cta-band">
           <div style={{ position: "relative", zIndex: 1 }}>
             <h2>Ready for VoIP quotes?</h2>
-            <p>Jump back up — three steps connect you with UC vendors matching our editorial roster.</p>
+            <p>Jump back up, three steps connect you with UC vendors matching our editorial roster.</p>
           </div>
           <a
             href="#"

@@ -20,6 +20,7 @@ import {
   Zap,
   type LucideIcon,
 } from "lucide-react";
+import { QuoteFormScrollBody } from "@/components/quotes/QuoteFormScrollBody";
 import { quoteLandingPageCss } from "@/lib/quoteLandingPageCss";
 
 interface FormData {
@@ -100,7 +101,7 @@ const TESTIMONIALS = [
     role: "Owner",
     company: "Alvarez Electric",
     result: "Booked 40% more calls after rebuild",
-    body: "I needed mobile speed and local SEO without hiring an agency. Matched platforms gave clear pricing — chose one and shipped fast.",
+    body: "I needed mobile speed and local SEO without hiring an agency. Matched platforms gave clear pricing, chose one and shipped fast.",
     initials: "TA",
     avatarBg: "#DCFCE7",
     avatarText: "#16A34A",
@@ -110,7 +111,7 @@ const TESTIMONIALS = [
     role: "E-commerce Lead",
     company: "Lumen Goods",
     result: "Found a builder that scales checkout",
-    body: "Cart requirements were specific. Every quoted vendor understood inventory sync — avoided weeks of irrelevant demos.",
+    body: "Cart requirements were specific. Every quoted vendor understood inventory sync, avoided weeks of irrelevant demos.",
     initials: "AF",
     avatarBg: "#FEF3C7",
     avatarText: "#D97706",
@@ -121,7 +122,7 @@ const WHY_ITEMS = [
   {
     icon: Target,
     title: "Matched to site scope",
-    body: "We factor website type, page counts, and commerce needs so you hear from builders that fit — not one-size templates.",
+    body: "We factor website type, page counts, and commerce needs so you hear from builders that fit, not one-size templates.",
   },
   {
     icon: ShieldCheck,
@@ -131,7 +132,7 @@ const WHY_ITEMS = [
   {
     icon: Zap,
     title: "Fast turnaround",
-    body: "Submit once and receive comparable quotes quickly — compare features and onboarding timelines side-by-side.",
+    body: "Submit once and receive comparable quotes quickly, compare features and onboarding timelines side-by-side.",
   },
   {
     icon: MessageCircle,
@@ -350,11 +351,11 @@ export default function WebsiteBuildingQuotePage() {
                 </h1>
                 <p className="hdesc">
                   Outline site type, page scope, and e‑commerce needs once. Within 24 hours we match you with platforms
-                  that fit templates, SEO, and budget — free and no obligation.
+                  that fit templates, SEO, and budget, free and no obligation.
                 </p>
                 <ul className="trust-ul">
                   {[
-                    "Free quotes — no credit card",
+                    "Free quotes, no credit card",
                     "Matched builders within 24 hours",
                     "Broad coverage of leading platforms",
                     "Independent recommendations",
@@ -437,11 +438,11 @@ export default function WebsiteBuildingQuotePage() {
                           ))}
                         </div>
                         <div className="plabel">
-                          Step <b>{step} of 3</b> — {stepLabel}
+                          Step <b>{step} of 3</b>: {stepLabel}
                         </div>
                       </div>
 
-                      <div className="fb">
+                      <QuoteFormScrollBody step={step}>
                         {step === 1 && (
                           <>
                             <div className="fr">
@@ -707,7 +708,7 @@ export default function WebsiteBuildingQuotePage() {
                             <div className="ff">
                               <label>
                                 Important features{" "}
-                                <span style={{ fontWeight: 400, color: "var(--gray-400)" }}>— select all that apply</span>
+                                <span style={{ fontWeight: 400, color: "var(--gray-400)" }}>(select all that apply)</span>
                               </label>
                               <div className="cgrid">
                                 {FEATURE_ITEMS.map((f) => {
@@ -778,7 +779,7 @@ export default function WebsiteBuildingQuotePage() {
                             </p>
                           </>
                         )}
-                      </div>
+                      </QuoteFormScrollBody>
                     </>
                   )}
                 </div>
@@ -834,7 +835,7 @@ export default function WebsiteBuildingQuotePage() {
           <div className="stag">Buyer Stories</div>
           <h2 className="sh">Teams that shipped faster with clearer builder quotes</h2>
           <p className="ssub">
-            Owners and marketers who wanted credible comparisons — not endless cold outreach.
+            Owners and marketers who wanted credible comparisons, not endless cold outreach.
           </p>
           <div className="tg">
             {TESTIMONIALS.map((t) => (
@@ -869,7 +870,7 @@ export default function WebsiteBuildingQuotePage() {
             <div className="stag">Why Compare Bazaar</div>
             <h2 className="sh">Guidance for teams picking a website platform</h2>
             <p className="ssub">
-              Independent reviews, structured matching, and transparent next steps — built for operators and creatives alike.
+              Independent reviews, structured matching, and transparent next steps, built for operators and creatives alike.
             </p>
             <div className="whyg">
               {WHY_ITEMS.map((w) => {
@@ -895,7 +896,7 @@ export default function WebsiteBuildingQuotePage() {
         <div className="cta-band">
           <div style={{ position: "relative", zIndex: 1 }}>
             <h2>Ready to pick your website builder?</h2>
-            <p>Share scope once — receive comparable quotes within a day.</p>
+            <p>Share scope once, receive comparable quotes within a day.</p>
           </div>
           <a
             href="#"
