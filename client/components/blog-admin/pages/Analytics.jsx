@@ -282,6 +282,17 @@ export const Analytics = () => {
       count: Number(c.count || 0),
     }))
 
+    const acceptedAll = (last30.consentBreakdown || [])
+      .filter((r) => r.analytics === true && r.marketing === true)
+      .reduce((acc, r) => acc + Number(r.count || 0), 0)
+    const rejectedAll = (last30.consentBreakdown || [])
+      .filter((r) => r.analytics === false && r.marketing === false)
+      .reduce((acc, r) => acc + Number(r.count || 0), 0)
+    const partial = (last30.consentBreakdown || [])
+      .filter((r) => (r.analytics === true && r.marketing === false))
+      .reduce((acc, r) => acc + Number(r.count || 0), 0)
+    const totalConsent = acceptedAll + rejectedAll + partial || 1
+
     const campaignRows = (mk.utmCampaigns || []).slice(0, 10).map((c) => {
       const visits = Number(c.views || 0)
       const emailAssist = Math.round((Number(mk.emailPrefillHits7d || 0) * visits) / Math.max(1, Number(last7.pageViews || 0)))
@@ -339,6 +350,10 @@ export const Analytics = () => {
       campaignRows,
       metricCatalog,
       metricTotals,
+      acceptedAll,
+      rejectedAll,
+      partial,
+      totalConsent,
     }
   }, [data])
 
@@ -357,47 +372,7 @@ export const Analytics = () => {
         <Metric title="Email-intent hits" value={fmt(derived.mk.emailPrefillHits7d)} hint="Last 7 days" />
       </section>
 
-      <Panel title="Analytics master plan (8 categories, 60+ metrics)">
-        <div className="p-5 space-y-5">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <Metric title="Total metrics" value={fmt(derived.metricTotals.total)} hint="Framework target" />
-            <Metric title="Live now" value={fmt(derived.metricTotals.live)} hint="Already flowing" />
-            <Metric title="Partial" value={fmt(derived.metricTotals.partial)} hint="Needs extra events/tools" />
-            <Metric title="Setup needed" value={fmt(derived.metricTotals.setup)} hint="Integrations pending" />
-          </div>
 
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-            {derived.metricCatalog.map((group) => {
-              const visibleMetrics = group.metrics.filter((metric) => metric.status !== 'setup')
-              if (!visibleMetrics.length) return null
-              return (
-                <article key={group.category} className="rounded-xl border border-gray-200 bg-gray-50 p-4">
-                  <h4 className="font-semibold text-gray-900">{group.category}</h4>
-                  <ul className="mt-3 space-y-2">
-                    {visibleMetrics.map((metric) => (
-                      <li key={metric.name} className="flex items-start justify-between gap-3">
-                        <p className="text-sm text-gray-700">{metric.name}</p>
-                        <div className="shrink-0 flex items-center gap-1.5">
-                          <span className={`px-2 py-0.5 rounded-full text-xs ${PRIORITY_STYLES[metric.priority]}`}>
-                            {priorityLabel(metric.priority)}
-                          </span>
-                          <span className={`px-2 py-0.5 rounded-full text-xs ${STATUS_STYLES[metric.status]}`}>
-                            {metric.status === 'live' ? 'Live' : 'Partial'}
-                          </span>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </article>
-              )
-            })}
-          </div>
-          <p className="text-xs text-gray-500">
-            Suggested connectors for remaining metrics: GA4, Search Console, Ahrefs/Semrush, Hotjar/Clarity, affiliate platform API,
-            Mailchimp/ConvertKit, ad/sponsor CRM, and Looker Studio blending.
-          </p>
-        </div>
-      </Panel>
 
       <section className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <Panel title="Traffic sources breakdown">
@@ -632,6 +607,25 @@ export const Analytics = () => {
             <span className="text-sm text-gray-600">Cookie banner is live on <strong>compare-bazaar.com</strong></span>
             <span className="ml-auto rounded-full bg-blue-50 border border-blue-200 px-3 py-1 text-xs font-semibold text-blue-700">GDPR</span>
             <span className="rounded-full bg-purple-50 border border-purple-200 px-3 py-1 text-xs font-semibold text-purple-700">Worldwide</span>
+          </div>
+
+          {/* Accept / Reject breakdown */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3">
+              <p className="text-xs uppercase tracking-wide text-emerald-600">Accept All</p>
+              <p className="mt-1 text-2xl font-bold text-emerald-700">{fmt(derived.acceptedAll)}</p>
+              <p className="mt-0.5 text-xs text-emerald-600">{derived.totalConsent ? Math.round((derived.acceptedAll / derived.totalConsent) * 100) : 0}% of consent events</p>
+            </div>
+            <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3">
+              <p className="text-xs uppercase tracking-wide text-rose-600">Reject All</p>
+              <p className="mt-1 text-2xl font-bold text-rose-700">{fmt(derived.rejectedAll)}</p>
+              <p className="mt-0.5 text-xs text-rose-600">{derived.totalConsent ? Math.round((derived.rejectedAll / derived.totalConsent) * 100) : 0}% of consent events</p>
+            </div>
+            <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+              <p className="text-xs uppercase tracking-wide text-amber-600">Analytics Only</p>
+              <p className="mt-1 text-2xl font-bold text-amber-700">{fmt(derived.partial)}</p>
+              <p className="mt-0.5 text-xs text-amber-600">{derived.totalConsent ? Math.round((derived.partial / derived.totalConsent) * 100) : 0}% of consent events</p>
+            </div>
           </div>
 
           {/* KPI cards */}
