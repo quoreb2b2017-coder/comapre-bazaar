@@ -1933,6 +1933,10 @@ function resolveReviewDetail(review: ReviewEntry): CrmDetail | undefined {
   )
 }
 
+const REVIEW_VENDOR_URL_OVERRIDES: Record<string, string> = {
+  'nextiva-review': 'https://trial.nextiva.com/compare-bazaar-free-quotes',
+}
+
 const reviewEntries: ReviewEntry[] = comparisonPages.flatMap((page) =>
   page.products.map((product) => ({
     slug: product.reviewSlug,
@@ -1945,7 +1949,7 @@ const reviewEntries: ReviewEntry[] = comparisonPages.flatMap((page) =>
     pricingLabel: product.pricingLabel,
     pricingAmount: product.pricingAmount,
     pricingPeriod: product.pricingPeriod,
-    vendorUrl: product.vendorUrl,
+    vendorUrl: REVIEW_VENDOR_URL_OVERRIDES[product.reviewSlug] ?? product.vendorUrl,
     categoryLabel: page.h1,
     categoryPath: page.canonical,
   }))

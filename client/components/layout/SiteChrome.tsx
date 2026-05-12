@@ -9,6 +9,7 @@ import { DisclosureBanner } from '@/components/layout/DisclosureBanner'
 import { RouteLoadingIndicator } from '@/components/layout/RouteLoadingIndicator'
 import ArrowNavigation from '@/components/ArrowNavigation'
 import { SiteAnalyticsBeacon } from '@/components/consent/SiteAnalyticsBeacon'
+import { CookieConsentBanner } from '@/components/consent/CookieConsentBanner'
 
 const CompareBazaarChat = dynamic(
   () => import('@/components/chatbot/CompareBazaarChat').then((mod) => mod.CompareBazaarChat),
@@ -36,6 +37,7 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
       <Suspense fallback={null}>
         <SiteAnalyticsBeacon />
       </Suspense>
+      <CookieConsentBanner />
       <SiteFooter />
     </>
   )

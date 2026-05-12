@@ -219,12 +219,23 @@ export function ComparisonPageTemplate({ data }: ComparisonPageProps) {
                       >
                         Compare Quotes
                       </a>
-                      <span
-                        aria-disabled="true"
-                        className="block text-center border border-[#F27F25] text-[#F27F25] text-sm font-semibold py-2 rounded-xl opacity-60 cursor-not-allowed select-none"
-                      >
-                        Visit Site
-                      </span>
+                      {card.vendorUrl && card.vendorUrl !== '#compare' ? (
+                        <a
+                          href={card.vendorUrl}
+                          target="_blank"
+                          rel="sponsored noopener noreferrer"
+                          className="block text-center border border-[#F27F25] text-[#F27F25] hover:bg-orange-50 text-sm font-semibold py-2 rounded-xl transition-colors"
+                        >
+                          Visit Site
+                        </a>
+                      ) : (
+                        <span
+                          aria-disabled="true"
+                          className="block text-center border border-[#F27F25] text-[#F27F25] text-sm font-semibold py-2 rounded-xl opacity-60 cursor-not-allowed select-none"
+                        >
+                          Visit Site
+                        </span>
+                      )}
                     </div>
                   </article>
                 ))}
