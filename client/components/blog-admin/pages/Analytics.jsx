@@ -617,6 +617,159 @@ export const Analytics = () => {
           </div>
         </Panel>
       </section>
+
+      {/* ── Cookie Banner & Consent Analytics ── */}
+      <Panel title="Cookie banner & consent analytics">
+        <div className="p-5 space-y-6">
+
+          {/* Status row */}
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2 rounded-full bg-emerald-50 border border-emerald-200 px-4 py-1.5">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-sm font-semibold text-emerald-700">Active</span>
+            </div>
+            <span className="text-gray-300">|</span>
+            <span className="text-sm text-gray-600">Cookie banner is live on <strong>compare-bazaar.com</strong></span>
+            <span className="ml-auto rounded-full bg-blue-50 border border-blue-200 px-3 py-1 text-xs font-semibold text-blue-700">GDPR</span>
+            <span className="rounded-full bg-purple-50 border border-purple-200 px-3 py-1 text-xs font-semibold text-purple-700">Worldwide</span>
+          </div>
+
+          {/* KPI cards */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
+              <p className="text-xs uppercase tracking-wide text-gray-500">Unique visitors (30d)</p>
+              <p className="mt-1 text-2xl font-bold text-gray-900">{fmt(derived.last30.uniqueSessions)}</p>
+              <p className="mt-0.5 text-xs text-gray-500">Distinct session IDs</p>
+            </div>
+            <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
+              <p className="text-xs uppercase tracking-wide text-gray-500">Unique visitors (7d)</p>
+              <p className="mt-1 text-2xl font-bold text-gray-900">{fmt(derived.last7.uniqueSessions)}</p>
+              <p className="mt-0.5 text-xs text-gray-500">Distinct session IDs</p>
+            </div>
+            <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
+              <p className="text-xs uppercase tracking-wide text-gray-500">Consent events (30d)</p>
+              <p className="mt-1 text-2xl font-bold text-gray-900">{fmt(derived.last30.consentEvents)}</p>
+              <p className="mt-0.5 text-xs text-gray-500">Banner interactions</p>
+            </div>
+            <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
+              <p className="text-xs uppercase tracking-wide text-gray-500">Marketing consent (30d)</p>
+              <p className="mt-1 text-2xl font-bold text-gray-900">{fmt(derived.marketingConsents)}</p>
+              <p className="mt-0.5 text-xs text-gray-500">Marketing ON events</p>
+            </div>
+          </div>
+
+          {/* Consent breakdown + Geo */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+
+            {/* Consent type breakdown */}
+            <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+              <p className="text-xs uppercase tracking-wide text-gray-500 mb-3">Consent type breakdown (30d)</p>
+              {derived.consentByType.length ? (
+                <div className="space-y-2">
+                  {derived.consentByType.map((c) => {
+                    const total = derived.consentByType.reduce((s, x) => s + x.count, 0)
+                    const pctVal = total ? Math.round((c.count / total) * 100) : 0
+                    const color = c.label === 'Marketing ON' ? '#10b981' : c.label === 'Analytics only' ? '#3b82f6' : '#9ca3af'
+                    return (
+                      <div key={c.label}>
+                        <div className="flex justify-between text-sm mb-1">
+                          <span className="text-gray-700">{c.label}</span>
+                          <span className="tabular-nums text-gray-600">{fmt(c.count)} ({pctVal}%)</span>
+                        </div>
+                        <div className="h-2 rounded-full bg-gray-200 overflow-hidden">
+                          <div className="h-full rounded-full" style={{ width: `${pctVal}%`, background: color }} />
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">No consent events yet. Banner interactions will appear here.</p>
+              )}
+            </div>
+
+            {/* Geo-target breakdown */}
+            <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-xs uppercase tracking-wide text-gray-500">Geo-target breakdown (7d)</p>
+                <span className="rounded-full bg-purple-50 border border-purple-200 px-2 py-0.5 text-xs font-semibold text-purple-700">Worldwide</span>
+              </div>
+              {(derived.mk.countries || []).length ? (
+                <ul className="space-y-2">
+                  {(derived.mk.countries || []).slice(0, 8).map((c) => {
+                    const total = (derived.mk.countries || []).reduce((s, x) => s + Number(x.views || 0), 0)
+                    const pctVal = total ? Math.round((Number(c.views) / total) * 100) : 0
+                    return (
+                      <li key={c.country}>
+                        <div className="flex justify-between text-sm mb-1">
+                          <span className="text-gray-700 font-medium">{c.country || 'Unknown'}</span>
+                          <span className="tabular-nums text-gray-600">{fmt(c.views)} ({pctVal}%)</span>
+                        </div>
+                        <div className="h-1.5 rounded-full bg-gray-200 overflow-hidden">
+                          <div className="h-full rounded-full bg-blue-500" style={{ width: `${pctVal}%` }} />
+                        </div>
+                      </li>
+                    )
+                  })}
+                </ul>
+              ) : (
+                <p className="text-sm text-gray-500">No geo data yet. Visitors from all countries will appear here once traffic flows.</p>
+              )}
+            </div>
+          </div>
+
+          {/* Device + Regulation info */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+              <p className="text-xs uppercase tracking-wide text-gray-500 mb-3">Device breakdown (7d)</p>
+              {(derived.mk.devices || []).length ? (
+                <div className="space-y-2">
+                  {(derived.mk.devices || []).map((d) => {
+                    const total = (derived.mk.devices || []).reduce((s, x) => s + Number(x.views || 0), 0)
+                    const pctVal = total ? Math.round((Number(d.views) / total) * 100) : 0
+                    const color = d.device === 'mobile' ? '#f59e0b' : d.device === 'tablet' ? '#8b5cf6' : '#3b82f6'
+                    return (
+                      <div key={d.device}>
+                        <div className="flex justify-between text-sm mb-1">
+                          <span className="text-gray-700 capitalize">{d.device || 'unknown'}</span>
+                          <span className="tabular-nums text-gray-600">{fmt(d.views)} ({pctVal}%)</span>
+                        </div>
+                        <div className="h-2 rounded-full bg-gray-200 overflow-hidden">
+                          <div className="h-full rounded-full" style={{ width: `${pctVal}%`, background: color }} />
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">No device data yet.</p>
+              )}
+            </div>
+
+            <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+              <p className="text-xs uppercase tracking-wide text-gray-500 mb-3">Banner configuration</p>
+              <ul className="space-y-2 text-sm">
+                {[
+                  { label: 'Status', value: 'Active', color: 'text-emerald-600 font-semibold' },
+                  { label: 'Regulation', value: 'GDPR', color: 'text-blue-600 font-semibold' },
+                  { label: 'Geo-target', value: 'Worldwide', color: 'text-purple-600 font-semibold' },
+                  { label: 'Consent version', value: 'v1', color: 'text-gray-700' },
+                  { label: 'Cookie name', value: 'cb_consent', color: 'text-gray-700 font-mono text-xs' },
+                  { label: 'Visitor ID cookie', value: 'cb_vid (400d)', color: 'text-gray-700 font-mono text-xs' },
+                  { label: 'Analytics tracking', value: 'First-party only', color: 'text-gray-700' },
+                  { label: 'Data retention', value: '180 days', color: 'text-gray-700' },
+                ].map((row) => (
+                  <li key={row.label} className="flex justify-between border-b border-gray-100 pb-1.5 last:border-0">
+                    <span className="text-gray-500">{row.label}</span>
+                    <span className={row.color}>{row.value}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </Panel>
     </div>
   )
 }
