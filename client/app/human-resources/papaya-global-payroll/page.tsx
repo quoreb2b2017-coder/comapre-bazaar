@@ -75,6 +75,11 @@ export default function PapayaGlobalPayrollPage() {
             <div className="flex flex-wrap gap-3">
               <a
                 href="https://www.papayaglobal.com/schedule-a-demo-partners/?pscd=get.papayaglobal.com&ps_partner_key=NWMzOGRkZGJmN2Zj&ps_xid=iQqEHkZ75A3aju&gsxid=iQqEHkZ75A3aju&gspk=NWMzOGRkZGJmN2Zj"
+                target="_blank"
+                rel="sponsored noopener noreferrer"
+                className="rounded-xl bg-white text-indigo-700 font-bold px-6 py-3 text-sm hover:bg-indigo-50 transition-colors"
+              >
+                Visit Papaya Global →
               </a>
               <Link
                 href="/human-resources/best-payroll-software/get-free-quotes"
@@ -288,6 +293,11 @@ export default function PapayaGlobalPayrollPage() {
           <div className="flex flex-wrap justify-center gap-3">
             <a
               href="https://www.papayaglobal.com/schedule-a-demo-partners/?pscd=get.papayaglobal.com&ps_partner_key=NWMzOGRkZGJmN2Zj&ps_xid=iQqEHkZ75A3aju&gsxid=iQqEHkZ75A3aju&gspk=NWMzOGRkZGJmN2Zj"
+              target="_blank"
+              rel="sponsored noopener noreferrer"
+              className="rounded-xl bg-white text-indigo-700 font-bold px-6 py-3 text-sm hover:bg-indigo-50 transition-colors"
+            >
+              Get Papaya Quote →
             </a>
             <Link
               href="/human-resources/best-payroll-software/get-free-quotes"
