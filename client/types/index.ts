@@ -21,6 +21,7 @@ export interface Product {
   vendorUrl: string      // real URL, not "#"
   reviewSlug: string
   isTopPick?: boolean
+  affiliateActive?: boolean  // if false, vendor buttons are hover-blocked
 }
 
 export interface TableRow {

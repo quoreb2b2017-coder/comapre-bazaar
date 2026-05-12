@@ -150,15 +150,27 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
         </div>
         <div className="flex gap-2">
           {/* All outbound vendor links use real URLs + rel="sponsored" */}
-          <a
-            href={product.vendorUrl}
-            rel="sponsored noopener noreferrer"
-            target="_blank"
-            className="bg-brand hover:bg-brand-hover text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
-            aria-label={`Visit ${product.name} website`}
-          >
-            Visit {product.name.split(' ')[0]} →
-          </a>
+          {product.affiliateActive === true ? (
+            <a
+              href={product.vendorUrl}
+              rel="sponsored noopener noreferrer"
+              target="_blank"
+              className="bg-brand hover:bg-brand-hover text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
+              aria-label={`Visit ${product.name} website`}
+            >
+              Visit {product.name.split(' ')[0]} →
+            </a>
+          ) : (
+            <span
+              className="bg-brand text-white text-sm font-semibold px-4 py-2 rounded-xl opacity-50 cursor-not-allowed select-none relative group"
+              aria-disabled="true"
+            >
+              Visit {product.name.split(' ')[0]} →
+              <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block whitespace-nowrap rounded-lg bg-gray-900 px-3 py-1.5 text-xs text-white shadow-lg">
+                Coming soon
+              </span>
+            </span>
+          )}
           <Link
             href={`/reviews/${product.reviewSlug}`}
             className="border border-brand text-brand hover:bg-brand-light text-sm font-semibold px-4 py-2 rounded-xl transition-colors"

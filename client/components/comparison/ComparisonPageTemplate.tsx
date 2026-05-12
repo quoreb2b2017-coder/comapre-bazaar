@@ -220,7 +220,7 @@ export function ComparisonPageTemplate({ data }: ComparisonPageProps) {
                       >
                         Compare Quotes
                       </a>
-                      {card.vendorUrl && card.vendorUrl !== '#compare' ? (
+                      {card.vendorUrl && card.vendorUrl !== '#compare' && card.name === 'ADP' ? (
                         <a
                           href={card.vendorUrl}
                           target="_blank"
@@ -232,7 +232,7 @@ export function ComparisonPageTemplate({ data }: ComparisonPageProps) {
                       ) : (
                         <span
                           aria-disabled="true"
-                          className="block text-center border border-[#F27F25] text-[#F27F25] text-sm font-semibold py-2 rounded-xl opacity-60 cursor-not-allowed select-none"
+                          className="block text-center border border-[#F27F25] text-[#F27F25] text-sm font-semibold py-2 rounded-xl opacity-50 cursor-not-allowed select-none"
                         >
                           Visit Site
                         </span>
