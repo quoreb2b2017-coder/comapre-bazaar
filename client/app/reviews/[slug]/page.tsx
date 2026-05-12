@@ -1907,6 +1907,219 @@ const CATEGORY_EMPLOYEE_PATH = '/human-resources/best-employee-management-softwa
 const CATEGORY_CALL_CENTER_PATH = '/sales/best-call-center-management-software'
 const CATEGORY_PROJECT_PATH = '/sales/best-project-management-software'
 
+const PAPAYA_REVIEW_DETAILS: Record<string, CrmDetail> = {
+  'papaya-global-payroll-review': {
+    summary: 'Papaya Global Payroll is the strongest fully automated global payroll platform for enterprises needing real-time workforce cost analytics, deep ERP integrations, and compliance automation across 160+ countries.',
+    onboarding: 'Implementation is structured and enterprise-grade. Teams should expect a dedicated onboarding project with configuration per country, ERP integration setup, and compliance policy alignment. Papaya provides dedicated implementation specialists.',
+    automation: 'Papaya automates payroll calculations, tax filings, compliance updates, and workforce cost reporting across all supported countries. The compliance engine updates automatically when local laws change, eliminating manual legal monitoring.',
+    pricingReality: 'Pricing is custom and enterprise-focused. It is competitive for organizations running payroll in 5+ countries but requires a sales engagement to get exact numbers. Best ROI for teams with 50+ international employees.',
+    reviewer: 'Marcus Rivera',
+    reviewerRole: 'Global HR & Payroll Systems Editor',
+    updatedOn: 'April 2026',
+    publishedOn: 'March 2026',
+    bestFor: ['Enterprises running payroll in 5+ countries', 'Finance teams needing CFO-level workforce cost visibility', 'Organizations with SAP, Oracle, or Workday already in place'],
+    notIdealFor: ['Startups needing fast self-serve setup', 'US-only teams with no international hiring', 'Companies wanting transparent self-serve pricing'],
+    scorecard: [
+      { metric: 'Global coverage', score: '9.7/10' },
+      { metric: 'Payroll automation', score: '9.5/10' },
+      { metric: 'Workforce analytics', score: '9.3/10' },
+      { metric: 'ERP integrations', score: '9.4/10' },
+      { metric: 'Value for money', score: '8.1/10' },
+    ],
+    faqs: [
+      { q: 'Is Papaya Global better than Deel for enterprises?', a: 'For large enterprises with 50+ international employees, Papaya is often stronger due to deeper workforce analytics, SAP/Oracle integrations, and enterprise compliance depth. Deel is faster to deploy for startups and scale-ups.' },
+      { q: 'What makes Papaya Global unique?', a: 'The combination of fully automated global payroll, real-time workforce cost analytics, and enterprise ERP integrations in one platform is Papaya\'s key differentiator.' },
+    ],
+  },
+  'papaya-eor-review': {
+    summary: 'Papaya EOR is an enterprise-grade employer of record service covering 160+ countries with automated compliance, dedicated country specialists, and seamless integration with Papaya payroll.',
+    onboarding: 'EOR onboarding is structured with dedicated compliance specialists per country. Most employees can be onboarded within 5-10 business days depending on country complexity.',
+    automation: 'Local employment contracts, benefits enrollment, tax filings, and compliance updates are automated. The platform integrates directly with Papaya payroll for seamless data flow.',
+    pricingReality: 'Premium enterprise pricing requires a custom quote. Best value when hiring multiple employees across several countries simultaneously.',
+    reviewer: 'Marcus Rivera',
+    reviewerRole: 'Global HR & Payroll Systems Editor',
+    updatedOn: 'April 2026',
+    publishedOn: 'March 2026',
+    bestFor: ['Enterprises hiring in multiple countries simultaneously', 'Regulated industries needing dedicated compliance specialists', 'Teams already using Papaya payroll'],
+    notIdealFor: ['Startups hiring 1-2 people internationally (Deel is faster)', 'Teams needing transparent self-serve pricing', 'Very small companies with minimal international hiring'],
+    scorecard: [
+      { metric: 'Global coverage', score: '9.6/10' },
+      { metric: 'Compliance depth', score: '9.4/10' },
+      { metric: 'Onboarding speed', score: '8.8/10' },
+      { metric: 'Payroll integration', score: '9.5/10' },
+      { metric: 'Value for money', score: '8.0/10' },
+    ],
+    faqs: [
+      { q: 'How does Papaya EOR compare with Deel EOR?', a: 'Papaya EOR is stronger for enterprises needing deep compliance specialists and ERP integration. Deel EOR is faster to deploy and better for startups.' },
+      { q: 'Does Papaya EOR integrate with payroll automatically?', a: 'Yes. Papaya EOR feeds directly into Papaya Global Payroll, eliminating manual data entry between HR and finance systems.' },
+    ],
+  },
+  'papaya-contractor-review': {
+    summary: 'Papaya Contractor covers 160+ countries with auto-generated compliant contracts, misclassification risk assessment, and integrated payment workflows suited for enterprise contractor management at scale.',
+    onboarding: 'Contractor onboarding is streamlined with auto-generated contracts. Teams can onboard contractors quickly once the platform is configured.',
+    automation: 'Contract generation, invoice collection, payment processing, and misclassification risk alerts are automated. Real-time contractor cost visibility is built into the Workforce OS dashboard.',
+    pricingReality: 'Custom quote required. Best value for enterprises managing 20+ contractors across multiple countries simultaneously.',
+    reviewer: 'Marcus Rivera',
+    reviewerRole: 'Global HR & Payroll Systems Editor',
+    updatedOn: 'April 2026',
+    publishedOn: 'March 2026',
+    bestFor: ['Enterprises managing contractors in multiple countries', 'Teams needing misclassification risk protection at scale', 'Organizations wanting contractor and employee data in one platform'],
+    notIdealFor: ['Small teams with 1-5 contractors (Deel free tier is better)', 'US-only contractor payments', 'Teams needing a free entry tier'],
+    scorecard: [
+      { metric: 'Global coverage', score: '9.5/10' },
+      { metric: 'Contract automation', score: '9.2/10' },
+      { metric: 'Risk protection', score: '9.0/10' },
+      { metric: 'Payment flexibility', score: '8.7/10' },
+      { metric: 'Value for money', score: '8.2/10' },
+    ],
+    faqs: [
+      { q: 'Is there a free tier for Papaya Contractor?', a: 'No. Papaya Contractor is enterprise-focused with custom pricing. For free contractor management, Deel offers a free plan for basic use cases.' },
+      { q: 'Does Papaya handle contractor misclassification risk?', a: 'Yes. Built-in misclassification risk assessment flags potential compliance issues before contracts are signed.' },
+    ],
+  },
+  'papaya-workforce-review': {
+    summary: 'Papaya Workforce OS is a real-time workforce intelligence platform giving CFOs and CHROs unified visibility into global labor costs, headcount, and compliance across employees, contractors, and EOR workers.',
+    onboarding: 'Setup connects to existing Papaya payroll and EOR data. Analytics dashboards are configurable for finance and HR leadership reporting needs.',
+    automation: 'Automated compliance alerts, budget variance notifications, and headcount planning workflows reduce manual reporting overhead for global HR and finance teams.',
+    pricingReality: 'Best value when paired with other Papaya modules. Standalone pricing requires a custom quote.',
+    reviewer: 'Marcus Rivera',
+    reviewerRole: 'Global HR & Payroll Systems Editor',
+    updatedOn: 'April 2026',
+    publishedOn: 'March 2026',
+    bestFor: ['CFO and CHRO teams needing global workforce cost visibility', 'Enterprises planning headcount across multiple countries', 'Organizations wanting unified employee + contractor + EOR analytics'],
+    notIdealFor: ['Teams not using other Papaya modules', 'SMBs with simple single-country workforce', 'Teams needing basic HR records only'],
+    scorecard: [
+      { metric: 'Analytics depth', score: '9.3/10' },
+      { metric: 'Reporting clarity', score: '9.1/10' },
+      { metric: 'Headcount planning', score: '8.9/10' },
+      { metric: 'Compliance alerts', score: '9.0/10' },
+      { metric: 'Value for money', score: '8.3/10' },
+    ],
+    faqs: [
+      { q: 'What makes Papaya Workforce OS different from standard HRIS analytics?', a: 'It combines payroll cost data, EOR costs, contractor spend, and compliance status in one real-time dashboard — something most HRIS tools cannot do across 160+ countries.' },
+      { q: 'Can Workforce OS be used standalone?', a: 'Technically yes, but it delivers the most value when connected to Papaya payroll and EOR data for unified workforce cost reporting.' },
+    ],
+  },
+}
+
+const DEEL_REVIEW_DETAILS: Record<string, CrmDetail> = {
+  'deel-eor-review': {
+    summary: 'Deel EOR is the strongest employer of record solution for companies that need to hire full-time employees in multiple countries without setting up local legal entities. It covers 150+ countries with automated compliance, local contracts, and benefits.',
+    onboarding: 'Onboarding is fast compared with traditional EOR providers. Most employees can be live within 3-5 business days. Deel provides a guided setup flow and dedicated compliance specialists per country.',
+    automation: 'Deel automates local tax calculations, payroll filings, benefits enrollment, and contract generation. Compliance updates are pushed automatically when local laws change, reducing manual legal overhead significantly.',
+    pricingReality: 'At $599 per employee per month, Deel EOR is premium but competitive for the category. The real cost comparison is against setting up a local entity, which typically costs $10,000-$50,000+ and takes 3-6 months per country.',
+    reviewer: 'Marcus Rivera',
+    reviewerRole: 'Global HR & Payroll Systems Editor',
+    updatedOn: 'April 2026',
+    publishedOn: 'March 2026',
+    bestFor: ['Companies hiring 1-10 employees per country internationally', 'Startups expanding globally without legal entity budget', 'Teams needing fast international hiring with full compliance'],
+    notIdealFor: ['Companies with 50+ employees in one country (direct entity is cheaper)', 'US-only teams with no international hiring plans', 'Businesses needing very niche country coverage beyond 150 markets'],
+    scorecard: [
+      { metric: 'Global coverage', score: '9.8/10' },
+      { metric: 'Compliance automation', score: '9.5/10' },
+      { metric: 'Onboarding speed', score: '9.2/10' },
+      { metric: 'Integrations', score: '8.8/10' },
+      { metric: 'Value for money', score: '8.2/10' },
+    ],
+    faqs: [
+      { q: 'Is Deel EOR worth the cost?', a: 'Yes for most international hiring scenarios. The $599/month per employee is expensive compared with domestic payroll, but it eliminates $10,000-$50,000+ in entity setup costs and months of legal work per country.' },
+      { q: 'How fast can Deel onboard an international employee?', a: 'Most employees are onboarded within 3-5 business days. Complex countries with stricter labor laws may take up to 2 weeks.' },
+    ],
+  },
+  'deel-contractor-review': {
+    summary: 'Deel Contractor is the leading platform for paying global contractors compliantly. The free plan covers basic contractor management, while paid plans add misclassification protection and advanced compliance tools.',
+    onboarding: 'Contractors can be onboarded in minutes. Deel generates a compliant contract automatically based on the contractor location and work type. Payment setup is straightforward with multiple payout options.',
+    automation: 'Deel automates contract generation, invoice collection, payment processing, and tax document generation (1099, local equivalents). Misclassification risk alerts are built into the workflow.',
+    pricingReality: 'The free plan is genuinely useful for basic contractor payments. Paid plans at $49/contractor/month are competitive for the compliance and protection features included. Transaction fees on some payment methods should be factored in.',
+    reviewer: 'Marcus Rivera',
+    reviewerRole: 'Global HR & Payroll Systems Editor',
+    updatedOn: 'April 2026',
+    publishedOn: 'March 2026',
+    bestFor: ['Companies paying contractors in multiple countries', 'Teams needing misclassification risk protection', 'Businesses wanting automated compliant contracts per jurisdiction'],
+    notIdealFor: ['US-only contractor payments (simpler tools exist)', 'Teams needing full HRIS alongside contractor management', 'Very small teams with 1-2 contractors in one country'],
+    scorecard: [
+      { metric: 'Global coverage', score: '9.6/10' },
+      { metric: 'Contract automation', score: '9.3/10' },
+      { metric: 'Payment flexibility', score: '9.0/10' },
+      { metric: 'Compliance protection', score: '9.1/10' },
+      { metric: 'Value for money', score: '9.2/10' },
+    ],
+    faqs: [
+      { q: 'Is Deel Contractor really free?', a: 'Yes, the basic plan is free for unlimited contractors. You pay transaction fees on payments but no monthly platform fee. Paid plans add compliance features and priority support.' },
+      { q: 'What payment methods does Deel support for contractors?', a: 'Bank transfer, Wise, Payoneer, PayPal, Coinbase (crypto), and local payment rails in many countries. Contractors choose their preferred method.' },
+    ],
+  },
+  'deel-payroll-review': {
+    summary: 'Deel Global Payroll lets companies run payroll across multiple countries from one dashboard. It handles tax calculations, filings, and compliance automatically, and integrates with major accounting and HRIS platforms.',
+    onboarding: 'Setup requires configuration per country, which takes longer than single-country payroll tools. Deel provides implementation support and dedicated payroll specialists to guide the process.',
+    automation: 'Payroll calculations, tax filings, and compliance updates are automated per country. Real-time payroll previews let finance teams review before processing. Accounting integrations sync data automatically.',
+    pricingReality: 'Pricing is quote-based and scales with employee count and countries. It is competitive for multi-country payroll but requires a sales conversation to get exact numbers. Best value when running payroll in 3+ countries.',
+    reviewer: 'Marcus Rivera',
+    reviewerRole: 'Global HR & Payroll Systems Editor',
+    updatedOn: 'April 2026',
+    publishedOn: 'March 2026',
+    bestFor: ['Companies running payroll in 3+ countries', 'Finance teams wanting one platform for global payroll', 'Teams needing accounting integration with payroll data'],
+    notIdealFor: ['Single-country payroll (Gusto or OnPay are simpler)', 'Very small teams needing minimal payroll features', 'Companies wanting fully transparent self-serve pricing'],
+    scorecard: [
+      { metric: 'Multi-country coverage', score: '9.4/10' },
+      { metric: 'Tax automation', score: '9.2/10' },
+      { metric: 'Accounting integrations', score: '8.9/10' },
+      { metric: 'Reporting depth', score: '8.6/10' },
+      { metric: 'Value for money', score: '8.3/10' },
+    ],
+    faqs: [
+      { q: 'How does Deel Global Payroll compare with ADP?', a: 'Deel is stronger for international multi-country payroll with a modern UI and faster setup. ADP has deeper enterprise compliance depth for US-heavy operations. For global-first teams, Deel is usually the better fit.' },
+      { q: 'Does Deel handle payroll tax filings automatically?', a: 'Yes. Deel calculates and files payroll taxes in each supported country automatically. Finance teams review payroll previews before processing.' },
+    ],
+  },
+  'deel-hr-review': {
+    summary: 'Deel HR is a free HRIS for globally distributed teams. It covers org charts, time-off management, performance reviews, onboarding workflows, and document management at no per-seat cost.',
+    onboarding: 'Setup is fast and intuitive. Teams can configure org structure, time-off policies, and onboarding checklists quickly. Works best when paired with other Deel modules.',
+    automation: 'Deel HR automates onboarding task assignments, time-off approvals, and document collection. Performance review cycles can be scheduled and tracked. Slack integration keeps teams notified.',
+    pricingReality: 'Genuinely free for unlimited employees with no hidden per-seat costs. The free tier is more capable than many paid HRIS tools for basic HR operations. Advanced analytics require paid Deel modules.',
+    reviewer: 'Marcus Rivera',
+    reviewerRole: 'Global HR & Payroll Systems Editor',
+    updatedOn: 'April 2026',
+    publishedOn: 'March 2026',
+    bestFor: ['Remote-first and async distributed teams', 'Companies already using Deel EOR or Contractor', 'Teams wanting free HRIS without per-seat pricing'],
+    notIdealFor: ['Teams needing deep performance management (Lattice is stronger)', 'Companies requiring advanced HR analytics out of the box', 'Organizations needing complex approval workflows'],
+    scorecard: [
+      { metric: 'Ease of use', score: '9.0/10' },
+      { metric: 'Core HR features', score: '8.5/10' },
+      { metric: 'Remote team support', score: '9.2/10' },
+      { metric: 'Integrations', score: '8.7/10' },
+      { metric: 'Value for money', score: '9.8/10' },
+    ],
+    faqs: [
+      { q: 'Is Deel HR really free forever?', a: 'Yes. Deel HR is free for unlimited employees with no per-seat cost. Deel monetizes through EOR, Contractor, and Payroll modules, not the HRIS.' },
+      { q: 'How does Deel HR compare with BambooHR?', a: 'BambooHR has deeper HR workflow depth and better performance management. Deel HR wins on price (free vs $6-9/user) and is better for globally distributed teams already using Deel for payroll.' },
+    ],
+  },
+  'deel-us-payroll-review': {
+    summary: 'Deel US Payroll lets companies run domestic US payroll alongside their global Deel operations. It handles federal, state, and local tax filing, W-2 and 1099 generation, and benefits administration.',
+    onboarding: 'Setup is straightforward for teams already on Deel. New users can configure US payroll in a few hours with guided setup. Multi-state configuration takes longer.',
+    automation: 'Federal, state, and local tax calculations and filings are automated. W-2 and 1099 forms are generated automatically at year-end. PTO tracking and benefits deductions are handled in the same workflow.',
+    pricingReality: 'At $19/employee/month, Deel US Payroll is competitive but not the cheapest option. Gusto starts at $40 base + $6/person which is cheaper for small teams. The value is in having US and global payroll in one platform.',
+    reviewer: 'Marcus Rivera',
+    reviewerRole: 'Global HR & Payroll Systems Editor',
+    updatedOn: 'April 2026',
+    publishedOn: 'March 2026',
+    bestFor: ['Companies with US + international workforce on Deel', 'Teams wanting one platform for all payroll globally', 'Finance teams needing unified payroll reporting across countries'],
+    notIdealFor: ['US-only teams (Gusto or OnPay are more cost-effective)', 'Very small US teams with no international hiring', 'Companies not using other Deel modules'],
+    scorecard: [
+      { metric: 'Tax automation', score: '8.8/10' },
+      { metric: 'Ease of use', score: '8.6/10' },
+      { metric: 'Multi-state support', score: '8.7/10' },
+      { metric: 'Global integration', score: '9.3/10' },
+      { metric: 'Value for money', score: '8.0/10' },
+    ],
+    faqs: [
+      { q: 'Should I use Deel US Payroll or Gusto?', a: 'Use Gusto if you only have US employees and want the simplest, most cost-effective payroll. Use Deel US Payroll if you also have international employees on Deel and want everything in one platform.' },
+      { q: 'Does Deel US Payroll handle multi-state payroll?', a: 'Yes. Deel handles payroll tax calculations and filings for all US states. Multi-state configuration is supported with automated nexus detection.' },
+    ],
+  },
+}
+
 function resolveReviewDetail(review: ReviewEntry): CrmDetail | undefined {
   const { slug, categoryPath } = review
   if (categoryPath === CATEGORY_PAYROLL_PATH && PAYROLL_REVIEW_DETAILS[slug]) return PAYROLL_REVIEW_DETAILS[slug]
@@ -1920,7 +2133,7 @@ function resolveReviewDetail(review: ReviewEntry): CrmDetail | undefined {
     return PROJECT_MANAGEMENT_REVIEW_DETAILS[slug]
 
   const universal =
-    CRM_REVIEW_DETAILS[slug] ?? EMAIL_REVIEW_DETAILS[slug] ?? WEBSITE_REVIEW_DETAILS[slug]
+    CRM_REVIEW_DETAILS[slug] ?? EMAIL_REVIEW_DETAILS[slug] ?? WEBSITE_REVIEW_DETAILS[slug] ?? DEEL_REVIEW_DETAILS[slug] ?? PAPAYA_REVIEW_DETAILS[slug]
   if (universal) return universal
 
   return (

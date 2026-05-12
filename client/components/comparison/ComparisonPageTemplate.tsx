@@ -103,7 +103,7 @@ export function ComparisonPageTemplate({ data }: ComparisonPageProps) {
       ]
       : isPayrollPage
       ? [
-        { name: 'ADP', subtitle: 'Best for Large Enterprises' },
+        { name: 'ADP', subtitle: 'Best for Large Enterprises', phone: '1-800-225-5237' },
         { name: 'Zoho', subtitle: 'Best for Small Businesses' },
         { name: 'BambooHR', subtitle: 'Best for HR Integration' },
         { name: 'OnPay', subtitle: 'Best for SMBs with contractors' },
@@ -143,6 +143,7 @@ export function ComparisonPageTemplate({ data }: ComparisonPageProps) {
           price: tableRow?.cells?.[2] || product?.pricingAmount || 'Custom quote',
           note: product?.tagline || 'Independent expert-rated platform',
           vendorUrl: product?.vendorUrl || '#compare',
+          phone: (card as { phone?: string }).phone || '',
         }
       })
     : []
