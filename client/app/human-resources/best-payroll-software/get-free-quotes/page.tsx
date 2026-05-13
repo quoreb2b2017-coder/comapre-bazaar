@@ -3,7 +3,7 @@ import PayrollGetQuotesForm from '@/app/technology/best-payroll-system/get-free-
 import { buildMetadata } from '@/lib/seo'
 
 export const metadata: Metadata = buildMetadata({
-  title: 'Get Payroll Software Quotes | Compare Bazaar',
+  title: 'Get Payroll Software Quotes',
   description:
     'Get matched with top payroll software providers. Compare features, pricing, and compliance support for your business.',
   canonical: '/human-resources/best-payroll-software/get-free-quotes',

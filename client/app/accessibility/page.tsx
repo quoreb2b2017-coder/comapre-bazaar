@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/icons'
 
 export const metadata: Metadata = buildMetadata({
-  title: 'Accessibility Statement | Compare Bazaar',
+  title: 'Accessibility Statement',
   description: 'Compare Bazaar is committed to making our website accessible to all users. Learn about our accessibility standards, known issues, and how to contact us for support.',
   canonical: '/accessibility',
 })

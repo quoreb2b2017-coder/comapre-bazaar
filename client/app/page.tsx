@@ -16,9 +16,9 @@ import {
 } from '@/components/ui/icons'
 
 export const metadata: Metadata = buildMetadata({
-  title: 'Best Business Software Comparisons & Reviews 2026 | Compare Bazaar',
+  title: 'Best Business Software Comparisons & Reviews 2026',
   description:
-    'Compare the best CRM, payroll, email marketing, and HR software for your business. Independent reviews, side-by-side pricing comparisons, and expert recommendations, updated for 2026.',
+    'Compare the best CRM, payroll, HR, and marketing software. Independent expert reviews, side-by-side pricing comparisons, and ranked recommendations — updated for 2026.',
   canonical: '/',
 })
 

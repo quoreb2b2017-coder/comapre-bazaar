@@ -3,7 +3,7 @@ import { buildMetadata } from '@/lib/seo'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
 
 export const metadata: Metadata = buildMetadata({
-  title: 'Copyright Policy | Compare Bazaar',
+  title: 'Copyright Policy',
   description: 'Copyright and intellectual property policy for content published on Compare Bazaar.',
   canonical: '/copyright-policy',
 })

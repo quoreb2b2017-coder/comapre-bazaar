@@ -3,7 +3,7 @@ import { buildMetadata } from '@/lib/seo'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
 
 export const metadata: Metadata = buildMetadata({
-  title: 'Advertise With Compare Bazaar',
+  title: 'Advertise With Us',
   description:
     'Partner with Compare Bazaar through clearly labeled featured placements and sponsorship opportunities for B2B software buyers.',
   canonical: '/advertise',

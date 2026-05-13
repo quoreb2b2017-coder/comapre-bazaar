@@ -5,7 +5,7 @@ import { buildMetadata } from '@/lib/seo'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
 
 export const metadata: Metadata = buildMetadata({
-  title: 'Buddy Punch Review (2026) — Time Tracking & Payroll | Compare Bazaar',
+  title: 'Buddy Punch Review (2026) — Time Tracking & Payroll',
   description:
     'Buddy Punch is the best time tracking and payroll platform for small businesses. GPS clock-in, scheduling, PTO management, and US payroll in one tool. 14-day free trial.',
   canonical: '/human-resources/buddy-punch',

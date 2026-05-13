@@ -9,10 +9,10 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://www.compare-bazaar.com'),
   title: {
     default: 'Best Business Software Reviews 2026 | Compare Bazaar',
-    template: '%s',
+    template: '%s | Compare Bazaar',
   },
   description:
-    'Compare the best CRM, payroll, email marketing, and HR software for your business. Independent reviews, side-by-side pricing comparisons, and expert recommendations, updated for 2026.',
+    'Compare the best CRM, payroll, HR, and marketing software. Independent expert reviews, side-by-side pricing comparisons, and ranked recommendations — updated for 2026.',
   openGraph: {
     siteName: 'Compare Bazaar',
     type: 'website',

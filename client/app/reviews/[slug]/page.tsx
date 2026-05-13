@@ -2222,7 +2222,7 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
       ' Editorial coverage evaluates project management software fit across workflow automation, cross-functional collaboration, dashboard reporting, agile delivery support, and project management platform pricing for scaling teams in 2026.'
   }
   return buildMetadata({
-    title: `${review.name} Review 2026 | Compare Bazaar`,
+    title: `${review.name} Review 2026`,
     description: `${review.name} review: ${review.tagline}. Pricing, pros, cons, and editorial verdict for business buyers.${seoSuffix}`,
     canonical: `/reviews/${review.slug}`,
   })

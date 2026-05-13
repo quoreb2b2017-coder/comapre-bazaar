@@ -4,7 +4,7 @@ import { buildMetadata } from '@/lib/seo'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
 
 export const metadata: Metadata = buildMetadata({
-  title: 'About Compare Bazaar | Independent Business Software Reviews',
+  title: 'About Us | Independent Business Software Reviews',
   description:
     'Compare Bazaar is a team of former software buyers and industry specialists producing independent business software comparisons and buying guides.',
   canonical: '/about',

@@ -6,7 +6,7 @@ import { Breadcrumb } from '@/components/ui/Breadcrumb'
 import { getComparisonPageBySlug } from '@/data/comparisons'
 
 export const metadata: Metadata = buildMetadata({
-  title: 'Deel HR & Payroll Software Review (2026) | Compare Bazaar',
+  title: 'Deel HR & Payroll Software Review (2026)',
   description:
     'Deel is the leading global HR and payroll platform for 2026. Hire employees and contractors in 150+ countries with built-in EOR, compliance, and payroll automation.',
   canonical: '/human-resources/deel-hr-payroll',

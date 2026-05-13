@@ -7,7 +7,7 @@ export const dynamic = 'force-static'
 export const revalidate = 86400
 
 export const metadata: Metadata = buildMetadata({
-  title: 'Do Not Sell or Share My Personal Information | Compare Bazaar',
+  title: 'Do Not Sell or Share My Personal Information',
   description: 'California residents and others can opt out of the sale or sharing of personal information. Submit your request here or learn about your privacy rights.',
   canonical: '/do-not-sell',
 })

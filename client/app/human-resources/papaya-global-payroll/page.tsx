@@ -6,7 +6,7 @@ import { Breadcrumb } from '@/components/ui/Breadcrumb'
 import { getComparisonPageBySlug } from '@/data/comparisons'
 
 export const metadata: Metadata = buildMetadata({
-  title: 'Papaya Global HR & Payroll Software Review (2026) | Compare Bazaar',
+  title: 'Papaya Global HR & Payroll Software Review (2026)',
   description:
     'Papaya Global is a leading enterprise global payroll and workforce management platform. Hire and pay in 160+ countries with automated compliance, EOR, and real-time workforce analytics.',
   canonical: '/human-resources/papaya-global-payroll',

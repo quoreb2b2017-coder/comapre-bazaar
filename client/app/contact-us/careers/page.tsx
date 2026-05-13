@@ -3,7 +3,7 @@ import { buildMetadata } from '@/lib/seo'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
 
 export const metadata: Metadata = buildMetadata({
-  title: 'Careers at Compare Bazaar',
+  title: 'Careers',
   description: 'Explore editorial, research, and operations career opportunities at Compare Bazaar.',
   canonical: '/contact-us/careers',
 })

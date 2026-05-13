@@ -4,7 +4,7 @@ import { buildMetadata } from '@/lib/seo'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
 
 export const metadata: Metadata = buildMetadata({
-  title: 'Terms of Use | Compare Bazaar',
+  title: 'Terms of Use',
   description: 'Terms of use for Compare Bazaar, the rules and conditions governing your use of our business software comparison platform.',
   canonical: '/terms-of-use',
 })

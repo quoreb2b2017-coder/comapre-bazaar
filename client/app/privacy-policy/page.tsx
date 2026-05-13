@@ -4,7 +4,7 @@ import { buildMetadata } from '@/lib/seo'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
 
 export const metadata: Metadata = buildMetadata({
-  title: 'Privacy Policy | Compare Bazaar',
+  title: 'Privacy Policy',
   description: 'Compare Bazaar privacy policy, how we collect, use, and protect your personal information when you use our business software comparison platform.',
   canonical: '/privacy-policy',
 })
