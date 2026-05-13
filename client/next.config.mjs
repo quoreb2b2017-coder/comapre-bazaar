@@ -16,16 +16,6 @@ const nextConfig = {
   async redirects() {
     return [
       {
-        source: '/technology/best-payroll-system',
-        destination: '/human-resources/best-payroll-software',
-        permanent: true,
-      },
-      {
-        source: '/technology/best-payroll-system/get-free-quotes',
-        destination: '/human-resources/best-payroll-software/get-free-quotes',
-        permanent: true,
-      },
-      {
         source: '/technology/best-employee-management-software',
         destination: '/human-resources/best-employee-management-software',
         permanent: true,
@@ -36,12 +26,7 @@ const nextConfig = {
         permanent: true,
       },
       {
-        source: '/Technology/best-payroll-system',
-        destination: '/human-resources/best-payroll-software',
-        permanent: true,
-      },
-      {
-        source: '/Technology/best-employee-management-software',
+        source: '/technology/best-employee-management-software',
         destination: '/human-resources/best-employee-management-software',
         permanent: true,
       },

@@ -19,13 +19,13 @@ export function ComparisonPageTemplate({ data }: ComparisonPageProps) {
   const isVoipPage = data.slug === 'business-phone-systems'
   const isGpsPage = data.slug === 'gps-fleet-management'
   const isEmployeePage = data.slug === 'employee-management'
-  const isPayrollPage = data.slug === 'payroll-software'
+  const isPayrollPage = data.slug === 'payroll-software' || data.slug === 'technology-payroll'
   const isCallCenterPage = data.slug === 'call-center'
   const isProjectManagementPage = data.slug === 'project-management'
   const isMarketingTrio = isCrmPage || isEmailMarketingPage || isWebsiteBuilderPage
-  const isTechnologyHub = isVoipPage || isGpsPage
+  const isTechnologyHub = isVoipPage || isGpsPage || data.slug === 'technology-payroll'
   const isSalesHub = data.slug === 'sales-crm' || isCallCenterPage || isProjectManagementPage
-  const isHrHub = isEmployeePage || isPayrollPage
+  const isHrHub = isEmployeePage || data.slug === 'payroll-software'
   const smoothVariant: 'default' | 'marketing-smooth' | 'technology-smooth' | 'sales-smooth' | 'hr-smooth' = isMarketingTrio
     ? 'marketing-smooth'
     : isTechnologyHub
