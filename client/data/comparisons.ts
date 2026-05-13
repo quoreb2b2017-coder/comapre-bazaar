@@ -4,7 +4,7 @@ export const comparisonPages: ComparisonPageData[] = [
   // ─── CRM (Marketing) ───────────────────────────────────────────────────
   {
     slug: 'crm-software',
-    title: 'Best CRM Software for Small Business & Teams (2026) | Compare Bazaar',
+    title: 'Best CRM Software for Small Business & Teams (2026)',
     metaDescription: 'We tested 6 CRM platforms in 2026. HubSpot leads for integrations, Zoho for growing teams, Pipedrive for pipeline-focused sales teams, and Salesforce for enterprise depth. Compare pricing, features, and free trials.',
     canonical: '/marketing/best-crm-software',
     h1: 'Best CRM Software for Small Business & Teams (2026)',
@@ -39,7 +39,7 @@ export const comparisonPages: ComparisonPageData[] = [
   // ─── EMAIL MARKETING ────────────────────────────────────────────────────
   {
     slug: 'email-marketing',
-    title: 'Best Email Marketing Services for Business (2026) | Compare Bazaar',
+    title: 'Best Email Marketing Services for Business (2026)',
     metaDescription: 'We tested 10 email marketing platforms in 2026. Campaign Monitor, Campaigner, Klaviyo, GetResponse, and HubSpot lead our quick picks. Compare pricing and features.',
     canonical: '/marketing/best-email-marketing-services',
     h1: 'Best Email Marketing Services for Business (2026)',
@@ -75,7 +75,7 @@ export const comparisonPages: ComparisonPageData[] = [
   // ─── WEBSITE BUILDER ────────────────────────────────────────────────────
   {
     slug: 'website-builder',
-    title: 'Best Website Building Platforms for Business (2026) | Compare Bazaar',
+    title: 'Best Website Building Platforms for Business (2026)',
     metaDescription: 'We tested 9 website builders in 2026. Wix, GoDaddy, MochaHost, Web.com, and Bluehost lead our quick picks, with Squarespace and Shopify covered below. Compare pricing and features.',
     canonical: '/marketing/best-website-building-platform',
     h1: 'Best Website Building Platforms for Business (2026)',
@@ -111,7 +111,7 @@ export const comparisonPages: ComparisonPageData[] = [
   // ─── PAPAYA GLOBAL HR & PAYROLL ──────────────────────────────────────────
   {
     slug: 'papaya-global-payroll',
-    title: 'Papaya Global HR & Payroll Software Review (2026) | Compare Bazaar',
+    title: 'Papaya Global HR & Payroll Software Review (2026)',
     metaDescription: 'Papaya Global is a leading global payroll and workforce management platform for 2026. We reviewed Papaya on EOR, contractor payments, payroll automation, and compliance across 160+ countries.',
     canonical: '/human-resources/papaya-global-payroll',
     h1: 'Papaya Global HR & Payroll Review (2026)',
@@ -144,7 +144,7 @@ export const comparisonPages: ComparisonPageData[] = [
   // ─── DEEL HR & PAYROLL ─────────────────────────────────────────────────
   {
     slug: 'deel-hr-payroll',
-    title: 'Deel HR & Payroll Software Review (2026) | Compare Bazaar',
+    title: 'Deel HR & Payroll Software Review (2026)',
     metaDescription: 'Deel is the leading global HR and payroll platform for 2026. We reviewed Deel on contractor payments, EOR services, compliance, and pricing. See how it compares.',
     canonical: '/human-resources/deel-hr-payroll',
     h1: 'Deel HR & Payroll Software Review (2026)',
@@ -332,7 +332,7 @@ export const comparisonPages: ComparisonPageData[] = [
   // ─── PAYROLL ────────────────────────────────────────────────────────────
   {
     slug: 'payroll-software',
-    title: 'Best Payroll Software for Small Business (2026) | Compare Bazaar',
+    title: 'Best Payroll Software for Small Business (2026)',
     metaDescription: 'We compared 8 payroll platforms in 2026. ADP, Zoho, BambooHR, OnPay, and QuickBooks lead our quick picks, with Gusto and others included below for full comparison.',
     canonical: '/human-resources/best-payroll-software',
     h1: 'Best Payroll Software for Small Business (2026)',
@@ -370,7 +370,7 @@ export const comparisonPages: ComparisonPageData[] = [
   // ─── VOIP ───────────────────────────────────────────────────────────────
   {
     slug: 'technology-payroll',
-    title: 'Best Payroll Software for Business (2026) | Compare Bazaar',
+    title: 'Best Payroll Software for Business (2026)',
     metaDescription: 'We compared 8 payroll platforms in 2026. ADP, Zoho, BambooHR, OnPay, and QuickBooks lead our quick picks, with Gusto and others included below for full comparison.',
     canonical: '/technology/best-payroll-system',
     h1: 'Best Payroll Software for Small Business (2026)',
@@ -406,7 +406,7 @@ export const comparisonPages: ComparisonPageData[] = [
   // ─── VOIP ───────────────────────────────────────────────────────────────
   {
     slug: 'business-phone-systems',
-    title: 'Best Business Phone Systems & VoIP Services (2026) | Compare Bazaar',
+    title: 'Best Business Phone Systems & VoIP Services (2026)',
     metaDescription: 'We tested 8 VoIP phone systems in 2026. Ooma Office, 800.com, Zoom, Nextiva, and Vonage lead our quick picks, with RingCentral and others included below for full comparison.',
     canonical: '/technology/business-phone-systems',
     h1: 'Best Business Phone Systems & VoIP Services (2026)',
@@ -441,7 +441,7 @@ export const comparisonPages: ComparisonPageData[] = [
   // ─── GPS FLEET MANAGEMENT ───────────────────────────────────────────────
   {
     slug: 'gps-fleet-management',
-    title: 'Best GPS Fleet Management Software (2026) | Compare Bazaar',
+    title: 'Best GPS Fleet Management Software (2026)',
     metaDescription: 'We compared 7 GPS fleet tracking platforms in 2026. Motive, Teletrac Navman, Verizon Connect, Samsara, and Surecam lead our quick picks, with Fleetio and others included below.',
     canonical: '/technology/gps-fleet-management-software',
     h1: 'Best GPS Fleet Management Software (2026)',
@@ -476,7 +476,7 @@ export const comparisonPages: ComparisonPageData[] = [
   // ─── EMPLOYEE MANAGEMENT ────────────────────────────────────────────────
   {
     slug: 'employee-management',
-    title: 'Best Employee Management Software (2026) | Compare Bazaar',
+    title: 'Best Employee Management Software (2026)',
     metaDescription: 'We tested 8 employee management platforms in 2026. Teramind, ActivTrak, Hubstaff, BambooHR, and Intelogos lead our quick picks, with Rippling and others still covered below.',
     canonical: '/human-resources/best-employee-management-software',
     h1: 'Best Employee Management Software (2026)',
@@ -512,7 +512,7 @@ export const comparisonPages: ComparisonPageData[] = [
   // ─── SALES CRM ──────────────────────────────────────────────────────────
   {
     slug: 'sales-crm',
-    title: 'Best CRM Software for Sales Teams (2026) | Compare Bazaar',
+    title: 'Best CRM Software for Sales Teams (2026)',
     metaDescription: 'We compared 9 CRM platforms for sales teams in 2026. Zoho CRM, Creatio, Hub CRM, HoneyBook, and Pipedrive lead our quick picks, with Salesforce and other sales CRMs covered below.',
     canonical: '/sales/best-crm-software',
     h1: 'Best CRM Software for Sales Teams (2026)',
@@ -547,7 +547,7 @@ export const comparisonPages: ComparisonPageData[] = [
   // ─── CALL CENTER ────────────────────────────────────────────────────────
   {
     slug: 'call-center',
-    title: 'Best Call Center Software & Management Platforms (2026) | Compare Bazaar',
+    title: 'Best Call Center Software & Management Platforms (2026)',
     metaDescription: 'We tested 9 call center platforms in 2026. GoTo, RingCentral, GoAnswer, Twilio, and Salesforce lead our quick picks, with Talkdesk, Genesys, and Freshdesk still covered below.',
     canonical: '/sales/best-call-center-management-software',
     h1: 'Best Call Center Software & Management Platforms (2026)',
@@ -584,7 +584,7 @@ export const comparisonPages: ComparisonPageData[] = [
   // ─── PROJECT MANAGEMENT ─────────────────────────────────────────────────
   {
     slug: 'project-management',
-    title: 'Best Project Management Software for Teams (2026) | Compare Bazaar',
+    title: 'Best Project Management Software for Teams (2026)',
     metaDescription: 'We tested 9 project management tools in 2026. Monday.com, ClickUp, Asana, Notion, and Jira lead our quick picks, with Trello and Smartsheet also included below.',
     canonical: '/sales/best-project-management-software',
     h1: 'Best Project Management Software for Teams (2026)',
