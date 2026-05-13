@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { buildMetadata, buildItemListSchema } from '@/lib/seo'
+import { buildMetadata, buildItemListSchema, buildFaqSchema } from '@/lib/seo'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { HomeSearchBar } from '@/components/ui/HomeSearchBar'
 import { HomeFaqSection } from '@/components/ui/HomeFaqSection'
@@ -120,12 +120,17 @@ const itemListSchema = buildItemListSchema(
   CATEGORIES.map((c) => ({ name: c.title, href: c.href, description: c.desc }))
 )
 
+const faqSchema = buildFaqSchema(
+  FAQS.map((f) => ({ question: f.q, answer: f.a }))
+)
+
 export default async function HomePage() {
   const recentBlogPosts = (await loadUnifiedBlogIndex()).slice(0, 3)
 
   return (
     <>
       <JsonLd schema={itemListSchema} />
+      <JsonLd schema={faqSchema} />
 
       {/* Trust bar */}
       <div className="bg-gradient-to-r from-[#071a57] via-[#0a246d] to-[#071a57] text-white/85 text-center py-2.5 px-4 shadow-[inset_0_-1px_0_rgba(255,255,255,0.08)]">

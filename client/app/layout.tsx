@@ -32,11 +32,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
+      <head />
+      <body className="flex flex-col min-h-screen overflow-x-hidden">
         <JsonLd schema={buildOrganizationSchema()} />
         <JsonLd schema={buildWebSiteSchema()} />
-      </head>
-      <body className="flex flex-col min-h-screen overflow-x-hidden">
         <SiteChrome>{children}</SiteChrome>
       </body>
     </html>

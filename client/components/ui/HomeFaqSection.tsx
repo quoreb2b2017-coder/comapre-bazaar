@@ -62,16 +62,17 @@ export function HomeFaqSection({ faqs }: HomeFaqSectionProps) {
                 </span>
               </button>
 
-              {isOpen && (
-                <div
-                  className="px-4 sm:px-6 pb-4 sm:pb-5 text-sm sm:text-[15px] text-gray-600 leading-relaxed border-t border-gray-100"
-                  itemScope
-                  itemProp="acceptedAnswer"
-                  itemType="https://schema.org/Answer"
-                >
-                  <p itemProp="text">{faq.a}</p>
-                </div>
-              )}
+              {/* Always in DOM for Googlebot — hidden via CSS only */}
+              <div
+                className={`px-4 sm:px-6 text-sm sm:text-[15px] text-gray-600 leading-relaxed border-t border-gray-100 transition-all duration-200 ${
+                  isOpen ? 'pb-4 sm:pb-5 max-h-[600px] opacity-100' : 'max-h-0 overflow-hidden opacity-0 border-t-0 pb-0'
+                }`}
+                itemScope
+                itemProp="acceptedAnswer"
+                itemType="https://schema.org/Answer"
+              >
+                <p itemProp="text">{faq.a}</p>
+              </div>
             </article>
           )
         })}

@@ -34,16 +34,17 @@ function FaqItemComponent({ question, answer }: FaqItem) {
         </svg>
       </button>
 
-      {open && (
-        <div
-          className="px-5 pb-5 text-sm text-gray-600 leading-relaxed"
-          itemScope
-          itemProp="acceptedAnswer"
-          itemType="https://schema.org/Answer"
-        >
-          <p itemProp="text">{answer}</p>
-        </div>
-      )}
+      {/* Always in DOM for Googlebot — hidden via CSS only */}
+      <div
+        className={`px-5 text-sm text-gray-600 leading-relaxed transition-all duration-200 ${
+          open ? 'pb-5 max-h-[600px] opacity-100' : 'max-h-0 overflow-hidden opacity-0 pb-0'
+        }`}
+        itemScope
+        itemProp="acceptedAnswer"
+        itemType="https://schema.org/Answer"
+      >
+        <p itemProp="text">{answer}</p>
+      </div>
     </div>
   )
 }
