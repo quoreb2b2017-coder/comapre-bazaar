@@ -2,7 +2,7 @@ import { ImageResponse } from 'next/og'
 import { blogPosts } from '@/data/blogPosts'
 import { fetchPublishedBlogBySlug, plainBlogExcerpt } from '@/lib/blogCms'
 
-export const runtime = 'nodejs'
+export const runtime = 'edge'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
