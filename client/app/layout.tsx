@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { SiteChrome } from '@/components/layout/SiteChrome'
-import { JsonLd } from '@/components/seo/JsonLd'
 import { buildOrganizationSchema, buildWebSiteSchema } from '@/lib/seo'
 import logoIcon from '@/components/icon.png'
 
@@ -32,10 +31,17 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head />
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(buildOrganizationSchema()) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(buildWebSiteSchema()) }}
+        />
+      </head>
       <body className="flex flex-col min-h-screen overflow-x-hidden">
-        <JsonLd schema={buildOrganizationSchema()} />
-        <JsonLd schema={buildWebSiteSchema()} />
         <SiteChrome>{children}</SiteChrome>
       </body>
     </html>

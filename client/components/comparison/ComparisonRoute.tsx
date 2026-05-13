@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import type { ComparisonPageData } from '@/types'
 import { buildMetadata, buildBreadcrumbSchema, buildFaqSchema, buildSoftwareAppSchema } from '@/lib/seo'
-import { JsonLd } from '@/components/seo/JsonLd'
 import { ComparisonPageTemplate } from '@/components/comparison/ComparisonPageTemplate'
 
 interface ComparisonRouteProps {
@@ -35,10 +34,20 @@ export function ComparisonRoute({ data }: ComparisonRouteProps) {
 
   return (
     <>
-      <JsonLd schema={breadcrumbSchema} />
-      <JsonLd schema={faqSchema} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       {productSchemas.map((s, i) => (
-        <JsonLd key={i} schema={s} />
+        <script
+          key={i}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(s) }}
+        />
       ))}
       <ComparisonPageTemplate data={data} />
     </>
