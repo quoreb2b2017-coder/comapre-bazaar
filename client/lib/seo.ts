@@ -34,8 +34,14 @@ export function buildMetadata({
   const url = `${SITE_URL}${canonical}`
   const ogImage = defaultOgImageUrl()
   const truncatedDesc = description.length > 160 ? `${description.slice(0, 159)}…` : description
+  // Use `absolute` to bypass the root layout template ('%s | Compare Bazaar').
+  // Without this, pages that already contain the site name in their title string
+  // would render "Title | Compare Bazaar | Compare Bazaar" in the <title> tag.
+  const absoluteTitle = title.includes('| Compare Bazaar')
+    ? title
+    : `${title} | Compare Bazaar`
   return {
-    title,
+    title: { absolute: absoluteTitle },
     description: truncatedDesc,
     alternates: { canonical: url },
     openGraph: {

@@ -23,7 +23,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function BlogIndexPage() {
-  const allPosts = await loadUnifiedBlogIndex()
+  let allPosts: Awaited<ReturnType<typeof loadUnifiedBlogIndex>> = []
+  try {
+    allPosts = await loadUnifiedBlogIndex()
+  } catch {
+    allPosts = []
+  }
   const posts = allPosts
   const hasPosts = posts.length > 0
   const featuredPost = posts[0]
