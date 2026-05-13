@@ -852,9 +852,10 @@ const PAYROLL_REVIEW_DETAILS: Record<string, CrmDetail> = {
   },
 
 
+  'adp-review': {
     summary: 'ADP is a strong payroll choice for businesses that need compliance reliability, multi-state coverage, and scalable support.',
     onboarding: 'Implementation is structured and usually requires setup planning, but long-term payroll operations are stable once configured.',
-  'adp-review': {
+    automation: 'ADP automates payroll calculations, tax filings, compliance updates, and multi-state payroll operations with strong reliability for growing teams.',
     pricingReality: 'Pricing is quote-based and can rise with add-on modules, so teams should validate full-year ownership cost before committing.',
     reviewer: 'Marcus Rivera',
     reviewerRole: 'Payroll & HR Systems Editor',
