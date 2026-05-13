@@ -827,10 +827,34 @@ const WEBSITE_REVIEW_DETAILS: Record<string, CrmDetail> = {
 }
 
 const PAYROLL_REVIEW_DETAILS: Record<string, CrmDetail> = {
-  'adp-review': {
+  'buddy-punch-review': {
+    summary: 'Buddy Punch is a practical all-in-one time tracking and payroll platform for small and mid-size businesses. It combines GPS-based time tracking, scheduling, PTO management, and US payroll processing in one clean interface.',
+    onboarding: 'Setup is fast and beginner-friendly. Most small teams can be live within a day. The mobile app is easy for employees to adopt, and the admin dashboard is straightforward for managers.',
+    automation: 'Buddy Punch automates time tracking approvals, overtime calculations, PTO accruals, and payroll tax filings. Scheduling automation reduces manual shift management for field and remote teams.',
+    pricingReality: 'Transparent per-user pricing starting at $4.49/user/month makes budgeting easy. Payroll processing is an add-on. Total cost is competitive for small teams needing time tracking and payroll together.',
+    reviewer: 'Marcus Rivera',
+    reviewerRole: 'Payroll & HR Software Lead',
+    updatedOn: 'April 2026',
+    publishedOn: 'March 2026',
+    bestFor: ['Small businesses needing time tracking + payroll in one tool', 'Field and remote teams using GPS clock-in', 'Managers wanting simple scheduling and PTO management'],
+    notIdealFor: ['Enterprises needing complex multi-country payroll', 'Teams outside the US needing payroll processing', 'Organizations needing deep HRIS workflow automation'],
+    scorecard: [
+      { metric: 'Ease of use', score: '9.1/10' },
+      { metric: 'Time tracking accuracy', score: '8.9/10' },
+      { metric: 'Payroll automation', score: '8.4/10' },
+      { metric: 'Mobile experience', score: '8.8/10' },
+      { metric: 'Value for money', score: '9.0/10' },
+    ],
+    faqs: [
+      { q: 'Does Buddy Punch include payroll?', a: 'Yes. Buddy Punch offers built-in US payroll processing with automatic tax filing as an add-on to the time tracking platform.' },
+      { q: 'Is Buddy Punch good for remote teams?', a: 'Yes. The GPS clock-in, facial recognition, and mobile app make it a strong fit for remote and field teams that need accurate time tracking.' },
+    ],
+  },
+
+
     summary: 'ADP is a strong payroll choice for businesses that need compliance reliability, multi-state coverage, and scalable support.',
     onboarding: 'Implementation is structured and usually requires setup planning, but long-term payroll operations are stable once configured.',
-    automation: 'ADP supports automated tax filing, payroll cycles, and workforce workflows suited for complex HR/payroll operations.',
+  'adp-review': {
     pricingReality: 'Pricing is quote-based and can rise with add-on modules, so teams should validate full-year ownership cost before committing.',
     reviewer: 'Marcus Rivera',
     reviewerRole: 'Payroll & HR Systems Editor',
@@ -847,7 +871,7 @@ const PAYROLL_REVIEW_DETAILS: Record<string, CrmDetail> = {
     ],
     faqs: [
       { q: 'Is ADP good for small businesses?', a: 'Yes, especially when compliance confidence and payroll reliability are top priorities.' },
-      { q: 'What is ADP’s main drawback?', a: 'Quote-based pricing and module expansion can increase total cost over time.' },
+      { q: 'What is ADP main drawback?', a: 'Quote-based pricing and module expansion can increase total cost over time.' },
     ],
   },
   'zoho-payroll-review': {
@@ -2148,6 +2172,7 @@ function resolveReviewDetail(review: ReviewEntry): CrmDetail | undefined {
 
 const REVIEW_VENDOR_URL_OVERRIDES: Record<string, string> = {
   'nextiva-review': 'https://trial.nextiva.com/compare-bazaar-free-quotes',
+  'buddy-punch-review': 'https://buddypunch.com/?utm_medium=referral&utm_source=growsumo&utm_content=5c38dddbf7fc&utm_campaign=affiliate&pscd=try.buddypunch.com&ps_partner_key=NWMzOGRkZGJmN2Zj&ps_xid=tpuDCq8PiZfjny&gsxid=tpuDCq8PiZfjny&gspk=NWMzOGRkZGJmN2Zj',
 }
 
 const reviewEntries: ReviewEntry[] = comparisonPages.flatMap((page) =>
