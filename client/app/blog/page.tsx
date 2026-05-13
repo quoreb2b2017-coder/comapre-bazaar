@@ -9,6 +9,9 @@ import {
 import { BlogFeaturedCard, BlogGridCard } from '@/components/blog/BlogListingCards'
 import { BlogSubscribeBox } from '@/components/blog/BlogSubscribeBox'
 
+export const dynamic = 'force-static'
+export const revalidate = 120
+
 export async function generateMetadata(): Promise<Metadata> {
   const titleBase = 'Compare Bazaar Blog | Software Buying Guides'
   const description =

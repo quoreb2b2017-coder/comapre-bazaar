@@ -33,13 +33,14 @@ export function buildMetadata({
 }): Metadata {
   const url = `${SITE_URL}${canonical}`
   const ogImage = defaultOgImageUrl()
+  const truncatedDesc = description.length > 160 ? `${description.slice(0, 159)}…` : description
   return {
     title,
-    description,
+    description: truncatedDesc,
     alternates: { canonical: url },
     openGraph: {
       title,
-      description,
+      description: truncatedDesc,
       url,
       siteName: SITE_NAME,
       type: openGraphType,
@@ -49,7 +50,7 @@ export function buildMetadata({
     twitter: {
       card: 'summary_large_image',
       title,
-      description,
+      description: truncatedDesc,
       images: [ogImage],
     },
     robots: {

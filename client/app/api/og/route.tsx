@@ -3,7 +3,7 @@ import { blogPosts } from '@/data/blogPosts'
 import { fetchPublishedBlogBySlug, plainBlogExcerpt } from '@/lib/blogCms'
 import { stripGradientForSlug } from '@/lib/blogCms'
 
-export const runtime = 'edge'
+export const runtime = 'nodejs'
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
