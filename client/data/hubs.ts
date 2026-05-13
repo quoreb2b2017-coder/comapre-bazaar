@@ -3,7 +3,7 @@ import type { HubPageData } from '@/types'
 export const hubPages: HubPageData[] = [
   {
     slug: 'marketing',
-    title: 'Marketing Software Comparisons & Buying Guides (2026) | Compare Bazaar',
+    title: 'Marketing Software Comparisons & Buying Guides (2026)',
     metaDescription:
       'Expert-reviewed comparisons of the best marketing software for 2026, CRM, email marketing, website builders, and more. Independent, updated monthly.',
     canonical: '/marketing',
@@ -37,7 +37,7 @@ export const hubPages: HubPageData[] = [
   },
   {
     slug: 'technology',
-    title: 'Business Technology Software Reviews (2026) | Compare Bazaar',
+    title: 'Business Technology Software Reviews (2026)',
     metaDescription:
       'Expert comparisons of the best business technology tools, payroll, VoIP, fleet management, employee management software. Updated for 2026.',
     canonical: '/technology',
@@ -78,7 +78,7 @@ export const hubPages: HubPageData[] = [
   },
   {
     slug: 'sales',
-    title: 'Sales Software Comparisons & Buying Guides (2026) | Compare Bazaar',
+    title: 'Sales Software Comparisons & Buying Guides (2026)',
     metaDescription:
       'Expert comparisons of the best sales software, CRM, call centre, project management. Tested and ranked for 2026.',
     canonical: '/sales',
@@ -112,7 +112,7 @@ export const hubPages: HubPageData[] = [
   },
   {
     slug: 'human-resources',
-    title: 'Best HR Software Comparisons & Reviews (2026) | Compare Bazaar',
+    title: 'Best HR Software Comparisons & Reviews (2026)',
     metaDescription:
       'Expert-reviewed HR software comparisons, employee management, payroll, onboarding tools. Updated for 2026.',
     canonical: '/human-resources',
