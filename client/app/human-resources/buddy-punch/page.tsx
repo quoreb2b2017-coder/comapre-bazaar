@@ -1,3 +1,4 @@
+export const revalidate = 3600
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CheckCircle2, XCircle, Clock, MapPin, DollarSign, Calendar, Star, Shield } from 'lucide-react'

@@ -1,3 +1,4 @@
+export const revalidate = 3600
 import type { Metadata } from 'next'
 import { getComparisonPageBySlug } from '@/data/comparisons'
 import { buildComparisonMetadata, ComparisonRoute } from '@/components/comparison/ComparisonRoute'

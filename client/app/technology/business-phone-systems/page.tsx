@@ -1,3 +1,4 @@
+export const revalidate = 3600
 import { getComparisonPageBySlug } from '@/data/comparisons'
 import { buildComparisonMetadata, ComparisonRoute } from '@/components/comparison/ComparisonRoute'
 import { BusinessPhoneSystemPopup } from '@/components/EmailMarketingPopup'

@@ -1,3 +1,4 @@
+export const revalidate = 3600
 import { permanentRedirect } from 'next/navigation';
 
 export default function MarketingGetFreeQuotesRedirect() {
