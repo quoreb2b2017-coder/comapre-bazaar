@@ -15,6 +15,7 @@ import {
   type CmsBlogDetail,
 } from '@/lib/blogCms'
 import { pickTopicCoverUrl, resolveBlogCoverUrl } from '@/lib/blogTopicCovers'
+import { injectBlogAutoLinks } from '@/lib/blogAutoLink'
 import { BlogSubscribeBox } from '@/components/blog/BlogSubscribeBox'
 import { BlogShareBar } from '@/components/blog/BlogShareBar'
 
@@ -285,7 +286,7 @@ async function CmsBlogArticle({ cms }: { cms: CmsBlogDetail }) {
   const { heroHtml, bodyHtml } = splitCmsHeroFromBody(cms.content)
   const hasHeroBanner = heroHtml != null
   const sourceBodyHtml = hasHeroBanner ? bodyHtml : cms.content
-  const { html: anchoredBodyHtml, toc } = addHeadingAnchors(sourceBodyHtml)
+  const { html: anchoredBodyHtml, toc } = addHeadingAnchors(injectBlogAutoLinks(sourceBodyHtml))
   const articleSchema = buildBlogPostingJsonLd({
     headline,
     description: cms.metaDescription || cms.excerpt || formatShareDescription(cms.content?.slice(0, 800)),

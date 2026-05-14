@@ -535,3 +535,19 @@ a.cb-link-pending {
   from { opacity: 0; transform: translateY(-6px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+
+/* Auto-injected contextual internal links inside blog content */
+.blog-cms-html .blog-auto-link,
+.prose .blog-auto-link {
+  color: #d86e1e;
+  text-decoration: underline;
+  text-decoration-color: #f3c79b;
+  text-underline-offset: 3px;
+  font-weight: 500;
+  transition: color 0.15s, text-decoration-color 0.15s;
+}
+.blog-cms-html .blog-auto-link:hover,
+.prose .blog-auto-link:hover {
+  color: #9c4302;
+  text-decoration-color: #d86e1e;
+}
