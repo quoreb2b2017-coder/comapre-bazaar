@@ -101,7 +101,7 @@ export function SiteNav() {
           >
             <Image
               src={logoIcon}
-              alt="Compare Bazaar icon"
+              alt="Compare Bazaar logo"
               width={60}
               height={60}
               className="h-16 w-16 object-contain"

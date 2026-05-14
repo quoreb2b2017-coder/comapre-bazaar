@@ -33,7 +33,8 @@ export function buildMetadata({
 }): Metadata {
   const url = `${SITE_URL}${canonical}`
   const ogImage = defaultOgImageUrl()
-  const truncatedDesc = description.length > 160 ? `${description.slice(0, 159)}…` : description
+  // Cap at 155 chars — Google truncates at ~155 (mobile: ~120)
+  const truncatedDesc = description.length > 155 ? `${description.slice(0, 154)}…` : description
   // Use `absolute` to bypass the root layout template ('%s | Compare Bazaar').
   // Without this, pages that already contain the site name in their title string
   // would render "Title | Compare Bazaar | Compare Bazaar" in the <title> tag.
@@ -51,10 +52,19 @@ export function buildMetadata({
       siteName: SITE_NAME,
       type: openGraphType,
       locale: 'en_US',
-      images: [{ url: ogImage, width: 1200, height: 630, alt: title }],
+      images: [{
+        url: ogImage,
+        width: 1200,
+        height: 630,
+        // Alt should describe the image, not repeat the page title
+        alt: `${SITE_NAME} — business software comparisons and expert reviews`,
+        type: 'image/png',
+      }],
     },
     twitter: {
       card: 'summary_large_image',
+      site: '@CompareBazaar',
+      creator: '@CompareBazaar',
       title,
       description: truncatedDesc,
       images: [ogImage],
@@ -110,10 +120,12 @@ export function buildBlogShareMetadata(opts: {
       modifiedTime: mod,
       section: opts.section,
       tags: opts.keywords,
-      images: [{ url: imageUrl, width: 1200, height: 630, alt: opts.title }],
+      images: [{ url: imageUrl, width: 1200, height: 630, alt: `Compare Bazaar — ${opts.title}`, type: 'image/png' }],
     },
     twitter: {
       card: 'summary_large_image',
+      site: '@CompareBazaar',
+      creator: '@CompareBazaar',
       title: opts.title,
       description: desc,
       images: [imageUrl],

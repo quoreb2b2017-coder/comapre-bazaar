@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { CheckCircle2, XCircle, Sparkles, Workflow, Users, Gauge, Link2, CircleDollarSign, ShieldCheck, UserCircle2, CalendarDays, FileClock } from 'lucide-react'
-import { buildMetadata } from '@/lib/seo'
+import { buildMetadata, buildBreadcrumbSchema, buildFaqSchema } from '@/lib/seo'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
 import { comparisonPages } from '@/data/comparisons'
 
@@ -2751,6 +2751,26 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
 
   return (
     <main className={isCrmStyle ? 'max-w-5xl mx-auto px-4 sm:px-6 py-12' : 'max-w-4xl mx-auto px-4 sm:px-6 py-12'}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(buildBreadcrumbSchema([
+            { label: 'Home', href: '/' },
+            { label: review.categoryLabel, href: review.categoryPath },
+            { label: `${review.name} Review` },
+          ])),
+        }}
+      />
+      {crmDetail && crmDetail.faqs.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(buildFaqSchema(
+              crmDetail.faqs.map((f) => ({ question: f.q, answer: f.a }))
+            )),
+          }}
+        />
+      )}
       <Breadcrumb
         items={[
           { label: 'Home', href: '/' },

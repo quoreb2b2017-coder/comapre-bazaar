@@ -158,8 +158,8 @@ export default async function HomePage() {
                 Independent software reviews
               </div>
               <h1 className="text-3xl sm:text-5xl lg:text-6xl text-white leading-tight tracking-tight mb-4 sm:mb-5 drop-shadow-[0_10px_26px_rgba(110,45,0,0.45)] [transform:translateZ(46px)]">
-                Find the <em className="text-[#FCE7D0] not-italic">right</em> business software,{' '}
-                <br className="hidden sm:block" />without the guesswork
+                Business software comparisons &amp; independent reviews,{' '}
+                <em className="text-[#FCE7D0] not-italic">without the guesswork</em>
               </h1>
               <p className="text-base sm:text-xl text-white/90 leading-relaxed mb-6 sm:mb-8 max-w-xl mx-auto [transform:translateZ(30px)]">
                 Independent comparisons of CRM, payroll, HR, and marketing software researched by
@@ -376,7 +376,7 @@ export default async function HomePage() {
           </p>
           <div className="flex flex-wrap justify-center gap-12">
             {[
-              { num: '20K+', label: 'Monthly readers' },
+              { num: '80K+', label: 'Business buyers helped' },
               { num: '60+', label: 'Platforms reviewed' },
               { num: '12', label: 'Scoring criteria per platform' },
               { num: '100%', label: 'Independent editorial' },
