@@ -93,8 +93,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     'goanswer-review', 'twilio-review', 'talkdesk-review', 'genesys-review', 'freshdesk-cc-review',
     // Sales CRM (these are confirmed live via comparisonPages products)
     'hubspot-sales-review', 'pipedrive-sales-review',
-    // CRM - add back when database records confirmed live:
-    // 'hubspot-crm-review', 'zoho-crm-review', 'pipedrive-review', 'salesforce-review',
+    // CRM reviews - confirmed generating correctly with Set dedup fix
+    'hubspot-crm-review', 'zoho-crm-review', 'pipedrive-review', 'salesforce-review',
+    'honeybook-review', 'creatio-review',
   ] as const
 
   const reviewRoutes: MetadataRoute.Sitemap = reviewSlugs.map((slug) => ({
