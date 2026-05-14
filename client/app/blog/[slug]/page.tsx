@@ -15,7 +15,6 @@ import {
   type CmsBlogDetail,
 } from '@/lib/blogCms'
 import { pickTopicCoverUrl, resolveBlogCoverUrl } from '@/lib/blogTopicCovers'
-import { BlogViewCounter } from '@/components/blog/BlogViewCounter'
 import { BlogSubscribeBox } from '@/components/blog/BlogSubscribeBox'
 import { BlogShareBar } from '@/components/blog/BlogShareBar'
 
@@ -305,7 +304,6 @@ async function CmsBlogArticle({ cms }: { cms: CmsBlogDetail }) {
       <time dateTime={publishedRaw.toISOString()}>{publishedLabel}</time>
       <span className="text-gray-300">·</span>
       <span>Compare Bazaar Editorial</span>
-      <BlogViewCounter slug={cms.slug} initialCount={typeof cms.viewCount === 'number' ? cms.viewCount : 0} />
     </div>
   )
 
