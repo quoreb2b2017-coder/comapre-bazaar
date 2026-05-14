@@ -2194,8 +2194,17 @@ const reviewEntries: ReviewEntry[] = comparisonPages.flatMap((page) =>
   }))
 )
 
+export const dynamicParams = false
+
 export function generateStaticParams() {
-  return reviewEntries.map((entry) => ({ slug: entry.slug }))
+  const seen = new Set<string>()
+  return reviewEntries
+    .filter((entry) => {
+      if (!entry.slug || seen.has(entry.slug)) return false
+      seen.add(entry.slug)
+      return true
+    })
+    .map((entry) => ({ slug: entry.slug }))
 }
 
 export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
