@@ -41,6 +41,7 @@ export function buildMetadata({
   const absoluteTitle = title.includes('| Compare Bazaar')
     ? title
     : `${title} | Compare Bazaar`
+    
   return {
     title: { absolute: absoluteTitle },
     description: truncatedDesc,
