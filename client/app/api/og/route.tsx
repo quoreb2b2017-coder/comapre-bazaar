@@ -1,35 +1,31 @@
 import { ImageResponse } from 'next/og'
 import { blogPosts } from '@/data/blogPosts'
-import { fetchPublishedBlogBySlug, plainBlogExcerpt } from '@/lib/blogCms'
 import { stripGradientForSlug } from '@/lib/blogCms'
 
-export const runtime = 'nodejs'
+export const runtime = 'edge'
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
   const slug = String(searchParams.get('slug') || '').trim()
 
-  const cms = slug ? await fetchPublishedBlogBySlug(slug) : null
   const fallback = slug ? blogPosts.find((p) => p.slug === slug) : null
 
   const title =
-    (cms?.metaTitle && cms.metaTitle.trim()) ||
-    cms?.title ||
     fallback?.title ||
     'Compare Bazaar | Business Software Comparisons'
 
-  const excerpt = plainBlogExcerpt(
-    cms?.excerpt || fallback?.excerpt || 'Independent software comparisons and buying guides for modern teams.',
-    140
-  )
-  const category = (cms?.tags && cms.tags[0]) || cms?.topic || fallback?.category || 'Editorial'
+  const excerpt =
+    fallback?.excerpt ||
+    'Independent software comparisons and buying guides for modern teams.'
+
+  const category = fallback?.category || 'Editorial'
   const strip = fallback
     ? { stripFrom: fallback.stripFrom, stripTo: fallback.stripTo }
-    : stripGradientForSlug(slug || title.toLowerCase().replace(/\s+/g, '-'))
+    : stripGradientForSlug(slug || 'compare-bazaar')
   const accentFrom = strip.stripFrom || '#0B2A6F'
   const accentTo = strip.stripTo || '#F58220'
 
-  const image = new ImageResponse(
+  return new ImageResponse(
     (
       <div
         style={{
@@ -88,14 +84,12 @@ export async function GET(req: Request) {
         </div>
       </div>
     ),
-    { width: 1200, height: 630 }
+    {
+      width: 1200,
+      height: 630,
+      headers: {
+        'Cache-Control': 'public, max-age=0, s-maxage=86400',
+      },
+    }
   )
-
-  return new Response(image.body, {
-    headers: {
-      'Content-Type': 'image/png',
-      'Cache-Control': 'public, max-age=0, s-maxage=86400',
-    },
-    status: 200,
-  })
 }
