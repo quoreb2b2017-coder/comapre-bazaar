@@ -2194,7 +2194,7 @@ const reviewEntries: ReviewEntry[] = comparisonPages.flatMap((page) =>
   }))
 )
 
-export const dynamicParams = false
+export const dynamicParams = true
 
 export function generateStaticParams() {
   const seen = new Set<string>()
