@@ -1,6 +1,5 @@
 import { ImageResponse } from 'next/og'
 import { blogPosts } from '@/data/blogPosts'
-import { fetchPublishedBlogBySlug, plainBlogExcerpt } from '@/lib/blogCms'
 
 export const runtime = 'edge'
 export const size = { width: 1200, height: 630 }
@@ -10,13 +9,11 @@ type Props = {
   params: { slug: string }
 }
 
-export default async function BlogSlugOpengraphImage({ params }: Props) {
-  const cms = await fetchPublishedBlogBySlug(params.slug)
+export default function BlogSlugOpengraphImage({ params }: Props) {
   const fallback = blogPosts.find((p) => p.slug === params.slug)
-
-  const title = (cms?.metaTitle && cms.metaTitle.trim()) || cms?.title || fallback?.title || 'Compare Bazaar Blog'
-  const excerpt = plainBlogExcerpt(cms?.excerpt || fallback?.excerpt || '', 140)
-  const category = (cms?.tags && cms.tags[0]) || cms?.topic || fallback?.category || 'Editorial'
+  const title = fallback?.title || 'Compare Bazaar Blog'
+  const excerpt = fallback?.excerpt || 'Software comparisons, practical guides, and decision frameworks for teams.'
+  const category = fallback?.category || 'Editorial'
 
   return new ImageResponse(
     (
@@ -36,7 +33,8 @@ export default async function BlogSlugOpengraphImage({ params }: Props) {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div
             style={{
-              display: 'inline-flex',
+              display: 'flex',
+              alignItems: 'center',
               borderRadius: 999,
               padding: '8px 16px',
               background: '#fff3e7',

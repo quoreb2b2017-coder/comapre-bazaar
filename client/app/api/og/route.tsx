@@ -43,7 +43,8 @@ export async function GET(req: Request) {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div
             style={{
-              display: 'inline-flex',
+              display: 'flex',
+              alignItems: 'center',
               borderRadius: 999,
               padding: '8px 16px',
               background: `${accentFrom}1a`,
