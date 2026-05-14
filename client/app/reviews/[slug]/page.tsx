@@ -2761,7 +2761,7 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
           ])),
         }}
       />
-      {crmDetail && crmDetail.faqs.length > 0 && (
+      {crmDetail && crmDetail.faqs?.length > 0 && (
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
