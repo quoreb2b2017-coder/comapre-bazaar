@@ -82,6 +82,7 @@ const QUOTE_SERVICES = [
   { label: 'Sales CRM Quotes', href: '/sales/best-crm-software/get-free-quotes', description: 'Pipeline, forecasting and deal workflows' },
   { label: 'Call Center Quotes', href: '/sales/best-call-center-management-software/get-free-quotes', description: 'Contact center and agent operations tools' },
   { label: 'Project Management Quotes', href: '/sales/best-project-management-software/get-free-quotes', description: 'Asana, Monday, ClickUp, Jira' },
+  { label: 'Contact Us', href: '/contact', description: 'Speak to our team directly' },
 ]
 
 export function SiteNav() {
