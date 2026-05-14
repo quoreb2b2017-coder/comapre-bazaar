@@ -203,19 +203,32 @@ export function SiteNav() {
 
               {quotesOpen && (
                 <div className="absolute right-0 top-full pt-2 z-50">
-                  <div className="w-[20rem] bg-white border border-gray-200 rounded-lg shadow-lg py-2">
-                    <p className="px-4 pt-1 pb-2 text-[11px] font-semibold tracking-wider uppercase text-[#9C4302] border-b border-gray-100">
-                      Quote Services
+                  <div
+                    className="w-[min(56rem,calc(100vw-2rem))] bg-white border border-gray-200/90 rounded-xl shadow-xl shadow-gray-900/8 ring-1 ring-black/[0.03] overflow-hidden"
+                    style={{ animation: 'fadeSlideDown 0.18s ease-out both' }}
+                  >
+                    <p className="px-5 pt-3 pb-2.5 text-[11px] font-semibold tracking-[0.14em] uppercase text-[#9C4302] bg-gradient-to-r from-[#FFF8F2] to-white border-b border-gray-100">
+                      Get Free Quotes
                     </p>
-                    {QUOTE_SERVICES.map((service) => (
-                      <Link
-                        key={service.href}
-                        href={service.href}
-                        className="block px-4 py-2.5 hover:bg-[#FFF8F2] transition-colors border-b border-gray-50 last:border-b-0"
-                      >
-                        <span className="block text-sm text-gray-700 hover:text-[#9C4302]">{service.label}</span>
-                      </Link>
-                    ))}
+                    <div className="grid grid-cols-3 gap-px bg-gray-100">
+                      {QUOTE_SERVICES.map((service) => (
+                        <Link
+                          key={service.href}
+                          href={service.href}
+                          className="group flex items-start gap-3 px-4 py-3.5 bg-white hover:bg-[#FFF8F2] transition-colors focus-visible:outline-none focus-visible:bg-[#FFF8F2]"
+                        >
+                          <span className="min-w-0 flex-1">
+                            <span className="block text-sm font-medium text-navy leading-snug group-hover:text-[#9C4302] transition-colors">
+                              {service.label}
+                            </span>
+                            <span className="block text-[11px] text-gray-400 mt-0.5 leading-snug">
+                              {service.description}
+                            </span>
+                          </span>
+                          <ChevronRight className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gray-300 opacity-0 transition-all group-hover:translate-x-0.5 group-hover:text-[#F58220] group-hover:opacity-100" aria-hidden />
+                        </Link>
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}
