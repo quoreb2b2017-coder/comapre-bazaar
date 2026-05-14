@@ -201,11 +201,15 @@ function BlogTitlesRail({
   currentTitle,
   toc,
   latest,
+  topic,
+  tags,
 }: {
   currentSlug: string
   currentTitle: string
   toc: Array<{ id: string; label: string }>
   latest: Array<{ slug: string; title: string }>
+  topic?: string
+  tags?: string[]
 }) {
   const rows = toc.slice(0, 14)
   return (
@@ -257,7 +261,7 @@ function BlogTitlesRail({
         </Link>
       </div>
       <BlogSubscribeBox slug={currentSlug} compact variant="editorial" />
-      <BlogShareBar title={currentTitle} slug={currentSlug} />
+      <BlogShareBar title={currentTitle} slug={currentSlug} topic={topic} tags={tags} />
     </aside>
   )
 }
@@ -394,7 +398,7 @@ async function CmsBlogArticle({ cms }: { cms: CmsBlogDetail }) {
             </nav>
           </article>
           <div className="order-1 lg:order-2 h-full">
-            <BlogTitlesRail currentSlug={cms.slug} currentTitle={headline} toc={toc} latest={latestSidebar} />
+            <BlogTitlesRail currentSlug={cms.slug} currentTitle={headline} toc={toc} latest={latestSidebar} topic={(cms.tags && cms.tags[0]) || cms.topic} tags={cms.tags} />
           </div>
         </div>
       </div>
@@ -535,7 +539,7 @@ export default async function BlogPostPage({ params }: Props) {
             </article>
 
             <div className="order-1 lg:order-2 h-full">
-              <BlogTitlesRail currentSlug={post.slug} currentTitle={post.title} toc={toc} latest={latestSidebar} />
+              <BlogTitlesRail currentSlug={post.slug} currentTitle={post.title} toc={toc} latest={latestSidebar} topic={post.category} tags={[post.category]} />
             </div>
           </div>
         </div>
