@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CheckCircle2, CircleDollarSign, Gauge, Link2, ShieldCheck, Sparkles, Users, Workflow, UserCircle2, FileClock, CalendarDays } from 'lucide-react'
-import { buildMetadata } from '@/lib/seo'
+import { buildMetadata, buildBreadcrumbSchema } from '@/lib/seo'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
 
 export const metadata: Metadata = buildMetadata({
@@ -89,6 +89,16 @@ export default function HubspotCrmReviewPage() {
 
   return (
     <main className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(buildBreadcrumbSchema([
+            { label: 'Home', href: '/' },
+            { label: 'Marketing Hub', href: '/marketing' },
+            { label: 'HubSpot CRM Review' },
+          ])),
+        }}
+      />
       <Breadcrumb
         items={[
           { label: 'Home', href: '/' },

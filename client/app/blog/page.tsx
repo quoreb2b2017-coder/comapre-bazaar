@@ -12,7 +12,7 @@ import { BlogSubscribeBox } from '@/components/blog/BlogSubscribeBox'
 export const revalidate = 120
 
 export async function generateMetadata(): Promise<Metadata> {
-  const titleBase = 'Blog | Software Buying Guides'
+  const titleBase = 'Business Software Buying Guides, Reviews & Tips 2026'
   const description =
     'Actionable business software buying guides from Compare Bazaar editors. CRM, payroll, marketing, HR, and operations software insights.'
   return buildMetadata({
