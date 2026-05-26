@@ -4,6 +4,10 @@ import { hubPages } from '@/data/hubs'
 import { fetchPublishedBlogSummaries } from '@/lib/blogCms'
 
 const BASE_URL = 'https://www.compare-bazaar.com'
+const NOINDEX_COMPARISON_CANONICALS = new Set([
+  '/technology/best-payroll-system',
+  '/technology/best-employee-management-software',
+])
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date()
@@ -43,12 +47,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }))
 
   // ── 4. Comparison / category pages ───────────────────────────────────────
-  const comparisonRoutes: MetadataRoute.Sitemap = comparisonPages.map((page) => ({
-    url: `${BASE_URL}${page.canonical}`,
-    lastModified: now,
-    changeFrequency: 'weekly' as const,
-    priority: 0.9,
-  }))
+  const comparisonRoutes: MetadataRoute.Sitemap = comparisonPages
+    .filter((page) => !NOINDEX_COMPARISON_CANONICALS.has(page.canonical))
+    .map((page) => ({
+      url: `${BASE_URL}${page.canonical}`,
+      lastModified: now,
+      changeFrequency: 'weekly' as const,
+      priority: 0.9,
+    }))
 
   // ── 5. Lead-gen quote pages — live + indexed, low SEO priority ────────────
   const leadGenRoutes: MetadataRoute.Sitemap = [
@@ -66,37 +72,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/sales/best-project-management-software/get-free-quotes`,            lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
   ]
 
-  // ── 6. Review pages — only slugs confirmed live ───────────────────────────
-  // CRM slugs (hubspot-crm-review, salesforce-review, pipedrive-review, zoho-crm-review)
-  // removed until content records are confirmed in database
-  const reviewSlugs = [
-    // Payroll & HR
-    'adp-review', 'zoho-payroll-review', 'bamboohr-review', 'bamboohr-employee-review',
-    'onpay-review', 'quickbooks-payroll-review', 'gusto-review', 'rippling-review', 'workday-review',
-    // Email marketing
-    'campaign-monitor-review', 'campaigner-review', 'klaviyo-review', 'getresponse-review',
-    'hubspot-email-review', 'mailchimp-review', 'activecampaign-review',
-    // Project management
-    'monday-review', 'clickup-review', 'asana-review', 'notion-review', 'jira-review',
-    // VoIP / phone
-    'ooma-review', '800com-review', 'zoom-phone-review', 'nextiva-review',
-    'vonage-review', 'ringcentral-review', 'goto-review',
-    // Website builders
-    'wix-review', 'godaddy-website-builder-review', 'mochahost-review', 'webcom-review',
-    'bluehost-review', 'squarespace-review', 'shopify-review',
-    // GPS fleet
-    'motive-review', 'teletrac-navman-review', 'verizon-connect-review',
-    'samsara-review', 'surecam-review', 'fleetio-review',
-    // Employee management
-    'teramind-review', 'activtrak-review', 'hubstaff-review', 'intelogos-review',
-    // Call centre
-    'goanswer-review', 'twilio-review', 'talkdesk-review', 'genesys-review', 'freshdesk-cc-review',
-    // Sales CRM (these are confirmed live via comparisonPages products)
-    'hubspot-sales-review', 'pipedrive-sales-review',
-    // CRM reviews - confirmed generating correctly with Set dedup fix
-    'hubspot-crm-review', 'zoho-crm-review', 'pipedrive-review', 'salesforce-review',
-    'honeybook-review', 'creatio-review',
-  ] as const
+  // ── 6. Review pages — derive from live comparison data to avoid omissions ──
+  const reviewSlugs = Array.from(
+    new Set(
+      comparisonPages.flatMap((page) =>
+        page.products.map((product) => product.reviewSlug)
+      )
+    )
+  )
 
   const reviewRoutes: MetadataRoute.Sitemap = reviewSlugs.map((slug) => ({
     url: `${BASE_URL}/reviews/${slug}`,
