@@ -76,7 +76,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // ── 6. Compare detail URLs (?category=&brand=) from comparison dataset ──────
   const compareDetailRoutes: MetadataRoute.Sitemap = comparisonPages.flatMap((page) =>
     page.products.map((product) => ({
-      url: `${BASE_URL}/compare?category=${encodeURIComponent(page.slug)}&brand=${encodeURIComponent(product.id)}`,
+      // XML sitemap needs escaped ampersand inside query-string URLs.
+      url: `${BASE_URL}/compare?category=${encodeURIComponent(page.slug)}&amp;brand=${encodeURIComponent(product.id)}`,
       lastModified: now,
       changeFrequency: 'weekly' as const,
       priority: 0.6,
