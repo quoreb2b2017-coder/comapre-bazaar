@@ -81,6 +81,7 @@ export function BlogShareBar({ title, slug, topic, tags }: Props) {
           aria-label="Share on LinkedIn"
         >
           LinkedIn
+          
         </a>
 
         <a

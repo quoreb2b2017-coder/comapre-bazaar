@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
 
 const MIN_VISIBLE_MS = 650
+const MIN_VISIBLE_COMPARE_MS = 120
 const MAX_VISIBLE_MS = 9000
 
 export function RouteLoadingIndicator() {
@@ -15,11 +16,13 @@ export function RouteLoadingIndicator() {
   const isNavigatingRef = useRef(false)
   const activeAnchorRef = useRef<HTMLAnchorElement | null>(null)
 
+  const minVisibleRef = useRef(MIN_VISIBLE_MS)
+
   useEffect(() => {
     if (!isNavigatingRef.current) return
 
     const elapsed = Date.now() - startedAtRef.current
-    const delay = Math.max(MIN_VISIBLE_MS - elapsed, 0)
+    const delay = Math.max(minVisibleRef.current - elapsed, 0)
     if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
     hideTimerRef.current = setTimeout(() => {
       setVisible(false)
@@ -60,12 +63,24 @@ export function RouteLoadingIndicator() {
           nextUrl.search === currentUrl.search &&
           nextUrl.hash === currentUrl.hash
 
-        if (!isInternal || isSameRoute) return
+        // Compare picker updates query params client-side; skip overlay for compare-only changes.
+        const isCompareQueryTweak =
+          nextUrl.pathname === '/compare' &&
+          currentUrl.pathname === '/compare' &&
+          nextUrl.search !== currentUrl.search
+
+        if (anchor.hasAttribute('data-cb-soft-nav')) return
+
+        if (!isInternal || isSameRoute || isCompareQueryTweak) return
+
+        const isOpeningCompare =
+          nextUrl.pathname === '/compare' && currentUrl.pathname !== '/compare'
 
         clearTimers()
         startedAtRef.current = Date.now()
         isNavigatingRef.current = true
         setVisible(true)
+        minVisibleRef.current = isOpeningCompare ? MIN_VISIBLE_COMPARE_MS : MIN_VISIBLE_MS
         if (activeAnchorRef.current && activeAnchorRef.current !== anchor) {
           activeAnchorRef.current.classList.remove('cb-link-pending')
         }

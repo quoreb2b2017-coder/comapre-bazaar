@@ -17,6 +17,7 @@ export default function CopyrightPolicyPage() {
         All original content on Compare Bazaar is protected by copyright law. Unauthorized reproduction, republication,
         or commercial reuse without written permission is prohibited.
       </p>
+      
       <p className="text-gray-600 leading-relaxed">
         If you believe your copyright has been infringed, email legal@compare-bazaar.com with supporting details.
       </p>

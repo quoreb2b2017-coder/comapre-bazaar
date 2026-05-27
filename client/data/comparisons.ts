@@ -616,8 +616,10 @@ export const comparisonPages: ComparisonPageData[] = [
   },
 ]
 
+const comparisonPageBySlug = new Map(comparisonPages.map((page) => [page.slug, page]))
+
 export function getComparisonPageBySlug(slug: string): ComparisonPageData | undefined {
-  return comparisonPages.find((p) => p.slug === slug)
+  return comparisonPageBySlug.get(slug)
 }
 
 export function getComparisonPageByCanonical(canonical: string): ComparisonPageData | undefined {

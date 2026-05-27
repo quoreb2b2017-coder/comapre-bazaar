@@ -26,6 +26,18 @@ const config: Config = {
           DEFAULT: '#f59e0b',
           light: '#fef9c3',
         },
+        /* Compare Bazaar marketing orange (logo, CTAs, compare UI) */
+        cb: {
+          orange: {
+            DEFAULT: '#F58220',
+            hover: '#ec7416',
+            mid: '#f48930',
+            light: '#fff7ef',
+            soft: '#fff3e7',
+            border: '#f3d6bd',
+            ring: '#FCE7D0',
+          },
+        },
       },
       fontFamily: {
         serif: ['DM Serif Display', 'Georgia', 'serif'],

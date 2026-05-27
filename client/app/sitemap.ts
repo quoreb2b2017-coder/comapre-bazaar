@@ -64,6 +64,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/marketing/best-email-marketing-services/get-free-quotes`,           lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${BASE_URL}/marketing/best-website-building-platform/get-free-quotes`,          lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${BASE_URL}/human-resources/best-payroll-software/get-free-quotes`,             lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${BASE_URL}/technology/best-payroll-system/get-free-quotes`,                  lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${BASE_URL}/technology/business-phone-systems/get-free-quotes`,                 lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${BASE_URL}/technology/gps-fleet-management-software/get-free-quotes`,          lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${BASE_URL}/human-resources/best-employee-management-software/get-free-quotes`, lastModified: now, changeFrequency: 'yearly', priority: 0.3 },

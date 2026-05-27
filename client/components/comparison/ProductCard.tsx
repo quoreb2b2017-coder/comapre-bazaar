@@ -14,10 +14,17 @@ const EMOJI_REGEX = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu
 
 interface ProductCardProps {
   product: Product
+  compareHref?: string
+  quoteHref?: string
   variant?: 'default' | 'marketing-smooth' | 'technology-smooth' | 'sales-smooth' | 'hr-smooth'
 }
 
-export function ProductCard({ product, variant = 'default' }: ProductCardProps) {
+export function ProductCard({
+  product,
+  compareHref = '/browse-all-software',
+  quoteHref,
+  variant = 'default',
+}: ProductCardProps) {
   const isMarketingSmooth = variant === 'marketing-smooth'
   const isTechnologySmooth = variant === 'technology-smooth'
   const isSalesSmooth = variant === 'sales-smooth'
@@ -91,6 +98,15 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
           ))}
         </div>
 
+        <Link
+          href={compareHref}
+          prefetch
+          className="bg-[#F27F25] hover:bg-[#E97A13] text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
+          aria-label={`Compare ${product.name} options`}
+        >
+          Compare +
+        </Link>
+
         {/* Score */}
         <div
           className="text-center min-w-[72px]"
@@ -148,7 +164,16 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
           <span className="text-xl font-bold text-navy">{product.pricingAmount}</span>
           <span className="text-xs text-gray-400">{product.pricingPeriod}</span>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap justify-end gap-2">
+          {quoteHref ? (
+            <Link
+              href={quoteHref}
+              className="bg-[#F27F25] hover:bg-[#E97A13] text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
+              aria-label={`Get free quotes for ${product.name}`}
+            >
+              Compare Quotes
+            </Link>
+          ) : null}
           {/* All outbound vendor links use real URLs + rel="sponsored" */}
           {product.affiliateActive === true ? (
             <a
