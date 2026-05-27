@@ -29,14 +29,6 @@ function buildCompareUrl(slug: string, brandId: string, vsIds: string[]) {
 
 type ComparePhase = 'select' | 'results'
 
-function getContextualDefaultVsId(products: Product[], baseId: string): string | undefined {
-  const baseIdx = products.findIndex((p) => p.id === baseId)
-  if (baseIdx === -1) return products[0]?.id
-  if (products[baseIdx + 1]) return products[baseIdx + 1].id
-  if (products[baseIdx - 1]) return products[baseIdx - 1].id
-  return undefined
-}
-
 export function ComparePageClient({
   page,
   initialBrandId,
@@ -47,12 +39,10 @@ export function ComparePageClient({
   initialVsIds: string[]
 }) {
   const initialBaseProduct = page.products.find((p) => p.id === initialBrandId) ?? page.products[0]
-  const fallbackVsId = getContextualDefaultVsId(page.products, initialBaseProduct.id)
-  const fallbackVsIds = fallbackVsId ? [fallbackVsId] : []
-  const initialSelectedIds = initialVsIds.length > 0 ? initialVsIds : fallbackVsIds
+  const initialVsKey = initialVsIds.join(',')
 
   const brandId = initialBaseProduct.id
-  const [vsIds, setVsIds] = useState(initialSelectedIds)
+  const [vsIds, setVsIds] = useState(initialVsIds)
   const [phase, setPhase] = useState<ComparePhase>('select')
 
   const baseProduct = useMemo(
@@ -103,12 +93,10 @@ export function ComparePageClient({
   )
 
   const clearSelection = useCallback(() => {
-    const defaultVsId = getContextualDefaultVsId(page.products, baseProduct.id)
-    const defaultVs = defaultVsId ? [defaultVsId] : []
-    setVsIds(defaultVs)
-    syncUrl(defaultVs)
+    setVsIds([])
+    syncUrl([])
     setPhase('select')
-  }, [syncUrl, page.products, baseProduct.id])
+  }, [syncUrl])
 
   const openComparison = useCallback(() => {
     if (vsIds.length === 0) return
@@ -119,10 +107,12 @@ export function ComparePageClient({
     setPhase('select')
   }, [])
 
+  // Sync only when URL-driven brand/vs changes — not on every client render.
   useEffect(() => {
-    setVsIds(initialSelectedIds)
+    const ids = initialVsKey ? initialVsKey.split(',').filter(Boolean) : []
+    setVsIds(ids)
     setPhase('select')
-  }, [initialBaseProduct.id, initialSelectedIds])
+  }, [initialBaseProduct.id, initialVsKey])
 
   return (
     <main className="compare-page">
@@ -144,7 +134,7 @@ export function ComparePageClient({
             baseProduct={baseProduct}
             relatedProducts={relatedProducts}
             selectedIds={vsIds}
-            defaultSelectedId={initialSelectedIds[0]}
+            previewProductId={relatedProducts[0]?.id}
             atMax={atMax}
             onToggle={toggleProduct}
             onCompare={openComparison}

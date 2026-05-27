@@ -20,7 +20,7 @@ export function CompareSelectionStep({
   baseProduct,
   relatedProducts,
   selectedIds,
-  defaultSelectedId,
+  previewProductId,
   atMax,
   onToggle,
   onCompare,
@@ -29,7 +29,8 @@ export function CompareSelectionStep({
   baseProduct: Product
   relatedProducts: Product[]
   selectedIds: string[]
-  defaultSelectedId?: string
+  /** Left-panel preview when nothing is selected yet (not added to comparison). */
+  previewProductId?: string
   atMax: boolean
   onToggle: (productId: string) => void
   onCompare: () => void
@@ -39,15 +40,15 @@ export function CompareSelectionStep({
   const baseShort = baseProduct.name.split(' ')[0]
 
   const [activeId, setActiveId] = useState(() =>
-    resolveActiveId(relatedProducts, selectedIds, defaultSelectedId)
+    resolveActiveId(relatedProducts, selectedIds, previewProductId)
   )
 
   useEffect(() => {
     setActiveId((current) => {
       if (relatedProducts.some((p) => p.id === current)) return current
-      return resolveActiveId(relatedProducts, selectedIds, defaultSelectedId)
+      return resolveActiveId(relatedProducts, selectedIds, previewProductId)
     })
-  }, [relatedProducts, selectedIds, defaultSelectedId])
+  }, [relatedProducts, selectedIds, previewProductId])
 
   const activeProduct = useMemo(
     () => relatedProducts.find((p) => p.id === activeId) ?? relatedProducts[0],
@@ -62,15 +63,9 @@ export function CompareSelectionStep({
     [onToggle]
   )
 
-  const handlePick = useCallback(
-    (productId: string) => {
-      setActiveId(productId)
-      if (!selectedIds.includes(productId)) {
-        onToggle(productId)
-      }
-    },
-    [onToggle, selectedIds]
-  )
+  const handlePick = useCallback((productId: string) => {
+    setActiveId(productId)
+  }, [])
 
   const handleClear = useCallback(() => {
     onClear()
