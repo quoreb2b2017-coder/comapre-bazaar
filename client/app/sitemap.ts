@@ -64,7 +64,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/marketing/best-email-marketing-services/get-free-quotes`,           lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${BASE_URL}/marketing/best-website-building-platform/get-free-quotes`,          lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${BASE_URL}/human-resources/best-payroll-software/get-free-quotes`,             lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${BASE_URL}/technology/best-payroll-system/get-free-quotes`,                  lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${BASE_URL}/technology/best-payroll-system/get-free-quotes`,                    lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${BASE_URL}/technology/business-phone-systems/get-free-quotes`,                 lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${BASE_URL}/technology/gps-fleet-management-software/get-free-quotes`,          lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${BASE_URL}/human-resources/best-employee-management-software/get-free-quotes`, lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
@@ -73,7 +73,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/sales/best-project-management-software/get-free-quotes`,            lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
   ]
 
-  // ── 6. Review pages — derive from live comparison data to avoid omissions ──
+  // ── 6. Compare detail URLs (?category=&brand=) from comparison dataset ──────
+  const compareDetailRoutes: MetadataRoute.Sitemap = comparisonPages.flatMap((page) =>
+    page.products.map((product) => ({
+      url: `${BASE_URL}/compare?category=${encodeURIComponent(page.slug)}&brand=${encodeURIComponent(product.id)}`,
+      lastModified: now,
+      changeFrequency: 'weekly' as const,
+      priority: 0.6,
+    }))
+  )
+
+  // ── 7. Review pages — derive from live comparison data to avoid omissions ──
   const reviewSlugs = Array.from(
     new Set(
       comparisonPages.flatMap((page) =>
@@ -89,7 +99,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.75,
   }))
 
-  // ── 7. Blog posts from CMS ────────────────────────────────────────────────
+  // ── 8. Blog posts from CMS ────────────────────────────────────────────────
   const cmsPosts = await fetchPublishedBlogSummaries()
   const blogRoutes: MetadataRoute.Sitemap = cmsPosts.map((post) => ({
     url: `${BASE_URL}/blog/${post.slug}`,
@@ -105,6 +115,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...hubRoutes,
     ...comparisonRoutes,
     ...leadGenRoutes,
+    ...compareDetailRoutes,
     ...reviewRoutes,
     ...blogRoutes,
   ]
