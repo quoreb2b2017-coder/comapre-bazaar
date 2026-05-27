@@ -1,8 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowRight, BarChart2, Clock } from 'lucide-react'
+import { ArrowRight, Clock } from 'lucide-react'
 import type { UnifiedBlogCard } from '@/lib/blogCms'
-import { formatBlogViews } from '@/lib/formatBlogViews'
 
 /** Lead story — editorial spread: flat plane, typographic hierarchy, accent rule (no card chrome). */
 export function BlogFeaturedCard({ post }: { post: UnifiedBlogCard }) {
@@ -56,11 +55,6 @@ export function BlogFeaturedCard({ post }: { post: UnifiedBlogCard }) {
             <span className="inline-flex items-center gap-1.5 normal-case tracking-normal">
               <Clock className="h-3.5 w-3.5 opacity-65" aria-hidden />
               {post.readTime}
-            </span>
-            <span className="font-normal text-gray-300">·</span>
-            <span className="inline-flex items-center gap-1 normal-case tracking-normal">
-              <BarChart2 className="h-3.5 w-3.5 opacity-65" aria-hidden />
-              {formatBlogViews(post.viewCount)} {post.viewCount === 1 ? 'view' : 'views'}
             </span>
           </div>
 
@@ -149,11 +143,6 @@ export function BlogGridCard({ post, index }: { post: UnifiedBlogCard; index?: n
               {post.readTime}
             </span>
             <span className="text-gray-300">·</span>
-            <span className="inline-flex items-center gap-1">
-              <BarChart2 className="h-3 w-3 opacity-60" aria-hidden />
-              {formatBlogViews(post.viewCount)} {post.viewCount === 1 ? 'view' : 'views'}
-            </span>
-            <span className="text-gray-300">·</span>
             <span>{post.authorName}</span>
             <Link
               href={`/blog/${post.slug}`}
@@ -196,11 +185,6 @@ export function BlogHomePreviewCard({ post, priority }: { post: UnifiedBlogCard;
           {post.category}
           <span className="mx-2 font-normal text-gray-300">/</span>
           {post.readTime}
-          <span className="mx-2 font-normal text-gray-300">/</span>
-          <span className="inline-flex items-center gap-0.5 font-normal normal-case tracking-normal">
-            <BarChart2 className="h-3 w-3 opacity-60" aria-hidden />
-            {formatBlogViews(post.viewCount)} {post.viewCount === 1 ? 'view' : 'views'}
-          </span>
         </p>
         <Link href={`/blog/${post.slug}`}>
           <h3 className="font-serif text-lg font-normal leading-snug tracking-tight text-navy transition-colors group-hover:text-brand">
