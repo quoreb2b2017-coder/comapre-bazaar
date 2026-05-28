@@ -6,7 +6,6 @@ import { Pencil } from 'lucide-react'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
 import { CompareActiveBar } from '@/components/comparison/compare/CompareActiveBar'
 import { ComparePageHeader } from '@/components/comparison/compare/ComparePageHeader'
-import { CompareProductPanel } from '@/components/comparison/compare/CompareProductPanel'
 import { CompareSelectionStep } from '@/components/comparison/compare/CompareSelectionStep'
 import { CompareTablesSkeleton } from '@/components/comparison/compare/ComparePageSkeleton'
 import { MAX_COMPARE } from '@/components/comparison/compare/constants'
@@ -70,8 +69,6 @@ export function ComparePageClient({
 
   const atMax = comparedProducts.length >= MAX_COMPARE
   const baseShort = baseProduct.name.split(' ')[0]
-  const showDetailPanels = phase === 'results' && selectedProducts.length === 1
-
   const syncUrl = useCallback(
     (nextVsIds: string[]) => {
       const url = buildCompareUrl(page.slug, baseProduct.id, nextVsIds)
@@ -134,7 +131,6 @@ export function ComparePageClient({
             baseProduct={baseProduct}
             relatedProducts={relatedProducts}
             selectedIds={vsIds}
-            previewProductId={relatedProducts[0]?.id}
             atMax={atMax}
             onToggle={toggleProduct}
             onCompare={openComparison}
@@ -158,27 +154,13 @@ export function ComparePageClient({
               </button>
             </div>
 
-            <section className="mb-8" aria-label="Comparison tables">
-              <CompareMultiTables products={comparedProducts} lastReviewed={page.lastReviewed} />
+            <section aria-label="Comparison table">
+              <CompareMultiTables
+                products={comparedProducts}
+                lastReviewed={page.lastReviewed}
+                officialTable={page.officialTable}
+              />
             </section>
-
-            {showDetailPanels ? (
-              <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
-                <CompareProductPanel product={baseProduct} variant="primary" />
-                <div className="relative min-w-0">
-                  <span className="compare-vs-badge" aria-hidden="true">
-                    VS
-                  </span>
-                  <CompareProductPanel product={selectedProducts[0]} variant="secondary" />
-                </div>
-              </div>
-            ) : selectedProducts.length > 1 ? (
-              <p className="mb-6 rounded-2xl border border-dashed border-cb-orange-border bg-white/90 px-4 py-3 text-sm leading-relaxed text-gray-600">
-                <span className="font-semibold text-navy">{comparedProducts.length} products</span> in
-                your tables above. Select exactly one competitor to also see full detail cards
-                side-by-side.
-              </p>
-            ) : null}
           </>
         )}
       </div>

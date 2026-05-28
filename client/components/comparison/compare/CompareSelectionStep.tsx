@@ -13,14 +13,13 @@ function resolveActiveId(
 ): string {
   if (preferredId && relatedProducts.some((p) => p.id === preferredId)) return preferredId
   if (selectedIds[0] && relatedProducts.some((p) => p.id === selectedIds[0])) return selectedIds[0]
-  return relatedProducts[0]?.id ?? ''
+  return ''
 }
 
 export function CompareSelectionStep({
   baseProduct,
   relatedProducts,
   selectedIds,
-  previewProductId,
   atMax,
   onToggle,
   onCompare,
@@ -29,8 +28,6 @@ export function CompareSelectionStep({
   baseProduct: Product
   relatedProducts: Product[]
   selectedIds: string[]
-  /** Left-panel preview when nothing is selected yet (not added to comparison). */
-  previewProductId?: string
   atMax: boolean
   onToggle: (productId: string) => void
   onCompare: () => void
@@ -40,20 +37,17 @@ export function CompareSelectionStep({
   const baseShort = baseProduct.name.split(' ')[0]
 
   const [activeId, setActiveId] = useState(() =>
-    resolveActiveId(relatedProducts, selectedIds, previewProductId)
+    resolveActiveId(relatedProducts, selectedIds)
   )
 
   useEffect(() => {
     setActiveId((current) => {
       if (relatedProducts.some((p) => p.id === current)) return current
-      return resolveActiveId(relatedProducts, selectedIds, previewProductId)
+      return resolveActiveId(relatedProducts, selectedIds)
     })
-  }, [relatedProducts, selectedIds, previewProductId])
+  }, [relatedProducts, selectedIds])
 
-  const activeProduct = useMemo(
-    () => relatedProducts.find((p) => p.id === activeId) ?? relatedProducts[0],
-    [relatedProducts, activeId]
-  )
+  const activeProduct = useMemo(() => relatedProducts.find((p) => p.id === activeId), [relatedProducts, activeId])
 
   const handleToggle = useCallback(
     (productId: string) => {
@@ -69,10 +63,10 @@ export function CompareSelectionStep({
 
   const handleClear = useCallback(() => {
     onClear()
-    setActiveId(relatedProducts[0]?.id ?? '')
-  }, [onClear, relatedProducts])
+    setActiveId('')
+  }, [onClear])
 
-  if (!activeProduct) {
+  if (relatedProducts.length === 0) {
     return (
       <p className="rounded-xl border border-dashed border-gray-300 px-4 py-6 text-sm text-gray-600">
         No other products available to compare.
@@ -106,15 +100,15 @@ export function CompareSelectionStep({
           <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
             <div>
               <p className="text-xs font-semibold uppercase tracking-widest text-cb-orange">
-                Against {baseShort}
+                {activeProduct ? `Against ${baseShort}` : `Your ${baseShort} summary`}
               </p>
               <h2 className="font-serif text-xl font-semibold text-navy sm:text-2xl">
-                {activeProduct.name}
+                {activeProduct ? activeProduct.name : baseProduct.name}
               </h2>
               <div className="mt-1">
                 <CompareScoreLine
-                  score={activeProduct.score}
-                  reviewCount={activeProduct.reviewCount}
+                  score={activeProduct ? activeProduct.score : baseProduct.score}
+                  reviewCount={activeProduct ? activeProduct.reviewCount : baseProduct.reviewCount}
                 />
               </div>
             </div>
@@ -123,10 +117,10 @@ export function CompareSelectionStep({
             </span>
           </div>
 
-          <CompareProductPanel product={activeProduct} variant="secondary" />
+          <CompareProductPanel product={activeProduct ?? baseProduct} variant={activeProduct ? 'secondary' : 'primary'} />
 
           <p className="mt-3 text-center text-xs text-gray-500 lg:hidden">
-            Use the list on the right to switch preview or add more products.
+            Use the list on the right to preview competitors and add them to comparison.
           </p>
         </div>
 
@@ -134,7 +128,7 @@ export function CompareSelectionStep({
           relatedProducts={relatedProducts}
           baseProduct={baseProduct}
           selectedIds={selectedIds}
-          activeId={activeProduct.id}
+          activeId={activeProduct?.id ?? ''}
           atMax={atMax}
           onPick={handlePick}
           onToggle={handleToggle}

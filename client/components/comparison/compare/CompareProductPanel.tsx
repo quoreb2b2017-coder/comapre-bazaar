@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { CheckIcon } from '@/components/ui/icons'
 import { cn } from '@/lib/utils'
 import type { Product } from '@/types'
+import { getMainPoints, getShortWatchOuts } from '@/components/comparison/compare/officialCompareData'
 import { WORKS_BEST_FOR_BY_PRODUCT } from './constants'
 import { CompareScoreLine } from './CompareStars'
 
@@ -12,8 +13,9 @@ export function CompareProductPanel({
   product: Product
   variant?: 'primary' | 'secondary'
 }) {
-  const worksBestFor = WORKS_BEST_FOR_BY_PRODUCT[product.id] ?? product.pros.slice(0, 5)
-  const featureSummary = product.pros.slice(0, 6).join(', ')
+  const worksBestFor = WORKS_BEST_FOR_BY_PRODUCT[product.id] ?? product.pros.slice(0, 4)
+  const mainPoints = getMainPoints(product)
+  const watchOuts = getShortWatchOuts(product)
 
   return (
     <article className="compare-card flex h-full flex-col">
@@ -82,11 +84,32 @@ export function CompareProductPanel({
         </section>
 
         <section className="py-5">
-          <h3 className="compare-section-label">Features</h3>
-          <p className="mt-2 text-sm leading-relaxed text-gray-700">
-            {featureSummary}
-          </p>
+          <h3 className="compare-section-label">Main points</h3>
+          <ul className="mt-3 space-y-2">
+            {mainPoints.map((item) => (
+              <li key={item} className="flex gap-2 text-sm leading-snug text-gray-700">
+                <CheckIcon className="mt-0.5 h-4 w-4 flex-shrink-0 text-cb-orange" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
         </section>
+
+        {watchOuts.length > 0 ? (
+          <section className="py-5">
+            <h3 className="compare-section-label">Watch out for</h3>
+            <ul className="mt-3 space-y-2">
+              {watchOuts.map((item) => (
+                <li key={item} className="flex gap-2 text-sm leading-snug text-amber-900/85">
+                  <span className="mt-0.5 text-amber-600" aria-hidden>
+                    •
+                  </span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
       </div>
     </article>
   )

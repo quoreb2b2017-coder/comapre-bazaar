@@ -1,194 +1,217 @@
-import type { ReactNode } from 'react'
 import Link from 'next/link'
+import { AlertTriangle } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { CheckIcon, XIcon } from '@/components/ui/icons'
-import type { Product } from '@/types'
-
-const MAX_FEATURE_ROWS = 6
-const MAX_CON_ROWS = 3
+import { CheckIcon } from '@/components/ui/icons'
+import {
+  buildComparisonRows,
+  type CompareCellValue,
+} from '@/components/comparison/compare/compareTableContent'
+import type { ComparisonTableData, Product } from '@/types'
 
 interface CompareMultiTablesProps {
   products: Product[]
   lastReviewed?: string
+  officialTable?: ComparisonTableData
 }
 
-function TableShell({
-  title,
-  description,
-  children,
+function CompareCellContent({
+  value,
+  rich,
+  variant = 'default',
 }: {
-  title: string
-  description: string
-  children: ReactNode
+  value: CompareCellValue
+  rich?: boolean
+  variant?: 'default' | 'main' | 'watch' | 'score'
 }) {
+  if (variant === 'score' && typeof value === 'string') {
+    return <span className="compare-score-pill">{value}</span>
+  }
+
+  if (Array.isArray(value)) {
+    if (variant === 'main') {
+      return (
+        <ol className="compare-main-points">
+          {value.map((item, i) => (
+            <li key={item}>
+              <span className="compare-main-points-num" aria-hidden>
+                {i + 1}
+              </span>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ol>
+      )
+    }
+
+    if (variant === 'watch') {
+      return (
+        <ul className="compare-watch-points">
+          {value.map((item) => (
+            <li key={item}>
+              <AlertTriangle className="h-4 w-4 flex-shrink-0 text-amber-600" aria-hidden />
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+
+    return (
+      <ul className={cn('compare-cell-list', rich && 'compare-cell-list-rich')}>
+        {value.map((item) => (
+          <li key={item} className="flex gap-2 text-left">
+            <CheckIcon className="mt-0.5 h-4 w-4 flex-shrink-0 text-cb-orange" aria-hidden />
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+
   return (
-    <section className="compare-table-shell">
-      <div className="compare-table-head">
-        <h2 className="font-serif text-lg font-semibold text-white">{title}</h2>
-        <p className="mt-0.5 text-sm text-white/75">{description}</p>
-      </div>
-      <div className="overflow-x-auto">{children}</div>
-    </section>
+    <p className={cn('m-0 text-left leading-relaxed', rich ? 'text-sm text-gray-700' : 'text-gray-800')}>
+      {value}
+    </p>
   )
 }
 
-export function CompareMultiTables({ products, lastReviewed }: CompareMultiTablesProps) {
+export function CompareMultiTables({ products, lastReviewed, officialTable }: CompareMultiTablesProps) {
   if (products.length < 2) return null
 
-  const featureRowCount = Math.min(
-    MAX_FEATURE_ROWS,
-    Math.max(...products.map((p) => p.pros.length), 0)
-  )
-  const conRowCount = Math.min(MAX_CON_ROWS, Math.max(...products.map((p) => p.cons.length), 0))
-
-  const priceRows: { label: string; values: string[]; highlight?: boolean }[] = [
-    {
-      label: 'Starting price',
-      highlight: true,
-      values: products.map((p) => `${p.pricingAmount}${p.pricingPeriod ? ` ${p.pricingPeriod}` : ''}`),
-    },
-    { label: 'Billing', values: products.map((p) => p.pricingLabel) },
-    { label: 'Expert score', values: products.map((p) => `${p.score} / 5`) },
-    { label: 'Reviews', values: products.map((p) => p.reviewCount.toLocaleString()) },
-    { label: 'Best for', values: products.map((p) => p.tagline) },
-  ]
-
-  const featureRows: { label: string; values: (string | null)[] }[] = [
-    { label: 'Summary', values: products.map((p) => p.tagline) },
-    ...Array.from({ length: featureRowCount }, (_, i) => ({
-      label: `Strength ${i + 1}`,
-      values: products.map((p) => p.pros[i] ?? null),
-    })),
-    ...Array.from({ length: conRowCount }, (_, i) => ({
-      label: `Limitation ${i + 1}`,
-      values: products.map((p) => p.cons[i] ?? null),
-    })),
-  ]
-
+  const rows = buildComparisonRows(products, officialTable)
   const colCount = products.length
+  const colSpan = colCount + 1
 
   return (
-    <div className="compare-results-block space-y-6">
-      <TableShell
-        title="Price comparison"
-        description={
-          lastReviewed
-            ? `${colCount} products · pricing verified ${lastReviewed}`
-            : `${colCount} products side-by-side`
-        }
-      >
-        <table className="compare-data-table">
-          <thead>
-            <tr className="compare-data-thead-row">
-              <th className="compare-row-label-head" scope="col">
-                Metric
-              </th>
-              {products.map((product) => (
-                <th key={product.id} className="compare-col-head" scope="col">
-                  <span className="text-cb-orange">{product.logo}</span>
-                  <span className="mt-0.5 block font-sans normal-case tracking-normal text-white/95">
-                    {product.name.split(' ')[0]}
-                  </span>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {priceRows.map((row, rowIdx) => (
-              <tr
-                key={row.label}
-                className={cn(rowIdx % 2 === 1 ? 'bg-cb-orange-light/40' : 'bg-white')}
-              >
-                <th className="compare-row-label" scope="row">
-                  {row.label}
-                </th>
-                {row.values.map((value, i) => (
-                  <td
-                    key={`${row.label}-${i}`}
-                    className={cn(
-                      'compare-data-cell',
-                      row.highlight && 'text-base font-bold text-navy'
-                    )}
-                  >
-                    {value}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </TableShell>
-
-      <TableShell
-        title="Features & highlights"
-        description="Strengths and limitations from Compare Bazaar editorial reviews"
-      >
-        <table className="compare-data-table">
-          <thead>
-            <tr className="compare-data-thead-row">
-              <th className="compare-row-label-head" scope="col">
-                Topic
-              </th>
-              {products.map((product) => (
-                <th key={product.id} className="compare-col-head" scope="col">
-                  <span className="text-cb-orange">{product.logo}</span>
-                  <span className="mt-0.5 block font-sans normal-case tracking-normal text-white/95">
-                    {product.name.split(' ')[0]}
-                  </span>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {featureRows.map((row, rowIdx) => (
-              <tr
-                key={row.label}
-                className={cn(rowIdx % 2 === 1 ? 'bg-gray-50' : 'bg-white')}
-              >
-                <th className="compare-row-label" scope="row">
-                  {row.label}
-                </th>
-                {row.values.map((value, i) => (
-                  <td key={`${row.label}-${i}`} className="compare-data-cell align-top">
-                    {value ? (
-                      <div className="flex gap-2 text-left text-sm leading-snug text-gray-700">
-                        <CheckIcon className="mt-0.5 h-4 w-4 flex-shrink-0 text-cb-orange" />
-                        <span>{value}</span>
-                      </div>
-                    ) : (
-                      <div className="flex justify-center">
-                        <XIcon className="h-4 w-4 text-gray-300" aria-hidden />
-                      </div>
-                    )}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </TableShell>
-
-      <div className="compare-results-actions">
-        {products.map((product) => (
-          <div key={product.id} className="compare-results-action-card">
-            <span className="text-xs font-bold text-cb-orange">{product.logo}</span>
-            <a
-              href={product.vendorUrl}
-              rel="sponsored noopener noreferrer"
-              target="_blank"
-              className="compare-btn-primary !px-4 !py-2 text-xs"
-            >
-              Visit {product.name.split(' ')[0]} →
-            </a>
-            <Link
-              href={`/reviews/${product.reviewSlug}`}
-              className="text-xs font-semibold text-brand hover:underline"
-            >
-              Review
-            </Link>
+    <div className="compare-results-block">
+      <section className="compare-table-shell compare-table-shell-expanded">
+        <div className="compare-table-head">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-cb-orange-light">
+                Side-by-side comparison
+              </p>
+              <h2 className="font-serif text-xl font-semibold text-white sm:text-2xl">
+                Main points & official pricing
+              </h2>
+              <p className="mt-1 max-w-2xl text-sm leading-relaxed text-white/80">
+                {lastReviewed
+                  ? `${colCount} products · prices aligned to our category guide (${lastReviewed}). Confirm on each vendor site before purchase.`
+                  : `${colCount} products compared with official-style pricing, main strengths, and short watch-outs.`}
+              </p>
+            </div>
+            <p className="compare-scroll-hint hidden sm:block" aria-hidden>
+              Scroll →
+            </p>
           </div>
-        ))}
-      </div>
+        </div>
+
+        <div className="compare-table-scroll">
+          <table className="compare-data-table compare-data-table-expanded">
+            <thead>
+              <tr className="compare-data-thead-row">
+                <th className="compare-row-label-head" scope="col">
+                  Compared
+                </th>
+                {products.map((product) => (
+                  <th key={product.id} className="compare-col-head compare-col-head-expanded" scope="col">
+                    <span className="compare-col-logo">{product.logo}</span>
+                    <span className="compare-col-name">{product.name}</span>
+                    <span className="compare-col-score">{product.score} / 5</span>
+                    {product.isTopPick ? <span className="compare-col-badge">Top pick</span> : null}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row, rowIdx) =>
+                row.kind === 'section' ? (
+                  <tr key={`section-${row.label}`} className="compare-section-row">
+                    <th colSpan={colSpan} scope="colgroup">
+                      <span className="block">{row.label}</span>
+                      {row.hint ? (
+                        <span className="mt-0.5 block text-[10px] font-normal normal-case tracking-normal text-white/60">
+                          {row.hint}
+                        </span>
+                      ) : null}
+                    </th>
+                  </tr>
+                ) : (
+                  <tr
+                    key={row.label}
+                    className={cn('compare-data-row', rowIdx % 2 === 1 && 'compare-data-row-alt')}
+                  >
+                    <th className="compare-row-label compare-row-label-expanded" scope="row">
+                      <span className="block font-semibold text-navy">{row.label}</span>
+                      {row.sublabel ? (
+                        <span className="mt-0.5 block text-xs font-normal text-gray-500">{row.sublabel}</span>
+                      ) : null}
+                    </th>
+                    {row.values.map((value, i) => (
+                      <td
+                        key={`${row.label}-${products[i]?.id ?? i}`}
+                        className={cn(
+                          'compare-data-cell',
+                          row.rich && 'compare-data-cell-rich',
+                          row.highlight && 'compare-data-cell-highlight',
+                          row.variant === 'score' && row.bestIndex === i && 'compare-data-cell-best'
+                        )}
+                      >
+                        <CompareCellContent
+                          value={value}
+                          rich={row.rich}
+                          variant={row.variant}
+                        />
+                      </td>
+                    ))}
+                  </tr>
+                )
+              )}
+
+              <tr className="compare-section-row">
+                <th colSpan={colSpan} scope="colgroup">
+                  Next steps
+                </th>
+              </tr>
+              <tr className="compare-data-row">
+                <th className="compare-row-label compare-row-label-expanded" scope="row">
+                  <span className="block font-semibold text-navy">Official site</span>
+                </th>
+                {products.map((product) => (
+                  <td key={`visit-${product.id}`} className="compare-data-cell compare-data-cell-rich">
+                    <a
+                      href={product.vendorUrl}
+                      rel="sponsored noopener noreferrer"
+                      target="_blank"
+                      className="compare-table-link"
+                    >
+                      Visit {product.name.split(' ')[0]} →
+                    </a>
+                  </td>
+                ))}
+              </tr>
+              <tr className="compare-data-row compare-data-row-alt">
+                <th className="compare-row-label compare-row-label-expanded" scope="row">
+                  <span className="block font-semibold text-navy">Full review</span>
+                </th>
+                {products.map((product) => (
+                  <td key={`review-${product.id}`} className="compare-data-cell compare-data-cell-rich">
+                    <Link href={`/reviews/${product.reviewSlug}`} className="compare-table-link-secondary">
+                      Read review
+                    </Link>
+                  </td>
+                ))}
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p className="border-t border-gray-100 bg-gray-50 px-5 py-3 text-xs leading-relaxed text-gray-500">
+          Pricing and plan details are taken from each vendor&apos;s public pages and our category comparison
+          tables{lastReviewed ? ` (last reviewed ${lastReviewed})` : ''}. Rates change — always confirm on the
+          official site before signing up.
+        </p>
+      </section>
     </div>
   )
 }

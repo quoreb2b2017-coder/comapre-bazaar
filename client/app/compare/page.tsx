@@ -22,6 +22,7 @@ function toComparePayload(page: NonNullable<ReturnType<typeof getComparisonPageB
     lastReviewed: page.lastReviewed,
     breadcrumbs: page.breadcrumbs,
     products: page.products,
+    officialTable: page.table,
   }
 }
 
