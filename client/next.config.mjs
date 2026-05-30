@@ -89,6 +89,8 @@ const nextConfig = {
         source: '/api/v1/blog-admin/:path*',
         destination: `${backend.replace(/\/$/, '')}/api/v1/blog-admin/:path*`,
       },
+      // Stable favicon for crawlers that request /favicon.ico (Google, browsers)
+      { source: '/favicon.ico', destination: '/favicon.png' },
     ]
   },
 }

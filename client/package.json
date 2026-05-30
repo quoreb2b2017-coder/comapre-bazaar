@@ -4,6 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "copy-favicons": "node scripts/copy-favicons.mjs",
+    "prebuild": "node scripts/copy-favicons.mjs",
+    "predev": "node scripts/copy-favicons.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

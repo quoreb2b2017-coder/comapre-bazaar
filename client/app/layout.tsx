@@ -1,9 +1,15 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { SiteChrome } from '@/components/layout/SiteChrome'
-import { buildOrganizationSchema, buildWebSiteSchema } from '@/lib/seo'
+import { buildOrganizationSchema, buildWebSiteSchema, SITE_URL } from '@/lib/seo'
+
+/** Stable absolute URLs — Google avoids hashed /icon.png?xxx from app/icon file convention. */
+const FAVICON_PNG = `${SITE_URL}/favicon.png`
+const FAVICON_48 = `${SITE_URL}/favicon-48.png`
+const FAVICON_ICO = `${SITE_URL}/favicon.ico`
+
 export const metadata: Metadata = {
-  metadataBase: new URL('https://www.compare-bazaar.com'),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: 'Best Business Software Reviews 2026 | Compare Bazaar',
     template: '%s | Compare Bazaar',
@@ -14,14 +20,14 @@ export const metadata: Metadata = {
     siteName: 'Compare Bazaar',
     type: 'website',
   },
-  // Browser tab + Google SERP favicon (navbar logo stays components/icon.png in SiteNav)
   icons: {
     icon: [
-      { url: '/favicon.png', type: 'image/png', sizes: '32x32' },
-      { url: '/favicon.png', type: 'image/png', sizes: '192x192' },
+      { url: FAVICON_ICO, sizes: 'any' },
+      { url: FAVICON_48, type: 'image/png', sizes: '48x48' },
+      { url: FAVICON_PNG, type: 'image/png', sizes: '192x192' },
     ],
-    shortcut: '/favicon.png',
-    apple: '/favicon.png',
+    shortcut: FAVICON_ICO,
+    apple: FAVICON_PNG,
   },
   robots: { index: true, follow: true },
 }
@@ -34,6 +40,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Explicit stable favicon links for Google Search (no cache-busting query strings) */}
+        <link rel="icon" href={FAVICON_ICO} sizes="any" />
+        <link rel="icon" href={FAVICON_48} type="image/png" sizes="48x48" />
+        <link rel="icon" href={FAVICON_PNG} type="image/png" sizes="192x192" />
+        <link rel="apple-touch-icon" href={FAVICON_PNG} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(buildOrganizationSchema()) }}
