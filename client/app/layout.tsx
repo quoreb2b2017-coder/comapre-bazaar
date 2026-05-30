@@ -2,8 +2,6 @@ import type { Metadata } from 'next'
 import './globals.css'
 import { SiteChrome } from '@/components/layout/SiteChrome'
 import { buildOrganizationSchema, buildWebSiteSchema } from '@/lib/seo'
-import logoIcon from '@/components/icon.png'
-
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.compare-bazaar.com'),
   title: {
@@ -16,10 +14,14 @@ export const metadata: Metadata = {
     siteName: 'Compare Bazaar',
     type: 'website',
   },
+  // Browser tab + Google SERP favicon (navbar logo stays components/icon.png in SiteNav)
   icons: {
-    icon: [{ url: logoIcon.src }],
-    shortcut: [{ url: logoIcon.src }],
-    apple: [{ url: logoIcon.src }],
+    icon: [
+      { url: '/favicon.png', type: 'image/png', sizes: '32x32' },
+      { url: '/favicon.png', type: 'image/png', sizes: '192x192' },
+    ],
+    shortcut: '/favicon.png',
+    apple: '/favicon.png',
   },
   robots: { index: true, follow: true },
 }
