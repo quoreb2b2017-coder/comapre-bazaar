@@ -1,7 +1,14 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import type { ComparisonPageData } from '@/types'
-import { buildMetadata, buildBreadcrumbSchema, buildFaqSchema, buildSoftwareAppSchema } from '@/lib/seo'
+import {
+  SITE_URL,
+  buildMetadata,
+  buildBreadcrumbSchema,
+  buildFaqSchema,
+  buildJsonLdGraph,
+  buildSoftwareAppSchema,
+} from '@/lib/seo'
 import { ComparisonPageTemplate } from '@/components/comparison/ComparisonPageTemplate'
 
 interface ComparisonRouteProps {
@@ -20,35 +27,32 @@ export function buildComparisonMetadata(data: ComparisonPageData): Metadata {
 export function ComparisonRoute({ data }: ComparisonRouteProps) {
   if (!data) notFound()
 
-  const breadcrumbSchema = buildBreadcrumbSchema(data.breadcrumbs)
-  const faqSchema = buildFaqSchema(data.faqs)
-  const productSchemas = buildSoftwareAppSchema(
-    data.products.map((p) => ({
-      name: p.name,
-      description: p.tagline,
-      ratingValue: p.score,
-      reviewCount: p.reviewCount,
-      price: p.pricingAmount.replace(/[^0-9.]/g, '') || '0',
-    }))
+  const pageUrl = `${SITE_URL}${data.canonical}`
+  const structuredData: object[] = [buildBreadcrumbSchema(data.breadcrumbs)]
+
+  if (data.faqs.length > 0) {
+    const faqSchema = buildFaqSchema(data.faqs, pageUrl)
+    if (faqSchema) structuredData.push(faqSchema)
+  }
+
+  structuredData.push(
+    ...buildSoftwareAppSchema(
+      data.products.map((p) => ({
+        name: p.name,
+        description: p.tagline,
+        ratingValue: p.score,
+        reviewCount: p.reviewCount,
+        price: p.pricingAmount.replace(/[^0-9.]/g, '') || '0',
+      }))
+    )
   )
 
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildJsonLdGraph(structuredData)) }}
       />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-      />
-      {productSchemas.map((s, i) => (
-        <script
-          key={i}
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(s) }}
-        />
-      ))}
       <ComparisonPageTemplate data={data} />
     </>
   )

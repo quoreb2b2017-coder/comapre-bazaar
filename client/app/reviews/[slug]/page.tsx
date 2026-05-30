@@ -2770,16 +2770,17 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
           ])),
         }}
       />
-      {crmDetail && crmDetail.faqs?.length > 0 && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(buildFaqSchema(
-              crmDetail.faqs.map((f) => ({ question: f.q, answer: f.a }))
-            )),
-          }}
-        />
-      )}
+      {crmDetail && crmDetail.faqs?.length > 0 && (() => {
+        const reviewFaqSchema = buildFaqSchema(
+          crmDetail.faqs.map((f) => ({ question: f.q, answer: f.a }))
+        )
+        return reviewFaqSchema ? (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(reviewFaqSchema) }}
+          />
+        ) : null
+      })()}
       <Breadcrumb
         items={[
           { label: 'Home', href: '/' },

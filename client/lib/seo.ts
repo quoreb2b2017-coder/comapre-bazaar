@@ -186,20 +186,51 @@ export function buildBreadcrumbSchema(
   }
 }
 
-export function buildFaqSchema(
-  items: { question: string; answer: string }[]
-): object {
+function plainTextForSchema(value: string): string {
+  return String(value || '')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+/** Merge multiple schema objects into one graph (avoids duplicate-type issues in Search Console). */
+export function buildJsonLdGraph(schemas: object[]): object {
   return {
     '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: items.map((faq) => ({
+    '@graph': schemas.map((schema) => {
+      const { '@context': _removed, ...rest } = schema as Record<string, unknown>
+      return rest
+    }),
+  }
+}
+
+/** JSON-LD FAQPage for Google rich results. Returns null if no valid Q&A pairs. */
+export function buildFaqSchema(
+  items: { question: string; answer: string }[],
+  pageUrl?: string
+): object | null {
+  const mainEntity = items
+    .map((faq) => ({
+      question: plainTextForSchema(faq.question),
+      answer: plainTextForSchema(faq.answer),
+    }))
+    .filter((faq) => faq.question.length > 0 && faq.answer.length > 0)
+    .map((faq) => ({
       '@type': 'Question',
       name: faq.question,
       acceptedAnswer: {
         '@type': 'Answer',
         text: faq.answer,
       },
-    })),
+    }))
+
+  if (mainEntity.length === 0) return null
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    ...(pageUrl ? { '@id': `${pageUrl}#faq`, url: pageUrl } : {}),
+    mainEntity,
   }
 }
 

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { buildMetadata, buildItemListSchema, buildFaqSchema } from '@/lib/seo'
+import { buildMetadata, buildItemListSchema, buildFaqSchema, buildJsonLdGraph } from '@/lib/seo'
 import { HomeSearchBar } from '@/components/ui/HomeSearchBar'
 import { HomeFaqSection } from '@/components/ui/HomeFaqSection'
 import { loadUnifiedBlogIndex } from '@/lib/blogCms'
@@ -119,9 +119,12 @@ const itemListSchema = buildItemListSchema(
   CATEGORIES.map((c) => ({ name: c.title, href: c.href, description: c.desc }))
 )
 
-const faqSchema = buildFaqSchema(
-  FAQS.map((f) => ({ question: f.q, answer: f.a }))
-)
+const homeSchemas = [
+  itemListSchema,
+  buildFaqSchema(FAQS.map((f) => ({ question: f.q, answer: f.a })), 'https://www.compare-bazaar.com/'),
+].filter((s): s is object => s !== null)
+
+const homeStructuredData = buildJsonLdGraph(homeSchemas)
 
 export default async function HomePage() {
   const recentBlogPosts = (await loadUnifiedBlogIndex()).slice(0, 3)
@@ -130,11 +133,7 @@ export default async function HomePage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(homeStructuredData) }}
       />
 
       {/* Trust bar */}

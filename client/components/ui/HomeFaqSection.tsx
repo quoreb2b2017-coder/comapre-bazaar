@@ -30,7 +30,7 @@ export function HomeFaqSection({ faqs }: HomeFaqSectionProps) {
         </div>
       </div>
 
-      <div className="lg:col-span-8 space-y-2.5 sm:space-y-3.5" itemScope itemType="https://schema.org/FAQPage">
+      <div className="lg:col-span-8 space-y-2.5 sm:space-y-3.5">
         {faqs.map((faq, idx) => {
           const isOpen = openIndex === idx
           return (
@@ -39,9 +39,6 @@ export function HomeFaqSection({ faqs }: HomeFaqSectionProps) {
               className={`border bg-white rounded-xl sm:rounded-2xl overflow-hidden transition-all ${
                 isOpen ? 'border-[#F3C4A3] shadow-[0_10px_30px_rgba(0,0,0,0.06)]' : 'border-gray-200'
               }`}
-              itemScope
-              itemProp="mainEntity"
-              itemType="https://schema.org/Question"
             >
               <button
                 type="button"
@@ -49,7 +46,7 @@ export function HomeFaqSection({ faqs }: HomeFaqSectionProps) {
                 onClick={() => setOpenIndex(isOpen ? null : idx)}
                 aria-expanded={isOpen}
               >
-                <span itemProp="name" className="font-medium text-navy text-[15px] sm:text-[17px] leading-snug">
+                <span className="font-medium text-navy text-[15px] sm:text-[17px] leading-snug">
                   {faq.q}
                 </span>
                 <span
@@ -67,11 +64,8 @@ export function HomeFaqSection({ faqs }: HomeFaqSectionProps) {
                 className={`px-4 sm:px-6 text-sm sm:text-[15px] text-gray-600 leading-relaxed border-t border-gray-100 transition-all duration-200 ${
                   isOpen ? 'pb-4 sm:pb-5 max-h-[600px] opacity-100' : 'max-h-0 overflow-hidden opacity-0 border-t-0 pb-0'
                 }`}
-                itemScope
-                itemProp="acceptedAnswer"
-                itemType="https://schema.org/Answer"
               >
-                <p itemProp="text">{faq.a}</p>
+                <p>{faq.a}</p>
               </div>
             </article>
           )
