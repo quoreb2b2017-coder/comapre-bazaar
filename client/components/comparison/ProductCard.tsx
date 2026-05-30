@@ -54,11 +54,7 @@ export function ProductCard({
           : 'border rounded-2xl overflow-hidden transition-shadow hover:shadow-lg',
         product.isTopPick ? 'border-blue-300' : 'border-gray-200'
       )}
-      itemScope
-      itemType="https://schema.org/SoftwareApplication"
     >
-      <meta itemProp="applicationCategory" content="BusinessApplication" />
-
       {/* Header */}
       <div className={cn(
         'border-b border-gray-200 px-6 py-5 flex flex-wrap items-center gap-4',
@@ -80,7 +76,7 @@ export function ProductCard({
 
         {/* Title */}
         <div className="flex-1 min-w-[140px]">
-          <h3 className="text-[20px] font-semibold text-navy tracking-tight" itemProp="name">
+          <h3 className="text-[20px] font-semibold text-navy tracking-tight">
             {product.name}
           </h3>
           <p className="text-sm text-brand font-medium">{product.tagline}</p>
@@ -108,15 +104,7 @@ export function ProductCard({
         </Link>
 
         {/* Score */}
-        <div
-          className="text-center min-w-[72px]"
-          itemProp="aggregateRating"
-          itemScope
-          itemType="https://schema.org/AggregateRating"
-        >
-          <meta itemProp="ratingValue" content={product.score} />
-          <meta itemProp="reviewCount" content={String(product.reviewCount)} />
-          <meta itemProp="bestRating" content="5" />
+        <div className="text-center min-w-[72px]">
           <div className="w-14 h-14 rounded-full bg-brand text-white text-xl font-bold flex items-center justify-center mx-auto shadow-[0_14px_28px_-16px_rgba(242,127,37,0.8)]">
             {product.score}
           </div>

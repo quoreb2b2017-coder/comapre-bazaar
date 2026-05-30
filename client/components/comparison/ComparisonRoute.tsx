@@ -1,14 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import type { ComparisonPageData } from '@/types'
-import {
-  SITE_URL,
-  buildMetadata,
-  buildBreadcrumbSchema,
-  buildFaqSchema,
-  buildJsonLdGraph,
-  buildSoftwareAppSchema,
-} from '@/lib/seo'
+import { SITE_URL, buildMetadata, buildBreadcrumbSchema, buildFaqSchema } from '@/lib/seo'
 import { ComparisonPageTemplate } from '@/components/comparison/ComparisonPageTemplate'
 
 interface ComparisonRouteProps {
@@ -28,31 +21,21 @@ export function ComparisonRoute({ data }: ComparisonRouteProps) {
   if (!data) notFound()
 
   const pageUrl = `${SITE_URL}${data.canonical}`
-  const structuredData: object[] = [buildBreadcrumbSchema(data.breadcrumbs)]
-
-  if (data.faqs.length > 0) {
-    const faqSchema = buildFaqSchema(data.faqs, pageUrl)
-    if (faqSchema) structuredData.push(faqSchema)
-  }
-
-  structuredData.push(
-    ...buildSoftwareAppSchema(
-      data.products.map((p) => ({
-        name: p.name,
-        description: p.tagline,
-        ratingValue: p.score,
-        reviewCount: p.reviewCount,
-        price: p.pricingAmount.replace(/[^0-9.]/g, '') || '0',
-      }))
-    )
-  )
+  const breadcrumbSchema = buildBreadcrumbSchema(data.breadcrumbs)
+  const faqSchema = data.faqs.length > 0 ? buildFaqSchema(data.faqs, pageUrl) : null
 
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildJsonLdGraph(structuredData)) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
+      {faqSchema ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
+      ) : null}
       <ComparisonPageTemplate data={data} />
     </>
   )
