@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { buildMetadata, buildItemListSchema, buildFaqSchema, buildJsonLdGraph } from '@/lib/seo'
+import { buildMetadata, buildItemListSchema, buildFaqSchema, SITE_URL } from '@/lib/seo'
 import { HomeSearchBar } from '@/components/ui/HomeSearchBar'
 import { HomeFaqSection } from '@/components/ui/HomeFaqSection'
 import { loadUnifiedBlogIndex } from '@/lib/blogCms'
@@ -119,12 +119,10 @@ const itemListSchema = buildItemListSchema(
   CATEGORIES.map((c) => ({ name: c.title, href: c.href, description: c.desc }))
 )
 
-const homeSchemas = [
-  itemListSchema,
-  buildFaqSchema(FAQS.map((f) => ({ question: f.q, answer: f.a })), 'https://www.compare-bazaar.com/'),
-].filter((s): s is object => s !== null)
-
-const homeStructuredData = buildJsonLdGraph(homeSchemas)
+const homeFaqSchema = buildFaqSchema(
+  FAQS.map((f) => ({ question: f.q, answer: f.a })),
+  SITE_URL
+)
 
 export default async function HomePage() {
   const recentBlogPosts = (await loadUnifiedBlogIndex()).slice(0, 3)
@@ -133,8 +131,14 @@ export default async function HomePage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(homeStructuredData) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
       />
+      {homeFaqSchema ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(homeFaqSchema) }}
+        />
+      ) : null}
 
       {/* Trust bar */}
       <div className="bg-gradient-to-r from-[#071a57] via-[#0a246d] to-[#071a57] text-white/85 text-center py-2.5 px-4 shadow-[inset_0_-1px_0_rgba(255,255,255,0.08)]">
