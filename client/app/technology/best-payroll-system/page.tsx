@@ -5,10 +5,7 @@ import { PayrollPopup } from '@/components/EmailMarketingPopup'
 import type { Metadata } from 'next'
 
 const data = getComparisonPageBySlug('technology-payroll')
-export const metadata: Metadata = {
-  ...buildComparisonMetadata(data!),
-  robots: { index: false, follow: true },
-}
+export const metadata: Metadata = buildComparisonMetadata(data!)
 export default function Page() {
   return (
     <>
