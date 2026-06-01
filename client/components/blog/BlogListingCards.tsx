@@ -2,9 +2,16 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight, Clock } from 'lucide-react'
 import type { UnifiedBlogCard } from '@/lib/blogCms'
+import { BlogTopicLink } from '@/components/blog/BlogTopicLink'
 
 /** Lead story — editorial spread: flat plane, typographic hierarchy, accent rule (no card chrome). */
-export function BlogFeaturedCard({ post }: { post: UnifiedBlogCard }) {
+export function BlogFeaturedCard({
+  post,
+  sectionLabel = 'Featured',
+}: {
+  post: UnifiedBlogCard
+  sectionLabel?: string
+}) {
   const dateLabel = new Date(post.publishedAt).toLocaleDateString('en-US', {
     month: 'long',
     day: 'numeric',
@@ -14,7 +21,7 @@ export function BlogFeaturedCard({ post }: { post: UnifiedBlogCard }) {
   return (
     <article className="group mb-16 border-b border-gray-200 pb-16 sm:mb-[4.5rem] sm:pb-[4.5rem]">
       <div className="mb-8 flex flex-wrap items-baseline justify-between gap-4">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-gray-400">Featured</p>
+        <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-gray-400">{sectionLabel}</p>
         <p className="text-[13px] tabular-nums text-gray-500">
           <time dateTime={post.publishedAt}>{dateLabel}</time>
           <span className="mx-2 text-gray-300">·</span>
@@ -50,7 +57,7 @@ export function BlogFeaturedCard({ post }: { post: UnifiedBlogCard }) {
           style={{ borderLeftColor: post.stripFrom }}
         >
           <div className="mb-5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11px] font-medium uppercase tracking-[0.14em] text-gray-500">
-            <span className="text-navy">{post.category}</span>
+            <BlogTopicLink category={post.category} className="text-navy" />
             <span className="font-normal text-gray-300">·</span>
             <span className="inline-flex items-center gap-1.5 normal-case tracking-normal">
               <Clock className="h-3.5 w-3.5 opacity-65" aria-hidden />
@@ -120,7 +127,7 @@ export function BlogGridCard({ post, index }: { post: UnifiedBlogCard; index?: n
 
         <div className="flex min-w-0 flex-1 flex-col border-l-2 border-gray-100 pl-5 sm:pl-6">
           <p className="mb-2.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-400">
-            {post.category}
+            <BlogTopicLink category={post.category} />
             <span className="mx-2 font-normal tracking-normal text-gray-300">/</span>
             <time className="font-normal tracking-normal text-gray-500" dateTime={post.publishedAt}>
               {dateLabel}

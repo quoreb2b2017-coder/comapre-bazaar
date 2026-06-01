@@ -114,6 +114,39 @@ function formatPublishedDay(input: string | Date | undefined): string {
   return d.toISOString().slice(0, 10)
 }
 
+/** URL slug for blog topic filters (/blog?topic=crm-software). */
+export function topicToSlug(topic: string): string {
+  return topic
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+/** Resolve ?topic= slug back to a category label present on posts. */
+export function resolveTopicFromSlug(slug: string, posts: UnifiedBlogCard[]): string | null {
+  const key = topicToSlug(slug)
+  if (!key) return null
+  const labels = [...new Set(posts.map((p) => p.category))]
+  return labels.find((label) => topicToSlug(label) === key) ?? null
+}
+
+export type BlogTopicEntry = { label: string; slug: string; count: number }
+
+export function getBlogTopics(posts: UnifiedBlogCard[]): BlogTopicEntry[] {
+  const map = new Map<string, BlogTopicEntry>()
+  for (const post of posts) {
+    const slug = topicToSlug(post.category)
+    const existing = map.get(slug)
+    if (existing) {
+      existing.count += 1
+    } else {
+      map.set(slug, { label: post.category, slug, count: 1 })
+    }
+  }
+  return [...map.values()].sort((a, b) => a.label.localeCompare(b.label))
+}
+
 export type UnifiedBlogCard = {
   slug: string
   title: string
