@@ -15,6 +15,9 @@ const nextConfig = {
   },
   async redirects() {
     return [
+      // Static files on Vercel are case-sensitive; browsers/users often type .ICO
+      { source: '/favicon.ICO', destination: '/favicon.ico', permanent: true },
+      { source: '/Favicon.ico', destination: '/favicon.ico', permanent: true },
       {
         source: '/technology/best-employee-management-software',
         destination: '/human-resources/best-employee-management-software',
