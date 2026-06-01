@@ -3,11 +3,6 @@ import './globals.css'
 import { SiteChrome } from '@/components/layout/SiteChrome'
 import { buildOrganizationSchema, buildWebSiteSchema, SITE_URL } from '@/lib/seo'
 
-/** Stable absolute URLs — Google avoids hashed /icon.png?xxx from app/icon file convention. */
-const FAVICON_PNG = `${SITE_URL}/favicon.png`
-const FAVICON_48 = `${SITE_URL}/favicon-48.png`
-const FAVICON_ICO = `${SITE_URL}/favicon.ico`
-
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
@@ -20,14 +15,16 @@ export const metadata: Metadata = {
     siteName: 'Compare Bazaar',
     type: 'website',
   },
+  // Google Search favicon: square PNG multiples of 48px + real /favicon.ico (not a PNG rewrite).
   icons: {
     icon: [
-      { url: FAVICON_ICO, sizes: 'any' },
-      { url: FAVICON_48, type: 'image/png', sizes: '48x48' },
-      { url: FAVICON_PNG, type: 'image/png', sizes: '192x192' },
+      { url: '/favicon-48.png', type: 'image/png', sizes: '48x48' },
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon-96.png', type: 'image/png', sizes: '96x96' },
+      { url: '/favicon.png', type: 'image/png', sizes: '192x192' },
     ],
-    shortcut: FAVICON_ICO,
-    apple: FAVICON_PNG,
+    shortcut: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
   },
   robots: { index: true, follow: true },
 }
@@ -40,11 +37,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Explicit stable favicon links for Google Search (no cache-busting query strings) */}
-        <link rel="icon" href={FAVICON_ICO} sizes="any" />
-        <link rel="icon" href={FAVICON_48} type="image/png" sizes="48x48" />
-        <link rel="icon" href={FAVICON_PNG} type="image/png" sizes="192x192" />
-        <link rel="apple-touch-icon" href={FAVICON_PNG} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(buildOrganizationSchema()) }}

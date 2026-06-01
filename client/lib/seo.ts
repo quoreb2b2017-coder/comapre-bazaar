@@ -287,9 +287,9 @@ export function buildOrganizationSchema(): object {
     url: SITE_URL,
     logo: {
       '@type': 'ImageObject',
-      url: `${SITE_URL}/favicon.png`,
-      width: 192,
-      height: 192,
+      url: `${SITE_URL}/favicon-96.png`,
+      width: 96,
+      height: 96,
     },
     description:
       'Compare Bazaar provides independent business software comparisons, pricing research, and expert buying guides for B2B decision-makers.',
