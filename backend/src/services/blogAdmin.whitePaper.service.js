@@ -31,6 +31,8 @@ function parseMetadataInput(raw) {
 }
 
 const HIGHLIGHT_QUESTIONS_MAX = 20
+const INSIDE_SECTIONS_MIN = 6
+const INSIDE_SECTIONS_MAX = 10
 
 function parseHighlightQuestions(raw) {
   if (raw == null || raw === '') return []
@@ -92,37 +94,138 @@ function titleFromFilename(fileName = '') {
     .trim()
 }
 
+const COMPARE_BAZAAR_DOMAIN = 'compare-bazaar.com'
+const DOMAIN_RE = /(?:https?:\/\/)?(?:www\.)?compare[-_\s]?bazaar(?:\.com)?/gi
+const COPYRIGHT_RE = /©\s*\d{4}[^.]*?(?:compare[-_\s]?bazaar[^.]*)?\.?/gi
+
+function stripCopyrightNotice(text) {
+  return String(text || '')
+    .replace(COPYRIGHT_RE, ' ')
+    .replace(/\s*©\s*\d{4}.*$/i, ' ')
+    .replace(/\ball rights reserved\b/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+function normalizeCompareBazaarDomain(text) {
+  return String(text || '').replace(DOMAIN_RE, COMPARE_BAZAAR_DOMAIN)
+}
+
+function cleanWhitePaperTitle(raw = '') {
+  let s = stripEmDashes(stripCopyrightNotice(normalizeCompareBazaarDomain(raw)))
+  s = s.replace(/\.\s*compare-bazaar\.?\s*$/i, '')
+  s = s.replace(/\s+\|\s*compare-bazaar\.com\s*$/i, '')
+  s = s.replace(/\s+\.\s*$/,'')
+  s = s.replace(/\s{2,}/g, ' ').trim()
+  return s.slice(0, 180)
+}
+
+function isCompareBazaarBranded(text = '') {
+  DOMAIN_RE.lastIndex = 0
+  return DOMAIN_RE.test(String(text || ''))
+}
+
+function stripPublisherFromTitle(text = '') {
+  return String(text || '')
+    .replace(new RegExp(`^${COMPARE_BAZAAR_DOMAIN}\\s*[-–—|:]\\s*`, 'i'), '')
+    .replace(new RegExp(`^${COMPARE_BAZAAR_DOMAIN}\\s+`, 'i'), '')
+    .replace(new RegExp(`\\s*[-–—|:]\\s*${COMPARE_BAZAAR_DOMAIN}\\s*$`, 'i'), '')
+    .replace(new RegExp(COMPARE_BAZAAR_DOMAIN, 'gi'), '')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+function scoreReportTitleCandidate(text) {
+  let score = 0
+  if (/\b20\d{2}\b/.test(text)) score += 4
+  if (/\b(report|benchmark|guide|whitepaper|analysis|pricing|telematics|fleet|software|payroll|crm)\b/i.test(text)) {
+    score += 3
+  }
+  if (text.length >= 25 && text.length <= 100) score += 2
+  if (/^compare/i.test(text)) score -= 5
+  if (/^©/.test(text)) score -= 10
+  return score
+}
+
+function extractReportTitleFromPdfChunk(pdfText = '', fileName = '') {
+  const chunk = String(pdfText || '').slice(0, 2500)
+  const fallback = titleFromFilename(fileName) || 'Untitled whitepaper'
+  if (!chunk.trim()) return fallback
+
+  const candidates = []
+  const pushCandidate = (value) => {
+    const c = stripPublisherFromTitle(stripCopyrightNotice(normalizeCompareBazaarDomain(String(value || ''))))
+    if (c.length >= 12 && c.length <= 140) candidates.push(c)
+  }
+
+  const lines = chunk
+    .split(/\n+/)
+    .map((l) => stripCopyrightNotice(normalizeCompareBazaarDomain(normalizeSentence(l, 200))))
+    .filter((l) => l.length >= 8)
+    .filter((l) => !/^©/.test(l))
+
+  for (const line of lines) pushCandidate(line)
+
+  const beforeCopy = chunk.split(/©\s*\d{4}/i)[0] || chunk
+  pushCandidate(beforeCopy)
+
+  const domainLead = beforeCopy.match(/compare-bazaar\.com\s+(.+)/i)
+  if (domainLead) pushCandidate(domainLead[1])
+
+  if (!candidates.length) return fallback
+
+  candidates.sort((a, b) => scoreReportTitleCandidate(b) - scoreReportTitleCandidate(a))
+  return candidates[0] || fallback
+}
+
+function formatWhitePaperDisplayTitle(reportTitle, pdfText = '') {
+  const cleaned = cleanWhitePaperTitle(reportTitle)
+  if (!cleaned) return ''
+
+  const branded =
+    isCompareBazaarBranded(String(pdfText || '').slice(0, 2500)) || isCompareBazaarBranded(cleaned)
+
+  if (!branded) return cleaned.slice(0, 180)
+
+  const core = stripPublisherFromTitle(cleaned) || cleaned
+  return `${COMPARE_BAZAAR_DOMAIN} — ${core}`.slice(0, 180)
+}
+
+function resolveWhitePaperTitle({ rawTitle = '', pdfText = '', fileName = '' } = {}) {
+  const fromPdf = extractReportTitleFromPdfChunk(pdfText, fileName)
+  const seed = String(rawTitle || '').trim()
+  const rawMessy =
+    /©\s*\d{4}/i.test(seed) ||
+    (isCompareBazaarBranded(seed) && stripPublisherFromTitle(seed).length >= 12 && seed.length > 50)
+
+  const reportTitle = rawMessy
+    ? fromPdf
+    : stripPublisherFromTitle(stripCopyrightNotice(seed)) || fromPdf
+
+  return formatWhitePaperDisplayTitle(reportTitle, pdfText)
+}
+
 function extractTitleAndDescriptionFromPdf({ pdfText = '', fileName = '' }) {
-  const text = normalizeSentence(pdfText, 24000)
+  const text = String(pdfText || '').slice(0, 4000)
   const fallbackTitle = titleFromFilename(fileName) || 'Untitled whitepaper'
 
-  if (!text) {
+  if (!text.trim()) {
     return {
       title: fallbackTitle.slice(0, 180),
       description: 'Download this whitepaper to explore key insights, strategies, and implementation guidance.',
     }
   }
 
-  const sentences = text
-    .split(/(?<=[.!?])\s+/)
-    .map((s) => normalizeSentence(s, 260))
-    .filter(Boolean)
+  const title = resolveWhitePaperTitle({ rawTitle: '', pdfText: text, fileName })
 
-  const first = sentences[0] || text.slice(0, 120)
-  const second = sentences[1] || ''
+  const bodyText = stripCopyrightNotice(normalizeCompareBazaarDomain(text))
+    .split(/\n+/)
+    .map((l) => normalizeSentence(l, 260))
+    .filter((l) => l.length > 40)
+    .filter((l) => !/^compare-bazaar\.com$/i.test(l))
+    .filter((l) => !/^©/.test(l))
 
-  let title = first
-    .replace(/^abstract[:\-\s]*/i, '')
-    .replace(/^title[:\-\s]*/i, '')
-    .trim()
-  if (title.length < 8) title = fallbackTitle
-  if (title.length > 140) title = `${title.slice(0, 137).trim()}...`
-
-  // Use abstract/intro only — keep description short for the public page
-  const introSource =
-    second && second.length > 40 && !/^abstract\b/i.test(first)
-      ? `${first} ${second}`
-      : first
+  const introSource = bodyText[0] || bodyText[1] || stripPublisherFromTitle(bodyText.join(' '))
   const description = shortenDescription(
     introSource,
     SHORT_DESCRIPTION_MAX
@@ -194,7 +297,7 @@ function parseSeoJson(raw, admin) {
       ? parsed.insidePoints
           .map((p) => String(p || '').trim())
           .filter(Boolean)
-          .slice(0, 6)
+          .slice(0, INSIDE_SECTIONS_MAX)
       : [],
     testimonialsHeading: String(parsed.testimonialsHeading || '').trim().slice(0, 80),
     testimonials: normalizeTestimonials(parsed.testimonials),
@@ -240,13 +343,13 @@ function normalizeInsideSections(sections, legacyPoints) {
         return { title: title || summary.slice(0, 80), summary, pages }
       })
       .filter(Boolean)
-      .slice(0, 6)
+      .slice(0, INSIDE_SECTIONS_MAX)
   }
   if (Array.isArray(legacyPoints) && legacyPoints.length) {
     return legacyPoints
       .map((p) => String(p || '').trim())
       .filter(Boolean)
-      .slice(0, 6)
+      .slice(0, INSIDE_SECTIONS_MAX)
       .map((text) => ({ title: text.slice(0, 80), summary: text, pages: '' }))
   }
   return []
@@ -278,6 +381,12 @@ Admin title: ${title}
 Admin description: ${description}
 Admin metadata: ${JSON.stringify(metadata)}
 
+Rules for seoTitle, metaTitle, and ogTitle:
+- Use the exact report title from the PDF cover (year + topic when present), not copyright/footer text
+- For Compare Bazaar PDFs, format as: compare-bazaar.com — {Report Title}
+- Always write the domain lowercase as compare-bazaar.com (never Compare-bazaar.com)
+- NEVER include copyright lines (© 2026...), duplicate publisher names, or "all rights reserved"
+
 PDF content excerpt:
 ${pdfText ? pdfText.slice(0, 24000) : '(No extractable text — use admin title and description only.)'}
 
@@ -302,7 +411,10 @@ Return JSON with exactly these keys:
 }
 
 Rules for insideSections:
-- Return exactly 5 or 6 items (prefer 6 when PDF has enough content)
+- Return between ${INSIDE_SECTIONS_MIN} and ${INSIDE_SECTIONS_MAX} items — choose the count from the PDF itself (major chapters, report parts, or distinct topic blocks), not a fixed number every time
+- Short or focused PDFs: usually ${INSIDE_SECTIONS_MIN} sections; longer multi-chapter reports: ${INSIDE_SECTIONS_MIN + 1} to ${INSIDE_SECTIONS_MAX} when the content supports it
+- Never pad with generic filler to hit a count; never exceed ${INSIDE_SECTIONS_MAX}
+- If the PDF has substantive content, never return fewer than ${INSIDE_SECTIONS_MIN} sections
 - Base every item only on PDF content
 - Titles should be scannable chapter-style headings
 - No duplicate sections
@@ -339,6 +451,15 @@ Rules for testimonials:
   seo.structuredSeoContent = stripEmDashes(shortenDescription(seo.structuredSeoContent, SHORT_STRUCTURED_SEO_MAX))
   seo.insideOverview = stripEmDashes(shortenDescription(seo.insideOverview || '', 600))
   seo.testimonialsHeading = stripEmDashes(seo.testimonialsHeading || '')
+
+  const resolvedTitle = resolveWhitePaperTitle({
+    rawTitle: seo.seoTitle || title,
+    pdfText,
+  })
+  seo.seoTitle = resolvedTitle
+  seo.metaTitle = cleanWhitePaperTitle(seo.metaTitle || resolvedTitle).slice(0, 70)
+  seo.ogTitle = cleanWhitePaperTitle(seo.ogTitle || resolvedTitle).slice(0, 70)
+
   if (!seo.insideSections?.length) {
     seo.insideSections = []
   }
@@ -438,4 +559,8 @@ module.exports = {
   uploadPdfToCloudinary,
   uploadThumbnailToCloudinary,
   generateWhitePaperSeo,
+  INSIDE_SECTIONS_MIN,
+  INSIDE_SECTIONS_MAX,
+  resolveWhitePaperTitle,
+  cleanWhitePaperTitle,
 }

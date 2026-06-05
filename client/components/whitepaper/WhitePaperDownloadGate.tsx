@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Loader2, ArrowLeft, CheckCircle2, Download } from 'lucide-react'
 import { cleanDisplayText } from '@/lib/cleanDisplayText'
+import { whitePaperDisplayTitle } from '@/lib/whitePaperDisplay'
 import { whitePaperBackendBase } from '@/lib/whitePaperCms'
 import { isWorkEmail, WORK_EMAIL_ERROR } from '@/lib/workEmail'
 import { WhitePaperHighlightFormFields } from '@/components/whitepaper/WhitePaperHighlightFormFields'
@@ -73,7 +74,7 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
   })
   const [customAnswers, setCustomAnswers] = useState<string[]>([])
 
-  const headline = paper.seoTitle || paper.title
+  const headline = whitePaperDisplayTitle(paper.title, paper.seoTitle)
   const offeredBy = paper.metadata?.offeredBy || 'Compare Bazaar'
   const base = whitePaperBackendBase()
   const detailHref = `/resources/whitepaper/${paper.slug}`

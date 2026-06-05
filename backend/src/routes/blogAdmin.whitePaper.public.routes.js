@@ -4,6 +4,7 @@ const WhitePaper = require('../models/whitePaper.model')
 const WhitePaperLead = require('../models/whitePaperLead.model')
 const { cloudinaryForceDownloadUrl, safePdfFileName } = require('../utils/pdf-download')
 const { isWorkEmail } = require('../utils/work-email')
+const { INSIDE_SECTIONS_MAX, resolveWhitePaperTitle, cleanWhitePaperTitle } = require('../services/blogAdmin.whitePaper.service')
 
 const router = express.Router()
 
@@ -26,13 +27,18 @@ function normalizeCustomAnswers(body, paper) {
 }
 
 function publicFields(p, { includePdf = false } = {}) {
+  const pdfText = p.pdfTextExcerpt || ''
+  const displayTitle = resolveWhitePaperTitle({
+    rawTitle: p.seoTitle || p.title,
+    pdfText,
+  })
   const base = {
     slug: p.slug,
-    title: p.title,
-    seoTitle: p.seoTitle || p.title,
+    title: resolveWhitePaperTitle({ rawTitle: p.title, pdfText }) || displayTitle,
+    seoTitle: displayTitle,
     description: p.description,
     structuredSeoContent: p.structuredSeoContent,
-    metaTitle: p.metaTitle,
+    metaTitle: cleanWhitePaperTitle(p.metaTitle || displayTitle).slice(0, 70),
     metaDescription: p.metaDescription,
     metaKeywords: p.metaKeywords || [],
     ogTitle: p.ogTitle,
@@ -43,14 +49,14 @@ function publicFields(p, { includePdf = false } = {}) {
     insideSections: Array.isArray(p.insideSections)
       ? p.insideSections
           .filter((s) => s && (s.title || s.summary))
-          .slice(0, 6)
+          .slice(0, INSIDE_SECTIONS_MAX)
           .map((s) => ({
             title: s.title || '',
             summary: s.summary || '',
             pages: s.pages || '',
           }))
       : [],
-    insidePoints: Array.isArray(p.insidePoints) ? p.insidePoints.filter(Boolean).slice(0, 6) : [],
+    insidePoints: Array.isArray(p.insidePoints) ? p.insidePoints.filter(Boolean).slice(0, INSIDE_SECTIONS_MAX) : [],
     highlightQuestions: Array.isArray(p.highlightQuestions) ? p.highlightQuestions.filter(Boolean) : [],
     testimonialsHeading: p.testimonialsHeading || 'Trusted by operations teams',
     testimonials: Array.isArray(p.testimonials)

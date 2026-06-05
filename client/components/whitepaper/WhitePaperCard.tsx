@@ -2,6 +2,8 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { whitePaperDisplayTitle } from '@/lib/whitePaperDisplay'
+
 import type { WhitePaperPublic } from '@/lib/whitePaperCms'
 
 type WhitePaperCardProps = {
@@ -11,7 +13,7 @@ type WhitePaperCardProps = {
 /** Flat catalog tile — hover overlay with Download + View details */
 export function WhitePaperCard({ paper }: WhitePaperCardProps) {
   const detailHref = `/resources/whitepaper/${paper.slug}`
-  const title = paper.seoTitle || paper.title
+  const title = whitePaperDisplayTitle(paper.title, paper.seoTitle)
   const category = paper.metadata?.category
 
   return (

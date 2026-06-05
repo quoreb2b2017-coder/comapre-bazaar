@@ -1,5 +1,7 @@
 import { cleanDisplayText } from '@/lib/cleanDisplayText'
 
+const INSIDE_SECTIONS_MAX = 10
+
 export type WhitePaperInsideSectionItem = {
   title: string
   summary: string
@@ -20,7 +22,7 @@ function resolveSections(
   if (Array.isArray(sections) && sections.length) {
     return sections
       .filter((s) => s && (s.title || s.summary))
-      .slice(0, 6)
+      .slice(0, INSIDE_SECTIONS_MAX)
       .map((s) => ({
         title: cleanDisplayText(String(s.title || '').trim()),
         summary: cleanDisplayText(String(s.summary || '').trim()),
@@ -29,7 +31,7 @@ function resolveSections(
   return (points || [])
     .map((p) => String(p || '').trim())
     .filter(Boolean)
-    .slice(0, 6)
+    .slice(0, INSIDE_SECTIONS_MAX)
     .map((text) => ({ title: '', summary: cleanDisplayText(text) }))
 }
 

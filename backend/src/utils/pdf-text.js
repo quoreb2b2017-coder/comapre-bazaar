@@ -8,8 +8,10 @@ async function extractPdfText(buffer, maxChars = 28000) {
 
   try {
     const data = await pdfParse(buffer, { max: 0 })
-    const text = String(data?.text || '')
-      .replace(/\s+/g, ' ')
+const text = String(data?.text || '')
+      .replace(/\r\n/g, '\n')
+      .replace(/[^\S\n]+/g, ' ')
+      .replace(/\n{3,}/g, '\n\n')
       .trim()
     if (!text) return ''
     if (text.length <= maxChars) return text

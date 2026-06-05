@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
 import { cleanDisplayText } from '@/lib/cleanDisplayText'
+import { whitePaperDisplayTitle } from '@/lib/whitePaperDisplay'
 import { buildMetadata, SITE_URL } from '@/lib/seo'
 import { fetchPublishedWhitePapers, fetchWhitePaperBySlug } from '@/lib/whitePaperCms'
 import { WhitePaperInsideSection } from '@/components/whitepaper/WhitePaperInsideSection'
@@ -22,7 +23,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const paper = await fetchWhitePaperBySlug(params.slug)
   if (!paper) return { title: 'Whitepaper not found' }
 
-  const googleTitle = paper.metaTitle || paper.seoTitle || paper.title
+  const googleTitle = whitePaperDisplayTitle(paper.title, paper.metaTitle || paper.seoTitle || paper.title)
   const googleDesc = paper.metaDescription || paper.description
   const ogTitle = paper.ogTitle || googleTitle
   const ogDesc = paper.ogDescription || googleDesc
@@ -54,7 +55,7 @@ export default async function WhitepaperDetailPage({ params }: PageProps) {
   const paper = await fetchWhitePaperBySlug(params.slug)
   if (!paper) notFound()
 
-  const headline = paper.seoTitle || paper.title
+  const headline = whitePaperDisplayTitle(paper.title, paper.seoTitle)
   const offeredBy = paper.metadata?.offeredBy || 'Compare Bazaar'
   const author = paper.metadata?.author || offeredBy
   const pageUrl = `${SITE_URL}/resources/whitepaper/${paper.slug}`

@@ -15,6 +15,7 @@ const {
   uploadPdfToCloudinary,
   uploadThumbnailToCloudinary,
   generateWhitePaperSeo,
+  resolveWhitePaperTitle,
 } = require('../services/blogAdmin.whitePaper.service')
 const { deleteCloudinaryAsset } = require('../utils/cloudinary-upload')
 const { formatLeadForAdmin } = require('../utils/whitePaperLeadFormat')
@@ -274,6 +275,11 @@ router.post('/', (req, res, next) => {
       if (!title) title = suggested.title
       if (!description) description = suggested.description
     }
+    title = resolveWhitePaperTitle({
+      rawTitle: title,
+      pdfText,
+      fileName: pdfFile.originalname,
+    })
     description = shortenDescription(description)
 
     const metaRaw = parseMetadataInput(req.body?.metadata)
@@ -311,7 +317,8 @@ router.post('/', (req, res, next) => {
     }
 
     draft.slug = seo.slug || undefined
-    draft.seoTitle = seo.seoTitle || title
+    draft.title = resolveWhitePaperTitle({ rawTitle: title, pdfText, fileName: pdfFile.originalname })
+    draft.seoTitle = seo.seoTitle || draft.title
     draft.metaTitle = seo.metaTitle || title.slice(0, 70)
     draft.metaDescription = seo.metaDescription || description.slice(0, 160)
     draft.metaKeywords = seo.metaKeywords
@@ -396,7 +403,11 @@ router.put(
         extra: String(metaRaw.extra || paper.metadata?.extra || '').trim(),
       }
 
-      paper.title = String(req.body?.title || paper.title || '').trim()
+      paper.title = resolveWhitePaperTitle({
+        rawTitle: String(req.body?.title || paper.title || '').trim(),
+        pdfText: pdfText || '',
+        fileName: pdfFile?.originalname || '',
+      })
       paper.description = shortenDescription(String(req.body?.description || paper.description || '').trim())
       paper.metadata = metadata
       paper.pdfTextExcerpt = pdfText ? String(pdfText).slice(0, 5000) : paper.pdfTextExcerpt
