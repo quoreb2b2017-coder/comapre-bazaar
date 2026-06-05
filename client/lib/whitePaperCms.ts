@@ -1,6 +1,7 @@
+import { cmsBackendBase } from '@/lib/cmsBackendBase'
+
 export function whitePaperBackendBase(): string {
-  const raw = process.env.BLOG_CMS_BACKEND_URL || process.env.BACKEND_URL || 'http://127.0.0.1:5000'
-  return raw.replace(/\/$/, '')
+  return cmsBackendBase()
 }
 
 export type WhitePaperPublic = {

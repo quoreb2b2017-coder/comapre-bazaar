@@ -1,9 +1,9 @@
 import { pickTopicCoverUrl, resolveBlogCoverUrl } from '@/lib/blogTopicCovers'
+import { cmsBackendBase } from '@/lib/cmsBackendBase'
 
-/** Server-side base URL for Express (not the browser). Production must set this to your API host. */
+/** Server-side base URL for Express. Browser callers should use cmsBackendBase() (same-origin proxy). */
 export function blogCmsBackendBase(): string {
-  const raw = process.env.BLOG_CMS_BACKEND_URL || process.env.BACKEND_URL || 'http://127.0.0.1:5000'
-  return raw.replace(/\/$/, '')
+  return cmsBackendBase()
 }
 
 const REVALIDATE_SECONDS = 120
