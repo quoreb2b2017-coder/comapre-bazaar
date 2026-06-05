@@ -15,6 +15,9 @@ import {
   Analytics,
   CookiesReport,
   Subscribers,
+  WhitePapers,
+  WhitePaperDownloads,
+  WhitePaperCreate,
 } from './lazyRoutes'
 import { useToast } from './hooks/useToast'
 import { BlogAdminPageLoader } from './components/ui/PageLoader'
@@ -66,6 +69,9 @@ function AppRoutes() {
           <Route path="analytics" element={<RouteSuspense><Analytics /></RouteSuspense>} />
           <Route path="cookies-report" element={<RouteSuspense><CookiesReport /></RouteSuspense>} />
           <Route path="subscribers" element={<RouteSuspense><Subscribers /></RouteSuspense>} />
+          <Route path="whitepapers" element={<RouteSuspense><WhitePapers /></RouteSuspense>} />
+          <Route path="whitepapers/downloads" element={<RouteSuspense><WhitePaperDownloads /></RouteSuspense>} />
+          <Route path="whitepapers/new" element={<RouteSuspense><WhitePaperCreate /></RouteSuspense>} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

@@ -12,12 +12,16 @@ import {
   ChartNoAxesCombined,
   Cookie,
   Users,
+  FileStack,
+  Download,
 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 
 const NAV = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard', exact: true },
   { to: '/blogs', icon: FileText, label: 'All Blogs' },
+  { to: '/whitepapers', icon: FileStack, label: 'White Papers' },
+  { to: '/whitepapers/downloads', icon: Download, label: 'WP Downloads' },
   { to: '/generate', icon: Zap, label: 'Generate Blog' },
   { to: '/approvals', icon: Bell, label: 'Approvals' },
   { to: '/trends', icon: Sparkles, label: 'Trending chat' },

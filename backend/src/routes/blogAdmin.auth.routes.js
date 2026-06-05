@@ -13,6 +13,13 @@ const otpLimiter = rateLimit({
   message: { success: false, message: 'Too many OTP requests. Please try again in 15 minutes.' },
 })
 
+const shouldLogOtpInTerminal = () => {
+  const flag = String(process.env.OTP_LOG_IN_TERMINAL || '').toLowerCase().trim()
+  if (['1', 'true', 'yes', 'on'].includes(flag)) return true
+  if (['0', 'false', 'no', 'off'].includes(flag)) return false
+  return process.env.NODE_ENV !== 'production'
+}
+
 // @route   POST /api/auth/request-otp
 // @desc    Request OTP for login
 const generateOTP = () => crypto.randomInt(100000, 999999).toString()
@@ -54,15 +61,15 @@ router.post('/request-otp', otpLimiter, async (req, res) => {
     const otp = generateOTP()
     await OTP.create({ email: normalizedEmail, otp })
 
+    // Always print OTP in terminal for local testing if enabled.
+    if (shouldLogOtpInTerminal()) {
+      console.log(`\n[BLOG_ADMIN_OTP] email=${normalizedEmail} otp=${otp}\n`)
+    }
+
     // Send OTP email
     const emailResult = await sendOTPEmail(normalizedEmail, otp)
 
     if (!emailResult.success) {
-      // In development, log OTP to console
-      if (process.env.NODE_ENV === 'development') {
-        console.log(`\n🔑 DEV OTP for ${normalizedEmail}: ${otp}\n`)
-        return res.json({ success: true, message: `OTP sent! (Dev mode: check console)`, dev_otp: otp })
-      }
       return res.status(500).json({ success: false, message: 'Failed to send OTP email. Check Resend settings.' })
     }
 
@@ -116,7 +123,7 @@ router.post('/verify-otp', async (req, res) => {
     const admin = await Admin.findOneAndUpdate(
       { email: normalizedEmail },
       { lastLogin: new Date(), $inc: { loginCount: 1 } },
-      { new: true }
+      { returnDocument: 'after' }
     )
 
     // Generate JWT

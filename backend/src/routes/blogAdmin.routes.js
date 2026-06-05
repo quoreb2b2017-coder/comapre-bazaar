@@ -42,7 +42,9 @@ router.use(
 );
 
 router.use("/public/blogs", require("./blogAdmin.public.routes"));
+router.use("/public/whitepapers", require("./blogAdmin.whitePaper.public.routes"));
 router.use("/public/site-analytics", require("./blogAdmin.siteAnalytics.public.routes"));
+router.use("/whitepapers", require("./blogAdmin.whitePaper.routes"));
 router.use(require("./blogAdmin.siteAnalytics.admin.routes"));
 router.use("/auth", require("./blogAdmin.auth.routes"));
 router.use("/blogs", require("./blogAdmin.blogs.routes"));

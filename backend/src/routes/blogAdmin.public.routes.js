@@ -22,7 +22,7 @@ router.post('/:slug/view', async (req, res) => {
     const blog = await Blog.findOneAndUpdate(
       { slug, status: { $in: PUBLIC_STATUSES } },
       { $inc: { viewCount: 1 } },
-      { new: true, select: 'viewCount slug' }
+      { returnDocument: 'after', select: 'viewCount slug' }
     ).lean()
 
     if (!blog) return res.status(404).json({ success: false, message: 'Not found' })

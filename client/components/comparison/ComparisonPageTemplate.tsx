@@ -41,14 +41,14 @@ export function ComparisonPageTemplate({ data }: ComparisonPageProps) {
       <div
         className={
           smoothVariant === 'marketing-smooth'
-            ? 'bg-[radial-gradient(120%_120%_at_10%_0%,#ffe7cf_0%,#fff8f0_35%,#ffffff_70%)] border-b border-[#f3d6bd]'
+            ? 'bg-[radial-gradient(120%_120%_at_10%_0%,#ffe7cf_0%,#fff8f0_35%,#ffffff_70%)]'
             : smoothVariant === 'technology-smooth'
-              ? 'bg-[radial-gradient(120%_120%_at_10%_0%,#dbeafe_0%,#f3f9ff_35%,#ffffff_72%)] border-b border-[#bfdbfe]'
+              ? 'bg-[radial-gradient(120%_120%_at_10%_0%,#dbeafe_0%,#f3f9ff_35%,#ffffff_72%)]'
               : smoothVariant === 'sales-smooth'
-                ? 'bg-[radial-gradient(120%_120%_at_10%_0%,#e9e5ff_0%,#f5f3ff_35%,#ffffff_72%)] border-b border-[#c7d2fe]'
+                ? 'bg-[radial-gradient(120%_120%_at_10%_0%,#e9e5ff_0%,#f5f3ff_35%,#ffffff_72%)]'
                 : smoothVariant === 'hr-smooth'
-                  ? 'bg-[radial-gradient(120%_120%_at_10%_0%,#d1fae5_0%,#f0fdf8_35%,#ffffff_72%)] border-b border-[#a7f3d0]'
-                  : 'bg-gray-50 border-b border-gray-200'
+                  ? 'bg-[radial-gradient(120%_120%_at_10%_0%,#d1fae5_0%,#f0fdf8_35%,#ffffff_72%)]'
+                  : 'bg-gray-50'
         }
       >
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12">

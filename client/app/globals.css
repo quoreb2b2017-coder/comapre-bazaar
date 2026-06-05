@@ -84,6 +84,211 @@
   .blog-admin-root .badge-published {
     @apply inline-flex items-center gap-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs font-semibold px-2.5 py-1 rounded-full;
   }
+
+  /* Whitepaper leads — professional data grid (table, not cards) */
+  .blog-admin-root .xl-sheet {
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  }
+  .dark .blog-admin-root .xl-sheet {
+    border-color: #374151;
+    background: #0f172a;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+  .blog-admin-root .xl-scroll {
+    overflow: auto;
+    max-height: min(68vh, 680px);
+  }
+  .blog-admin-root .xl-table {
+    width: 100%;
+    min-width: 1520px;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  .blog-admin-root .xl-table .xl-th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    padding: 11px 14px;
+    border-bottom: 1px solid #e2e8f0;
+    background: #f8fafc;
+    color: #475569;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-align: left;
+    white-space: nowrap;
+    box-shadow: 0 1px 0 #e2e8f0;
+  }
+  .blog-admin-root .xl-table .xl-th-center {
+    text-align: center;
+  }
+  .blog-admin-root .xl-table .xl-th-row {
+    width: 52px;
+    text-align: center;
+    color: #64748b;
+  }
+  .dark .blog-admin-root .xl-table .xl-th {
+    background: #1e293b;
+    color: #94a3b8;
+    border-bottom-color: #334155;
+    box-shadow: 0 1px 0 #334155;
+  }
+  .blog-admin-root .xl-table .xl-td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: top;
+    color: #1e293b;
+    background: #fff;
+  }
+  .dark .blog-admin-root .xl-table .xl-td {
+    border-bottom-color: #1f2937;
+    color: #e2e8f0;
+    background: #0f172a;
+  }
+  .blog-admin-root .xl-table .xl-td-row {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: #94a3b8;
+    background: #fafbfc;
+    font-variant-numeric: tabular-nums;
+  }
+  .dark .blog-admin-root .xl-table .xl-td-row {
+    background: #111827;
+    color: #64748b;
+  }
+  .blog-admin-root .xl-table tbody tr:hover .xl-td:not(.xl-td-row) {
+    background: #f8fafc;
+  }
+  .dark .blog-admin-root .xl-table tbody tr:hover .xl-td:not(.xl-td-row) {
+    background: #1e293b;
+  }
+  .blog-admin-root .xl-table .xl-td a {
+    color: #1d4ed8;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .blog-admin-root .xl-table .xl-td a:hover {
+    text-decoration: underline;
+  }
+  .dark .blog-admin-root .xl-table .xl-td a {
+    color: #60a5fa;
+  }
+  .blog-admin-root .xl-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+  .blog-admin-root .xl-pill-ok {
+    background: #ecfdf5;
+    color: #047857;
+  }
+  .blog-admin-root .xl-pill-pending {
+    background: #fffbeb;
+    color: #b45309;
+  }
+  .dark .blog-admin-root .xl-pill-ok {
+    background: rgba(6, 78, 59, 0.35);
+    color: #6ee7b7;
+  }
+  .dark .blog-admin-root .xl-pill-pending {
+    background: rgba(120, 53, 15, 0.35);
+    color: #fcd34d;
+  }
+  .blog-admin-root .xl-metric-bar {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .dark .blog-admin-root .xl-metric-bar {
+    border-bottom-color: #374151;
+  }
+  .blog-admin-root .xl-metric {
+    padding: 14px 18px;
+    border-right: 1px solid #f1f5f9;
+  }
+  .blog-admin-root .xl-metric:last-child {
+    border-right: none;
+  }
+  .dark .blog-admin-root .xl-metric {
+    border-right-color: #1f2937;
+  }
+  .blog-admin-root .xl-metric-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .blog-admin-root .xl-metric-value {
+    margin-top: 4px;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #0f172a;
+    font-variant-numeric: tabular-nums;
+  }
+  .dark .blog-admin-root .xl-metric-value {
+    color: #f1f5f9;
+  }
+  .blog-admin-root .xl-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #fff;
+  }
+  .dark .blog-admin-root .xl-toolbar {
+    background: #0f172a;
+    border-bottom-color: #374151;
+  }
+  .blog-admin-root .xl-footbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 18px;
+    border-top: 1px solid #e5e7eb;
+    background: #f8fafc;
+    font-size: 13px;
+    color: #64748b;
+  }
+  .dark .blog-admin-root .xl-footbar {
+    background: #111827;
+    border-top-color: #374151;
+    color: #94a3b8;
+  }
+  .blog-admin-root .xl-empty {
+    padding: 48px 24px;
+    text-align: center;
+    color: #64748b;
+    font-size: 14px;
+  }
+  @media (max-width: 768px) {
+    .blog-admin-root .xl-metric-bar {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .blog-admin-root .xl-metric:nth-child(2) {
+      border-right: none;
+    }
+  }
+
   /* Route transitions: fade/slide in after lazy chunk renders */
   .blog-admin-root .route-page-enter {
     animation: blog-admin-route-page 0.38s ease-out both;
@@ -583,6 +788,61 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* White paper upload — portal to body; full-height right drawer */
+.blog-admin-drawer-root {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+}
+.blog-admin-drawer-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(15, 31, 61, 0.45);
+  pointer-events: auto;
+  animation: blog-admin-drawer-fade 0.2s ease-out both;
+}
+.blog-admin-drawer-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  width: min(100%, 28rem);
+  flex-direction: column;
+  background: #fff;
+  box-shadow: -8px 0 40px rgba(15, 31, 61, 0.18);
+  pointer-events: auto;
+  animation: blog-admin-drawer-slide 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.dark .blog-admin-drawer-panel {
+  background: #030712;
+  box-shadow: -8px 0 40px rgba(0, 0, 0, 0.45);
+}
+@keyframes blog-admin-drawer-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes blog-admin-drawer-slide {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .blog-admin-drawer-backdrop,
+  .blog-admin-drawer-panel {
+    animation: none;
   }
 }
 

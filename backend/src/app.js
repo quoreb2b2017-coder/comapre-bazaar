@@ -1,13 +1,13 @@
 const path = require("path");
+
+// Load .env BEFORE any module reads process.env (e.g. Cloudinary config on require)
+require("dotenv").config({ path: path.join(__dirname, "..", ".env") });
+
 const express = require("express");
 const cors = require("cors");
-const dotenv = require("dotenv");
 const routes = require("./routes");
 const blogAdminRoutes = require("./routes/blogAdmin.routes");
 const { notFound, errorHandler } = require("./middlewares/error.middleware");
-
-// Always load backend/.env even if `node` was started from repo root
-dotenv.config({ path: path.join(__dirname, "..", ".env") });
 
 const app = express();
 
@@ -21,11 +21,12 @@ function parseCorsOrigins(value) {
 function parseTrustProxy(value) {
   const v = String(value ?? "").trim().toLowerCase();
   if (!v) return false;
-  if (v === "true" || v === "1" || v === "yes") return true;
+  // express-rate-limit rejects permissive `true`; use hop count instead.
+  if (v === "true" || v === "1" || v === "yes") return 1;
   if (v === "false" || v === "0" || v === "no") return false;
   const n = Number(v);
   if (Number.isFinite(n) && n >= 0) return n;
-  return value;
+  return false;
 }
 
 app.set("trust proxy", parseTrustProxy(process.env.TRUST_PROXY));

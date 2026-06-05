@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next'
 import { comparisonPages } from '@/data/comparisons'
 import { hubPages } from '@/data/hubs'
 import { fetchPublishedBlogSummaries } from '@/lib/blogCms'
+import { fetchPublishedWhitePapers } from '@/lib/whitePaperCms'
 
 const BASE_URL = 'https://www.compare-bazaar.com'
 const NOINDEX_COMPARISON_CANONICALS = new Set([
@@ -109,6 +110,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.65,
   }))
 
+  const whitePapers = await fetchPublishedWhitePapers()
+  const whitePaperRoutes: MetadataRoute.Sitemap = whitePapers.map((paper) => ({
+    url: `${BASE_URL}/resources/whitepaper/${paper.slug}`,
+    lastModified: paper.publishedAt ? new Date(paper.publishedAt) : now,
+    changeFrequency: 'monthly' as const,
+    priority: 0.6,
+  }))
+
   // ── Merge: first-write-wins ───────────────────────────────────────────────
   const combined = [
     ...staticRoutes,
@@ -119,6 +128,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...compareDetailRoutes,
     ...reviewRoutes,
     ...blogRoutes,
+    ...whitePaperRoutes,
   ]
 
   const seen = new Set<string>()
