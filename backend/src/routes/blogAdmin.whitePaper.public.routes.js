@@ -53,6 +53,7 @@ function publicFields(p, { includePdf = false } = {}) {
           .map((s) => ({
             title: s.title || '',
             summary: s.summary || '',
+            body: s.body || s.summary || '',
             pages: s.pages || '',
           }))
       : [],

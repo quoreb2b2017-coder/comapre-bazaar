@@ -20,7 +20,7 @@ function Field({
 }) {
   return (
     <div>
-      <label htmlFor={htmlFor} className="mb-1 block text-sm font-medium text-gray-700">
+      <label htmlFor={htmlFor} className="mb-0 block text-xs font-medium text-gray-700">
         {label}
         {required ? <span className="text-red-600"> *</span> : null}
       </label>
@@ -34,12 +34,9 @@ export function WhitePaperHighlightFormFields({ questions, values, onChange, inp
   if (!items.length) return null
 
   return (
-    <fieldset className="mt-8 border-0 border-t border-gray-200 p-0 pt-8">
-      <legend className="mb-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-gray-500">
-        A few quick questions
-      </legend>
-      <p className="mb-4 text-sm text-gray-600">Help us tailor this resource to your needs.</p>
-      <div className="grid grid-cols-1 gap-x-5 gap-y-4 min-[480px]:grid-cols-2 min-[480px]:gap-x-6 min-[480px]:gap-y-5">
+    <fieldset className="mt-2.5 border-0 p-0">
+      <legend className="mb-1 block text-[13px] font-semibold text-navy">A few quick questions</legend>
+      <div className="flex flex-col gap-1.5">
         {items.map((question, index) => (
           <Field
             key={`${index}-${question.slice(0, 24)}`}

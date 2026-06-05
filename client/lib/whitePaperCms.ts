@@ -25,7 +25,7 @@ export type WhitePaperPublic = {
     extra?: string
   }
   insideOverview?: string
-  insideSections?: { title: string; summary: string; pages?: string }[]
+  insideSections?: { title: string; summary: string; body?: string; pages?: string }[]
   insidePoints?: string[]
   highlightQuestions?: string[]
   testimonialsHeading?: string

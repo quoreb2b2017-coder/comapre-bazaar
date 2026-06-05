@@ -9,8 +9,7 @@ import { whitePaperDisplayTitle } from '@/lib/whitePaperDisplay'
 import { whitePaperBackendBase } from '@/lib/whitePaperCms'
 import { isWorkEmail, WORK_EMAIL_ERROR } from '@/lib/workEmail'
 import { WhitePaperHighlightFormFields } from '@/components/whitepaper/WhitePaperHighlightFormFields'
-import { WhitePaperInsideSection } from '@/components/whitepaper/WhitePaperInsideSection'
-import { WhitePaperTestimonials } from '@/components/whitepaper/WhitePaperTestimonials'
+import { WhitePaperInsideExplorer } from '@/components/whitepaper/WhitePaperInsideExplorer'
 
 type PaperPreview = {
   slug: string
@@ -21,7 +20,7 @@ type PaperPreview = {
   metadata?: { offeredBy?: string }
   highlightQuestions?: string[]
   insideOverview?: string
-  insideSections?: { title: string; summary: string; pages?: string }[]
+  insideSections?: { title: string; summary: string; body?: string; pages?: string }[]
   insidePoints?: string[]
   testimonialsHeading?: string
   testimonials?: {
@@ -161,23 +160,18 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
 
   return (
     <main className="min-h-screen bg-white">
-      <header className="border-b border-gray-200">
-        <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
-          <Link
-            href={detailHref}
-            className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-cb-orange"
-          >
-            <ArrowLeft className="h-4 w-4" aria-hidden />
-            Back to whitepaper
-          </Link>
-        </div>
-      </header>
+      <div className="mx-auto max-w-5xl px-4 py-3 sm:px-6">
+        <Link
+          href="/resources/whitepaper"
+          className="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-cb-orange"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
+          Back to all whitepapers
+        </Link>
 
-      <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,360px)_1fr] lg:gap-12 xl:grid-cols-[minmax(0,400px)_1fr]">
-          {/* Resource info — plain, no card */}
-          <div className="lg:sticky lg:top-8 lg:self-start">
-            <div className="relative mx-auto aspect-[4/5] w-full max-w-[280px] lg:max-w-none">
+        <div className="mt-3 grid lg:grid-cols-[minmax(0,280px)_minmax(0,1fr)] lg:gap-x-10 xl:grid-cols-[minmax(0,300px)_minmax(0,1fr)]">
+          <div className="lg:sticky lg:top-8 lg:row-span-1 lg:self-start">
+            <div className="relative mx-auto aspect-[4/5] w-full max-w-[240px] overflow-hidden rounded-md bg-[#f4f6fb] p-2 lg:mx-0 lg:max-w-none">
               <Image
                 src={paper.thumbnailUrl}
                 alt={headline}
@@ -187,9 +181,9 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
                 priority
               />
             </div>
-            <p className="mt-6 text-xs font-medium uppercase tracking-wider text-gray-500">Free whitepaper</p>
-            <h1 className="mt-2 font-serif text-xl leading-snug text-navy lg:text-2xl">{headline}</h1>
-            <p className="mt-3 text-sm text-gray-600">
+            <p className="mt-3 text-xs font-medium uppercase tracking-wider text-gray-500">Free whitepaper</p>
+            <h1 className="mt-1 font-serif text-lg leading-snug text-navy lg:text-xl">{headline}</h1>
+            <p className="mt-1 text-sm text-gray-600">
               Offered by <span className="text-navy">{offeredBy}</span>
             </p>
             {paper.description ? (
@@ -197,35 +191,20 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
                 {cleanDisplayText(paper.description)}
               </p>
             ) : null}
-
-            <div className="mt-6">
-              <WhitePaperInsideSection
-                overview={paper.insideOverview || ''}
-                sections={paper.insideSections}
-                points={paper.insidePoints}
-              />
-            </div>
-
-            <WhitePaperTestimonials
-              heading={paper.testimonialsHeading}
-              items={paper.testimonials}
-              className="mt-5 lg:mt-6"
-            />
           </div>
 
           {/* Form column */}
-          <div className="min-w-0 border-t border-gray-200 pt-8 lg:border-t-0 lg:pt-0">
+          <div className="min-w-0 lg:pl-4 xl:pl-8">
+            <div className={formPanelClass}>
             {step === 'email' && (
-              <section className="mt-6">
-                <h2 className="text-lg font-semibold text-navy">Download this whitepaper</h2>
-                <p className="mt-1.5 max-w-lg text-sm leading-relaxed text-gray-600">
-                  Enter your work email. We will use it only to deliver your PDF and related resources from{' '}
-                  {offeredBy}.
-                </p>
+              <section>
+                <FormHeader
+                  title="Download this whitepaper"
+                  description={`Enter your work email. We will use it only to deliver your PDF and related resources from ${offeredBy}.`}
+                />
 
-                <form onSubmit={onEmailSubmit} className="mt-5">
-                  <div className="max-w-xs sm:max-w-sm">
-                    <Field label="Work email" required htmlFor="wp-email">
+                <form onSubmit={onEmailSubmit} className="mt-3">
+                  <Field label="Work email" required htmlFor="wp-email">
                       <input
                         id="wp-email"
                         type="email"
@@ -237,12 +216,11 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
                         className={inputClass}
                       />
                     </Field>
-                    <p className="mt-1.5 text-xs text-gray-500">
+                    <p className="mt-1 text-[11px] leading-snug text-gray-500">
                       Company email only. Not Gmail, Yahoo, Outlook, or other personal addresses.
                     </p>
-                  </div>
-                  {error ? <p className="mt-3 max-w-sm text-sm text-red-600">{error}</p> : null}
-                  <div className="mt-5">
+                  {error ? <p className="mt-2 text-sm text-red-600">{error}</p> : null}
+                  <div className="mt-4">
                     <button type="submit" disabled={loading} className={btnPrimary}>
                       {loading ? (
                         <Loader2 className="mx-auto h-5 w-5 animate-spin" />
@@ -259,27 +237,26 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
             )}
 
             {step === 'profile' && (
-              <section className="mt-6">
-                <h2 className="text-lg font-semibold text-navy">Download this whitepaper</h2>
-                <p className="mt-1.5 max-w-lg text-sm leading-relaxed text-gray-600">
-                  A few more details to deliver your PDF from {offeredBy}.
-                </p>
+              <section>
+                <FormHeader
+                  title="Download this whitepaper"
+                  description={`A few more details to deliver your PDF from ${offeredBy}.`}
+                />
 
-                <form onSubmit={onProfileSubmit} className="mt-5 max-w-3xl">
-                  <div className="max-w-xs sm:max-w-sm">
-                    <Field label="Work email" required htmlFor="wp-email-readonly">
-                      <input
-                        id="wp-email-readonly"
-                        type="email"
-                        readOnly
-                        value={email}
-                        className={`${inputClass} bg-gray-50 text-gray-600`}
-                      />
-                    </Field>
-                  </div>
-                  <fieldset className="mt-6 border-0 p-0">
-                    <legend className="mb-3 text-sm font-semibold text-navy">Contact information</legend>
-                    <div className={formRowGrid}>
+                <form onSubmit={onProfileSubmit} className="mt-3">
+                  <Field label="Work email" required htmlFor="wp-email-readonly">
+                    <input
+                      id="wp-email-readonly"
+                      type="email"
+                      readOnly
+                      value={email}
+                      className={`${inputClass} bg-gray-50 text-gray-600`}
+                    />
+                  </Field>
+
+                  <fieldset className="mt-3 border-0 p-0">
+                    <legend className={sectionLegendClass}>Contact information</legend>
+                    <div className={formStack}>
                       <Field label="First name" required htmlFor="wp-first">
                         <input
                           id="wp-first"
@@ -324,9 +301,9 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
                     </div>
                   </fieldset>
 
-                  <fieldset className="mt-8 border-0 border-t border-gray-200 p-0 pt-8">
-                    <legend className="mb-3 text-sm font-semibold text-navy">Company address</legend>
-                    <div className={formRowGrid}>
+                  <fieldset className="mt-3 border-0 p-0">
+                    <legend className={sectionLegendClass}>Company address</legend>
+                    <div className={formStack}>
                       <Field label="Street address" required htmlFor="wp-street">
                         <input
                           id="wp-street"
@@ -400,21 +377,21 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
                     inputClass={inputClass}
                   />
 
-                  <label className="mt-6 flex max-w-3xl items-start gap-2.5 text-sm leading-relaxed text-gray-600">
+                  <label className="mt-3 flex items-start gap-2.5 text-[13px] leading-snug text-gray-600">
                     <input
                       type="checkbox"
                       checked={form.marketingConsent}
                       onChange={(e) => setField('marketingConsent', e.target.checked)}
-                      className="mt-1 h-4 w-4 shrink-0 accent-cb-orange"
+                      className="mt-0.5 h-3.5 w-3.5 shrink-0 accent-cb-orange"
                     />
                     <span>
                       I agree to receive relevant updates from {offeredBy}. You may unsubscribe at any time.
                     </span>
                   </label>
 
-                  {error ? <p className="mt-4 text-sm text-red-600">{error}</p> : null}
+                  {error ? <p className="mt-2 text-sm text-red-600">{error}</p> : null}
 
-                  <div className="mt-6 border-t border-gray-200 pt-6">
+                  <div className="mt-3">
                     <button type="submit" disabled={loading} className={btnPrimary}>
                       {loading ? (
                         <Loader2 className="mx-auto h-5 w-5 animate-spin" />
@@ -431,29 +408,39 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
             )}
 
             {step === 'done' && downloadUrl && (
-              <section className="mt-8 max-w-md">
-                <CheckCircle2 className="h-10 w-10 text-green-600" aria-hidden />
-                <h2 className="mt-4 text-lg font-semibold text-navy">Download started</h2>
-                <p className="mt-2 text-sm leading-relaxed text-gray-600">
+              <section>
+                <CheckCircle2 className="h-9 w-9 text-green-600" aria-hidden />
+                <h2 className="mt-3 text-base font-semibold text-navy">Download started</h2>
+                <p className="mt-1.5 text-[13px] leading-snug text-gray-600">
                   Your PDF should save automatically. If it did not, use the button below.
                 </p>
                 <button
                   type="button"
                   onClick={() => triggerPdfDownload(downloadUrl)}
-                  className={`mt-6 ${btnPrimary}`}
+                  className={`mt-4 ${btnPrimary}`}
                 >
                   <span className="inline-flex items-center justify-center gap-2">
                     <Download className="h-4 w-4" aria-hidden />
                     Download PDF again
                   </span>
                 </button>
-                <p className="mt-6 text-sm">
+                <p className="mt-4 text-sm">
                   <Link href={detailHref} className="font-medium text-cb-orange hover:underline">
                     Return to whitepaper
                   </Link>
                 </p>
               </section>
             )}
+            </div>
+
+            <WhitePaperInsideExplorer
+              slug={paper.slug}
+              overview={paper.insideOverview || paper.description || ''}
+              sections={paper.insideSections}
+              points={paper.insidePoints}
+              compact
+              className="mt-4"
+            />
           </div>
         </div>
       </div>
@@ -461,15 +448,28 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
   )
 }
 
-/** Two fields per row from 480px; tighter vertical rhythm */
-const formRowGrid =
-  'grid grid-cols-1 gap-x-5 gap-y-4 min-[480px]:grid-cols-2 min-[480px]:gap-x-6 min-[480px]:gap-y-5'
+/** One field per row */
+const formStack = 'flex flex-col gap-1.5'
+
+const formPanelClass = 'max-w-md lg:max-w-lg'
+
+const sectionLegendClass = 'mb-1 block text-[13px] font-semibold text-navy'
 
 const inputClass =
-  'block w-full min-w-0 border border-gray-300 bg-white px-3 py-2.5 text-sm text-navy outline-none placeholder:text-gray-400 focus:border-cb-orange focus:outline-none focus:ring-1 focus:ring-cb-orange'
+  'block h-8 w-full min-w-0 rounded-md border border-gray-200 bg-white px-2.5 text-[13px] leading-none text-navy transition-colors outline-none placeholder:text-gray-400 focus:border-cb-orange focus:outline-none focus:ring-0'
 
 const btnPrimary =
-  'inline-flex min-w-[200px] items-center justify-center bg-cb-orange px-8 py-3 text-sm font-semibold uppercase tracking-wide text-white hover:bg-cb-orange-hover disabled:cursor-not-allowed disabled:opacity-60'
+  'inline-flex min-w-[180px] items-center justify-center rounded-md bg-cb-orange px-6 py-2 text-xs font-semibold uppercase tracking-wide text-white transition-colors hover:bg-cb-orange-hover disabled:cursor-not-allowed disabled:opacity-60'
+
+function FormHeader({ title, description }: { title: string; description: string }) {
+  return (
+    <div>
+      <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-cb-orange">Free download</p>
+      <h2 className="mt-1 text-base font-semibold text-navy">{title}</h2>
+      <p className="mt-1 text-[13px] leading-snug text-gray-600">{description}</p>
+    </div>
+  )
+}
 
 function Field({
   label,
@@ -486,7 +486,7 @@ function Field({
 }) {
   return (
     <div className={className}>
-      <label htmlFor={htmlFor} className="mb-1 block text-sm font-medium text-gray-700">
+      <label htmlFor={htmlFor} className="mb-0.5 block text-xs font-medium text-gray-600">
         {label}
         {required ? <span className="text-red-600"> *</span> : null}
       </label>

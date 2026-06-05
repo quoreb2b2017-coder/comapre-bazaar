@@ -42,6 +42,7 @@ const whitePaperSchema = new mongoose.Schema(
       {
         title: { type: String, trim: true, maxlength: 120 },
         summary: { type: String, trim: true, maxlength: 320 },
+        body: { type: String, trim: true, maxlength: 1000 },
         pages: { type: String, trim: true, maxlength: 24 },
       },
     ],

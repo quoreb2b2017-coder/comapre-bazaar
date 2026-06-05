@@ -7,8 +7,7 @@ import { cleanDisplayText } from '@/lib/cleanDisplayText'
 import { whitePaperDisplayTitle } from '@/lib/whitePaperDisplay'
 import { buildMetadata, SITE_URL } from '@/lib/seo'
 import { fetchPublishedWhitePapers, fetchWhitePaperBySlug } from '@/lib/whitePaperCms'
-import { WhitePaperInsideSection } from '@/components/whitepaper/WhitePaperInsideSection'
-import { WhitePaperTestimonials } from '@/components/whitepaper/WhitePaperTestimonials'
+import { WhitePaperInsideExplorer } from '@/components/whitepaper/WhitePaperInsideExplorer'
 
 export const revalidate = 120
 
@@ -115,19 +114,6 @@ export default async function WhitepaperDetailPage({ params }: PageProps) {
               />
             </div>
 
-            <WhitePaperInsideSection
-              overview={paper.insideOverview || intro}
-              sections={paper.insideSections}
-              points={paper.insidePoints}
-              className="mt-5 lg:mt-6"
-            />
-
-            <WhitePaperTestimonials
-              heading={paper.testimonialsHeading}
-              items={paper.testimonials}
-              className="mt-5 lg:mt-6"
-            />
-
             <div className="mt-6 space-y-1.5 border-t border-gray-200 pt-5 text-left text-[13px] text-[#333] lg:mt-8">
               <p>
                 <span className="text-gray-500">Offered free by: </span>
@@ -171,6 +157,14 @@ export default async function WhitepaperDetailPage({ params }: PageProps) {
             </Link>
           </div>
         </div>
+
+        <WhitePaperInsideExplorer
+          slug={paper.slug}
+          overview={paper.insideOverview || intro}
+          sections={paper.insideSections}
+          points={paper.insidePoints}
+          className="mt-8 border-t border-gray-200 pt-8 lg:mt-10"
+        />
       </div>
     </main>
   )

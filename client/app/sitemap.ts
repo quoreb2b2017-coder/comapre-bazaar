@@ -111,12 +111,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }))
 
   const whitePapers = await fetchPublishedWhitePapers()
-  const whitePaperRoutes: MetadataRoute.Sitemap = whitePapers.map((paper) => ({
-    url: `${BASE_URL}/resources/whitepaper/${paper.slug}`,
-    lastModified: paper.publishedAt ? new Date(paper.publishedAt) : now,
-    changeFrequency: 'monthly' as const,
-    priority: 0.6,
-  }))
+  const whitePaperRoutes: MetadataRoute.Sitemap = whitePapers.flatMap((paper) => {
+    const lastModified = paper.publishedAt ? new Date(paper.publishedAt) : now
+    return [
+      {
+        url: `${BASE_URL}/resources/whitepaper/${paper.slug}`,
+        lastModified,
+        changeFrequency: 'monthly' as const,
+        priority: 0.6,
+      },
+      {
+        url: `${BASE_URL}/resources/whitepaper/${paper.slug}/description`,
+        lastModified,
+        changeFrequency: 'monthly' as const,
+        priority: 0.55,
+      },
+    ]
+  })
 
   // ── Merge: first-write-wins ───────────────────────────────────────────────
   const combined = [

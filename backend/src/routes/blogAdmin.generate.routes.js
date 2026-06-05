@@ -56,7 +56,14 @@ router.post('/validate-key', protect, async (req, res) => {
 // @route   POST /api/generate-blog
 router.post('/', protect, async (req, res) => {
   try {
-    const { topic, keywords = [], tone = 'professional', customInstructions = '', saveAsDraft = false } = req.body
+    const {
+      topic,
+      keywords = [],
+      tone = 'professional',
+      customInstructions = '',
+      saveAsDraft = true,
+      existingBlogId,
+    } = req.body
 
     if (!topic?.trim()) {
       return res.status(400).json({ success: false, message: 'Topic is required' })
@@ -72,7 +79,6 @@ router.post('/', protect, async (req, res) => {
       })
     }
 
-    // Generate blog
     const result = await generateBlog({ topic, keywords, tone, customInstructions }, apiKey)
 
     if (!result.success) {
@@ -81,10 +87,9 @@ router.post('/', protect, async (req, res) => {
 
     const { data } = result
 
-    // Save as draft if requested
     let savedBlog = null
-    if (saveAsDraft) {
-      savedBlog = await Blog.create({
+    if (saveAsDraft !== false) {
+      const draftPayload = {
         title: data.title,
         content: data.content,
         metaTitle: data.metaTitle,
@@ -95,7 +100,20 @@ router.post('/', protect, async (req, res) => {
         topic: data.topic,
         tone: data.tone,
         status: 'pending',
-      })
+      }
+
+      if (existingBlogId) {
+        savedBlog = await Blog.findByIdAndUpdate(existingBlogId, draftPayload, {
+          new: true,
+          runValidators: true,
+        })
+        if (!savedBlog) {
+          savedBlog = await Blog.create(draftPayload)
+        }
+      } else {
+        savedBlog = await Blog.create(draftPayload)
+      }
+
       try {
         await notifyPendingBlogForApproval(savedBlog)
       } catch (notifyErr) {
@@ -106,7 +124,7 @@ router.post('/', protect, async (req, res) => {
     res.json({
       success: true,
       data: { ...data, savedBlog },
-      message: saveAsDraft ? 'Blog generated and saved as draft!' : 'Blog generated successfully!',
+      message: saveAsDraft !== false ? 'Blog generated and saved as draft!' : 'Blog generated successfully!',
     })
   } catch (error) {
     const msg = error?.message || String(error)

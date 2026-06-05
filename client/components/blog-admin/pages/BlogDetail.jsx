@@ -106,6 +106,7 @@ export const BlogDetail = () => {
           keywords: kw,
           tone: blog.tone || 'professional',
           customInstructions: `Rewrite this Compare Bazaar article. Keep the same URL slug "${blog.slug}" in mind (do not output slug in HTML). Current working title theme: "${String(form.title || '').slice(0, 200)}". Produce a fresh full HTML article with hero banner per site template.`,
+          saveAsDraft: false,
         },
         { timeout: API_TIMEOUT_LONG_MS }
       )

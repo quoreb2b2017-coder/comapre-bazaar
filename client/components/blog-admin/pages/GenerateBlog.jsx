@@ -18,6 +18,7 @@ export const GenerateBlog = () => {
   const [keywords, setKeywords] = useState([])
   const [loading, setLoading] = useState(false)
   const [generated, setGenerated] = useState(null)
+  const [savedBlogId, setSavedBlogId] = useState(null)
   const [saving, setSaving] = useState(false)
   const [previewMode, setPreviewMode] = useState(false)
 
@@ -43,8 +44,19 @@ export const GenerateBlog = () => {
     setLoading(true)
     setGenerated(null)
     try {
-      const res = await api.post('/generate-blog', { ...form, keywords }, { timeout: API_TIMEOUT_LONG_MS })
+      const res = await api.post(
+        '/generate-blog',
+        { ...form, keywords, saveAsDraft: true, existingBlogId: savedBlogId || undefined },
+        { timeout: API_TIMEOUT_LONG_MS }
+      )
       setGenerated(res.data)
+      const draftId = res.data?.savedBlog?._id
+      if (draftId) {
+        setSavedBlogId(draftId)
+        toast.success(res.message || 'Blog generated and saved as draft!')
+        navigate(`/blogs/${draftId}`)
+        return
+      }
       toast.success(res.message)
     } catch (err) {
       toast.error(err.message || 'Generation failed — try Regenerate.')
@@ -89,7 +101,8 @@ export const GenerateBlog = () => {
         <p className="text-gray-500 dark:text-gray-400 text-sm mt-0.5">
           Each run pulls plain-text excerpts from{' '}
           <span className="font-medium text-gray-600 dark:text-gray-300">compare-bazaar.com</span> (homepage + /blog) so the draft
-          matches site voice. Use <strong className="font-medium">Regenerate</strong> if no article appeared or you want another pass.
+          matches site voice. Drafts are saved automatically after each generate. Use{' '}
+          <strong className="font-medium">Regenerate</strong> to refresh the same draft.
         </p>
       </div>
 

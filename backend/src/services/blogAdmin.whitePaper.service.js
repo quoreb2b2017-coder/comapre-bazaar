@@ -31,8 +31,8 @@ function parseMetadataInput(raw) {
 }
 
 const HIGHLIGHT_QUESTIONS_MAX = 20
-const INSIDE_SECTIONS_MIN = 6
-const INSIDE_SECTIONS_MAX = 10
+const INSIDE_SECTIONS_MIN = 3
+const INSIDE_SECTIONS_MAX = 5
 
 function parseHighlightQuestions(raw) {
   if (raw == null || raw === '') return []
@@ -338,9 +338,15 @@ function normalizeInsideSections(sections, legacyPoints) {
         if (!s || typeof s !== 'object') return null
         const title = stripEmDashes(String(s.title || '').trim())
         const summary = stripEmDashes(String(s.summary || s.description || '').trim())
+        const body = stripEmDashes(String(s.body || s.detail || s.content || '').trim())
         const pages = String(s.pages || s.pageCount || '').trim()
-        if (!title && !summary) return null
-        return { title: title || summary.slice(0, 80), summary, pages }
+        if (!title && !summary && !body) return null
+        return {
+          title: title || summary.slice(0, 80),
+          summary: summary || body.slice(0, 180),
+          body: (body || summary).slice(0, 1000),
+          pages,
+        }
       })
       .filter(Boolean)
       .slice(0, INSIDE_SECTIONS_MAX)
@@ -404,19 +410,25 @@ Return JSON with exactly these keys:
   "insideSections": [
     {
       "title": "Short section title under 60 chars",
-      "summary": "1-2 sentence summary under 180 chars",
+      "summary": "One-line teaser under 120 chars for the section list",
+      "body": "4-6 sentences drawn from the PDF for this section. Include specific numbers, benchmarks, pricing tiers, hidden costs, or ROI findings when the PDF has them. Write in plain editorial prose as one or two short paragraphs, max 900 chars.",
       "pages": "e.g. 2 pages or 3 pages — estimate from PDF if possible, else empty string"
     }
   ]
 }
 
 Rules for insideSections:
-- Return between ${INSIDE_SECTIONS_MIN} and ${INSIDE_SECTIONS_MAX} items — choose the count from the PDF itself (major chapters, report parts, or distinct topic blocks), not a fixed number every time
-- Short or focused PDFs: usually ${INSIDE_SECTIONS_MIN} sections; longer multi-chapter reports: ${INSIDE_SECTIONS_MIN + 1} to ${INSIDE_SECTIONS_MAX} when the content supports it
-- Never pad with generic filler to hit a count; never exceed ${INSIDE_SECTIONS_MAX}
-- If the PDF has substantive content, never return fewer than ${INSIDE_SECTIONS_MIN} sections
+- Read the PDF table of contents, chapter headings, and major topic blocks first
+- Return exactly 3, 4, or 5 items — choose the count that matches the PDF structure, never a fixed number every time
+- Short focused PDFs with ~3 main chapters: return 3 sections
+- Medium reports with ~4 distinct blocks: return 4 sections
+- Longer benchmark reports with ~5 major chapters: return 5 sections
+- Never return fewer than ${INSIDE_SECTIONS_MIN} or more than ${INSIDE_SECTIONS_MAX}
+- Never pad with generic filler; merge minor subsections into parent topics instead of adding extra items
+- If the PDF has substantive content, aim for at least ${INSIDE_SECTIONS_MIN} distinct sections when the material allows
 - Base every item only on PDF content
 - Titles should be scannable chapter-style headings
+- summary = short list teaser; body = fuller PDF-derived copy for the detail panel (must not duplicate summary word-for-word)
 - No duplicate sections
 
   "testimonialsHeading": "Short trust line under 60 chars, e.g. Trusted by operations teams — match the PDF audience",

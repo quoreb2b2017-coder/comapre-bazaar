@@ -8,6 +8,13 @@ import { comparisonPages } from '@/data/comparisons'
 import { getReviewQuoteCta } from '@/lib/reviewQuoteCta'
 import { humanizeReviewCopy, humanizeReviewDetail } from '@/lib/humanizeReviewCopy'
 import { ReviewQuoteBanner } from '@/components/reviews/ReviewQuoteBanner'
+import { buildReviewInsideSections } from '@/lib/buildReviewInsideSections'
+import { getReviewTestimonials } from '@/lib/reviewTestimonials'
+import {
+  categoryBadgeFromPath,
+  REVIEW_DESCRIPTION_DEFAULT_COVER,
+} from '@/lib/reviewDescriptionData'
+import { ReviewInsideExplorer } from '@/components/reviews/ReviewInsideExplorer'
 import { ReviewQuotePopup } from '@/components/reviews/ReviewQuotePopup'
 import { ReviewHeroBanner } from '@/components/reviews/ReviewHeroBanner'
 import { ReviewVendorVisitButton } from '@/components/reviews/ReviewVendorVisitButton'
@@ -30,6 +37,7 @@ import {
 type ReviewEntry = {
   slug: string
   name: string
+  logo: string
   tagline: string
   score: string
   reviewCount: number
@@ -2201,6 +2209,7 @@ const reviewEntries: ReviewEntry[] = comparisonPages.flatMap((page) =>
   page.products.map((product) => ({
     slug: product.reviewSlug,
     name: product.name,
+    logo: product.logo,
     tagline: product.tagline,
     score: product.score,
     reviewCount: product.reviewCount,
@@ -2214,6 +2223,46 @@ const reviewEntries: ReviewEntry[] = comparisonPages.flatMap((page) =>
     categoryPath: page.canonical,
   }))
 )
+
+export function getReviewInsidePayload(slug: string) {
+  const review = reviewEntries.find((item) => item.slug === slug)
+  if (!review) return null
+
+  const displayReview = {
+    ...review,
+    tagline: humanizeReviewCopy(review.tagline),
+    pros: review.pros.map(humanizeReviewCopy),
+  }
+
+  const rawDetail = resolveReviewDetail(review)
+  const crmDetail = rawDetail ? humanizeReviewDetail(rawDetail) : undefined
+  if (!crmDetail) return null
+
+  const sections = buildReviewInsideSections({
+    reviewName: review.name,
+    summary: crmDetail.summary ?? displayReview.tagline,
+    onboarding: crmDetail.onboarding,
+    automation: crmDetail.automation,
+    pricingReality: crmDetail.pricingReality,
+    bestFor: crmDetail.bestFor,
+    tagline: displayReview.tagline,
+    pros: displayReview.pros,
+  })
+
+  if (!sections.length) return null
+
+  return {
+    review,
+    sections,
+    overview: humanizeReviewCopy(
+      crmDetail.summary ??
+        `${review.name} is an independent editorial review covering pricing, strengths, trade-offs, and buyer fit for teams evaluating this category in 2026.`
+    ),
+    testimonials: getReviewTestimonials(review.categoryPath, review.name),
+    categoryBadge: categoryBadgeFromPath(review.categoryPath),
+    coverBackground: REVIEW_DESCRIPTION_DEFAULT_COVER,
+  }
+}
 
 export const dynamicParams = true
 
@@ -2858,15 +2907,38 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
     ? `linear-gradient(125deg, ${bannerPalette.from} 0%, ${bannerPalette.to} 58%, #0EA5E9 100%)`
     : isWebsiteStyle
       ? `linear-gradient(128deg, ${bannerPalette.from} 0%, ${bannerPalette.to} 70%, #60A5FA 120%)`
-      : isGpsStyle
-        ? `linear-gradient(127deg, ${bannerPalette.from} 0%, ${bannerPalette.to} 60%, #22C55E 118%)`
-        : isEmployeeStyle
-          ? `linear-gradient(127deg, ${bannerPalette.from} 0%, ${bannerPalette.to} 62%, #A855F7 118%)`
-          : isCallCenterStyle
-            ? `linear-gradient(124deg, ${bannerPalette.from} 0%, ${bannerPalette.to} 64%, #22D3EE 118%)`
-            : isProjectStyle
-              ? `linear-gradient(125deg, ${bannerPalette.from} 0%, ${bannerPalette.to} 62%, #F97316 122%)`
-              : `linear-gradient(120deg, ${bannerPalette.from} 0%, ${bannerPalette.to} 72%, #F58220 140%)`
+      : isPayrollStyle
+        ? `linear-gradient(126deg, ${bannerPalette.from} 0%, ${bannerPalette.to} 64%, #10B981 118%)`
+        : isVoipStyle
+          ? `linear-gradient(124deg, ${bannerPalette.from} 0%, ${bannerPalette.to} 66%, #06B6D4 118%)`
+          : isGpsStyle
+            ? `linear-gradient(127deg, ${bannerPalette.from} 0%, ${bannerPalette.to} 60%, #22C55E 118%)`
+            : isEmployeeStyle
+              ? `linear-gradient(127deg, ${bannerPalette.from} 0%, ${bannerPalette.to} 62%, #A855F7 118%)`
+              : isCallCenterStyle
+                ? `linear-gradient(124deg, ${bannerPalette.from} 0%, ${bannerPalette.to} 64%, #22D3EE 118%)`
+                : isProjectStyle
+                  ? `linear-gradient(125deg, ${bannerPalette.from} 0%, ${bannerPalette.to} 62%, #F97316 122%)`
+                  : `linear-gradient(120deg, ${bannerPalette.from} 0%, ${bannerPalette.to} 72%, #F58220 140%)`
+
+  const reviewInsideSections = buildReviewInsideSections({
+    reviewName: review.name,
+    summary: crmDetail?.summary ?? displayReview.tagline,
+    onboarding: crmDetail?.onboarding,
+    automation: crmDetail?.automation,
+    pricingReality: crmDetail?.pricingReality,
+    featureBreakdown,
+    bestFor: crmDetail?.bestFor,
+    tagline: displayReview.tagline,
+    pros: displayReview.pros,
+  })
+
+  const reviewTestimonials = getReviewTestimonials(review.categoryPath, review.name)
+
+  const reviewInsideOverview = humanizeReviewCopy(
+    crmDetail?.summary ??
+      `${review.name} is an independent editorial review covering pricing, strengths, trade-offs, and buyer fit for teams evaluating this category in 2026.`
+  )
 
   return (
     <main className="bg-white">
@@ -2947,9 +3019,18 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
         </div>
       )}
 
+      {isCrmStyle && reviewInsideSections.length > 0 ? (
+        <ReviewInsideExplorer
+          reviewSlug={review.slug}
+          reviewName={review.name}
+          overview={reviewInsideOverview}
+          sections={reviewInsideSections}
+        />
+      ) : null}
+
       <div className={reviewArticleClass}>
 
-      {isCrmStyle ? (
+      {isCrmStyle && reviewInsideSections.length === 0 ? (
         <ReviewSection title="What you will learn in this review">
           <div className="mt-4 grid grid-cols-1 gap-4 text-sm leading-relaxed text-gray-700 sm:grid-cols-3 sm:gap-5">
             <p className="flex items-start gap-2">
@@ -3000,13 +3081,13 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
         </ReviewSection>
       ) : null}
 
-      {isCrmStyle ? (
+      {isCrmStyle && reviewInsideSections.length === 0 ? (
         <ReviewSection title="At a glance">
           <ReviewFactGrid items={quickFacts} />
         </ReviewSection>
       ) : null}
 
-      {isCrmStyle ? (
+      {isCrmStyle && reviewInsideSections.length === 0 ? (
         <ReviewSection title="Quick verdict">
           <ul className="mt-3 space-y-2.5 border-l-2 border-brand/25 pl-4">
             {verdictPoints.map((point) => (
@@ -3169,7 +3250,7 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
         </ReviewSection>
       ) : null}
 
-      {isCrmStyle ? (
+      {isCrmStyle && reviewInsideSections.length === 0 ? (
         <section className={`${reviewSectionClass} border-l-4 border-l-cb-orange/70 pl-4 sm:pl-5`}>
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-cb-orange">Featured choice</p>
           <h2 className={`mt-1 ${reviewSectionTitleClass}`}>Featured: {review.name} for growth-focused teams</h2>
@@ -3210,45 +3291,46 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
               </div>
             </aside>
 
-            <ReviewContentStack
-              blocks={[
-                {
-                  title: (
-                    <>
-                      <Gauge className="h-5 w-5 text-brand" aria-hidden />
-                      {isWebsiteStyle
-                        ? 'Setup and editing experience'
-                        : isPayrollStyle
-                          ? 'Payroll setup and usability'
-                          : isVoipStyle
-                            ? 'Phone system setup and usability'
-                            : isCallCenterStyle
-                              ? 'Contact center setup and agent adoption'
-                            : isGpsStyle
-                              ? 'Fleet deployment and admin experience'
-                              : isEmployeeStyle
-                                ? 'HR platform setup and adoption'
-                                : isProjectStyle
-                                  ? 'Project workspace setup and team adoption'
-                                : 'Onboarding and usability'}
-                    </>
-                  ),
-                  body: crmDetail.onboarding,
-                },
-                {
-                  title: (
-                    <>
-                      <Link2 className="h-5 w-5 text-brand" aria-hidden />
-                      {isEmailStyle
-                        ? 'Automation and segmentation depth'
-                        : isWebsiteStyle
-                          ? 'SEO and growth tooling depth'
+            {reviewInsideSections.length === 0 ? (
+              <ReviewContentStack
+                blocks={[
+                  {
+                    title: (
+                      <>
+                        <Gauge className="h-5 w-5 text-brand" aria-hidden />
+                        {isWebsiteStyle
+                          ? 'Setup and editing experience'
                           : isPayrollStyle
-                            ? 'Payroll automation and compliance depth'
+                            ? 'Payroll setup and usability'
                             : isVoipStyle
-                              ? 'Routing automation and call operations depth'
+                              ? 'Phone system setup and usability'
                               : isCallCenterStyle
-                                ? 'Routing, QA and automation depth'
+                                ? 'Contact center setup and agent adoption'
+                              : isGpsStyle
+                                ? 'Fleet deployment and admin experience'
+                                : isEmployeeStyle
+                                  ? 'HR platform setup and adoption'
+                                  : isProjectStyle
+                                    ? 'Project workspace setup and team adoption'
+                                  : 'Onboarding and usability'}
+                      </>
+                    ),
+                    body: crmDetail.onboarding,
+                  },
+                  {
+                    title: (
+                      <>
+                        <Link2 className="h-5 w-5 text-brand" aria-hidden />
+                        {isEmailStyle
+                          ? 'Automation and segmentation depth'
+                          : isWebsiteStyle
+                            ? 'SEO and growth tooling depth'
+                            : isPayrollStyle
+                              ? 'Payroll automation and compliance depth'
+                              : isVoipStyle
+                                ? 'Routing automation and call operations depth'
+                                : isCallCenterStyle
+                                  ? 'Routing, QA and automation depth'
                               : isGpsStyle
                                 ? 'Safety and compliance automation depth'
                                 : isEmployeeStyle
@@ -3256,44 +3338,55 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
                                   : isProjectStyle
                                     ? 'Workflow automation and collaboration depth'
                                   : 'Automation and workflow depth'}
-                    </>
-                  ),
-                  body: crmDetail.automation,
-                },
-                {
-                  title: (
-                    <>
-                      <CircleDollarSign className="h-5 w-5 text-brand" aria-hidden />
-                      Pricing reality
-                    </>
-                  ),
-                  body: crmDetail.pricingReality,
-                },
-                {
-                  title: (
-                    <>
-                      <ShieldCheck className="h-5 w-5 text-brand" aria-hidden />
-                      Best fit and who should skip
-                    </>
-                  ),
-                  body: humanizeReviewCopy(
-                    `${review.name} is usually strongest where teams prioritize workflow fit, adoption speed, and practical execution quality. It is less suitable when requirements sit outside its core operating model or budget profile.`
-                  ),
-                },
-              ]}
-            />
+                      </>
+                    ),
+                    body: crmDetail.automation,
+                  },
+                  {
+                    title: (
+                      <>
+                        <CircleDollarSign className="h-5 w-5 text-brand" aria-hidden />
+                        Pricing reality
+                      </>
+                    ),
+                    body: crmDetail.pricingReality,
+                  },
+                  {
+                    title: (
+                      <>
+                        <ShieldCheck className="h-5 w-5 text-brand" aria-hidden />
+                        Best fit and who should skip
+                      </>
+                    ),
+                    body: humanizeReviewCopy(
+                      `${review.name} is usually strongest where teams prioritize workflow fit, adoption speed, and practical execution quality. It is less suitable when requirements sit outside its core operating model or budget profile.`
+                    ),
+                  },
+                ]}
+              />
+            ) : (
+              <div>
+                <h2 className={reviewSubheadingClass}>Editorial score breakdown</h2>
+                <p className={`mt-2 ${reviewBodyClass}`}>
+                  Use the full review panel above to explore setup, pricing, and fit. This scorecard summarizes how{' '}
+                  {review.name} performed in hands-on testing.
+                </p>
+              </div>
+            )}
           </section>
 
-          <ReviewSection title="Feature-by-feature breakdown">
-            <div className="mt-4 divide-y divide-gray-100">
-              {featureBreakdown.map((item) => (
-                <article key={item.title} className="py-4 first:pt-0 last:pb-0">
-                  <h3 className={reviewSubheadingClass}>{item.title}</h3>
-                  <p className={`mt-2 ${reviewBodyClass}`}>{humanizeReviewCopy(item.body)}</p>
-                </article>
-              ))}
-            </div>
-          </ReviewSection>
+          {reviewInsideSections.length === 0 ? (
+            <ReviewSection title="Feature-by-feature breakdown">
+              <div className="mt-4 divide-y divide-gray-100">
+                {featureBreakdown.map((item) => (
+                  <article key={item.title} className="py-4 first:pt-0 last:pb-0">
+                    <h3 className={reviewSubheadingClass}>{item.title}</h3>
+                    <p className={`mt-2 ${reviewBodyClass}`}>{humanizeReviewCopy(item.body)}</p>
+                  </article>
+                ))}
+              </div>
+            </ReviewSection>
+          ) : null}
 
           <ReviewFitColumns bestFor={crmDetail.bestFor} notIdealFor={crmDetail.notIdealFor} />
 
