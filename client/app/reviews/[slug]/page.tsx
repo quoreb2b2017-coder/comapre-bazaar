@@ -1,14 +1,31 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { CheckCircle2, XCircle, Sparkles, Workflow, Users, Gauge, Link2, CircleDollarSign, ShieldCheck, UserCircle2, CalendarDays, FileClock } from 'lucide-react'
+import { CheckCircle2, XCircle, Sparkles, Workflow, Users, Gauge, Link2, CircleDollarSign, ShieldCheck } from 'lucide-react'
 import { buildMetadata, buildBreadcrumbSchema, buildFaqSchema } from '@/lib/seo'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
 import { comparisonPages } from '@/data/comparisons'
 import { getReviewQuoteCta } from '@/lib/reviewQuoteCta'
 import { humanizeReviewCopy, humanizeReviewDetail } from '@/lib/humanizeReviewCopy'
 import { ReviewQuoteBanner } from '@/components/reviews/ReviewQuoteBanner'
+import { ReviewQuotePopup } from '@/components/reviews/ReviewQuotePopup'
+import { ReviewHeroBanner } from '@/components/reviews/ReviewHeroBanner'
 import { ReviewVendorVisitButton } from '@/components/reviews/ReviewVendorVisitButton'
+import {
+  ReviewContentStack,
+  ReviewFactGrid,
+  ReviewFitColumns,
+  ReviewInsightStack,
+  ReviewProsConsSection,
+  ReviewSection,
+  ReviewSnapshotSection,
+  reviewArticleClass,
+  reviewBodyClass,
+  reviewHeroShellClass,
+  reviewSectionClass,
+  reviewSectionTitleClass,
+  reviewSubheadingClass,
+} from '@/components/reviews/ReviewPageUi'
 
 type ReviewEntry = {
   slug: string
@@ -2775,8 +2792,84 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
     }
   })()
 
+  const categoryBadge = isEmailStyle
+    ? 'Email Marketing Software Review'
+    : isWebsiteStyle
+      ? 'Website Builder Review'
+      : isPayrollStyle
+        ? 'Payroll Software Review'
+        : isVoipStyle
+          ? 'Business VoIP Review'
+          : isCallCenterStyle
+            ? 'Call Center Software Review'
+            : isGpsStyle
+              ? 'GPS Fleet Management Review'
+              : isEmployeeStyle
+                ? 'Employee Management Software Review'
+                : isProjectStyle
+                  ? 'Project Management Software Review'
+                  : 'CRM Software Review'
+
+  const heroFeatureTags =
+    isEmailStyle ||
+    isWebsiteStyle ||
+    isPayrollStyle ||
+    isVoipStyle ||
+    isGpsStyle ||
+    isEmployeeStyle ||
+    isCallCenterStyle ||
+    isProjectStyle
+      ? isGpsStyle
+        ? ['GPS Tracking', 'ELD Ready', 'Safety Coaching', 'Fuel KPIs']
+        : isEmployeeStyle
+          ? ['HR Workflows', 'Analytics', 'Compliance', 'Integrations']
+          : isCallCenterStyle
+            ? ['IVR', 'Queue Routing', 'QA', 'Omnichannel']
+            : isProjectStyle
+              ? ['Kanban/Gantt', 'Automation', 'Dashboards', 'Collaboration']
+              : isWebsiteStyle
+                ? ['Templates', 'SEO', 'Page Speed', 'Scalability']
+                : isPayrollStyle
+                  ? ['Tax Filing', 'Automation', 'Compliance', 'Payroll Accuracy']
+                  : isVoipStyle
+                    ? ['Call Quality', 'Routing', 'Voicemail', 'Integrations']
+                    : ['Deliverability', 'Automation', 'Segmentation', 'ROI Tracking']
+      : []
+
+  const compareAlternativesLabel = isEmailStyle
+    ? 'Compare email marketing alternatives'
+    : isWebsiteStyle
+      ? 'Compare website builder alternatives'
+      : isPayrollStyle
+        ? 'Compare payroll alternatives'
+        : isVoipStyle
+          ? 'Compare VoIP alternatives'
+          : isCallCenterStyle
+            ? 'Compare call center alternatives'
+            : isGpsStyle
+              ? 'Compare fleet management alternatives'
+              : isEmployeeStyle
+                ? 'Compare employee management alternatives'
+                : isProjectStyle
+                  ? 'Compare project management alternatives'
+                  : 'Compare CRM alternatives'
+
+  const bannerBackground = isEmailStyle
+    ? `linear-gradient(125deg, ${bannerPalette.from} 0%, ${bannerPalette.to} 58%, #0EA5E9 100%)`
+    : isWebsiteStyle
+      ? `linear-gradient(128deg, ${bannerPalette.from} 0%, ${bannerPalette.to} 70%, #60A5FA 120%)`
+      : isGpsStyle
+        ? `linear-gradient(127deg, ${bannerPalette.from} 0%, ${bannerPalette.to} 60%, #22C55E 118%)`
+        : isEmployeeStyle
+          ? `linear-gradient(127deg, ${bannerPalette.from} 0%, ${bannerPalette.to} 62%, #A855F7 118%)`
+          : isCallCenterStyle
+            ? `linear-gradient(124deg, ${bannerPalette.from} 0%, ${bannerPalette.to} 64%, #22D3EE 118%)`
+            : isProjectStyle
+              ? `linear-gradient(125deg, ${bannerPalette.from} 0%, ${bannerPalette.to} 62%, #F97316 122%)`
+              : `linear-gradient(120deg, ${bannerPalette.from} 0%, ${bannerPalette.to} 72%, #F58220 140%)`
+
   return (
-    <main className={isCrmStyle ? 'max-w-5xl mx-auto px-4 sm:px-6 py-12' : 'max-w-4xl mx-auto px-4 sm:px-6 py-12'}>
+    <main className="bg-white">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -2798,203 +2891,67 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
           />
         ) : null
       })()}
-      <Breadcrumb
-        items={[
-          { label: 'Home', href: '/' },
-          { label: 'Reviews', href: review.categoryPath },
-          { label: `${review.name} Review` },
-        ]}
-        className="mb-6"
-      />
+      <div className={reviewHeroShellClass}>
+        <div className="pt-6">
+          <Breadcrumb
+            items={[
+              { label: 'Home', href: '/' },
+              { label: 'Reviews', href: review.categoryPath },
+              { label: `${review.name} Review` },
+            ]}
+            className="mb-0"
+          />
+        </div>
 
       {isCrmStyle ? (
-        <header
-          className={`rounded-3xl p-6 sm:p-8 shadow-sm mb-10 text-white relative overflow-hidden ${
-            isEmailStyle ||
-            isWebsiteStyle ||
-            isPayrollStyle ||
-            isVoipStyle ||
-            isGpsStyle ||
-            isEmployeeStyle ||
-            isCallCenterStyle ||
-            isProjectStyle
-              ? 'ring-1 ring-white/20'
-              : ''
-          }`}
-          style={{
-            background: isEmailStyle
-              ? `linear-gradient(125deg, ${bannerPalette.from} 0%, ${bannerPalette.to} 58%, #0EA5E9 100%)`
-              : isWebsiteStyle
-                ? `linear-gradient(128deg, ${bannerPalette.from} 0%, ${bannerPalette.to} 70%, #60A5FA 120%)`
-                : isGpsStyle
-                  ? `linear-gradient(127deg, ${bannerPalette.from} 0%, ${bannerPalette.to} 60%, #22C55E 118%)`
-                  : isEmployeeStyle
-                    ? `linear-gradient(127deg, ${bannerPalette.from} 0%, ${bannerPalette.to} 62%, #A855F7 118%)`
-                    : isCallCenterStyle
-                      ? `linear-gradient(124deg, ${bannerPalette.from} 0%, ${bannerPalette.to} 64%, #22D3EE 118%)`
-                      : isProjectStyle
-                        ? `linear-gradient(125deg, ${bannerPalette.from} 0%, ${bannerPalette.to} 62%, #F97316 122%)`
-                    : `linear-gradient(120deg, ${bannerPalette.from} 0%, ${bannerPalette.to} 72%, #F58220 140%)`,
-          }}
-        >
-          <div className="absolute top-0 right-0 h-40 w-40 rounded-full border border-white/15 -mr-16 -mt-12" aria-hidden="true" />
-          <div className="absolute bottom-0 right-16 h-20 w-20 rounded-full border border-white/10" aria-hidden="true" />
-          {isEmailStyle ? (
-            <>
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.24),transparent_55%)]" aria-hidden="true" />
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(14,165,233,0.28),transparent_45%)]" aria-hidden="true" />
-              <div className="absolute left-8 top-8 h-2 w-2 rounded-full bg-white/70" aria-hidden="true" />
-              <div className="absolute left-16 top-14 h-1.5 w-1.5 rounded-full bg-white/60" aria-hidden="true" />
-              <div className="absolute right-24 top-16 h-1.5 w-1.5 rounded-full bg-white/60" aria-hidden="true" />
-            </>
-          ) : null}
-          {isWebsiteStyle ? (
-            <>
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(255,255,255,0.2),transparent_55%)]" aria-hidden="true" />
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(255,255,255,0.14),transparent_45%)]" aria-hidden="true" />
-              <div className="absolute left-10 bottom-10 h-16 w-16 rounded-full border border-white/20" aria-hidden="true" />
-            </>
-          ) : null}
-          {isGpsStyle ? (
-            <>
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(34,197,94,0.22),transparent_50%)]" aria-hidden="true" />
-              <div className="absolute right-12 top-12 h-24 w-24 rounded-full border border-white/15" aria-hidden="true" />
-            </>
-          ) : null}
-          {isEmployeeStyle ? (
-            <>
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(168,85,247,0.2),transparent_52%)]" aria-hidden="true" />
-              <div className="absolute left-14 bottom-14 h-3 w-3 rounded-full bg-white/50" aria-hidden="true" />
-            </>
-          ) : null}
-          {isCallCenterStyle ? (
-            <>
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(34,211,238,0.2),transparent_52%)]" aria-hidden="true" />
-              <div className="absolute left-16 top-16 h-2.5 w-2.5 rounded-full bg-white/55" aria-hidden="true" />
-            </>
-          ) : null}
-          {isProjectStyle ? (
-            <>
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(249,115,22,0.2),transparent_55%)]" aria-hidden="true" />
-              <div className="absolute right-24 bottom-12 h-14 w-14 rounded-full border border-white/15" aria-hidden="true" />
-            </>
-          ) : null}
-
-          <div className="relative z-10">
-            <p className="text-xs font-semibold uppercase tracking-widest text-white/80 mb-2">
-              {isEmailStyle
-                ? 'Email Marketing Software Review'
-                : isWebsiteStyle
-                  ? 'Website Builder Review'
-                  : isPayrollStyle
-                    ? 'Payroll Software Review'
-                    : isVoipStyle
-                      ? 'Business VoIP Review'
-                      : isCallCenterStyle
-                        ? 'Call Center Software Review'
-                      : isGpsStyle
-                        ? 'GPS Fleet Management Review'
-                        : isEmployeeStyle
-                          ? 'Employee Management Software Review'
-                          : isProjectStyle
-                            ? 'Project Management Software Review'
-                          : 'CRM Software Review'}
-            </p>
-            <h1 className="text-3xl sm:text-4xl tracking-tight mb-2">{review.name} Review</h1>
-            <p className="text-white/85 mb-5 max-w-3xl">{displayReview.tagline}</p>
-
-            <div className="flex flex-wrap items-center gap-3 text-sm text-white/90 mb-4">
-              <span className="inline-flex rounded-full bg-white/15 px-3 py-1 font-semibold">
+        <ReviewHeroBanner
+          reviewName={review.name}
+          reviewSlug={review.slug}
+          tagline={displayReview.tagline}
+          score={review.score}
+          reviewCount={review.reviewCount}
+          pricingLabel={review.pricingLabel}
+          pricingAmount={review.pricingAmount}
+          pricingPeriod={review.pricingPeriod}
+          vendorUrl={review.vendorUrl}
+          categoryPath={review.categoryPath}
+          categoryBadge={categoryBadge}
+          compareLabel={compareAlternativesLabel}
+          featureTags={heroFeatureTags}
+          summary={crmDetail?.summary}
+          reviewer={crmDetail?.reviewer}
+          reviewerRole={crmDetail?.reviewerRole}
+          updatedOn={crmDetail?.updatedOn}
+          publishedOn={crmDetail?.publishedOn}
+          quoteHref={quoteCta.href}
+          quoteLabel={quoteCta.buttonLabel}
+          background={bannerBackground}
+        />
+      ) : (
+        <div className={`${reviewArticleClass} pt-6`}>
+          <header className={`${reviewSectionClass} pt-0`}>
+            <p className="text-xs font-semibold uppercase tracking-widest text-brand mb-2">Software Review</p>
+            <h1 className="text-3xl text-navy tracking-tight mb-2 sm:text-4xl">{review.name} Review</h1>
+            <p className="text-gray-600 mb-4 max-w-3xl text-base leading-relaxed">{displayReview.tagline}</p>
+            <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600">
+              <span className="inline-flex rounded-full bg-brand-light text-brand px-3 py-1 font-semibold">
                 Score: {review.score}/5
               </span>
               <span>{review.reviewCount.toLocaleString()} user reviews analyzed</span>
               <span>
-                {review.pricingLabel}: <strong className="text-white">{review.pricingAmount}</strong>
-                <span className="text-white/75">{review.pricingPeriod}</span>
+                {review.pricingLabel}: <strong className="text-navy">{review.pricingAmount}</strong>
+                <span className="text-gray-500">{review.pricingPeriod}</span>
               </span>
             </div>
-
-            {isEmailStyle ||
-            isWebsiteStyle ||
-            isPayrollStyle ||
-            isVoipStyle ||
-            isGpsStyle ||
-            isEmployeeStyle ||
-            isCallCenterStyle ||
-            isProjectStyle ? (
-              <div className="mb-4 flex flex-wrap gap-2 text-xs">
-                {(isGpsStyle
-                  ? ['GPS Tracking', 'ELD Ready', 'Safety Coaching', 'Fuel KPIs']
-                  : isEmployeeStyle
-                    ? ['HR Workflows', 'Analytics', 'Compliance', 'Integrations']
-                    : isCallCenterStyle
-                      ? ['IVR', 'Queue Routing', 'QA', 'Omnichannel']
-                      : isProjectStyle
-                        ? ['Kanban/Gantt', 'Automation', 'Dashboards', 'Collaboration']
-                    : isWebsiteStyle
-                      ? ['Templates', 'SEO', 'Page Speed', 'Scalability']
-                      : isPayrollStyle
-                        ? ['Tax Filing', 'Automation', 'Compliance', 'Payroll Accuracy']
-                        : isVoipStyle
-                          ? ['Call Quality', 'Routing', 'Voicemail', 'Integrations']
-                          : ['Deliverability', 'Automation', 'Segmentation', 'ROI Tracking']).map((tag) => (
-                  <span key={tag} className="inline-flex rounded-full border border-white/30 bg-white/10 px-3 py-1 font-medium text-white/90">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            ) : null}
-
-            <div className="border-t border-white/20 pt-4 space-y-2 text-sm text-white/85">
-              <p className="flex items-start gap-2">
-                <UserCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0 text-white/80" />
-                <span>
-                  Written by <strong className="text-white">{crmDetail?.reviewer}</strong> · {crmDetail?.reviewerRole}
-                </span>
-              </p>
-              <p className="flex items-start gap-2">
-                <ShieldCheck className="w-4 h-4 mt-0.5 flex-shrink-0 text-white/80" />
-                <span>
-                  Compare Bazaar may earn affiliate commissions from some providers. Editorial rankings remain independent and unbiased.
-                </span>
-              </p>
-              <p className="flex items-start gap-2">
-                <FileClock className="w-4 h-4 mt-0.5 flex-shrink-0 text-white/80" />
-                <span>Last updated: {crmDetail?.updatedOn}</span>
-              </p>
-              <p className="flex items-start gap-2">
-                <CalendarDays className="w-4 h-4 mt-0.5 flex-shrink-0 text-white/80" />
-                <span>Published: {crmDetail?.publishedOn}</span>
-              </p>
-            </div>
-          </div>
-        </header>
-      ) : (
-        <header className="rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 shadow-sm mb-10">
-          <p className="text-xs font-semibold uppercase tracking-widest text-brand mb-2">Software Review</p>
-          <h1 className="text-3xl text-navy tracking-tight mb-2">{review.name} Review</h1>
-          <p className="text-gray-600 mb-4 max-w-3xl">{displayReview.tagline}</p>
-          <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600">
-            <span className="inline-flex rounded-full bg-brand-light text-brand px-3 py-1 font-semibold">
-              Score: {review.score}/5
-            </span>
-            <span>{review.reviewCount.toLocaleString()} user reviews analyzed</span>
-            <span>
-              {review.pricingLabel}: <strong className="text-navy">{review.pricingAmount}</strong>
-              <span className="text-gray-500">{review.pricingPeriod}</span>
-            </span>
-          </div>
-        </header>
+          </header>
+        </div>
       )}
 
-      <div className="mb-10">
-        <ReviewQuoteBanner cta={quoteCta} />
-      </div>
+      <div className={reviewArticleClass}>
 
       {isCrmStyle ? (
-        <section className="rounded-2xl border border-gray-200 bg-white p-5 mb-10 shadow-sm">
-          <h2 className="text-lg text-navy tracking-tight mb-3">What You Will Learn in This Review</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm text-gray-700">
+        <ReviewSection title="What you will learn in this review">
+          <div className="mt-4 grid grid-cols-1 gap-4 text-sm leading-relaxed text-gray-700 sm:grid-cols-3 sm:gap-5">
             <p className="flex items-start gap-2">
               <Sparkles className="w-4 h-4 text-brand mt-0.5 flex-shrink-0" />
               Real-world strengths and practical trade-offs for {review.name}
@@ -3040,347 +2997,184 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
                           : 'Which teams should shortlist this CRM first'}
             </p>
           </div>
-        </section>
+        </ReviewSection>
       ) : null}
 
       {isCrmStyle ? (
-        <section className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
-          {quickFacts.map((fact) => (
-            <article key={fact.label} className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-              <p className="text-xs uppercase tracking-wider text-gray-400 mb-1">{fact.label}</p>
-              <p className="text-sm text-gray-700 leading-relaxed">{fact.value}</p>
-            </article>
-          ))}
-        </section>
+        <ReviewSection title="At a glance">
+          <ReviewFactGrid items={quickFacts} />
+        </ReviewSection>
       ) : null}
 
       {isCrmStyle ? (
-        <section className="rounded-2xl border border-blue-200 bg-brand-light p-6 mb-10 shadow-sm">
-          <h2 className="text-xl text-navy tracking-tight mb-3">Quick Verdict</h2>
-          <ul className="space-y-2">
+        <ReviewSection title="Quick verdict">
+          <ul className="mt-3 space-y-2.5 border-l-2 border-brand/25 pl-4">
             {verdictPoints.map((point) => (
-              <li key={point} className="flex gap-2 text-sm text-gray-700">
-                <CheckCircle2 className="w-4 h-4 text-brand mt-0.5 flex-shrink-0" />
+              <li key={point} className="flex gap-2.5 text-sm leading-relaxed text-gray-700">
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
                 {point}
               </li>
             ))}
           </ul>
-        </section>
+        </ReviewSection>
       ) : null}
 
       {isEmailStyle ? (
-        <section className="rounded-2xl border border-cyan-200 bg-[linear-gradient(180deg,#f0f9ff_0%,#ffffff_100%)] p-6 mb-10">
-          <h2 className="text-xl text-navy tracking-tight mb-4">Email Performance Snapshot</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-            {emailPerformanceSignals.map((item) => (
-              <article key={item.label} className="rounded-xl border border-cyan-100 bg-white p-4">
-                <p className="text-xs uppercase tracking-wide text-cyan-700/80 mb-1">{item.label}</p>
-                <p className="text-sm text-gray-700 leading-relaxed">{item.value}</p>
-              </article>
-            ))}
-          </div>
-          <div className="rounded-xl border border-cyan-100 bg-white p-4">
-            <h3 className="text-base font-semibold text-navy mb-2">Optimization Checklist Before Purchase</h3>
-            <ul className="space-y-2 text-sm text-gray-700">
-              {emailOptimizationChecklist.map((item) => (
-                <li key={item} className="flex gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-cyan-600 mt-0.5 flex-shrink-0" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
+        <ReviewSnapshotSection
+          title="Email performance snapshot"
+          signals={emailPerformanceSignals}
+          checklistTitle="Optimization checklist before purchase"
+          checklist={emailOptimizationChecklist}
+          iconClass="text-cyan-600"
+        />
       ) : null}
 
       {isWebsiteStyle ? (
-        <section className="rounded-2xl border border-indigo-200 bg-[linear-gradient(180deg,#eef2ff_0%,#ffffff_100%)] p-6 mb-10">
-          <h2 className="text-xl text-navy tracking-tight mb-4">Website Performance Snapshot</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-            {websitePerformanceSignals.map((item) => (
-              <article key={item.label} className="rounded-xl border border-indigo-100 bg-white p-4">
-                <p className="text-xs uppercase tracking-wide text-indigo-700/80 mb-1">{item.label}</p>
-                <p className="text-sm text-gray-700 leading-relaxed">{item.value}</p>
-              </article>
-            ))}
-          </div>
-          <div className="rounded-xl border border-indigo-100 bg-white p-4">
-            <h3 className="text-base font-semibold text-navy mb-2">Website Build Checklist Before Purchase</h3>
-            <ul className="space-y-2 text-sm text-gray-700">
-              {websiteOptimizationChecklist.map((item) => (
-                <li key={item} className="flex gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-indigo-600 mt-0.5 flex-shrink-0" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
+        <ReviewSnapshotSection
+          title="Website performance snapshot"
+          signals={websitePerformanceSignals}
+          checklistTitle="Website build checklist before purchase"
+          checklist={websiteOptimizationChecklist}
+          iconClass="text-indigo-600"
+        />
       ) : null}
 
       {isPayrollStyle ? (
-        <section className="rounded-2xl border border-emerald-200 bg-[linear-gradient(180deg,#ecfdf5_0%,#ffffff_100%)] p-6 mb-10">
-          <h2 className="text-xl text-navy tracking-tight mb-4">Payroll Performance Snapshot</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-            {payrollSignals.map((item) => (
-              <article key={item.label} className="rounded-xl border border-emerald-100 bg-white p-4">
-                <p className="text-xs uppercase tracking-wide text-emerald-700/80 mb-1">{item.label}</p>
-                <p className="text-sm text-gray-700 leading-relaxed">{item.value}</p>
-              </article>
-            ))}
-          </div>
-          <div className="rounded-xl border border-emerald-100 bg-white p-4">
-            <h3 className="text-base font-semibold text-navy mb-2">Payroll Checklist Before Purchase</h3>
-            <ul className="space-y-2 text-sm text-gray-700">
-              {payrollChecklist.map((item) => (
-                <li key={item} className="flex gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 flex-shrink-0" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
+        <ReviewSnapshotSection
+          title="Payroll performance snapshot"
+          signals={payrollSignals}
+          checklistTitle="Payroll checklist before purchase"
+          checklist={payrollChecklist}
+          iconClass="text-emerald-600"
+        />
       ) : null}
 
       {isVoipStyle ? (
-        <section className="rounded-2xl border border-sky-200 bg-[linear-gradient(180deg,#f0f9ff_0%,#ffffff_100%)] p-6 mb-10">
-          <h2 className="text-xl text-navy tracking-tight mb-4">VoIP Performance Snapshot</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-            {voipSignals.map((item) => (
-              <article key={item.label} className="rounded-xl border border-sky-100 bg-white p-4">
-                <p className="text-xs uppercase tracking-wide text-sky-700/80 mb-1">{item.label}</p>
-                <p className="text-sm text-gray-700 leading-relaxed">{item.value}</p>
-              </article>
-            ))}
-          </div>
-          <div className="rounded-xl border border-sky-100 bg-white p-4">
-            <h3 className="text-base font-semibold text-navy mb-2">VoIP Evaluation Checklist Before Purchase</h3>
-            <ul className="space-y-2 text-sm text-gray-700">
-              {voipChecklist.map((item) => (
-                <li key={item} className="flex gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-sky-600 mt-0.5 flex-shrink-0" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
+        <ReviewSnapshotSection
+          title="VoIP performance snapshot"
+          signals={voipSignals}
+          checklistTitle="VoIP evaluation checklist before purchase"
+          checklist={voipChecklist}
+          iconClass="text-sky-600"
+        />
       ) : null}
 
       {isGpsStyle ? (
-        <section className="rounded-2xl border border-lime-200 bg-[linear-gradient(180deg,#f7fee7_0%,#ffffff_100%)] p-6 mb-10">
-          <h2 className="text-xl text-navy tracking-tight mb-4">Fleet Operations Snapshot</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-            {gpsSignals.map((item) => (
-              <article key={item.label} className="rounded-xl border border-lime-100 bg-white p-4">
-                <p className="text-xs uppercase tracking-wide text-lime-800/80 mb-1">{item.label}</p>
-                <p className="text-sm text-gray-700 leading-relaxed">{item.value}</p>
-              </article>
-            ))}
-          </div>
-          <div className="rounded-xl border border-lime-100 bg-white p-4">
-            <h3 className="text-base font-semibold text-navy mb-2">Fleet Vendor Evaluation Checklist</h3>
-            <ul className="space-y-2 text-sm text-gray-700">
-              {gpsChecklist.map((item) => (
-                <li key={item} className="flex gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-lime-700 mt-0.5 flex-shrink-0" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
+        <ReviewSnapshotSection
+          title="Fleet operations snapshot"
+          signals={gpsSignals}
+          checklistTitle="Fleet vendor evaluation checklist"
+          checklist={gpsChecklist}
+          iconClass="text-lime-700"
+        />
       ) : null}
 
       {isEmployeeStyle ? (
-        <section className="rounded-2xl border border-violet-200 bg-[linear-gradient(180deg,#f5f3ff_0%,#ffffff_100%)] p-6 mb-10">
-          <h2 className="text-xl text-navy tracking-tight mb-4">People Operations Snapshot</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-            {employeeSignals.map((item) => (
-              <article key={item.label} className="rounded-xl border border-violet-100 bg-white p-4">
-                <p className="text-xs uppercase tracking-wide text-violet-700/80 mb-1">{item.label}</p>
-                <p className="text-sm text-gray-700 leading-relaxed">{item.value}</p>
-              </article>
-            ))}
-          </div>
-          <div className="rounded-xl border border-violet-100 bg-white p-4">
-            <h3 className="text-base font-semibold text-navy mb-2">HR Tech Governance Checklist</h3>
-            <ul className="space-y-2 text-sm text-gray-700">
-              {employeeChecklist.map((item) => (
-                <li key={item} className="flex gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-violet-600 mt-0.5 flex-shrink-0" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
+        <ReviewSnapshotSection
+          title="People operations snapshot"
+          signals={employeeSignals}
+          checklistTitle="HR tech governance checklist"
+          checklist={employeeChecklist}
+          iconClass="text-violet-600"
+        />
       ) : null}
 
       {isCallCenterStyle ? (
-        <section className="rounded-2xl border border-cyan-200 bg-[linear-gradient(180deg,#ecfeff_0%,#ffffff_100%)] p-6 mb-10">
-          <h2 className="text-xl text-navy tracking-tight mb-4">Call Center Operations Snapshot</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-            {callCenterSignals.map((item) => (
-              <article key={item.label} className="rounded-xl border border-cyan-100 bg-white p-4">
-                <p className="text-xs uppercase tracking-wide text-cyan-700/80 mb-1">{item.label}</p>
-                <p className="text-sm text-gray-700 leading-relaxed">{item.value}</p>
-              </article>
-            ))}
-          </div>
-          <div className="rounded-xl border border-cyan-100 bg-white p-4">
-            <h3 className="text-base font-semibold text-navy mb-2">Contact Center Evaluation Checklist</h3>
-            <ul className="space-y-2 text-sm text-gray-700">
-              {callCenterChecklist.map((item) => (
-                <li key={item} className="flex gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-cyan-600 mt-0.5 flex-shrink-0" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
+        <ReviewSnapshotSection
+          title="Call center operations snapshot"
+          signals={callCenterSignals}
+          checklistTitle="Contact center evaluation checklist"
+          checklist={callCenterChecklist}
+          iconClass="text-cyan-600"
+        />
       ) : null}
 
       {isProjectStyle ? (
-        <section className="rounded-2xl border border-orange-200 bg-[linear-gradient(180deg,#fff7ed_0%,#ffffff_100%)] p-6 mb-10">
-          <h2 className="text-xl text-navy tracking-tight mb-4">Project Delivery Snapshot</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-            {projectSignals.map((item) => (
-              <article key={item.label} className="rounded-xl border border-orange-100 bg-white p-4">
-                <p className="text-xs uppercase tracking-wide text-orange-700/80 mb-1">{item.label}</p>
-                <p className="text-sm text-gray-700 leading-relaxed">{item.value}</p>
-              </article>
-            ))}
-          </div>
-          <div className="rounded-xl border border-orange-100 bg-white p-4">
-            <h3 className="text-base font-semibold text-navy mb-2">Project Management Buyer Checklist</h3>
-            <ul className="space-y-2 text-sm text-gray-700">
-              {projectChecklist.map((item) => (
-                <li key={item} className="flex gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-orange-600 mt-0.5 flex-shrink-0" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
+        <ReviewSnapshotSection
+          title="Project delivery snapshot"
+          signals={projectSignals}
+          checklistTitle="Project management buyer checklist"
+          checklist={projectChecklist}
+          iconClass="text-orange-600"
+        />
       ) : null}
 
       {isGpsStyle ? (
-        <section className="rounded-2xl border border-green-200 bg-[linear-gradient(180deg,#f0fdf4_0%,#ffffff_100%)] p-6 mb-10">
-          <h2 className="text-xl text-navy tracking-tight mb-3">
-            SEO and Buyer Intent Notes for {review.name}
-          </h2>
-          <p className="text-sm text-gray-700 leading-relaxed mb-4">
-            Fleet procurement teams often compare GPS fleet management systems using searches tied to compliance,
-            fuel savings, driver coaching, and fleet telematics ROI. The modules below highlight how this review aligns
-            with those structured queries for SEO clarity.
-          </p>
-          <div className="space-y-4">
-            {gpsSeoSignals.map((item) => (
-              <article key={item.title} className="rounded-xl border border-green-100 bg-white p-4">
-                <h3 className="text-base font-semibold text-navy mb-1">{item.title}</h3>
-                <p className="text-sm text-gray-700 leading-relaxed">{humanizeReviewCopy(item.body)}</p>
-              </article>
-            ))}
-          </div>
-        </section>
+        <ReviewSection
+          title={`SEO and buyer intent notes for ${review.name}`}
+          lead="Fleet procurement teams often compare GPS fleet management systems using searches tied to compliance, fuel savings, driver coaching, and fleet telematics ROI."
+        >
+          <ReviewInsightStack
+            items={gpsSeoSignals.map((item) => ({
+              title: item.title,
+              body: humanizeReviewCopy(item.body),
+            }))}
+          />
+        </ReviewSection>
       ) : null}
 
       {isEmployeeStyle ? (
-        <section className="rounded-2xl border border-fuchsia-200 bg-[linear-gradient(180deg,#fdf4ff_0%,#ffffff_100%)] p-6 mb-10">
-          <h2 className="text-xl text-navy tracking-tight mb-3">
-            SEO and Buyer Intent Notes for {review.name}
-          </h2>
-          <p className="text-sm text-gray-700 leading-relaxed mb-4">
-            Employee management software comparisons increasingly blend HRIS fundamentals with analytics, remote work
-            visibility, and compliance documentation. This section maps those recurring SEO themes to how we structured
-            this vendor review.
-          </p>
-          <div className="space-y-4">
-            {employeeSeoSignals.map((item) => (
-              <article key={item.title} className="rounded-xl border border-fuchsia-100 bg-white p-4">
-                <h3 className="text-base font-semibold text-navy mb-1">{item.title}</h3>
-                <p className="text-sm text-gray-700 leading-relaxed">{humanizeReviewCopy(item.body)}</p>
-              </article>
-            ))}
-          </div>
-        </section>
+        <ReviewSection
+          title={`SEO and buyer intent notes for ${review.name}`}
+          lead="Employee management software comparisons increasingly blend HRIS fundamentals with analytics, remote work visibility, and compliance documentation."
+        >
+          <ReviewInsightStack
+            items={employeeSeoSignals.map((item) => ({
+              title: item.title,
+              body: humanizeReviewCopy(item.body),
+            }))}
+          />
+        </ReviewSection>
       ) : null}
 
       {isCallCenterStyle ? (
-        <section className="rounded-2xl border border-cyan-200 bg-[linear-gradient(180deg,#f0fdff_0%,#ffffff_100%)] p-6 mb-10">
-          <h2 className="text-xl text-navy tracking-tight mb-3">
-            SEO and Buyer Intent Notes for {review.name}
-          </h2>
-          <p className="text-sm text-gray-700 leading-relaxed mb-4">
-            Call center software buyers search around IVR reliability, queue routing, QA tooling, omnichannel support,
-            and agent productivity outcomes. These modules structure that search intent for stronger SEO relevance.
-          </p>
-          <div className="space-y-4">
-            {callCenterSeoSignals.map((item) => (
-              <article key={item.title} className="rounded-xl border border-cyan-100 bg-white p-4">
-                <h3 className="text-base font-semibold text-navy mb-1">{item.title}</h3>
-                <p className="text-sm text-gray-700 leading-relaxed">{humanizeReviewCopy(item.body)}</p>
-              </article>
-            ))}
-          </div>
-        </section>
+        <ReviewSection
+          title={`SEO and buyer intent notes for ${review.name}`}
+          lead="Call center software buyers search around IVR reliability, queue routing, QA tooling, omnichannel support, and agent productivity outcomes."
+        >
+          <ReviewInsightStack
+            items={callCenterSeoSignals.map((item) => ({
+              title: item.title,
+              body: humanizeReviewCopy(item.body),
+            }))}
+          />
+        </ReviewSection>
       ) : null}
 
       {isProjectStyle ? (
-        <section className="rounded-2xl border border-orange-200 bg-[linear-gradient(180deg,#fff7ed_0%,#ffffff_100%)] p-6 mb-10">
-          <h2 className="text-xl text-navy tracking-tight mb-3">
-            SEO and Buyer Intent Notes for {review.name}
-          </h2>
-          <p className="text-sm text-gray-700 leading-relaxed mb-4">
-            Project management buyers usually compare tools around ease of onboarding, workflow automation, team
-            collaboration, and reporting quality. This section maps those recurring SEO and buyer-intent themes.
-          </p>
-          <div className="space-y-4">
-            {projectSeoSignals.map((item) => (
-              <article key={item.title} className="rounded-xl border border-orange-100 bg-white p-4">
-                <h3 className="text-base font-semibold text-navy mb-1">{item.title}</h3>
-                <p className="text-sm text-gray-700 leading-relaxed">{humanizeReviewCopy(item.body)}</p>
-              </article>
-            ))}
-          </div>
-        </section>
+        <ReviewSection
+          title={`SEO and buyer intent notes for ${review.name}`}
+          lead="Project management buyers usually compare tools around ease of onboarding, workflow automation, team collaboration, and reporting quality."
+        >
+          <ReviewInsightStack
+            items={projectSeoSignals.map((item) => ({
+              title: item.title,
+              body: humanizeReviewCopy(item.body),
+            }))}
+          />
+        </ReviewSection>
       ) : null}
 
       {isWebsiteStyle ? (
-        <section className="rounded-2xl border border-blue-200 bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_100%)] p-6 mb-10">
-          <h2 className="text-xl text-navy tracking-tight mb-3">
-            SEO and Growth Analysis for {review.name}
-          </h2>
-          <p className="text-sm text-gray-700 leading-relaxed mb-4">
-            This section focuses on what matters most for businesses searching terms like
-            "best website builder for small business", "SEO-friendly website builder", and
-            "best website platform for Google ranking". We evaluate practical publishing speed,
-            technical SEO controls, and long-term content scalability.
-          </p>
-          <div className="space-y-4">
-            {websiteSeoSignals.map((item) => (
-              <article key={item.title} className="rounded-xl border border-blue-100 bg-white p-4">
-                <h3 className="text-base font-semibold text-navy mb-1">{item.title}</h3>
-                <p className="text-sm text-gray-700 leading-relaxed">{humanizeReviewCopy(item.body)}</p>
-              </article>
-            ))}
-          </div>
-        </section>
+        <ReviewSection
+          title={`SEO and growth analysis for ${review.name}`}
+          lead='This section focuses on practical publishing speed, technical SEO controls, and long-term content scalability for businesses comparing website builders.'
+        >
+          <ReviewInsightStack
+            items={websiteSeoSignals.map((item) => ({
+              title: item.title,
+              body: humanizeReviewCopy(item.body),
+            }))}
+          />
+        </ReviewSection>
       ) : null}
 
       {isCrmStyle ? (
-        <section className="rounded-2xl border border-orange-200 bg-orange-50 p-6 mb-10 shadow-sm relative overflow-hidden">
-          <div className="absolute right-0 top-0 h-24 w-24 rounded-full bg-orange-100 -mr-8 -mt-8" aria-hidden="true" />
-          <p className="text-xs font-semibold uppercase tracking-widest text-orange-700 mb-2">Featured Choice</p>
-          <h2 className="text-xl text-navy tracking-tight mb-2">Featured: {review.name} for Growth-Focused Teams</h2>
-          <p className="text-sm text-gray-700 leading-relaxed mb-4">
-            {crmDetail?.summary}
-          </p>
-          <div className="flex flex-wrap gap-3">
+        <section className={`${reviewSectionClass} border-l-4 border-l-cb-orange/70 pl-4 sm:pl-5`}>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-cb-orange">Featured choice</p>
+          <h2 className={`mt-1 ${reviewSectionTitleClass}`}>Featured: {review.name} for growth-focused teams</h2>
+          <p className={`mt-3 ${reviewBodyClass}`}>{crmDetail?.summary}</p>
+          <div className="mt-5 flex flex-wrap gap-3">
             <ReviewVendorVisitButton
               reviewSlug={review.slug}
               reviewName={review.name}
@@ -3388,66 +3182,27 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
             />
             <Link
               href={review.categoryPath}
-              className="border border-brand text-brand hover:bg-brand-light text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
+              className="rounded-md border border-brand px-4 py-2 text-sm font-semibold text-brand transition-colors hover:bg-brand-light"
             >
-              {isEmailStyle
-                ? 'Compare Email Marketing Alternatives'
-                : isWebsiteStyle
-                  ? 'Compare Website Builder Alternatives'
-                  : isPayrollStyle
-                    ? 'Compare Payroll Alternatives'
-                    : isVoipStyle
-                      ? 'Compare VoIP Alternatives'
-                      : isCallCenterStyle
-                        ? 'Compare Call Center Alternatives'
-                      : isGpsStyle
-                        ? 'Compare Fleet Management Alternatives'
-                        : isEmployeeStyle
-                          ? 'Compare Employee Management Alternatives'
-                          : isProjectStyle
-                            ? 'Compare Project Management Alternatives'
-                          : 'Compare CRM Alternatives'}
+              {compareAlternativesLabel}
             </Link>
           </div>
         </section>
       ) : null}
 
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
-        <article className="rounded-xl border border-green-200 bg-green-50 p-5">
-          <h2 className="text-lg text-green-900 mb-3">Pros</h2>
-          <ul className="space-y-2">
-            {displayReview.pros.map((pro) => (
-              <li key={pro} className="flex gap-2 text-sm text-green-900/90">
-                <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                {pro}
-              </li>
-            ))}
-          </ul>
-        </article>
-        <article className="rounded-xl border border-red-200 bg-red-50 p-5">
-          <h2 className="text-lg text-red-900 mb-3">Cons</h2>
-          <ul className="space-y-2">
-            {displayReview.cons.map((con) => (
-              <li key={con} className="flex gap-2 text-sm text-red-900/90">
-                <XCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                {con}
-              </li>
-            ))}
-          </ul>
-        </article>
-      </section>
+      <ReviewProsConsSection pros={displayReview.pros} cons={displayReview.cons} />
 
       {crmDetail ? (
         <>
-          <section className="grid grid-cols-1 lg:grid-cols-[320px,1fr] gap-6 mb-10">
-            <aside className="rounded-2xl border border-gray-200 bg-white p-5 h-fit">
-              <h3 className="text-base font-semibold text-navy mb-1">{review.name} Scorecard</h3>
-              <p className="text-xs text-gray-500 mb-3">At-a-glance editorial scoring based on testing criteria.</p>
-              <div className="space-y-2 text-sm">
+          <section className={`${reviewSectionClass} grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,200px)_1fr] lg:gap-10`}>
+            <aside className="border-b border-gray-200/75 pb-6 lg:border-b-0 lg:border-r lg:pb-0 lg:pr-8">
+              <h2 className={reviewSubheadingClass}>{review.name} scorecard</h2>
+              <p className="mt-1 text-xs text-gray-500">Editorial scoring from hands-on testing.</p>
+              <div className="mt-4 space-y-2.5">
                 {crmDetail.scorecard.map((item) => (
-                  <div key={item.metric} className="flex items-center justify-between border-b border-gray-100 pb-2 last:border-b-0">
+                  <div key={item.metric} className="flex items-center justify-between gap-4 border-b border-gray-100 pb-3 last:border-b-0 last:pb-0">
                     <span className="text-sm text-gray-600">{item.metric}</span>
-                    <span className={`inline-flex border rounded-full px-2 py-0.5 text-xs font-semibold ${getScorePillClass(item.score)}`}>
+                    <span className={`inline-flex rounded-full border px-2.5 py-0.5 text-xs font-semibold ${getScorePillClass(item.score)}`}>
                       {item.score}
                     </span>
                   </div>
@@ -3455,134 +3210,115 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
               </div>
             </aside>
 
-            <div className="space-y-4">
-              <article className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm hover:shadow-md transition-shadow">
-                <h3 className="text-lg text-navy tracking-tight mb-2 flex items-center gap-2">
-                  <Gauge className="w-5 h-5 text-brand" />
-                  {isWebsiteStyle
-                    ? 'Setup and Editing Experience'
-                    : isPayrollStyle
-                      ? 'Payroll Setup and Usability'
-                      : isVoipStyle
-                        ? 'Phone System Setup and Usability'
-                        : isCallCenterStyle
-                          ? 'Contact Center Setup and Agent Adoption'
-                        : isGpsStyle
-                          ? 'Fleet Deployment and Admin Experience'
-                          : isEmployeeStyle
-                            ? 'HR Platform Setup and Adoption'
-                            : isProjectStyle
-                              ? 'Project Workspace Setup and Team Adoption'
-                            : 'Onboarding and Usability'}
-                </h3>
-                <p className="text-gray-700 leading-relaxed">{crmDetail.onboarding}</p>
-              </article>
-              <article className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm hover:shadow-md transition-shadow">
-                <h3 className="text-lg text-navy tracking-tight mb-2 flex items-center gap-2">
-                  <Link2 className="w-5 h-5 text-brand" />
-                  {isEmailStyle
-                    ? 'Automation and Segmentation Depth'
-                    : isWebsiteStyle
-                      ? 'SEO and Growth Tooling Depth'
-                      : isPayrollStyle
-                        ? 'Payroll Automation and Compliance Depth'
-                        : isVoipStyle
-                          ? 'Routing Automation and Call Operations Depth'
-                          : isCallCenterStyle
-                            ? 'Routing, QA and Automation Depth'
-                          : isGpsStyle
-                            ? 'Safety and Compliance Automation Depth'
-                            : isEmployeeStyle
-                              ? 'Workforce Policy and Automation Depth'
-                              : isProjectStyle
-                                ? 'Workflow Automation and Collaboration Depth'
-                              : 'Automation and Workflow Depth'}
-                </h3>
-                <p className="text-gray-700 leading-relaxed">{crmDetail.automation}</p>
-              </article>
-              <article className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm hover:shadow-md transition-shadow">
-                <h3 className="text-lg text-navy tracking-tight mb-2 flex items-center gap-2">
-                  <CircleDollarSign className="w-5 h-5 text-brand" />
-                  Pricing Reality
-                </h3>
-                <p className="text-gray-700 leading-relaxed">{crmDetail.pricingReality}</p>
-              </article>
-              <article className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm hover:shadow-md transition-shadow">
-                <h3 className="text-lg text-navy tracking-tight mb-2 flex items-center gap-2">
-                  <ShieldCheck className="w-5 h-5 text-brand" />
-                  Best Fit and Who Should Skip
-                </h3>
-                <p className="text-gray-700 leading-relaxed">
-                  {humanizeReviewCopy(
+            <ReviewContentStack
+              blocks={[
+                {
+                  title: (
+                    <>
+                      <Gauge className="h-5 w-5 text-brand" aria-hidden />
+                      {isWebsiteStyle
+                        ? 'Setup and editing experience'
+                        : isPayrollStyle
+                          ? 'Payroll setup and usability'
+                          : isVoipStyle
+                            ? 'Phone system setup and usability'
+                            : isCallCenterStyle
+                              ? 'Contact center setup and agent adoption'
+                            : isGpsStyle
+                              ? 'Fleet deployment and admin experience'
+                              : isEmployeeStyle
+                                ? 'HR platform setup and adoption'
+                                : isProjectStyle
+                                  ? 'Project workspace setup and team adoption'
+                                : 'Onboarding and usability'}
+                    </>
+                  ),
+                  body: crmDetail.onboarding,
+                },
+                {
+                  title: (
+                    <>
+                      <Link2 className="h-5 w-5 text-brand" aria-hidden />
+                      {isEmailStyle
+                        ? 'Automation and segmentation depth'
+                        : isWebsiteStyle
+                          ? 'SEO and growth tooling depth'
+                          : isPayrollStyle
+                            ? 'Payroll automation and compliance depth'
+                            : isVoipStyle
+                              ? 'Routing automation and call operations depth'
+                              : isCallCenterStyle
+                                ? 'Routing, QA and automation depth'
+                              : isGpsStyle
+                                ? 'Safety and compliance automation depth'
+                                : isEmployeeStyle
+                                  ? 'Workforce policy and automation depth'
+                                  : isProjectStyle
+                                    ? 'Workflow automation and collaboration depth'
+                                  : 'Automation and workflow depth'}
+                    </>
+                  ),
+                  body: crmDetail.automation,
+                },
+                {
+                  title: (
+                    <>
+                      <CircleDollarSign className="h-5 w-5 text-brand" aria-hidden />
+                      Pricing reality
+                    </>
+                  ),
+                  body: crmDetail.pricingReality,
+                },
+                {
+                  title: (
+                    <>
+                      <ShieldCheck className="h-5 w-5 text-brand" aria-hidden />
+                      Best fit and who should skip
+                    </>
+                  ),
+                  body: humanizeReviewCopy(
                     `${review.name} is usually strongest where teams prioritize workflow fit, adoption speed, and practical execution quality. It is less suitable when requirements sit outside its core operating model or budget profile.`
-                  )}
-                </p>
-              </article>
-            </div>
+                  ),
+                },
+              ]}
+            />
           </section>
 
-          <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm mb-10">
-            <h2 className="text-2xl text-navy tracking-tight mb-3">Feature-by-Feature Breakdown</h2>
-            <div className="space-y-4">
+          <ReviewSection title="Feature-by-feature breakdown">
+            <div className="mt-4 divide-y divide-gray-100">
               {featureBreakdown.map((item) => (
-                <div key={item.title} className="rounded-xl border border-gray-200 bg-gray-50 p-4">
-                  <h3 className="text-base font-semibold text-navy mb-1">{item.title}</h3>
-                  <p className="text-sm text-gray-600 leading-relaxed">{humanizeReviewCopy(item.body)}</p>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10">
-            <article className="rounded-xl border border-green-200 bg-green-50 p-5">
-              <h3 className="text-lg text-green-900 mb-3">Best For</h3>
-              <ul className="space-y-2 text-sm text-green-900/90">
-                {crmDetail.bestFor.map((item) => (
-                  <li key={item} className="flex gap-2">
-                    <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </article>
-            <article className="rounded-xl border border-amber-200 bg-amber-50 p-5">
-              <h3 className="text-lg text-amber-900 mb-3">Not Ideal For</h3>
-              <ul className="space-y-2 text-sm text-amber-900/90">
-                {crmDetail.notIdealFor.map((item) => (
-                  <li key={item} className="flex gap-2">
-                    <XCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </article>
-          </section>
-
-          <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm mb-10">
-            <h2 className="text-xl text-navy tracking-tight mb-4">{review.name} FAQ</h2>
-            <div className="space-y-4">
-              {crmDetail.faqs.map((faq) => (
-                <article key={faq.q} className="border-b border-gray-200 pb-4 last:border-b-0 last:pb-0">
-                  <h3 className="text-base font-semibold text-navy mb-1">{faq.q}</h3>
-                  <p className="text-sm text-gray-700 leading-relaxed">{faq.a}</p>
+                <article key={item.title} className="py-4 first:pt-0 last:pb-0">
+                  <h3 className={reviewSubheadingClass}>{item.title}</h3>
+                  <p className={`mt-2 ${reviewBodyClass}`}>{humanizeReviewCopy(item.body)}</p>
                 </article>
               ))}
             </div>
-          </section>
+          </ReviewSection>
+
+          <ReviewFitColumns bestFor={crmDetail.bestFor} notIdealFor={crmDetail.notIdealFor} />
+
+          <ReviewSection title={`${review.name} FAQ`}>
+            <div className="mt-4 divide-y divide-gray-100">
+              {crmDetail.faqs.map((faq) => (
+                <article key={faq.q} className="py-4 first:pt-0 last:pb-0">
+                  <h3 className={reviewSubheadingClass}>{faq.q}</h3>
+                  <p className={`mt-2 ${reviewBodyClass}`}>{faq.a}</p>
+                </article>
+              ))}
+            </div>
+          </ReviewSection>
         </>
       ) : null}
 
-      <div className="mb-10">
-        <ReviewQuoteBanner cta={quoteCta} />
-      </div>
+      <ReviewQuoteBanner cta={quoteCta} />
 
-      <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-        <h2 className="text-xl text-navy tracking-tight mb-2">{crmDetail ? 'Final Recommendation' : 'Editorial Verdict'}</h2>
-        <p className="text-gray-700 leading-relaxed mb-5">{finalRecommendation}</p>
-        <div className="flex flex-wrap gap-3">
+      <section className={reviewSectionClass}>
+        <h2 className={reviewSectionTitleClass}>{crmDetail ? 'Final recommendation' : 'Editorial verdict'}</h2>
+        <p className={`mt-3 ${reviewBodyClass}`}>{finalRecommendation}</p>
+        <div className="mt-5 flex flex-wrap gap-2.5">
           <Link
             href={quoteCta.href}
-            className="bg-cb-orange hover:bg-cb-orange-hover text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
+            className="rounded-md bg-cb-orange px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-cb-orange-hover"
           >
             {quoteCta.buttonLabel} →
           </Link>
@@ -3593,12 +3329,16 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
           />
           <Link
             href={review.categoryPath}
-            className="border border-brand text-brand hover:bg-brand-light text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
+            className="rounded-md border border-brand px-4 py-2 text-sm font-semibold text-brand transition-colors hover:bg-brand-light"
           >
             Compare Alternatives
           </Link>
         </div>
       </section>
+      </div>
+      </div>
+
+      <ReviewQuotePopup categoryPath={review.categoryPath} reviewName={review.name} />
     </main>
   )
 }

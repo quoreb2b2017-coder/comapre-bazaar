@@ -12,7 +12,7 @@ import Employeeform from '@/components/Employeeform'
 import CallCenterForm from '@/components/CallCenterForm'
 import ProjectManagementForm from '@/components/ProjectManagementForm'
 
-function PopupShell({
+export function PopupShell({
   title,
   children,
 }: {
