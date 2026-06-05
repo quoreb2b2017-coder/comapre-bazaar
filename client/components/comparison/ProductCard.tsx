@@ -2,6 +2,7 @@ import Link from 'next/link'
 import type { Product } from '@/types'
 import { cn } from '@/lib/utils'
 import { CheckIcon, XIcon } from '@/components/ui/icons'
+import { FullReviewLink } from '@/components/reviews/FullReviewLink'
 
 const BADGE_STYLES: Record<string, string> = {
   top: 'bg-brand text-white',
@@ -184,13 +185,11 @@ export function ProductCard({
               </span>
             </span>
           )}
-          <Link
-            href={`/reviews/${product.reviewSlug}`}
-            className="border border-brand text-brand hover:bg-brand-light text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
-            aria-label={`Read full ${product.name} review`}
-          >
-            Full Review
-          </Link>
+          <FullReviewLink
+            reviewSlug={product.reviewSlug}
+            productName={product.name}
+            linkClassName="border border-brand text-brand hover:bg-brand-light text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
+          />
         </div>
       </div>
     </article>

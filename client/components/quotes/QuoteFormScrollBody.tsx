@@ -24,8 +24,24 @@ export function QuoteFormScrollBody({ step, children }: QuoteFormScrollBodyProps
     window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
   }, [step]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.location.hash !== "#quote-form") return;
+    const scrollToForm = () => {
+      const el = ref.current;
+      if (!el) return;
+      const card = el.closest(".fc");
+      const target = card instanceof HTMLElement ? card : el;
+      const navGap = 96;
+      const top = target.getBoundingClientRect().top + window.scrollY - navGap;
+      window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+    };
+    const timer = window.setTimeout(scrollToForm, 150);
+    return () => window.clearTimeout(timer);
+  }, []);
+
   return (
-    <div className="fb" ref={ref}>
+    <div className="fb" ref={ref} id="quote-form">
       <div className="step-pane" key={step}>
         {children}
       </div>

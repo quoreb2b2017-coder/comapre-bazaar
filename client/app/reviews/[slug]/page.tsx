@@ -5,6 +5,10 @@ import { CheckCircle2, XCircle, Sparkles, Workflow, Users, Gauge, Link2, CircleD
 import { buildMetadata, buildBreadcrumbSchema, buildFaqSchema } from '@/lib/seo'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
 import { comparisonPages } from '@/data/comparisons'
+import { getReviewQuoteCta } from '@/lib/reviewQuoteCta'
+import { humanizeReviewCopy, humanizeReviewDetail } from '@/lib/humanizeReviewCopy'
+import { ReviewQuoteBanner } from '@/components/reviews/ReviewQuoteBanner'
+import { ReviewVendorVisitButton } from '@/components/reviews/ReviewVendorVisitButton'
 
 type ReviewEntry = {
   slug: string
@@ -2240,7 +2244,16 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
 export default function DynamicReviewPage({ params }: { params: { slug: string } }) {
   const review = reviewEntries.find((item) => item.slug === params.slug)
   if (!review) notFound()
-  const crmDetail = resolveReviewDetail(review)
+
+  const displayReview = {
+    ...review,
+    tagline: humanizeReviewCopy(review.tagline),
+    pros: review.pros.map(humanizeReviewCopy),
+    cons: review.cons.map(humanizeReviewCopy),
+  }
+
+  const rawDetail = resolveReviewDetail(review)
+  const crmDetail = rawDetail ? humanizeReviewDetail(rawDetail) : undefined
   const isCrmStyle = Boolean(crmDetail)
   const isEmailStyle = Boolean(EMAIL_REVIEW_DETAILS[review.slug])
   const isWebsiteStyle = Boolean(WEBSITE_REVIEW_DETAILS[review.slug])
@@ -2258,26 +2271,24 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
   const isProjectStyle =
     review.categoryPath === CATEGORY_PROJECT_PATH && Boolean(PROJECT_MANAGEMENT_REVIEW_DETAILS[review.slug])
 
+  const quoteCta = getReviewQuoteCta(review.slug, review.name, review.categoryPath)
+
   const quickFacts = [
     { label: 'Best for', value: crmDetail ? crmDetail.bestFor[0] : `Teams evaluating ${review.name}` },
     {
       label: 'Starting price',
       value: `${review.pricingAmount}${review.pricingPeriod || ''}`.trim(),
     },
-    { label: 'Standout strength', value: review.pros[0] ?? review.tagline },
-    { label: 'Main trade-off', value: review.cons[0] ?? 'Pricing and setup vary by use case' },
+    { label: 'Standout strength', value: displayReview.pros[0] ?? displayReview.tagline },
+    { label: 'Main trade-off', value: displayReview.cons[0] ?? humanizeReviewCopy('Pricing and setup vary by use case') },
   ]
 
   const verdictPoints = crmDetail
-    ? [
-        crmDetail.summary,
-        crmDetail.onboarding,
-        crmDetail.pricingReality,
-      ]
+    ? [crmDetail.summary, crmDetail.onboarding, crmDetail.pricingReality]
     : [
-        `${review.name} is a solid choice for teams aligned with its core strengths.`,
-        'Use a live trial or pilot to validate workflow fit before buying.',
-        'Compare setup effort, integration depth, and total ownership cost.',
+        humanizeReviewCopy(`${review.name} is a solid option for teams that match its category fit and budget profile.`),
+        humanizeReviewCopy('Use a live trial or pilot to validate workflow fit before buying.'),
+        humanizeReviewCopy('Compare setup effort, integration depth, and total ownership cost.'),
       ]
 
   const featureBreakdown = crmDetail
@@ -2301,8 +2312,8 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
                         ? 'Project Structure and Team Execution Views'
                       : 'Pipeline and Deal Management',
           body:
-            review.pros[0] ??
-            (isWebsiteStyle
+            displayReview.pros[0] ??
+            humanizeReviewCopy(isWebsiteStyle
               ? `${review.name} provides practical design and layout controls for business website execution.`
               : isPayrollStyle
                 ? `${review.name} supports practical payroll setup and recurring employee payment workflows.`
@@ -2357,8 +2368,8 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
                         ? 'Project Reporting and Capacity Visibility'
                       : 'Reporting and Forecasting',
           body:
-            review.pros[1] ??
-            (isWebsiteStyle
+            displayReview.pros[1] ??
+            humanizeReviewCopy(isWebsiteStyle
               ? `${review.name} supports performance and analytics workflows, but teams should validate scaling requirements in a live build pilot.`
               : isPayrollStyle
                 ? `${review.name} supports payroll and reporting workflows, but teams should validate compliance depth in a live pilot.`
@@ -2393,8 +2404,8 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
                         ? 'Workspace Integrations and Project Data Integrity'
                       : 'Integration and Data Quality',
           body:
-            review.pros[2] ??
-            (isWebsiteStyle
+            displayReview.pros[2] ??
+            humanizeReviewCopy(isWebsiteStyle
               ? `${review.name} offers useful integrations; long-term ROI depends on SEO consistency and scalable content operations.`
               : isPayrollStyle
                 ? `${review.name} offers useful integrations; long-term ROI depends on clean employee data and compliance governance.`
@@ -2413,11 +2424,17 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
       ]
     : []
 
+  const finalRecommendation = humanizeReviewCopy(
+    crmDetail
+      ? `${review.name} belongs on your shortlist when your team priorities match its strengths in usability, workflow fit, and how you plan to run it long term. Before you buy, run a live pilot to check integrations, adoption risk, and reporting needs.`
+      : `${review.name} is a solid option for teams that match its category fit and budget profile. Use this review to narrow your shortlist, then compare onboarding effort, reporting needs, and integration depth before you purchase.`
+  )
+
   const emailPerformanceSignals = isEmailStyle
     ? [
         { label: 'Primary use case', value: crmDetail?.bestFor[0] ?? `Lifecycle campaigns with ${review.name}` },
         { label: 'Best acquisition channel fit', value: 'Email nurture, lead capture, and repeat engagement flows' },
-        { label: 'Budget watchpoint', value: review.cons[0] ?? 'Contact growth can increase monthly spend over time' },
+        { label: 'Budget watchpoint', value: displayReview.cons[0] ?? humanizeReviewCopy('Contact growth can increase monthly spend over time') },
         { label: 'Pilot period', value: 'Run a 2-4 week deliverability and workflow fit pilot before scaling' },
       ]
     : []
@@ -2434,7 +2451,7 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
     ? [
         { label: 'Primary use case', value: crmDetail?.bestFor[0] ?? `Business website growth with ${review.name}` },
         { label: 'Best fit team', value: 'SMB teams needing fast launch with long-term SEO and content growth' },
-        { label: 'Budget watchpoint', value: review.cons[0] ?? 'Premium plans, apps, or add-ons can raise monthly total cost' },
+        { label: 'Budget watchpoint', value: displayReview.cons[0] ?? humanizeReviewCopy('Premium plans, apps, or add-ons can raise monthly total cost') },
         { label: 'Pilot period', value: 'Build a real 5-10 page test site before final purchase' },
       ]
     : []
@@ -2468,7 +2485,7 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
     ? [
         { label: 'Primary use case', value: crmDetail?.bestFor[0] ?? `SMB payroll operations with ${review.name}` },
         { label: 'Core focus', value: 'Payroll accuracy, tax compliance, and recurring pay-run reliability' },
-        { label: 'Budget watchpoint', value: review.cons[0] ?? 'Per-employee scaling and add-on modules can raise monthly spend' },
+        { label: 'Budget watchpoint', value: displayReview.cons[0] ?? humanizeReviewCopy('Per-employee scaling and add-on modules can raise monthly spend') },
         { label: 'Pilot period', value: 'Run 2-3 pay cycles in a controlled pilot before full rollout' },
       ]
     : []
@@ -2485,7 +2502,7 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
     ? [
         { label: 'Primary use case', value: crmDetail?.bestFor[0] ?? `Business communications with ${review.name}` },
         { label: 'Core focus', value: 'Call quality, routing reliability, and team collaboration speed' },
-        { label: 'Budget watchpoint', value: review.cons[0] ?? 'Advanced modules and larger team routing can increase cost' },
+        { label: 'Budget watchpoint', value: displayReview.cons[0] ?? humanizeReviewCopy('Advanced modules and larger team routing can increase cost') },
         { label: 'Pilot period', value: 'Run a 2-week call quality and routing fit pilot before full migration' },
       ]
     : []
@@ -2502,7 +2519,7 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
     ? [
         { label: 'Primary use case', value: crmDetail?.bestFor[0] ?? `Commercial fleet operations with ${review.name}` },
         { label: 'Core focus', value: 'Live GPS visibility, safety accountability, and fleet productivity signals' },
-        { label: 'Budget watchpoint', value: review.cons[0] ?? 'Hardware bundles and quote-based tiers can shift total fleet tech spend' },
+        { label: 'Budget watchpoint', value: displayReview.cons[0] ?? humanizeReviewCopy('Hardware bundles and quote-based tiers can shift total fleet tech spend') },
         { label: 'Pilot period', value: 'Instrument a 30-day pilot measuring speeding, idle fuel, and incident response SLAs' },
       ]
     : []
@@ -2536,7 +2553,7 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
     ? [
         { label: 'Primary use case', value: crmDetail?.bestFor[0] ?? `People operations with ${review.name}` },
         { label: 'Core focus', value: 'HR workflows, workforce analytics, and compliant employee communications' },
-        { label: 'Budget watchpoint', value: review.cons[0] ?? 'Modular pricing and monitored seats can accelerate SaaS spend as teams scale' },
+        { label: 'Budget watchpoint', value: displayReview.cons[0] ?? humanizeReviewCopy('Modular pricing and monitored seats can accelerate SaaS spend as teams scale') },
         { label: 'Pilot period', value: 'Pilot one department with documented policies before enterprise-wide analytics rollout' },
       ]
     : []
@@ -2570,7 +2587,7 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
     ? [
         { label: 'Primary use case', value: crmDetail?.bestFor[0] ?? `Inbound and support operations with ${review.name}` },
         { label: 'Core focus', value: 'IVR reliability, queue performance, QA workflows, and agent productivity' },
-        { label: 'Budget watchpoint', value: review.cons[0] ?? 'Per-agent bundles, AI add-ons, and WFM modules can increase spend' },
+        { label: 'Budget watchpoint', value: displayReview.cons[0] ?? humanizeReviewCopy('Per-agent bundles, AI add-ons, and WFM modules can increase spend') },
         { label: 'Pilot period', value: 'Run a 2-4 week SLA pilot with live queues, transfers, and QA scoring' },
       ]
     : []
@@ -2604,7 +2621,7 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
     ? [
         { label: 'Primary use case', value: crmDetail?.bestFor[0] ?? `Project delivery and team collaboration with ${review.name}` },
         { label: 'Core focus', value: 'Workflow clarity, delivery visibility, and cross-functional execution consistency' },
-        { label: 'Budget watchpoint', value: review.cons[0] ?? 'Per-user growth and advanced reporting features can raise total license cost' },
+        { label: 'Budget watchpoint', value: displayReview.cons[0] ?? humanizeReviewCopy('Per-user growth and advanced reporting features can raise total license cost') },
         { label: 'Pilot period', value: 'Pilot one department workflow for 2-3 sprints before org-wide rollout' },
       ]
     : []
@@ -2884,7 +2901,7 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
                           : 'CRM Software Review'}
             </p>
             <h1 className="text-3xl sm:text-4xl tracking-tight mb-2">{review.name} Review</h1>
-            <p className="text-white/85 mb-5 max-w-3xl">{review.tagline}</p>
+            <p className="text-white/85 mb-5 max-w-3xl">{displayReview.tagline}</p>
 
             <div className="flex flex-wrap items-center gap-3 text-sm text-white/90 mb-4">
               <span className="inline-flex rounded-full bg-white/15 px-3 py-1 font-semibold">
@@ -2956,7 +2973,7 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
         <header className="rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 shadow-sm mb-10">
           <p className="text-xs font-semibold uppercase tracking-widest text-brand mb-2">Software Review</p>
           <h1 className="text-3xl text-navy tracking-tight mb-2">{review.name} Review</h1>
-          <p className="text-gray-600 mb-4 max-w-3xl">{review.tagline}</p>
+          <p className="text-gray-600 mb-4 max-w-3xl">{displayReview.tagline}</p>
           <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600">
             <span className="inline-flex rounded-full bg-brand-light text-brand px-3 py-1 font-semibold">
               Score: {review.score}/5
@@ -2969,6 +2986,10 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
           </div>
         </header>
       )}
+
+      <div className="mb-10">
+        <ReviewQuoteBanner cta={quoteCta} />
+      </div>
 
       {isCrmStyle ? (
         <section className="rounded-2xl border border-gray-200 bg-white p-5 mb-10 shadow-sm">
@@ -3261,7 +3282,7 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
             {gpsSeoSignals.map((item) => (
               <article key={item.title} className="rounded-xl border border-green-100 bg-white p-4">
                 <h3 className="text-base font-semibold text-navy mb-1">{item.title}</h3>
-                <p className="text-sm text-gray-700 leading-relaxed">{item.body}</p>
+                <p className="text-sm text-gray-700 leading-relaxed">{humanizeReviewCopy(item.body)}</p>
               </article>
             ))}
           </div>
@@ -3282,7 +3303,7 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
             {employeeSeoSignals.map((item) => (
               <article key={item.title} className="rounded-xl border border-fuchsia-100 bg-white p-4">
                 <h3 className="text-base font-semibold text-navy mb-1">{item.title}</h3>
-                <p className="text-sm text-gray-700 leading-relaxed">{item.body}</p>
+                <p className="text-sm text-gray-700 leading-relaxed">{humanizeReviewCopy(item.body)}</p>
               </article>
             ))}
           </div>
@@ -3302,7 +3323,7 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
             {callCenterSeoSignals.map((item) => (
               <article key={item.title} className="rounded-xl border border-cyan-100 bg-white p-4">
                 <h3 className="text-base font-semibold text-navy mb-1">{item.title}</h3>
-                <p className="text-sm text-gray-700 leading-relaxed">{item.body}</p>
+                <p className="text-sm text-gray-700 leading-relaxed">{humanizeReviewCopy(item.body)}</p>
               </article>
             ))}
           </div>
@@ -3322,7 +3343,7 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
             {projectSeoSignals.map((item) => (
               <article key={item.title} className="rounded-xl border border-orange-100 bg-white p-4">
                 <h3 className="text-base font-semibold text-navy mb-1">{item.title}</h3>
-                <p className="text-sm text-gray-700 leading-relaxed">{item.body}</p>
+                <p className="text-sm text-gray-700 leading-relaxed">{humanizeReviewCopy(item.body)}</p>
               </article>
             ))}
           </div>
@@ -3344,7 +3365,7 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
             {websiteSeoSignals.map((item) => (
               <article key={item.title} className="rounded-xl border border-blue-100 bg-white p-4">
                 <h3 className="text-base font-semibold text-navy mb-1">{item.title}</h3>
-                <p className="text-sm text-gray-700 leading-relaxed">{item.body}</p>
+                <p className="text-sm text-gray-700 leading-relaxed">{humanizeReviewCopy(item.body)}</p>
               </article>
             ))}
           </div>
@@ -3360,14 +3381,11 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
             {crmDetail?.summary}
           </p>
           <div className="flex flex-wrap gap-3">
-            <a
-              href={review.vendorUrl}
-              target="_blank"
-              rel="sponsored noopener noreferrer"
-              className="bg-brand hover:bg-brand-hover text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
-            >
-              Visit {review.name}
-            </a>
+            <ReviewVendorVisitButton
+              reviewSlug={review.slug}
+              reviewName={review.name}
+              vendorUrl={review.vendorUrl}
+            />
             <Link
               href={review.categoryPath}
               className="border border-brand text-brand hover:bg-brand-light text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
@@ -3398,7 +3416,7 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
         <article className="rounded-xl border border-green-200 bg-green-50 p-5">
           <h2 className="text-lg text-green-900 mb-3">Pros</h2>
           <ul className="space-y-2">
-            {review.pros.map((pro) => (
+            {displayReview.pros.map((pro) => (
               <li key={pro} className="flex gap-2 text-sm text-green-900/90">
                 <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" />
                 {pro}
@@ -3409,7 +3427,7 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
         <article className="rounded-xl border border-red-200 bg-red-50 p-5">
           <h2 className="text-lg text-red-900 mb-3">Cons</h2>
           <ul className="space-y-2">
-            {review.cons.map((con) => (
+            {displayReview.cons.map((con) => (
               <li key={con} className="flex gap-2 text-sm text-red-900/90">
                 <XCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
                 {con}
@@ -3495,9 +3513,9 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
                   Best Fit and Who Should Skip
                 </h3>
                 <p className="text-gray-700 leading-relaxed">
-                  {review.name} is usually strongest where teams prioritize workflow fit, adoption speed, and practical
-                  execution quality. It is less suitable when requirements are outside its core operating model or
-                  budget profile.
+                  {humanizeReviewCopy(
+                    `${review.name} is usually strongest where teams prioritize workflow fit, adoption speed, and practical execution quality. It is less suitable when requirements sit outside its core operating model or budget profile.`
+                  )}
                 </p>
               </article>
             </div>
@@ -3509,7 +3527,7 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
               {featureBreakdown.map((item) => (
                 <div key={item.title} className="rounded-xl border border-gray-200 bg-gray-50 p-4">
                   <h3 className="text-base font-semibold text-navy mb-1">{item.title}</h3>
-                  <p className="text-sm text-gray-600 leading-relaxed">{item.body}</p>
+                  <p className="text-sm text-gray-600 leading-relaxed">{humanizeReviewCopy(item.body)}</p>
                 </div>
               ))}
             </div>
@@ -3554,22 +3572,25 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
         </>
       ) : null}
 
+      <div className="mb-10">
+        <ReviewQuoteBanner cta={quoteCta} />
+      </div>
+
       <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
         <h2 className="text-xl text-navy tracking-tight mb-2">{crmDetail ? 'Final Recommendation' : 'Editorial Verdict'}</h2>
-        <p className="text-gray-700 leading-relaxed mb-5">
-          {crmDetail
-            ? `${review.name} should be shortlisted when your team priorities align with its strengths in usability, workflow fit, and long-term operating model. Before final purchase, validate integration depth, adoption risk, and reporting requirements with a live pilot.`
-            : `${review.name} is a strong option for teams that match its category fit and budget profile. Use this review as a shortlist filter, then compare onboarding effort, reporting needs, and integration depth before final purchase.`}
-        </p>
+        <p className="text-gray-700 leading-relaxed mb-5">{finalRecommendation}</p>
         <div className="flex flex-wrap gap-3">
-          <a
-            href={review.vendorUrl}
-            target="_blank"
-            rel="sponsored noopener noreferrer"
-            className="bg-brand hover:bg-brand-hover text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
+          <Link
+            href={quoteCta.href}
+            className="bg-cb-orange hover:bg-cb-orange-hover text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
           >
-            Visit {review.name}
-          </a>
+            {quoteCta.buttonLabel} →
+          </Link>
+          <ReviewVendorVisitButton
+            reviewSlug={review.slug}
+            reviewName={review.name}
+            vendorUrl={review.vendorUrl}
+          />
           <Link
             href={review.categoryPath}
             className="border border-brand text-brand hover:bg-brand-light text-sm font-semibold px-4 py-2 rounded-lg transition-colors"

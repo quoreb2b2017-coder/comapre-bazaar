@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { CheckCircle2, XCircle, Globe, Shield, Zap, Users, DollarSign, Star } from 'lucide-react'
 import { buildMetadata } from '@/lib/seo'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
+import { FullReviewLink } from '@/components/reviews/FullReviewLink'
 import { getComparisonPageBySlug } from '@/data/comparisons'
 
 export const metadata: Metadata = buildMetadata({
@@ -208,12 +209,11 @@ export default function DeelHrPayrollPage() {
                   >
                     Visit {product.name.split(' ')[1] ?? 'Deel'} →
                   </a>
-                  <Link
-                    href={`/reviews/${product.reviewSlug}`}
-                    className="flex-1 text-center rounded-xl border border-[#F27F25] text-[#F27F25] hover:bg-orange-50 text-xs font-bold py-2.5 transition-colors"
-                  >
-                    Full Review
-                  </Link>
+                  <FullReviewLink
+                    reviewSlug={product.reviewSlug}
+                    productName={product.name}
+                    linkClassName="flex-1 text-center rounded-xl border border-[#F27F25] text-[#F27F25] hover:bg-orange-50 text-xs font-bold py-2.5 transition-colors"
+                  />
                 </div>
               </article>
             )

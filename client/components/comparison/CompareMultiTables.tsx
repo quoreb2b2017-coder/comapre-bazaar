@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { AlertTriangle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { CheckIcon } from '@/components/ui/icons'
+import { FullReviewLink } from '@/components/reviews/FullReviewLink'
 import {
   buildComparisonRows,
   type CompareCellValue,
@@ -196,9 +197,12 @@ export function CompareMultiTables({ products, lastReviewed, officialTable }: Co
                 </th>
                 {products.map((product) => (
                   <td key={`review-${product.id}`} className="compare-data-cell compare-data-cell-rich">
-                    <Link href={`/reviews/${product.reviewSlug}`} className="compare-table-link-secondary">
-                      Read review
-                    </Link>
+                    <FullReviewLink
+                      reviewSlug={product.reviewSlug}
+                      productName={product.name}
+                      label="Read review"
+                      linkClassName="compare-table-link-secondary"
+                    />
                   </td>
                 ))}
               </tr>

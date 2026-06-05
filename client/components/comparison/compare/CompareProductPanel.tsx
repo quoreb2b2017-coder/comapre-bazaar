@@ -5,6 +5,7 @@ import type { Product } from '@/types'
 import { getMainPoints, getShortWatchOuts } from '@/components/comparison/compare/officialCompareData'
 import { WORKS_BEST_FOR_BY_PRODUCT } from './constants'
 import { CompareScoreLine } from './CompareStars'
+import { FullReviewLink } from '@/components/reviews/FullReviewLink'
 
 export function CompareProductPanel({
   product,
@@ -56,9 +57,12 @@ export function CompareProductPanel({
         >
           Visit {product.name.split(' ')[0]} →
         </a>
-        <Link href={`/reviews/${product.reviewSlug}`} className="compare-btn-secondary">
-          Full review
-        </Link>
+        <FullReviewLink
+          reviewSlug={product.reviewSlug}
+          productName={product.name}
+          label="Full review"
+          linkClassName="compare-btn-secondary"
+        />
       </div>
 
       <div className="space-y-0 divide-y divide-gray-100 px-5 sm:px-6">
