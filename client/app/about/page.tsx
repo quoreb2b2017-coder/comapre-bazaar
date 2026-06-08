@@ -61,7 +61,7 @@ export default function AboutPage() {
           For editorial inquiries, corrections, or partnership questions, reach us at{' '}
           <a href="mailto:marketing@compare-bazaar.com">marketing@compare-bazaar.com</a>.
         </p>
-        <p>Compare Bazaar is based in New York, NY.</p>
+        <p>Compare Bazaar is based in Dallas, Texas.</p>
       </div>
     </div>
   )
