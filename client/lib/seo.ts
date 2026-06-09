@@ -25,13 +25,20 @@ export function buildMetadata({
   description,
   canonical,
   openGraphType = 'website',
+  ogTitle,
+  ogUrl,
 }: {
   title: string
   description: string
   canonical: string
   openGraphType?: 'website' | 'article'
+  /** Full share title (defaults to page title with site suffix). */
+  ogTitle?: string
+  /** Absolute og:url including query strings when needed. */
+  ogUrl?: string
 }): Metadata {
-  const url = `${SITE_URL}${canonical}`
+  const pageUrl = canonical.startsWith('http') ? canonical : `${SITE_URL}${canonical}`
+  const shareUrl = ogUrl ?? pageUrl
   const ogImage = defaultOgImageUrl()
   // Cap at 155 chars — Google truncates at ~155 (mobile: ~120)
   const truncatedDesc = description.length > 155 ? `${description.slice(0, 154)}…` : description
@@ -41,15 +48,16 @@ export function buildMetadata({
   const absoluteTitle = title.includes('| Compare Bazaar')
     ? title
     : `${title} | Compare Bazaar`
-    
+  const graphTitle = ogTitle ?? absoluteTitle
+
   return {
     title: { absolute: absoluteTitle },
     description: truncatedDesc,
-    alternates: { canonical: url },
+    alternates: { canonical: pageUrl },
     openGraph: {
-      title,
+      title: graphTitle,
       description: truncatedDesc,
-      url,
+      url: shareUrl,
       siteName: SITE_NAME,
       type: openGraphType,
       locale: 'en_US',
@@ -66,7 +74,7 @@ export function buildMetadata({
       card: 'summary_large_image',
       site: '@CompareBazaar',
       creator: '@CompareBazaar',
-      title,
+      title: graphTitle,
       description: truncatedDesc,
       images: [ogImage],
     },

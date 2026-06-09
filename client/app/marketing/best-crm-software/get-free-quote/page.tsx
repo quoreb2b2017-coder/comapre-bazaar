@@ -1,9 +1,9 @@
 import type { Metadata } from 'next'
-import { buildQuotePageHeading, buildQuotePageMetadata } from '@/lib/pageMetaDescriptions'
+import { buildQuotePageHeading, buildQuotePageMetadata, type QuoteSearchParams } from '@/lib/pageMetaDescriptions'
 import QuoteFormClient from './QuoteFormClient'
 
 type PageProps = {
-  searchParams: { vendor?: string | string[] }
+  searchParams: QuoteSearchParams
 }
 
 export function generateMetadata({ searchParams }: PageProps): Metadata {

@@ -1,9 +1,9 @@
 import type { Metadata } from 'next'
 import PayrollGetQuotesForm from '@/app/technology/best-payroll-system/get-free-quotes/QuoteFormClient'
-import { buildQuotePageHeading, buildQuotePageMetadata } from '@/lib/pageMetaDescriptions'
+import { buildQuotePageHeading, buildQuotePageMetadata, type QuoteSearchParams } from '@/lib/pageMetaDescriptions'
 
 type PageProps = {
-  searchParams: { vendor?: string | string[] }
+  searchParams: QuoteSearchParams
 }
 
 export function generateMetadata({ searchParams }: PageProps): Metadata {
