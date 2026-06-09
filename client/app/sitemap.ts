@@ -1,14 +1,18 @@
 import type { MetadataRoute } from 'next'
 import { comparisonPages } from '@/data/comparisons'
 import { hubPages } from '@/data/hubs'
-import { fetchPublishedBlogSummaries } from '@/lib/blogCms'
+import { fetchPublishedBlogSummaries, getBlogTopics, loadUnifiedBlogIndex } from '@/lib/blogCms'
+import { buildReviewVendorQuotePath } from '@/lib/reviewQuoteCta'
 import { fetchPublishedWhitePapers } from '@/lib/whitePaperCms'
+import { getReviewInsidePayload, generateStaticParams as reviewStaticParams } from '@/app/reviews/[slug]/page'
 
 const BASE_URL = 'https://www.compare-bazaar.com'
-const NOINDEX_COMPARISON_CANONICALS = new Set([
-  '/technology/best-payroll-system',
-  '/technology/best-employee-management-software',
-])
+
+/** XML sitemaps require escaped ampersands inside query-string URLs. */
+function sitemapUrl(pathOrUrl: string): string {
+  const absolute = pathOrUrl.startsWith('http') ? pathOrUrl : `${BASE_URL}${pathOrUrl}`
+  return absolute.replace(/&/g, '&amp;')
+}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date()
@@ -47,15 +51,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.9,
   }))
 
-  // ── 4. Comparison / category pages ───────────────────────────────────────
-  const comparisonRoutes: MetadataRoute.Sitemap = comparisonPages
-    .filter((page) => !NOINDEX_COMPARISON_CANONICALS.has(page.canonical))
-    .map((page) => ({
-      url: `${BASE_URL}${page.canonical}`,
-      lastModified: now,
-      changeFrequency: 'weekly' as const,
-      priority: 0.9,
-    }))
+  // ── 4. Comparison / category pages (includes /technology/best-payroll-system) ──
+  const comparisonRoutes: MetadataRoute.Sitemap = comparisonPages.map((page) => ({
+    url: `${BASE_URL}${page.canonical}`,
+    lastModified: now,
+    changeFrequency: 'weekly' as const,
+    priority: 0.9,
+  }))
 
   // ── 5. Lead-gen quote pages — live + indexed, low SEO priority ────────────
   const leadGenRoutes: MetadataRoute.Sitemap = [
@@ -77,8 +79,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // ── 6. Compare detail URLs (?category=&brand=) from comparison dataset ──────
   const compareDetailRoutes: MetadataRoute.Sitemap = comparisonPages.flatMap((page) =>
     page.products.map((product) => ({
-      // XML sitemap needs escaped ampersand inside query-string URLs.
-      url: `${BASE_URL}/compare?category=${encodeURIComponent(page.slug)}&amp;brand=${encodeURIComponent(product.id)}`,
+      url: sitemapUrl(`/compare?category=${encodeURIComponent(page.slug)}&brand=${encodeURIComponent(product.id)}`),
       lastModified: now,
       changeFrequency: 'weekly' as const,
       priority: 0.6,
@@ -101,7 +102,33 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.75,
   }))
 
-  // ── 8. Blog posts from CMS ────────────────────────────────────────────────
+  // ── 8. Review full-description pages (linked from review CTAs) ─────────────
+  const reviewDescriptionRoutes: MetadataRoute.Sitemap = reviewStaticParams()
+    .filter(({ slug }) => getReviewInsidePayload(slug) !== null)
+    .map(({ slug }) => ({
+      url: `${BASE_URL}/reviews/${slug}/description`,
+      lastModified: now,
+      changeFrequency: 'monthly' as const,
+      priority: 0.55,
+    }))
+
+  // ── 9. Vendor-specific quote landings (?ref=review&product=&vendor=) ───────
+  const vendorQuoteRoutes: MetadataRoute.Sitemap = comparisonPages.flatMap((page) =>
+    page.products
+      .map((product) => {
+        const path = buildReviewVendorQuotePath(product.reviewSlug, product.name, page.canonical)
+        if (!path) return null
+        return {
+          url: sitemapUrl(path),
+          lastModified: now,
+          changeFrequency: 'yearly' as const,
+          priority: 0.25,
+        }
+      })
+      .filter((entry): entry is NonNullable<typeof entry> => entry !== null)
+  )
+
+  // ── 10. Blog posts from CMS ───────────────────────────────────────────────
   const cmsPosts = await fetchPublishedBlogSummaries()
   const blogRoutes: MetadataRoute.Sitemap = cmsPosts.map((post) => ({
     url: `${BASE_URL}/blog/${post.slug}`,
@@ -109,6 +136,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: 'monthly' as const,
     priority: 0.65,
   }))
+
+  // ── 11. Blog topic filter pages (?topic=) ───────────────────────────────────
+  let blogTopicRoutes: MetadataRoute.Sitemap = []
+  try {
+    const blogIndex = await loadUnifiedBlogIndex()
+    blogTopicRoutes = getBlogTopics(blogIndex).map((topic) => ({
+      url: sitemapUrl(`/blog?topic=${encodeURIComponent(topic.slug)}`),
+      lastModified: now,
+      changeFrequency: 'weekly' as const,
+      priority: 0.5,
+    }))
+  } catch {
+    blogTopicRoutes = []
+  }
 
   const whitePapers = await fetchPublishedWhitePapers()
   const whitePaperRoutes: MetadataRoute.Sitemap = whitePapers.flatMap((paper) => {
@@ -138,7 +179,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...leadGenRoutes,
     ...compareDetailRoutes,
     ...reviewRoutes,
+    ...reviewDescriptionRoutes,
+    ...vendorQuoteRoutes,
     ...blogRoutes,
+    ...blogTopicRoutes,
     ...whitePaperRoutes,
   ]
 

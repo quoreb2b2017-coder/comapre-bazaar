@@ -10,6 +10,24 @@ export type ReviewQuoteCta = {
 
 const FALLBACK_HREF = '/technology/get-free-quotes'
 
+/** Path + query for review-sourced vendor quote landings (no hash). */
+export function buildReviewVendorQuotePath(
+  reviewSlug: string,
+  reviewName: string,
+  categoryPath: string
+): string | null {
+  const page = comparisonPages.find((p) => p.canonical === categoryPath)
+  const baseHref = page?.ctaSlug
+  if (!baseHref) return null
+  const root = baseHref.split('#')[0].replace(/\/$/, '')
+  const params = new URLSearchParams({
+    ref: 'review',
+    product: reviewSlug,
+    vendor: reviewName.trim(),
+  })
+  return `${root}?${params.toString()}`
+}
+
 function quoteHref(base: string, reviewSlug: string, reviewName: string): string {
   const root = base.split('#')[0].replace(/\/$/, '')
   const params = new URLSearchParams({
