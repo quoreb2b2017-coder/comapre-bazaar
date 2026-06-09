@@ -1,14 +1,16 @@
 import type { Metadata } from 'next'
-import EmployeeManagementGetQuotesForm from '@/app/technology/best-employee-management-software/get-free-quotes/page'
-import { buildMetadata } from '@/lib/seo'
+import EmployeeManagementGetQuotesForm from '@/app/technology/best-employee-management-software/get-free-quotes/QuoteFormClient'
+import { buildQuotePageHeading, buildQuotePageMetadata } from '@/lib/pageMetaDescriptions'
 
-export const metadata: Metadata = buildMetadata({
-  title: 'Get Employee Management Software Quotes',
-  description:
-    'Compare top employee management software providers. Get free quotes for onboarding, performance, and workforce analytics tools.',
-  canonical: '/human-resources/best-employee-management-software/get-free-quotes',
-})
+type PageProps = {
+  searchParams: { vendor?: string | string[] }
+}
 
-export default function Page() {
-  return <EmployeeManagementGetQuotesForm />
+export function generateMetadata({ searchParams }: PageProps): Metadata {
+  return buildQuotePageMetadata('human-resources/best-employee-management-software/get-free-quotes', searchParams)
+}
+
+export default function Page({ searchParams }: PageProps) {
+  const heading = buildQuotePageHeading('human-resources/best-employee-management-software/get-free-quotes', searchParams)
+  return <EmployeeManagementGetQuotesForm heading={heading} />
 }

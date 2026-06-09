@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, type ChangeEvent, type FormEvent } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
 
 type ContactFaq = {
     question: string;
@@ -47,11 +47,6 @@ function FAQ({ faqsData }: { faqsData: ContactFaq[] }) {
 }
 
 const ContactPage = () => {
-    // Update document title
-    useEffect(() => {
-        document.title = "Contact Us | Compare-Bazaar";
-    }, []);
-
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [formData, setFormData] = useState({
         name: '',

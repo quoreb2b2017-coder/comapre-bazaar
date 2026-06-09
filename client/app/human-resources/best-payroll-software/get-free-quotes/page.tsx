@@ -1,14 +1,16 @@
 import type { Metadata } from 'next'
-import PayrollGetQuotesForm from '@/app/technology/best-payroll-system/get-free-quotes/page'
-import { buildMetadata } from '@/lib/seo'
+import PayrollGetQuotesForm from '@/app/technology/best-payroll-system/get-free-quotes/QuoteFormClient'
+import { buildQuotePageHeading, buildQuotePageMetadata } from '@/lib/pageMetaDescriptions'
 
-export const metadata: Metadata = buildMetadata({
-  title: 'Get Payroll Software Quotes',
-  description:
-    'Get matched with top payroll software providers. Compare features, pricing, and compliance support for your business.',
-  canonical: '/human-resources/best-payroll-software/get-free-quotes',
-})
+type PageProps = {
+  searchParams: { vendor?: string | string[] }
+}
 
-export default function Page() {
-  return <PayrollGetQuotesForm />
+export function generateMetadata({ searchParams }: PageProps): Metadata {
+  return buildQuotePageMetadata('human-resources/best-payroll-software/get-free-quotes', searchParams)
+}
+
+export default function Page({ searchParams }: PageProps) {
+  const heading = buildQuotePageHeading('human-resources/best-payroll-software/get-free-quotes', searchParams)
+  return <PayrollGetQuotesForm heading={heading} />
 }

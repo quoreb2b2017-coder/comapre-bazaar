@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
 import { ComparePageClient } from '@/components/comparison/compare/ComparePageClient'
@@ -5,6 +6,7 @@ import { ComparePageSkeleton } from '@/components/comparison/compare/ComparePage
 import type { ComparePagePayload } from '@/components/comparison/compare/types'
 import { parseVsParam } from '@/lib/compareUrl'
 import { getComparisonPageBySlug } from '@/data/comparisons'
+import { buildComparePageMetadata } from '@/lib/pageMetaDescriptions'
 import type { Product } from '@/types'
 
 type ComparePageProps = {
@@ -13,6 +15,10 @@ type ComparePageProps = {
     brand?: string | string[]
     vs?: string | string[]
   }
+}
+
+export function generateMetadata({ searchParams }: ComparePageProps): Metadata {
+  return buildComparePageMetadata(searchParams)
 }
 
 function toComparePayload(page: NonNullable<ReturnType<typeof getComparisonPageBySlug>>): ComparePagePayload {
