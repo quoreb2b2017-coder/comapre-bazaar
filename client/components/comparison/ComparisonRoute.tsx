@@ -9,11 +9,14 @@ interface ComparisonRouteProps {
 }
 
 export function buildComparisonMetadata(data: ComparisonPageData): Metadata {
+  const pageUrl = `${SITE_URL}${data.canonical}`
   return buildMetadata({
     title: data.title,
     description: data.metaDescription,
     canonical: data.canonical,
     openGraphType: 'website',
+    ogTitle: `${data.title} | Compare Bazaar`,
+    ogUrl: pageUrl,
   })
 }
 

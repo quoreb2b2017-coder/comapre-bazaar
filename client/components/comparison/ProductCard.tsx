@@ -46,6 +46,9 @@ export function ProductCard({
       : isSalesSmooth
         ? 'bg-gradient-to-r from-white to-indigo-50/60'
         : 'bg-gradient-to-r from-white to-emerald-50/60'
+
+  const displayName = product.id === 'hubspot' ? 'HubSpot CRM' : product.name
+
   return (
     <article
       id={product.id}
@@ -77,8 +80,8 @@ export function ProductCard({
 
         {/* Title */}
         <div className="flex-1 min-w-[140px]">
-          <h3 className="text-[20px] font-semibold text-navy tracking-tight">
-            {product.name}
+          <h3 className="text-[20px] font-semibold text-navy tracking-tight break-words">
+            {displayName}
           </h3>
           <p className="text-sm text-brand font-medium">{product.tagline}</p>
         </div>
