@@ -1,12 +1,23 @@
 import type { MetadataRoute } from 'next'
 import { comparisonPages } from '@/data/comparisons'
 import { hubPages } from '@/data/hubs'
-import { fetchPublishedBlogSummaries, getBlogTopics, loadUnifiedBlogIndex } from '@/lib/blogCms'
+import {
+  fetchPublishedBlogSummaries,
+  getBlogTopicsFromSummaries,
+  loadUnifiedBlogIndex,
+} from '@/lib/blogCms'
+import { QUOTE_PAGE_CONFIGS } from '@/lib/pageMetaDescriptions'
 import { buildReviewVendorQuotePath } from '@/lib/reviewQuoteCta'
 import { fetchPublishedWhitePapers } from '@/lib/whitePaperCms'
 import { getReviewInsidePayload, generateStaticParams as reviewStaticParams } from '@/app/reviews/[slug]/page'
 
 const BASE_URL = 'https://www.compare-bazaar.com'
+
+/** Paths that 301 to another canonical — omit from sitemap to avoid duplicate entries. */
+const SITEMAP_REDIRECT_PATHS = new Set([
+  '/technology/best-employee-management-software',
+  '/technology/best-employee-management-software/get-free-quotes',
+])
 
 /** XML sitemaps require escaped ampersands inside query-string URLs. */
 function sitemapUrl(pathOrUrl: string): string {
@@ -14,22 +25,27 @@ function sitemapUrl(pathOrUrl: string): string {
   return absolute.replace(/&/g, '&amp;')
 }
 
+function isSitemapPath(path: string): boolean {
+  const normalized = path.startsWith('/') ? path : `/${path}`
+  return !SITEMAP_REDIRECT_PATHS.has(normalized)
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date()
 
   // ── 1. Core pages ────────────────────────────────────────────────────────
   const staticRoutes: MetadataRoute.Sitemap = [
-    { url: BASE_URL,                                    lastModified: now, changeFrequency: 'weekly',  priority: 1.0 },
-    { url: `${BASE_URL}/blog`,                          lastModified: now, changeFrequency: 'weekly',  priority: 0.8 },
-    { url: `${BASE_URL}/browse-all-software`,           lastModified: now, changeFrequency: 'weekly',  priority: 0.7 },
-    { url: `${BASE_URL}/editorial-process`,             lastModified: now, changeFrequency: 'yearly',  priority: 0.5 },
-    { url: `${BASE_URL}/about`,                         lastModified: now, changeFrequency: 'yearly',  priority: 0.5 },
-    { url: `${BASE_URL}/resources`,                     lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
-    { url: `${BASE_URL}/resources/whitepaper`,          lastModified: now, changeFrequency: 'monthly', priority: 0.4 },
-    { url: `${BASE_URL}/start-a-business`,              lastModified: now, changeFrequency: 'monthly', priority: 0.4 },
-    { url: `${BASE_URL}/business-planning`,             lastModified: now, changeFrequency: 'monthly', priority: 0.4 },
-    { url: `${BASE_URL}/advertise`,                     lastModified: now, changeFrequency: 'yearly',  priority: 0.4 },
-    { url: `${BASE_URL}/contact`,                       lastModified: now, changeFrequency: 'yearly',  priority: 0.4 },
+    { url: BASE_URL,                          lastModified: now, changeFrequency: 'weekly',  priority: 1.0 },
+    { url: `${BASE_URL}/blog`,                lastModified: now, changeFrequency: 'weekly',  priority: 0.8 },
+    { url: `${BASE_URL}/browse-all-software`, lastModified: now, changeFrequency: 'weekly',  priority: 0.7 },
+    { url: `${BASE_URL}/editorial-process`,   lastModified: now, changeFrequency: 'yearly',  priority: 0.5 },
+    { url: `${BASE_URL}/about`,               lastModified: now, changeFrequency: 'yearly',  priority: 0.5 },
+    { url: `${BASE_URL}/resources`,           lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${BASE_URL}/resources/whitepaper`, lastModified: now, changeFrequency: 'monthly', priority: 0.4 },
+    { url: `${BASE_URL}/start-a-business`,    lastModified: now, changeFrequency: 'monthly', priority: 0.4 },
+    { url: `${BASE_URL}/business-planning`,   lastModified: now, changeFrequency: 'monthly', priority: 0.4 },
+    { url: `${BASE_URL}/advertise`,           lastModified: now, changeFrequency: 'yearly',  priority: 0.4 },
+    { url: `${BASE_URL}/contact`,             lastModified: now, changeFrequency: 'yearly',  priority: 0.4 },
   ]
 
   // ── 2. Legal / compliance ─────────────────────────────────────────────────
@@ -51,32 +67,34 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.9,
   }))
 
-  // ── 4. Comparison / category pages (includes /technology/best-payroll-system) ──
-  const comparisonRoutes: MetadataRoute.Sitemap = comparisonPages.map((page) => ({
-    url: `${BASE_URL}${page.canonical}`,
-    lastModified: now,
-    changeFrequency: 'weekly' as const,
-    priority: 0.9,
-  }))
+  // ── 4. Comparison / category pages ───────────────────────────────────────
+  const comparisonRoutes: MetadataRoute.Sitemap = comparisonPages
+    .filter((page) => isSitemapPath(page.canonical))
+    .map((page) => ({
+      url: `${BASE_URL}${page.canonical}`,
+      lastModified: now,
+      changeFrequency: 'weekly' as const,
+      priority: 0.9,
+    }))
 
-  // ── 5. Lead-gen quote pages — live + indexed, low SEO priority ────────────
-  const leadGenRoutes: MetadataRoute.Sitemap = [
-    { url: `${BASE_URL}/technology/get-free-quotes`,                                        lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${BASE_URL}/marketing/get-free-quotes`,                                         lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${BASE_URL}/marketing/best-crm-software/get-free-quote`,                        lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${BASE_URL}/marketing/best-email-marketing-services/get-free-quotes`,           lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${BASE_URL}/marketing/best-website-building-platform/get-free-quotes`,          lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${BASE_URL}/human-resources/best-payroll-software/get-free-quotes`,             lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${BASE_URL}/technology/best-payroll-system/get-free-quotes`,                    lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${BASE_URL}/technology/business-phone-systems/get-free-quotes`,                 lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${BASE_URL}/technology/gps-fleet-management-software/get-free-quotes`,          lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${BASE_URL}/human-resources/best-employee-management-software/get-free-quotes`, lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${BASE_URL}/sales/best-crm-software/get-free-quotes`,                           lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${BASE_URL}/sales/best-call-center-management-software/get-free-quotes`,        lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${BASE_URL}/sales/best-project-management-software/get-free-quotes`,            lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
+  // ── 5. Lead-gen quote pages (from QUOTE_PAGE_CONFIGS + quote hub landings) ─
+  const quoteConfigRoutes: MetadataRoute.Sitemap = Object.values(QUOTE_PAGE_CONFIGS)
+    .filter((config) => isSitemapPath(config.canonical))
+    .map((config) => ({
+      url: `${BASE_URL}${config.canonical}`,
+      lastModified: now,
+      changeFrequency: 'yearly' as const,
+      priority: 0.3,
+    }))
+
+  const quoteHubRoutes: MetadataRoute.Sitemap = [
+    { url: `${BASE_URL}/technology/get-free-quotes`, lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${BASE_URL}/marketing/get-free-quotes`,  lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
   ]
 
-  // ── 6. Compare detail URLs (?category=&brand=) from comparison dataset ──────
+  const leadGenRoutes: MetadataRoute.Sitemap = [...quoteConfigRoutes, ...quoteHubRoutes]
+
+  // ── 6. Compare detail URLs (?category=&brand=) ───────────────────────────
   const compareDetailRoutes: MetadataRoute.Sitemap = comparisonPages.flatMap((page) =>
     page.products.map((product) => ({
       url: sitemapUrl(`/compare?category=${encodeURIComponent(page.slug)}&brand=${encodeURIComponent(product.id)}`),
@@ -86,13 +104,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }))
   )
 
-  // ── 7. Review pages — derive from live comparison data to avoid omissions ──
+  // ── 7. Review pages ───────────────────────────────────────────────────────
   const reviewSlugs = Array.from(
-    new Set(
-      comparisonPages.flatMap((page) =>
-        page.products.map((product) => product.reviewSlug)
-      )
-    )
+    new Set(comparisonPages.flatMap((page) => page.products.map((product) => product.reviewSlug)))
   )
 
   const reviewRoutes: MetadataRoute.Sitemap = reviewSlugs.map((slug) => ({
@@ -102,7 +116,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.75,
   }))
 
-  // ── 8. Review full-description pages (linked from review CTAs) ─────────────
+  // ── 8. Review full-description pages ──────────────────────────────────────
   const reviewDescriptionRoutes: MetadataRoute.Sitemap = reviewStaticParams()
     .filter(({ slug }) => getReviewInsidePayload(slug) !== null)
     .map(({ slug }) => ({
@@ -112,12 +126,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.55,
     }))
 
-  // ── 9. Vendor-specific quote landings (?ref=review&product=&vendor=) ───────
+  // ── 9. Vendor quote landings (?ref=review&product=&vendor=) ─────────────
   const vendorQuoteRoutes: MetadataRoute.Sitemap = comparisonPages.flatMap((page) =>
     page.products
       .map((product) => {
         const path = buildReviewVendorQuotePath(product.reviewSlug, product.name, page.canonical)
-        if (!path) return null
+        if (!path || !isSitemapPath(path.split('?')[0])) return null
         return {
           url: sitemapUrl(path),
           lastModified: now,
@@ -128,8 +142,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .filter((entry): entry is NonNullable<typeof entry> => entry !== null)
   )
 
-  // ── 10. Blog posts from CMS ───────────────────────────────────────────────
+  // ── 10. Blog posts + topic filters (single CMS fetch) ─────────────────────
   const cmsPosts = await fetchPublishedBlogSummaries()
+
   const blogRoutes: MetadataRoute.Sitemap = cmsPosts.map((post) => ({
     url: `${BASE_URL}/blog/${post.slug}`,
     lastModified: post.publishedAt ? new Date(post.publishedAt) : now,
@@ -137,20 +152,37 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.65,
   }))
 
-  // ── 11. Blog topic filter pages (?topic=) ───────────────────────────────────
-  let blogTopicRoutes: MetadataRoute.Sitemap = []
-  try {
-    const blogIndex = await loadUnifiedBlogIndex()
-    blogTopicRoutes = getBlogTopics(blogIndex).map((topic) => ({
-      url: sitemapUrl(`/blog?topic=${encodeURIComponent(topic.slug)}`),
-      lastModified: now,
-      changeFrequency: 'weekly' as const,
-      priority: 0.5,
-    }))
-  } catch {
-    blogTopicRoutes = []
+  let blogTopicRoutes: MetadataRoute.Sitemap = getBlogTopicsFromSummaries(cmsPosts).map((topic) => ({
+    url: sitemapUrl(`/blog?topic=${encodeURIComponent(topic.slug)}`),
+    lastModified: now,
+    changeFrequency: 'weekly' as const,
+    priority: 0.5,
+  }))
+
+  // Fallback when CMS is empty/offline: derive topics from local blog index
+  if (blogTopicRoutes.length === 0) {
+    try {
+      const blogIndex = await loadUnifiedBlogIndex()
+      blogTopicRoutes = getBlogTopicsFromSummaries(
+        blogIndex.map((post) => ({
+          slug: post.slug,
+          title: post.title,
+          excerpt: post.excerpt,
+          publishedAt: post.publishedAt,
+          tags: [post.category],
+        }))
+      ).map((topic) => ({
+        url: sitemapUrl(`/blog?topic=${encodeURIComponent(topic.slug)}`),
+        lastModified: now,
+        changeFrequency: 'weekly' as const,
+        priority: 0.5,
+      }))
+    } catch {
+      blogTopicRoutes = []
+    }
   }
 
+  // ── 11. Whitepapers ───────────────────────────────────────────────────────
   const whitePapers = await fetchPublishedWhitePapers()
   const whitePaperRoutes: MetadataRoute.Sitemap = whitePapers.flatMap((paper) => {
     const lastModified = paper.publishedAt ? new Date(paper.publishedAt) : now
@@ -170,7 +202,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ]
   })
 
-  // ── Merge: first-write-wins ───────────────────────────────────────────────
+  // ── Merge: first-write-wins dedupe ────────────────────────────────────────
   const combined = [
     ...staticRoutes,
     ...legalRoutes,

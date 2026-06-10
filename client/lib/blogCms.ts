@@ -147,6 +147,25 @@ export function getBlogTopics(posts: UnifiedBlogCard[]): BlogTopicEntry[] {
   return [...map.values()].sort((a, b) => a.label.localeCompare(b.label))
 }
 
+/** All ?topic= slugs from CMS tags and topic fields (for sitemap coverage). */
+export function getBlogTopicsFromSummaries(summaries: CmsBlogSummary[]): BlogTopicEntry[] {
+  const map = new Map<string, BlogTopicEntry>()
+  for (const post of summaries) {
+    const labels = [...new Set([...(post.tags || []), ...(post.topic ? [post.topic] : [])])]
+    for (const label of labels) {
+      const slug = topicToSlug(label)
+      if (!slug) continue
+      const existing = map.get(slug)
+      if (existing) {
+        existing.count += 1
+      } else {
+        map.set(slug, { label, slug, count: 1 })
+      }
+    }
+  }
+  return [...map.values()].sort((a, b) => a.label.localeCompare(b.label))
+}
+
 export type UnifiedBlogCard = {
   slug: string
   title: string
