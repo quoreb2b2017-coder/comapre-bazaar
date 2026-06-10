@@ -8,10 +8,6 @@ type ContactFaq = {
     answerDetails?: string[];
 };
 
-function NewPage() {
-    return null;
-}
-
 function FAQ({ faqsData }: { faqsData: ContactFaq[] }) {
     const [openIndex, setOpenIndex] = useState<number | null>(0);
 
@@ -57,14 +53,13 @@ const ContactPage = () => {
 
     const contactFAQs: ContactFaq[] = [
         {
-            question: "How can I contact CompareBazar customer support?",
+            question: "How can I contact Compare Bazaar customer support?",
             answer: [
-                "You can reach us through multiple channels:",
-                "• Phone support: Available through our request form (24/7 support)",
-                "• Email: support@comparebazar.com",
-                "• Live Chat: Available on our website during business hours",
-                "• Social Media: DM us on Twitter/Facebook/Instagram @CompareBazar",
-                "• In-person: Visit our headquarters at [Your Company Address]"
+                "You can reach us through:",
+                "• Phone: +1 332-231-0404 (Monday–Friday 9am–11pm, Sunday 9am–4pm)",
+                "• Email: contactus@compare-bazaar.com",
+                "• Contact form: Use the form on this page and we will reply within 1 business day",
+                "• LinkedIn: linkedin.com/company/comparebazaar",
             ]
         },
         {
@@ -104,13 +99,13 @@ const ContactPage = () => {
         },
         {
             question: "Where can I send partnership or business inquiries?",
-            answer: "For business collaborations, please email partnerships@comparebazar.com or fill out the partnership form on our website. Our business development team responds within 24 hours."
+            answer: "For business collaborations, please email contactus@compare-bazaar.com or fill out the partnership form on this page. Our business development team responds within 24 hours."
         },
         {
             question: "How do I report a technical issue with the website?",
             answer: [
                 "Please report any technical problems to:",
-                "• Email: techsupport@comparebazar.com",
+                "• Email: contactus@compare-bazaar.com",
                 "• Phone support: Request a technical callback through our support form",
                 "• Use the 'Report Issue' button in your account dashboard",
                 "Include screenshots and details for faster resolution"
@@ -129,14 +124,14 @@ const ContactPage = () => {
         },
         {
             question: "Do you have a premium support option?",
-            answer: "Yes, our CompareBazar Pro members get priority support with dedicated account managers, 24/7 phone access, and guaranteed 15-minute response times for all inquiries."
+            answer: "Yes, Compare Bazaar members get priority support with dedicated account managers, extended phone hours, and faster response times for all inquiries."
         },
         {
             question: "How can I provide feedback about your service?",
             answer: [
                 "We welcome your feedback through:",
                 "• Customer satisfaction surveys after each interaction",
-                "• Email to feedback@comparebazar.com",
+                "• Email to contactus@compare-bazaar.com",
                 "• Review platforms like Trustpilot",
                 "• Social media channels",
                 "All feedback receives a personal response from our management team"
@@ -187,7 +182,7 @@ const ContactPage = () => {
     };
     return (
         <>
-            <h1 className="sr-only">Contact Compare Bazaar</h1>
+            <h1 className="sr-only">Contact Us</h1>
             <div className="font-sans overflow-x-hidden bg-gray-50">
                 {/* Hero Section with Map */}
                 <div className="relative">
@@ -241,8 +236,8 @@ const ContactPage = () => {
                             </div>
                             <div className="flex flex-col justify-center text-center">
                                 <h2 className="text-xl md:text-2xl text-[#000e54] font-bold mb-4">EMAIL</h2>
-                                <a href="mailto:Contactus@compare-bazaar.com" className="text-base md:text-lg leading-relaxed text-[#ff8633] hover:text-[#ff9a57] transition-colors break-all">
-                                    Contactus@compare-bazaar.com
+                                <a href="mailto:contactus@compare-bazaar.com" className="text-base md:text-lg leading-relaxed text-[#ff8633] hover:text-[#ff9a57] transition-colors break-all">
+                                    contactus@compare-bazaar.com
                                 </a>
                             </div>
                         </div>
@@ -443,8 +438,7 @@ const ContactPage = () => {
                     </div>
                     
                 </div>
-                <NewPage/>
-           
+
                 {/* Call to Action Section */}
                 <div className="bg-gradient-to-br from-[#000e54] to-[#001e74] text-white text-center py-20 px-4">
                     <div className="max-w-4xl mx-auto">

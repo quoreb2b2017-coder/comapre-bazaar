@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { buildMetadata } from '@/lib/seo'
 
 export const metadata: Metadata = buildMetadata({
-  title: 'Contact Compare Bazaar',
+  title: 'Contact Us',
   description:
     'Got a question or want to list your software? Reach out to the Compare Bazaar team and we will get back to you shortly.',
   canonical: '/contact',

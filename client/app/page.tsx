@@ -17,8 +17,10 @@ import {
 export const metadata: Metadata = buildMetadata({
   title: 'Best Business Software Comparisons & Reviews 2026',
   description:
-    'Compare the best CRM, payroll, HR, and marketing software. Independent expert reviews, side-by-side pricing comparisons, and ranked recommendations — updated for 2026.',
+    'Independent reviews, side by side pricing, and ranked picks across CRM, payroll, HR, email marketing, and more. Trusted by 80,000 business buyers.',
   canonical: '/',
+  ogTitle: 'Best Business Software Comparisons & Reviews 2026 | Compare Bazaar',
+  ogUrl: 'https://www.compare-bazaar.com',
 })
 
 const CATEGORIES = [

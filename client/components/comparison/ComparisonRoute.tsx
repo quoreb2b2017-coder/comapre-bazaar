@@ -13,7 +13,7 @@ export function buildComparisonMetadata(data: ComparisonPageData): Metadata {
     title: data.title,
     description: data.metaDescription,
     canonical: data.canonical,
-    openGraphType: 'article',
+    openGraphType: 'website',
   })
 }
 

@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     template: '%s | Compare Bazaar',
   },
   description:
-    'Compare the best CRM, payroll, HR, and marketing software. Independent expert reviews, side-by-side pricing comparisons, and ranked recommendations — updated for 2026.',
+    'Independent reviews, side by side pricing, and ranked picks across CRM, payroll, HR, email marketing, and more. Trusted by 80,000 business buyers.',
   openGraph: {
     siteName: 'Compare Bazaar',
     type: 'website',

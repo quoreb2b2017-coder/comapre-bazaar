@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
-import { buildMetadata } from '@/lib/seo'
+import { buildMetadata, SITE_URL } from '@/lib/seo'
 import { ReviewInsideFullView } from '@/components/reviews/ReviewInsideFullView'
 import { getReviewInsidePayload, generateStaticParams as reviewStaticParams } from '../page'
 
@@ -25,10 +25,15 @@ export function generateMetadata({ params }: PageProps): Metadata {
     })
   }
 
+  const canonical = `/reviews/${data.review.slug}/description`
+  const title = `Full description: ${data.review.name} Review`
+
   return buildMetadata({
-    title: `Full description: ${data.review.name} Review`,
+    title,
     description: data.overview,
-    canonical: `/reviews/${data.review.slug}/description`,
+    canonical,
+    ogTitle: `${title} | Compare Bazaar`,
+    ogUrl: `${SITE_URL}${canonical}`,
   })
 }
 

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { getComparisonPageBySlug } from '@/data/comparisons'
+import { resolveCompareSeoNames, resolveQuoteVendorTitlePrefix } from '@/lib/seoAuditOverrides'
 import { buildMetadata, SITE_URL } from '@/lib/seo'
 
 const COMPARE_CATEGORY_LABELS: Record<string, string> = {
@@ -52,8 +53,9 @@ export function buildComparePageMetadata(searchParams: {
   const path = brandId
     ? `/compare?category=${category}&brand=${brandId}`
     : `/compare?category=${category}`
-  const title = `${product.name} Review and Pricing 2026`
-  const description = buildCompareBrandMetaDescription(product.name, category)
+  const { metaName, titleName } = resolveCompareSeoNames(category, product.id, product.name)
+  const title = `${titleName} Review and Pricing 2026`
+  const description = buildCompareBrandMetaDescription(metaName, category)
 
   return buildMetadata({
     title,
@@ -109,7 +111,7 @@ export const QUOTE_PAGE_CONFIGS = {
     baseTitle: 'Best Call Center Software 2026',
     canonical: '/sales/best-call-center-management-software/get-free-quotes',
     baseDescription:
-      'Get free quotes from top Call Center Software providers. Compare pricing and features to find the right fit for your team.',
+      'Get free quotes from top call center software providers. Compare pricing and features to find the right fit for your support team.',
     vendorCategoryLabel: 'call center software',
     vendorTitleSuffix: 'Call Center Quote',
     baseH1: 'Get Free Quotes from Top Call Center Software Providers',
@@ -244,8 +246,11 @@ export function buildQuotePageMetadata(
 ): Metadata {
   const config = QUOTE_PAGE_CONFIGS[key]
   const vendor = parseParam(searchParams?.vendor)
+  const product = parseParam(searchParams?.product)
   const path = buildQuotePagePath(config.canonical, searchParams)
-  const title = vendor ? `${vendor} ${config.vendorTitleSuffix}` : config.baseTitle
+  const title = vendor
+    ? `${resolveQuoteVendorTitlePrefix(product, vendor)} ${config.vendorTitleSuffix}`
+    : config.baseTitle
   const description = vendor
     ? buildVendorQuoteDescription(vendor, config.vendorCategoryLabel)
     : config.baseDescription
