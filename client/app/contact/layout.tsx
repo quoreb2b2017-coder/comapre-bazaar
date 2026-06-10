@@ -6,6 +6,7 @@ export const metadata: Metadata = buildMetadata({
   description:
     'Got a question or want to list your software? Reach out to the Compare Bazaar team and we will get back to you shortly.',
   canonical: '/contact',
+  openGraphType: 'website',
   ogTitle: 'Contact Compare Bazaar',
   ogUrl: 'https://www.compare-bazaar.com/contact',
 })

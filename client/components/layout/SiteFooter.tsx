@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { CookiePreferencesTrigger } from '@/components/consent/CookiePreferencesTrigger'
+import { LINKEDIN_COMPANY_URL } from '@/lib/seo'
 
 const CATEGORIES = [
   { label: 'All Software Quotes', href: '/technology/get-free-quotes' },
@@ -133,7 +134,7 @@ export function SiteFooter({ className = '' }: { className?: string }) {
               Follow Us
             </h5>
             <a
-              href="https://www.linkedin.com/company/comparebazaar/"
+              href={LINKEDIN_COMPANY_URL}
               rel="noopener noreferrer"
               target="_blank"
               className="text-sm text-white/90 hover:text-[#FFE9CF] transition-colors"

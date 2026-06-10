@@ -58,27 +58,25 @@ const ContactPage = () => {
                 "You can reach us through:",
                 "• Phone: +1 332-231-0404 (Monday–Friday 9am–11pm, Sunday 9am–4pm)",
                 "• Email: contactus@compare-bazaar.com",
+                "• In-person: 539 W. Commerce St #2577, Dallas, TX 75208",
                 "• Contact form: Use the form on this page and we will reply within 1 business day",
-                "• LinkedIn: linkedin.com/company/comparebazaar",
+                "• LinkedIn: https://www.linkedin.com/company/comparebazaar/posts/?feedView=all",
             ]
         },
         {
             question: "What are your customer support hours?",
             answer: [
                 "Our support team is available:",
-                "Monday-Friday: 8:00 AM to 10:00 PM (your timezone)",
-                "Saturday-Sunday: 9:00 AM to 8:00 PM",
-                "24/7 emergency support for premium members"
+                "Monday–Friday: 9:00 AM to 11:00 PM",
+                "Sunday: 9:00 AM to 4:00 PM",
             ]
         },
         {
             question: "How long does it take to get a response from your team?",
             answer: "We typically respond within:",
             answerDetails: [
-                "• Live Chat: Instant during business hours",
                 "• Email: Within 2 business hours",
-                "• Social Media: Within 4 hours",
-                "• Phone: Immediate answer when calling",
+                "• Phone: During posted business hours",
                 "For complex inquiries, resolution may take 24-48 hours"
             ]
         },
@@ -133,7 +131,6 @@ const ContactPage = () => {
                 "• Customer satisfaction surveys after each interaction",
                 "• Email to contactus@compare-bazaar.com",
                 "• Review platforms like Trustpilot",
-                "• Social media channels",
                 "All feedback receives a personal response from our management team"
             ]
         }

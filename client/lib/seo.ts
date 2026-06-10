@@ -3,6 +3,9 @@ import type { Metadata } from 'next'
 export const SITE_URL = 'https://www.compare-bazaar.com'
 const SITE_NAME = 'Compare Bazaar'
 
+export const LINKEDIN_COMPANY_URL =
+  'https://www.linkedin.com/company/comparebazaar/posts/?feedView=all'
+
 /** Default Open Graph / WhatsApp preview image (absolute URL). Override via NEXT_PUBLIC_OG_IMAGE_PATH or replace asset at /images/logo.png */
 export function defaultOgImageUrl(): string {
   const path = process.env.NEXT_PUBLIC_OG_IMAGE_PATH || '/api/og'
@@ -72,8 +75,6 @@ export function buildMetadata({
     },
     twitter: {
       card: 'summary_large_image',
-      site: '@CompareBazaar',
-      creator: '@CompareBazaar',
       title: graphTitle,
       description: truncatedDesc,
       images: [ogImage],
@@ -133,8 +134,6 @@ export function buildBlogShareMetadata(opts: {
     },
     twitter: {
       card: 'summary_large_image',
-      site: '@CompareBazaar',
-      creator: '@CompareBazaar',
       title: opts.title,
       description: desc,
       images: [imageUrl],
@@ -306,7 +305,7 @@ export function buildOrganizationSchema(): object {
       url: `${SITE_URL}/contact`,
       contactType: 'customer support',
     },
-    sameAs: ['https://www.linkedin.com/company/comparebazaar/'],
+    sameAs: [LINKEDIN_COMPANY_URL],
   }
 }
 

@@ -47,14 +47,11 @@ function buildAbsoluteUrl(slug: string) {
 
 export function BlogShareBar({ title, slug, topic, tags }: Props) {
   const [copied, setCopied] = useState(false)
-  const encodedTitle = encodeURIComponent(title)
   const shareUrl = useMemo(() => buildAbsoluteUrl(slug), [slug])
   const encodedUrl = encodeURIComponent(shareUrl)
   const quoteCta = useMemo(() => resolveQuoteCta(topic, tags, slug), [topic, tags, slug])
 
   const linkedinUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`
-  const xUrl = `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`
-  const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`
 
   const copyLink = async () => {
     try {
@@ -81,27 +78,6 @@ export function BlogShareBar({ title, slug, topic, tags }: Props) {
           aria-label="Share on LinkedIn"
         >
           LinkedIn
-          
-        </a>
-
-        <a
-          href={xUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex h-10 w-full min-w-0 items-center justify-center whitespace-nowrap rounded-xl border border-gray-300 bg-white px-2 text-[13px] font-semibold leading-none text-gray-700 transition hover:border-gray-400 hover:bg-gray-50 sm:text-sm"
-          aria-label="Share on X"
-        >
-          X
-        </a>
-
-        <a
-          href={facebookUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex h-10 w-full min-w-0 items-center justify-center whitespace-nowrap rounded-xl border border-gray-300 bg-white px-2 text-[13px] font-semibold leading-none text-gray-700 transition hover:border-gray-400 hover:bg-gray-50 sm:text-sm"
-          aria-label="Share on Facebook"
-        >
-          Facebook
         </a>
 
         <button
