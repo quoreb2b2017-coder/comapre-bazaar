@@ -1,86 +1,21 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { buildMetadata, buildItemListSchema, buildFaqSchema, SITE_URL } from '@/lib/seo'
-import { HomeCategoryCard } from '@/components/ui/HomeCategoryCard'
+import { HOME_CATEGORIES } from '@/data/homeCategories'
+import { HomeHeroSection } from '@/components/home/HomeHeroSection'
+import { MotionSection } from '@/components/home/MotionSection'
 import { HomeFaqSection } from '@/components/ui/HomeFaqSection'
-import { HomeSearchBar } from '@/components/ui/HomeSearchBar'
-import { NewsletterSubscribeForm } from '@/components/ui/NewsletterSubscribeForm'
 import { loadUnifiedBlogIndex } from '@/lib/blogCms'
 import { BlogHomePreviewCard } from '@/components/blog/BlogListingCards'
-import {
-  HandshakeIcon,
-  MailIcon,
-  PhoneIcon,
-  TruckIcon,
-  UsersIcon,
-  WalletIcon,
-} from '@/components/ui/icons'
 
 export const metadata: Metadata = buildMetadata({
   title: 'Best Business Software Comparisons & Reviews 2026',
   description:
-    'Independent reviews, side by side pricing, and ranked picks across CRM, payroll, HR, email marketing, and more. Trusted by 80,000 business buyers.',
+    'Independent reviews, side by side pricing, and ranked picks across CRM, payroll, HR, email marketing, and more. Trusted by 50,000 business buyers.',
   canonical: '/',
   ogTitle: 'Best Business Software Comparisons & Reviews 2026 | Compare Bazaar',
   ogUrl: 'https://www.compare-bazaar.com',
 })
-
-const CATEGORIES = [
-  {
-    href: '/technology/business-phone-systems',
-    quotesHref: '/technology/business-phone-systems/get-free-quotes',
-    icon: PhoneIcon,
-    shortTitle: 'VoIP & UCaaS',
-    vendors: '6 vendors',
-    title: 'Best VoIP & Business Phone Systems',
-    desc: 'RingCentral, Nextiva, and Ooma compared on call quality, mobile apps, and SMB pricing.',
-  },
-  {
-    href: '/human-resources/best-payroll-software',
-    quotesHref: '/human-resources/best-payroll-software/get-free-quotes',
-    icon: WalletIcon,
-    shortTitle: 'Payroll',
-    vendors: '8 vendors',
-    title: 'Best Payroll Software for Small Business',
-    desc: 'ADP, Gusto, OnPay, and Rippling compared on tax compliance, contractor support, and integrations.',
-  },
-  {
-    href: '/human-resources',
-    quotesHref: '/human-resources/best-employee-management-software/get-free-quotes',
-    icon: UsersIcon,
-    shortTitle: 'HR Software',
-    vendors: '7 vendors',
-    title: 'Best HR Software for 2026',
-    desc: 'BambooHR, Rippling, Workday compared on onboarding, performance tools, and company size fit.',
-  },
-  {
-    href: '/marketing/best-crm-software',
-    quotesHref: '/marketing/best-crm-software/get-free-quote',
-    icon: HandshakeIcon,
-    shortTitle: 'CRM',
-    vendors: '11 vendors',
-    title: 'Best CRM Software of 2026',
-    desc: 'Compare HubSpot, Salesforce, Zoho, and 8 more on pipeline management, automation, and pricing.',
-  },
-  {
-    href: '/technology/gps-fleet-management-software',
-    quotesHref: '/technology/gps-fleet-management-software/get-free-quotes',
-    icon: TruckIcon,
-    shortTitle: 'GPS Fleet',
-    vendors: '7 vendors',
-    title: 'Best GPS Fleet Management Software',
-    desc: 'Samsara, Motive, and Verizon Connect compared on tracking, safety, and fleet visibility.',
-  },
-  {
-    href: '/marketing/best-email-marketing-services',
-    quotesHref: '/marketing/best-email-marketing-services/get-free-quotes',
-    icon: MailIcon,
-    shortTitle: 'Email Marketing',
-    vendors: '9 vendors',
-    title: 'Best Email Marketing Services',
-    desc: 'Mailchimp, Klaviyo, ActiveCampaign ranked on deliverability, automation depth, and list pricing.',
-  },
-]
 
 const TEAM = [
   { initials: 'SK', name: 'Sarah Kim', role: 'CRM & Sales Tech Editor', exp: 'Former Salesforce consultant · 9 yrs' },
@@ -112,16 +47,21 @@ const FAQS = [
   },
 ]
 
+const ADDITIONAL_RESOURCES = [
+  { href: '/technology/get-free-quotes', label: 'All Software Quotes' },
+  { href: '/business-planning', label: 'Business Planning' },
+  { href: '/start-a-business', label: 'Start a Business' },
+  { href: '/resources/whitepaper', label: 'Whitepaper' },
+  { href: '/contact-us/careers', label: 'Careers' },
+  { href: '/advertise', label: 'Advertise' },
+  { href: '/limit-the-use', label: 'Limit the Use' },
+  { href: '/copyright-policy', label: 'Copyright Policy' },
+]
+
 const itemListSchema = buildItemListSchema(
   'Business Software Categories',
-  CATEGORIES.map((c) => ({ name: c.title, href: c.href, description: c.desc }))
+  HOME_CATEGORIES.map((c) => ({ name: c.title, href: c.href, description: c.desc }))
 )
-
-const HERO_SEARCH_ITEMS = CATEGORIES.map((c) => ({
-  href: c.href,
-  label: `${c.shortTitle} ${c.title}`,
-  shortLabel: c.shortTitle,
-}))
 
 const homeFaqSchema = buildFaqSchema(
   FAQS.map((f) => ({ question: f.q, answer: f.a })),
@@ -144,87 +84,42 @@ export default async function HomePage() {
         />
       ) : null}
 
-      {/* Trust bar */}
-      <div className="bg-gradient-to-r from-[#071a57] via-[#0a246d] to-[#071a57] text-white/85 text-center py-2.5 px-4 shadow-[inset_0_-1px_0_rgba(255,255,255,0.08)]">
+      <div className="bg-gradient-to-r from-[#071a57] via-[#0a246d] to-[#071a57] text-white/85 text-center py-2 px-4">
         <p className="text-xs sm:text-sm">
           Reviewed by <strong className="text-white">independent experts</strong> ·
           No paid placements in rankings ·{' '}
-          <strong className="text-white">Updated monthly</strong> · Trusted by 80,000+ business buyers
+          <strong className="text-white">Updated monthly</strong> · Trusted by 50,000+ business buyers
         </p>
       </div>
 
-      {/* Hero */}
-      <header className="bg-white px-6 py-14 sm:px-10 sm:py-16 lg:px-16 lg:py-20 xl:px-24 border-b border-gray-100">
-        <div className="mx-auto max-w-6xl lg:max-w-7xl">
-          <div className="mb-10 grid grid-cols-1 gap-6 lg:grid-cols-[1fr_minmax(240px,300px)] lg:items-center lg:gap-8 xl:gap-12">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#F58220] mb-3">
-                Independent B2B Software Research
-              </p>
-              <div className="flex gap-2 mb-5" aria-hidden="true">
-                <span className="block w-2 h-1.5 rounded-full bg-[#F58220]" />
-                <span className="block w-14 h-1.5 rounded-full bg-[#F58220]" />
-              </div>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl text-navy tracking-tight mb-3 max-w-3xl">
-                Find the right software before the vendor call.
-              </h1>
-              <div className="w-20 h-1 rounded-full bg-[#F58220] mb-4" aria-hidden="true" />
-              <p className="text-gray-600 max-w-2xl text-base sm:text-lg">
-                Side-by-side comparisons, pricing breakdowns, and unbiased shortlists - built for US small businesses.
-              </p>
-            </div>
+      <HomeHeroSection />
 
-            <div className="lg:justify-self-end lg:w-full lg:max-w-[300px]">
-              <HomeSearchBar items={HERO_SEARCH_ITEMS} variant="hero" />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 lg:gap-3">
-            {CATEGORIES.map((cat) => (
-              <HomeCategoryCard
-                key={cat.href}
-                href={cat.href}
-                quotesHref={cat.quotesHref}
-                icon={cat.icon}
-                shortTitle={cat.shortTitle}
-                vendors={cat.vendors}
-                title={cat.title}
-              />
-            ))}
-          </div>
-
-          <NewsletterSubscribeForm sourceSlug="homepage" variant="hero" />
-        </div>
-      </header>
-
-      {/* Methodology bar */}
-      <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-blue-50 border-b border-blue-200/80 py-4 px-4">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center gap-3 rounded-2xl border border-blue-200/70 bg-white/75 px-4 py-3 shadow-[0_14px_30px_-24px_rgba(37,99,235,0.45)]">
-          <span className="bg-brand text-white text-xs font-bold px-2.5 py-1 rounded uppercase tracking-wide">
+      <div className="border-b border-gray-100 bg-white py-3 px-4">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-2.5 px-1">
+          <span className="rounded bg-[#F58220] px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-white">
             How we review
           </span>
-          <p className="text-sm text-blue-800">
+          <p className="text-sm text-gray-600">
             Every comparison is based on hands-on testing, pricing verification, and structured scoring
             across 12+ criteria, never influenced by vendor payments.{' '}
-            <Link href="/editorial-process" className="font-semibold underline">
+            <Link href="/editorial-process" className="font-semibold text-navy underline underline-offset-2 hover:text-[#F58220]">
               Read our editorial process →
             </Link>
           </p>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-20 space-y-24 sm:space-y-28">
+      <div className="mx-auto max-w-7xl space-y-16 px-4 py-12 sm:space-y-20 sm:px-6 sm:py-14">
 
-        {/* How we review */}
-        <section className="bg-gradient-to-b from-gray-50 via-white to-white border border-gray-200 rounded-3xl p-8 sm:p-12 shadow-[0_20px_40px_-24px_rgba(15,31,61,0.5)]" aria-labelledby="how-heading">
-          <p className="text-xs font-semibold uppercase tracking-widest text-brand mb-2">Our methodology</p>
-          <h2 id="how-heading" className="text-3xl sm:text-4xl text-navy tracking-tight mb-2">
+        <MotionSection className="border-t border-gray-100 pt-10 sm:pt-12" aria-labelledby="how-heading">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#F58220]">Our methodology</p>
+          <h2 id="how-heading" className="mb-2 text-2xl tracking-tight text-navy sm:text-3xl">
             How we independently review and rank software
           </h2>
-          <p className="text-gray-500 mb-10 max-w-lg">
+          <p className="mb-8 max-w-lg text-sm text-gray-500 sm:text-base">
             Our reviews are never pay-to-play. Here&apos;s exactly how we evaluate each platform.
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-3 sm:gap-8">
             {[
               {
                 num: '01',
@@ -242,125 +137,115 @@ export default async function HomePage() {
                 body: 'Rankings are based on weighted scores across our criteria, vendors cannot pay to improve their ranking. Sponsored placements are always clearly labelled.',
               },
             ].map(({ num, title, body }) => (
-              <div key={num} className="rounded-2xl border border-gray-200/80 bg-white p-5 sm:p-6 shadow-[0_14px_30px_-24px_rgba(15,31,61,0.5)]">
-                <p className="font-serif text-5xl text-brand leading-none mb-3">{num}</p>
-                <h3 className="font-semibold text-navy mb-2">{title}</h3>
-                <p className="text-sm text-gray-500 leading-relaxed">{body}</p>
+              <div key={num} className="border-t border-gray-200 pt-4 sm:border-l sm:border-t-0 sm:pl-6 sm:first:border-l-0 sm:first:pl-0">
+                <p className="mb-2 font-serif text-3xl leading-none text-[#F58220]">{num}</p>
+                <h3 className="mb-1.5 text-base font-semibold text-navy sm:text-lg">{title}</h3>
+                <p className="text-sm leading-relaxed text-gray-500">{body}</p>
               </div>
             ))}
           </div>
-          <Link href="/editorial-process" className="inline-block mt-8 text-sm text-brand font-semibold hover:underline">
+          <Link href="/editorial-process" className="mt-6 inline-block text-sm font-semibold text-navy underline underline-offset-2 hover:text-[#F58220]">
             Read our full editorial process →
           </Link>
-        </section>
+        </MotionSection>
 
-        {/* Editorial blog */}
         {recentBlogPosts.length > 0 ? (
-          <section aria-labelledby="blog-preview-heading">
-            <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <MotionSection aria-labelledby="blog-preview-heading" delay={0.05}>
+            <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-brand">Buying guides</p>
-                <h2 id="blog-preview-heading" className="text-3xl sm:text-4xl text-navy tracking-tight">
+                <h2 id="blog-preview-heading" className="text-2xl tracking-tight text-navy sm:text-3xl">
                   Latest from our blog
                 </h2>
-                <p className="mt-2 max-w-xl text-gray-500">
+                <p className="mt-1.5 max-w-xl text-sm text-gray-500">
                   Deep dives on payroll, VoIP, CRM, and more, with the same scoring mindset as our comparison hubs.
                 </p>
               </div>
-              <Link
-                href="/blog"
-                className="shrink-0 text-sm font-semibold text-brand hover:underline"
-              >
+              <Link href="/blog" className="shrink-0 text-sm font-semibold text-brand hover:underline">
                 View all articles →
               </Link>
             </div>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
               {recentBlogPosts.map((post, index) => (
                 <BlogHomePreviewCard key={post.slug} post={post} priority={index === 0} />
               ))}
             </div>
-          </section>
+          </MotionSection>
         ) : null}
 
-        {/* Expert team */}
-        <section aria-labelledby="team-heading" className="rounded-3xl border border-gray-200/80 bg-gradient-to-b from-white to-gray-50/60 p-6 sm:p-8 shadow-[0_18px_38px_-28px_rgba(15,31,61,0.45)]">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand mb-2">Our editorial team</p>
-          <h2 id="team-heading" className="text-3xl sm:text-4xl text-navy tracking-tight mb-2">
+        <MotionSection aria-labelledby="team-heading" className="border-t border-gray-100 pt-10 sm:pt-12" delay={0.05}>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#F58220]">Our editorial team</p>
+          <h2 id="team-heading" className="mb-2 text-2xl tracking-tight text-navy sm:text-3xl">
             Reviews written by verified software experts
           </h2>
-          <p className="text-gray-500 mb-8 max-w-lg">
+          <p className="mb-8 max-w-lg text-sm text-gray-500 sm:text-base">
             Our writers combine hands-on industry experience with structured review frameworks.
           </p>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-2 gap-6 sm:gap-8 lg:grid-cols-4">
             {TEAM.map(({ initials, name, role, exp }) => (
-              <div key={name} className="bg-white border border-gray-200 rounded-2xl p-5 text-center transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_22px_40px_-22px_rgba(15,31,61,0.5)]">
+              <div key={name} className="text-center">
                 <div
-                  className="w-14 h-14 rounded-full bg-brand-light flex items-center justify-center text-brand text-lg font-semibold mx-auto mb-3"
+                  className="mx-auto mb-2.5 flex h-12 w-12 items-center justify-center rounded-full border border-gray-200 bg-gray-50 text-sm font-semibold text-navy"
                   aria-hidden="true"
                 >
                   {initials}
                 </div>
-                <h4 className="font-semibold text-navy text-sm">{name}</h4>
-                <p className="text-xs text-brand font-medium mt-0.5">{role}</p>
-                <p className="text-xs text-gray-400 mt-1">{exp}</p>
+                <h4 className="text-sm font-semibold text-navy">{name}</h4>
+                <p className="mt-1 text-xs font-medium text-gray-600">{role}</p>
+                <p className="mt-1 text-xs leading-relaxed text-gray-400">{exp}</p>
               </div>
             ))}
           </div>
-        </section>
+        </MotionSection>
 
-        {/* Trust stats */}
-        <section className="relative overflow-hidden bg-gradient-to-br from-[#071a57] via-[#0b2f88] to-[#09236b] rounded-3xl p-8 sm:p-12 text-center text-white shadow-[0_28px_52px_-28px_rgba(8,20,60,0.8)]" aria-label="Trust statistics">
+        <MotionSection
+          className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#071a57] via-[#0b2f88] to-[#09236b] p-7 text-center text-white sm:p-10"
+          aria-label="Trust statistics"
+          delay={0.05}
+        >
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_25%,rgba(255,255,255,0.14),transparent_35%),radial-gradient(circle_at_80%_80%,rgba(255,255,255,0.1),transparent_40%)]" />
           <div className="relative">
-          <h2 className="text-3xl sm:text-4xl tracking-tight mb-3">Trusted by thousands of business buyers</h2>
-          <p className="text-white/70 max-w-lg mx-auto mb-10 text-base">
-            Our comparison guides help B2B decision-makers cut through vendor marketing and make confident software choices.
-          </p>
-          <div className="flex flex-wrap justify-center gap-12">
-            {[
-              { num: '80K+', label: 'Business buyers helped' },
-              { num: '60+', label: 'Platforms reviewed' },
-              { num: '12', label: 'Scoring criteria per platform' },
-              { num: '100%', label: 'Independent editorial' },
-            ].map(({ num, label }) => (
-              <div key={label} className="min-w-[130px]">
-                <p className="font-serif text-5xl text-accent leading-none">{num}</p>
-                <p className="text-sm text-white/60 mt-2">{label}</p>
-              </div>
-            ))}
+            <h2 className="mb-2 text-2xl tracking-tight sm:text-3xl">Trusted by thousands of business buyers</h2>
+            <p className="mx-auto mb-8 max-w-lg text-sm text-white/70 sm:text-base">
+              Our comparison guides help B2B decision-makers cut through vendor marketing and make confident software choices.
+            </p>
+            <div className="flex flex-wrap justify-center gap-8 sm:gap-10">
+              {[
+                { num: '50K+', label: 'Business buyers helped' },
+                { num: '40+', label: 'Platforms reviewed' },
+                { num: '12', label: 'Scoring criteria per platform' },
+                { num: '100%', label: 'Independent editorial' },
+              ].map(({ num, label }) => (
+                <div key={label} className="min-w-[120px]">
+                  <p className="font-serif text-4xl leading-none text-accent sm:text-5xl">{num}</p>
+                  <p className="mt-1.5 text-xs text-white/60 sm:text-sm">{label}</p>
+                </div>
+              ))}
+            </div>
           </div>
-          </div>
-        </section>
+        </MotionSection>
 
-        {/* FAQ */}
-        <HomeFaqSection faqs={FAQS} />
+        <MotionSection delay={0.05}>
+          <HomeFaqSection faqs={FAQS} />
+        </MotionSection>
 
-        <section className="bg-gradient-to-b from-gray-50 to-white border border-gray-200 rounded-3xl p-6 sm:p-8 shadow-[0_18px_36px_-24px_rgba(15,31,61,0.5)]" aria-label="Additional resources">
-          <h2 className="text-2xl sm:text-3xl text-navy tracking-tight mb-3">Additional Resources</h2>
-          <p className="text-sm text-gray-600 mb-4">
-            Explore policy pages, planning resources, and company information.
+        <MotionSection className="border-t border-gray-100 pt-8 sm:pt-10" aria-label="Additional resources" delay={0.05}>
+          <h2 className="mb-1 text-lg tracking-tight text-navy sm:text-xl">Additional Resources</h2>
+          <p className="mb-3 text-sm text-gray-500">
+            Policy pages, planning resources, and company information.
           </p>
-          <div className="flex flex-wrap gap-3">
-            {[
-              { href: '/technology/get-free-quotes', label: 'All Software Quotes' },
-              { href: '/business-planning', label: 'Business Planning' },
-              { href: '/start-a-business', label: 'Start a Business' },
-              { href: '/resources/whitepaper', label: 'Whitepaper' },
-              { href: '/contact-us/careers', label: 'Careers' },
-              { href: '/advertise', label: 'Advertise' },
-              { href: '/limit-the-use', label: 'Limit the Use' },
-              { href: '/copyright-policy', label: 'Copyright Policy' },
-            ].map((item) => (
+          <nav className="flex flex-wrap gap-x-4 gap-y-2">
+            {ADDITIONAL_RESOURCES.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="text-sm text-brand border border-brand/30 bg-white px-3 py-2 rounded-lg hover:bg-brand-light transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_22px_-14px_rgba(14,42,106,0.35)]"
+                className="text-sm text-gray-600 transition-colors hover:text-[#F58220]"
               >
                 {item.label}
               </Link>
             ))}
-          </div>
-        </section>
+          </nav>
+        </MotionSection>
 
       </div>
     </>

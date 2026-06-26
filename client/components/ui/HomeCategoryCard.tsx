@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import type { ComponentType } from 'react'
+import { heroBtn3d, heroCard3d } from '@/lib/hero3dStyles'
 
 type Props = {
   href: string
@@ -8,6 +9,7 @@ type Props = {
   shortTitle: string
   vendors: string
   title: string
+  blurb: string
 }
 
 export function HomeCategoryCard({
@@ -17,20 +19,25 @@ export function HomeCategoryCard({
   shortTitle,
   vendors,
   title,
+  blurb,
 }: Props) {
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-xl border border-[#1e3a6a]/90 border-t-[3px] border-t-[#F58220] bg-[#0c2147] p-4 sm:p-5 lg:p-4 transition-all duration-300 hover:border-[#F58220] hover:bg-[#0f2854] hover:shadow-[0_0_0_1px_#F58220,0_12px_28px_-14px_rgba(245,130,32,0.35)]">
+    <div className={`group flex min-h-[132px] flex-col p-2.5 sm:min-h-[136px] sm:p-3 lg:min-h-[128px] lg:p-2.5 ${heroCard3d}`}>
       <Link href={href} className="flex flex-1 flex-col" aria-label={`${title}, ${vendors}`}>
-        <Icon className="h-6 w-6 text-[#F58220] lg:h-5 lg:w-5" aria-hidden={true} />
-        <div className="mt-3 lg:mt-2">
+        <Icon
+          className="h-6 w-6 text-[#F58220] transition-transform duration-300 ease-out group-hover:scale-105 lg:h-5 lg:w-5"
+          aria-hidden={true}
+        />
+        <div className="mt-2 lg:mt-1.5">
           <h2 className="text-base font-semibold text-white mb-0.5 lg:text-[15px]">{shortTitle}</h2>
           <p className="text-xs text-[#F58220]/90">{vendors}</p>
         </div>
+        <p className="mt-2 flex-1 text-[11px] leading-relaxed text-white/75 sm:text-xs">{blurb}</p>
       </Link>
 
       <Link
         href={quotesHref}
-        className="mt-3 inline-flex w-fit items-center justify-center rounded-md bg-[#F58220] px-2.5 py-1.5 text-[11px] font-semibold text-white transition hover:bg-[#e67410]"
+        className={`mt-2.5 inline-flex w-fit items-center justify-center rounded-md px-2 py-1 text-[11px] font-semibold text-white ${heroBtn3d}`}
         aria-label={`Get free quotes for ${shortTitle}`}
       >
         Free Quotes

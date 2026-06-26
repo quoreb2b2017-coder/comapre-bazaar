@@ -78,13 +78,13 @@ export function NewsletterSubscribeForm({
 
   if (variant === 'hero') {
     return (
-      <section className="mt-10 pt-8 border-t border-gray-100" aria-label="Newsletter signup">
+      <section className="mt-6 border-t border-gray-100 pt-5" aria-label="Newsletter signup">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#F58220]">Subscribe</p>
-        <h2 className="mt-2 text-xl sm:text-2xl text-navy tracking-tight">Get software buying guides in your inbox</h2>
-        <p className="mt-2 max-w-xl text-sm sm:text-base text-gray-600">
+        <h2 className="mt-1.5 text-lg tracking-tight text-navy sm:text-xl">Get software buying guides in your inbox</h2>
+        <p className="mt-1 max-w-xl text-sm text-gray-600">
           New comparisons and pricing updates - no spam, unsubscribe anytime.
         </p>
-        <form onSubmit={submit} className="mt-4 flex flex-col gap-3 sm:max-w-lg sm:flex-row">
+        <form onSubmit={submit} className="mt-3 flex flex-col gap-2.5 sm:max-w-lg sm:flex-row">
           <input
             type="email"
             name="subscribeEmail"
