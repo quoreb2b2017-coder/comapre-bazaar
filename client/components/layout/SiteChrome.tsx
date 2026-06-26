@@ -5,7 +5,6 @@ import dynamic from 'next/dynamic'
 import { usePathname } from 'next/navigation'
 import { SiteNav } from '@/components/layout/SiteNav'
 import { SiteFooter } from '@/components/layout/SiteFooter'
-import { DisclosureBanner } from '@/components/layout/DisclosureBanner'
 import { RouteLoadingIndicator } from '@/components/layout/RouteLoadingIndicator'
 import ArrowNavigation from '@/components/ArrowNavigation'
 import { SiteAnalyticsBeacon } from '@/components/consent/SiteAnalyticsBeacon'
@@ -29,7 +28,6 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
   return (
     <>
       <RouteLoadingIndicator />
-      <DisclosureBanner />
       <SiteNav />
       <main className="flex-1">{children}</main>
       <ArrowNavigation />

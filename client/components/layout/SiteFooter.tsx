@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { CookiePreferencesTrigger } from '@/components/consent/CookiePreferencesTrigger'
+import { NewsletterSubscribeForm } from '@/components/ui/NewsletterSubscribeForm'
 import { LINKEDIN_COMPANY_URL } from '@/lib/seo'
 
 const CATEGORIES = [
@@ -66,6 +67,7 @@ export function SiteFooter({ className = '' }: { className?: string }) {
               <br />
               Dallas, TX 75208
             </p>
+            <NewsletterSubscribeForm sourceSlug="footer" variant="footer" />
           </div>
 
           {/* Categories */}

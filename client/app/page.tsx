@@ -1,15 +1,17 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { buildMetadata, buildItemListSchema, buildFaqSchema, SITE_URL } from '@/lib/seo'
-import { HomeSearchBar } from '@/components/ui/HomeSearchBar'
+import { HomeCategoryCard } from '@/components/ui/HomeCategoryCard'
 import { HomeFaqSection } from '@/components/ui/HomeFaqSection'
+import { HomeSearchBar } from '@/components/ui/HomeSearchBar'
+import { NewsletterSubscribeForm } from '@/components/ui/NewsletterSubscribeForm'
 import { loadUnifiedBlogIndex } from '@/lib/blogCms'
 import { BlogHomePreviewCard } from '@/components/blog/BlogListingCards'
 import {
-  ClipboardIcon,
   HandshakeIcon,
   MailIcon,
   PhoneIcon,
+  TruckIcon,
   UsersIcon,
   WalletIcon,
 } from '@/components/ui/icons'
@@ -25,65 +27,59 @@ export const metadata: Metadata = buildMetadata({
 
 const CATEGORIES = [
   {
-    href: '/marketing/best-crm-software',
-    icon: HandshakeIcon,
-    title: 'Best CRM Software of 2026',
-    desc: 'Compare HubSpot, Salesforce, Zoho, and 8 more on pipeline management, automation, and pricing.',
-    count: '11 platforms reviewed',
-    rating: '9.4/10',
+    href: '/technology/business-phone-systems',
+    quotesHref: '/technology/business-phone-systems/get-free-quotes',
+    icon: PhoneIcon,
+    shortTitle: 'VoIP & UCaaS',
+    vendors: '6 vendors',
+    title: 'Best VoIP & Business Phone Systems',
+    desc: 'RingCentral, Nextiva, and Ooma compared on call quality, mobile apps, and SMB pricing.',
   },
   {
     href: '/human-resources/best-payroll-software',
+    quotesHref: '/human-resources/best-payroll-software/get-free-quotes',
     icon: WalletIcon,
+    shortTitle: 'Payroll',
+    vendors: '8 vendors',
     title: 'Best Payroll Software for Small Business',
     desc: 'ADP, Gusto, OnPay, and Rippling compared on tax compliance, contractor support, and integrations.',
-    count: '8 platforms reviewed',
-    rating: '9.1/10',
-  },
-  {
-    href: '/marketing/best-email-marketing-services',
-    icon: MailIcon,
-    title: 'Best Email Marketing Services',
-    desc: 'Mailchimp, Klaviyo, ActiveCampaign ranked on deliverability, automation depth, and list pricing.',
-    count: '9 platforms reviewed',
-    rating: '8.9/10',
   },
   {
     href: '/human-resources',
+    quotesHref: '/human-resources/best-employee-management-software/get-free-quotes',
     icon: UsersIcon,
+    shortTitle: 'HR Software',
+    vendors: '7 vendors',
     title: 'Best HR Software for 2026',
     desc: 'BambooHR, Rippling, Workday compared on onboarding, performance tools, and company size fit.',
-    count: '7 platforms reviewed',
-    rating: '8.8/10',
   },
   {
-    href: '/sales/best-project-management-software',
-    icon: ClipboardIcon,
-    title: 'Best Project Management Software',
-    desc: 'Monday.com, Asana, ClickUp, and Notion ranked on team size, flexibility, and workflow features.',
-    count: '10 platforms reviewed',
-    rating: '8.7/10',
+    href: '/marketing/best-crm-software',
+    quotesHref: '/marketing/best-crm-software/get-free-quote',
+    icon: HandshakeIcon,
+    shortTitle: 'CRM',
+    vendors: '11 vendors',
+    title: 'Best CRM Software of 2026',
+    desc: 'Compare HubSpot, Salesforce, Zoho, and 8 more on pipeline management, automation, and pricing.',
   },
   {
-    href: '/technology/business-phone-systems',
-    icon: PhoneIcon,
-    title: 'Best VoIP & Business Phone Systems',
-    desc: 'RingCentral, Nextiva, and Ooma compared on call quality, mobile apps, and SMB pricing.',
-    count: '6 platforms reviewed',
-    rating: '8.6/10',
+    href: '/technology/gps-fleet-management-software',
+    quotesHref: '/technology/gps-fleet-management-software/get-free-quotes',
+    icon: TruckIcon,
+    shortTitle: 'GPS Fleet',
+    vendors: '7 vendors',
+    title: 'Best GPS Fleet Management Software',
+    desc: 'Samsara, Motive, and Verizon Connect compared on tracking, safety, and fleet visibility.',
   },
-]
-
-const SOFTWARE_CATEGORIES = [
-  { href: '/marketing', label: 'Marketing Hub' },
-  { href: '/technology', label: 'Technology Hub' },
-  { href: '/sales', label: 'Sales Hub' },
-  { href: '/human-resources', label: 'HR Software Hub' },
-]
-
-const SEARCH_ITEMS = [
-  ...SOFTWARE_CATEGORIES.map((item) => ({ href: item.href, label: item.label })),
-  ...CATEGORIES.map((item) => ({ href: item.href, label: item.title })),
+  {
+    href: '/marketing/best-email-marketing-services',
+    quotesHref: '/marketing/best-email-marketing-services/get-free-quotes',
+    icon: MailIcon,
+    shortTitle: 'Email Marketing',
+    vendors: '9 vendors',
+    title: 'Best Email Marketing Services',
+    desc: 'Mailchimp, Klaviyo, ActiveCampaign ranked on deliverability, automation depth, and list pricing.',
+  },
 ]
 
 const TEAM = [
@@ -121,6 +117,12 @@ const itemListSchema = buildItemListSchema(
   CATEGORIES.map((c) => ({ name: c.title, href: c.href, description: c.desc }))
 )
 
+const HERO_SEARCH_ITEMS = CATEGORIES.map((c) => ({
+  href: c.href,
+  label: `${c.shortTitle} ${c.title}`,
+  shortLabel: c.shortTitle,
+}))
+
 const homeFaqSchema = buildFaqSchema(
   FAQS.map((f) => ({ question: f.q, answer: f.a })),
   SITE_URL
@@ -152,67 +154,47 @@ export default async function HomePage() {
       </div>
 
       {/* Hero */}
-      <header className="bg-gradient-to-br from-[#F58220] via-[#f48930] to-[#ec7416] py-12 sm:py-16 lg:py-20 px-4 relative overflow-hidden [perspective:1800px]">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,rgba(255,255,255,0.25),transparent_45%),radial-gradient(circle_at_80%_85%,rgba(255,215,170,0.35),transparent_45%)]" />
-        <div className="pointer-events-none absolute -left-20 top-8 h-52 w-52 rounded-full bg-white/20 blur-3xl" />
-        <div className="pointer-events-none absolute -right-16 bottom-6 h-44 w-44 rounded-full bg-[#ffd8b0]/35 blur-3xl" />
-        <div className="max-w-7xl mx-auto relative">
-          <div className="flex justify-center">
-            <div className="text-center min-h-[640px] flex flex-col justify-center max-w-4xl [transform-style:preserve-3d]">
-              <div className="mb-5 text-xs font-semibold uppercase tracking-wider text-white/95 [transform:translateZ(26px)]">
-                Independent software reviews
-              </div>
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl text-white leading-tight tracking-tight mb-4 sm:mb-5 drop-shadow-[0_10px_26px_rgba(110,45,0,0.45)] [transform:translateZ(46px)]">
-                Business software comparisons &amp; independent reviews,{' '}
-                <em className="text-[#FCE7D0] not-italic">without the guesswork</em>
-              </h1>
-              <p className="text-base sm:text-xl text-white/90 leading-relaxed mb-6 sm:mb-8 max-w-xl mx-auto [transform:translateZ(30px)]">
-                Independent comparisons of CRM, payroll, HR, and marketing software researched by
-                experts, ranked on real criteria, updated for 2026.
+      <header className="bg-white px-6 py-14 sm:px-10 sm:py-16 lg:px-16 lg:py-20 xl:px-24 border-b border-gray-100">
+        <div className="mx-auto max-w-6xl lg:max-w-7xl">
+          <div className="mb-10 grid grid-cols-1 gap-6 lg:grid-cols-[1fr_minmax(240px,300px)] lg:items-center lg:gap-8 xl:gap-12">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#F58220] mb-3">
+                Independent B2B Software Research
               </p>
-
-              <div className="cb-hero-tilt cb-hero-float cb-hero-prism relative mx-auto max-w-3xl rounded-[32px] border border-white/35 bg-white/12 p-1.5 shadow-[0_38px_90px_-34px_rgba(35,18,3,0.8)] backdrop-blur-md [transform-style:preserve-3d] [transform:translateZ(58px)] before:pointer-events-none before:absolute before:inset-0 before:rounded-[32px] before:bg-[linear-gradient(140deg,rgba(255,255,255,0.28),transparent_40%,rgba(255,255,255,0.1))] before:opacity-80 after:pointer-events-none after:absolute after:-bottom-5 after:left-8 after:right-8 after:h-8 after:rounded-full after:bg-black/25 after:blur-xl">
-                <div className="relative rounded-[26px] border border-white/40 bg-white p-5 sm:p-6 [transform:translateZ(20px)]">
-                  <div className="pointer-events-none absolute -left-8 top-8 h-24 w-24 rounded-full bg-white/25 blur-2xl" />
-                  <div className="pointer-events-none absolute -right-10 bottom-6 h-20 w-20 rounded-full bg-[#ffd7b3]/40 blur-2xl" />
-                  <div className="[transform:translateZ(26px)]">
-                    <HomeSearchBar items={SEARCH_ITEMS} />
-                  </div>
-
-                  <nav aria-label="Software categories" className="mt-3 flex flex-wrap justify-center gap-3 [transform:translateZ(16px)]">
-                    {SOFTWARE_CATEGORIES.map((category) => (
-                      <Link
-                        key={category.href}
-                        href={category.href}
-                        className="bg-gradient-to-br from-[#F58220] via-[#f48930] to-[#ec7416] hover:brightness-105 border border-[#f6a057] text-white text-xs px-4 py-2 rounded-full shadow-[0_10px_20px_rgba(110,45,0,0.25)] transition-all duration-300 hover:-translate-y-0.5 hover:scale-[1.03]"
-                      >
-                        {category.label}
-                      </Link>
-                    ))}
-                  </nav>
-
-                  <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-3 [transform:translateZ(12px)]">
-                    {[
-                      { label: 'CRM', score: '9.4/10' },
-                      { label: 'Payroll', score: '9.1/10' },
-                      { label: 'Email', score: '8.9/10' },
-                      { label: 'HR', score: '8.8/10' },
-                    ].map((item) => (
-                      <div
-                        key={item.label}
-                        className="rounded-xl bg-gradient-to-br from-[#F58220] via-[#f48930] to-[#ec7416] px-3.5 py-2.5 text-center text-white border border-[#f6a057] shadow-[0_14px_26px_-14px_rgba(0,0,0,0.45)] transition-transform duration-300 hover:[transform:translateZ(14px)]"
-                      >
-                        <p className="text-[11px] uppercase tracking-wider text-white/80">{item.label}</p>
-                        <p className="mt-0.5 text-sm font-semibold">{item.score}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+              <div className="flex gap-2 mb-5" aria-hidden="true">
+                <span className="block w-2 h-1.5 rounded-full bg-[#F58220]" />
+                <span className="block w-14 h-1.5 rounded-full bg-[#F58220]" />
               </div>
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl text-navy tracking-tight mb-3 max-w-3xl">
+                Find the right software before the vendor call.
+              </h1>
+              <div className="w-20 h-1 rounded-full bg-[#F58220] mb-4" aria-hidden="true" />
+              <p className="text-gray-600 max-w-2xl text-base sm:text-lg">
+                Side-by-side comparisons, pricing breakdowns, and unbiased shortlists - built for US small businesses.
+              </p>
+            </div>
+
+            <div className="lg:justify-self-end lg:w-full lg:max-w-[300px]">
+              <HomeSearchBar items={HERO_SEARCH_ITEMS} variant="hero" />
             </div>
           </div>
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 lg:gap-3">
+            {CATEGORIES.map((cat) => (
+              <HomeCategoryCard
+                key={cat.href}
+                href={cat.href}
+                quotesHref={cat.quotesHref}
+                icon={cat.icon}
+                shortTitle={cat.shortTitle}
+                vendors={cat.vendors}
+                title={cat.title}
+              />
+            ))}
+          </div>
+
+          <NewsletterSubscribeForm sourceSlug="homepage" variant="hero" />
         </div>
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/10 to-transparent" />
       </header>
 
       {/* Methodology bar */}
@@ -232,51 +214,6 @@ export default async function HomePage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-20 space-y-24 sm:space-y-28">
-
-        {/* Categories */}
-        <section aria-labelledby="categories-heading" className="relative rounded-3xl border border-gray-200/80 bg-gradient-to-b from-white to-[#fffaf5] p-6 sm:p-8 shadow-[0_22px_44px_-34px_rgba(15,31,61,0.5)]">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand mb-2">
-            Software Categories
-          </p>
-          <h2 id="categories-heading" className="text-3xl sm:text-4xl text-navy tracking-tight mb-2">
-            Compare the best business software for 2026
-          </h2>
-          <p className="text-gray-500 mb-10 max-w-xl">
-            From CRM to payroll, our experts test and rank the tools your business actually needs.
-          </p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {CATEGORIES.map((cat) => (
-              <Link
-                key={cat.href}
-                href={cat.href}
-                className="group block bg-white/95 border border-gray-200 rounded-2xl p-6 transition-all duration-300 relative overflow-hidden hover:-translate-y-1.5 hover:shadow-[0_24px_48px_-22px_rgba(14,42,106,0.5)] hover:border-blue-200"
-                aria-label={`${cat.title}, ${cat.count}`}
-              >
-                <div className="absolute inset-x-0 top-0 h-0.5 bg-brand scale-x-0 group-hover:scale-x-100 transition-transform origin-left" aria-hidden="true" />
-                <div className="pointer-events-none absolute -top-12 -right-12 h-28 w-28 rounded-full bg-brand/10 blur-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                <div>
-                  <div className="w-11 h-11 rounded-xl bg-brand-light text-[#F27F25] flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-105" aria-hidden="true">
-                    <cat.icon className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-navy mb-2">{cat.title}</h3>
-                    <p className="text-sm leading-relaxed mb-4 text-gray-500">{cat.desc}</p>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs text-gray-400">{cat.count}</span>
-                    <span className="text-xs font-semibold rounded-full bg-emerald-50 text-emerald-700 px-2.5 py-1">
-                      Rating: {cat.rating}
-                    </span>
-                  </div>
-                  <span className="text-sm text-brand font-semibold">Compare →</span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
 
         {/* How we review */}
         <section className="bg-gradient-to-b from-gray-50 via-white to-white border border-gray-200 rounded-3xl p-8 sm:p-12 shadow-[0_20px_40px_-24px_rgba(15,31,61,0.5)]" aria-labelledby="how-heading">

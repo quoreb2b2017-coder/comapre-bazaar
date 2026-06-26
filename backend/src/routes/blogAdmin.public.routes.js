@@ -7,6 +7,12 @@ const BlogSubscriber = require("../models/blogSubscriber.model")
 const PUBLIC_STATUSES = ['approved', 'published']
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
+const SOURCE_LABELS = {
+  homepage: 'Homepage',
+  footer: 'Footer',
+  'blog-index': 'Blog index',
+}
+
 function sortBlogPostsDesc(blogs) {
   const t = (b) =>
     new Date(b.publishedAt || b.approvedAt || b.updatedAt || b.createdAt || 0).getTime()
@@ -95,6 +101,7 @@ router.post('/subscribe', async (req, res) => {
     const sourceBlog = source
       ? await Blog.findOne({ slug: source }).select('_id slug title').lean()
       : null
+    const sourceLabel = sourceBlog?.title || SOURCE_LABELS[source] || source || ''
 
     const existing = await BlogSubscriber.findOne({ email: emailRaw })
     let subscriber
@@ -102,7 +109,7 @@ router.post('/subscribe', async (req, res) => {
       existing.isActive = true
       if (!existing.subscribedFrom) existing.subscribedFrom = source || ''
       if (!existing.sourceBlogSlug) existing.sourceBlogSlug = sourceBlog?.slug || source || ''
-      if (!existing.sourceBlogTitle) existing.sourceBlogTitle = sourceBlog?.title || ''
+      if (!existing.sourceBlogTitle) existing.sourceBlogTitle = sourceLabel
       if (!existing.sourceBlogId) existing.sourceBlogId = sourceBlog?._id ? String(sourceBlog._id) : ''
       await existing.save()
       subscriber = existing
@@ -113,7 +120,7 @@ router.post('/subscribe', async (req, res) => {
         subscribedFrom: source || '',
         sourceBlogId: sourceBlog?._id ? String(sourceBlog._id) : '',
         sourceBlogSlug: sourceBlog?.slug || source || '',
-        sourceBlogTitle: sourceBlog?.title || '',
+        sourceBlogTitle: sourceLabel,
         totalNotifications: 0,
       })
     }
