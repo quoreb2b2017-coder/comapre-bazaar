@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import axios from 'axios'
-import { X, Loader2, CheckCircle2, FileText, ImageIcon } from 'lucide-react'
+import { X, Loader2, CheckCircle2, FileText, ImageIcon, Sparkles } from 'lucide-react'
 import { API_TIMEOUT_LONG_MS } from '../../utils/api'
 import {
   WhitePaperSeoFields,
   emptySeoForm,
   seoFormFromPaper,
+  seoFormFromBasics,
   seoFormToPayload,
 } from './WhitePaperSeoFields'
 import {
@@ -20,6 +21,24 @@ function getBlogAdminBaseURL() {
   if (fromEnv && String(fromEnv).trim()) return String(fromEnv).replace(/\/$/, '')
   if (process.env.NODE_ENV === 'development') return 'http://127.0.0.1:5000/api/v1/blog-admin'
   return '/api/v1/blog-admin'
+}
+
+function claudeContentFromResponse(data) {
+  if (!data) return null
+  return {
+    slug: data.slug,
+    seoTitle: data.seoTitle,
+    metaTitle: data.metaTitle,
+    metaDescription: data.metaDescription,
+    metaKeywords: data.metaKeywords,
+    ogTitle: data.ogTitle,
+    ogDescription: data.ogDescription,
+    structuredSeoContent: data.structuredSeoContent,
+    insideOverview: data.insideOverview,
+    insideSections: data.insideSections,
+    testimonialsHeading: data.testimonialsHeading,
+    testimonials: data.testimonials,
+  }
 }
 
 export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, editingPaper = null }) {
@@ -38,6 +57,10 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
   const [seo, setSeo] = useState(emptySeoForm)
   const [highlightQuestions, setHighlightQuestions] = useState([])
   const [savingSeo, setSavingSeo] = useState(false)
+  const [seoMode, setSeoMode] = useState('claude')
+  const [generatingClaude, setGeneratingClaude] = useState(false)
+  const [claudeSeoReady, setClaudeSeoReady] = useState(false)
+  const [claudeContent, setClaudeContent] = useState(null)
 
   const [isDark, setIsDark] = useState(false)
   const isEditMode = Boolean(editingPaper?._id)
@@ -49,6 +72,9 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
     if (!editingPaper) {
       setSeo(emptySeoForm())
       setHighlightQuestions([])
+      setSeoMode('claude')
+      setClaudeSeoReady(false)
+      setClaudeContent(null)
       return
     }
     setTitle(editingPaper.title || '')
@@ -62,6 +88,9 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
     setPublished(null)
     setSeo(seoFormFromPaper(editingPaper))
     setHighlightQuestions(highlightQuestionsFromPaper(editingPaper))
+    setSeoMode('manual')
+    setClaudeSeoReady(false)
+    setClaudeContent(null)
   }, [open, editingPaper])
 
   useEffect(() => {
@@ -86,6 +115,10 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
     setPublished(null)
     setSeo(emptySeoForm())
     setHighlightQuestions([])
+    setSeoMode('claude')
+    setClaudeSeoReady(false)
+    setClaudeContent(null)
+    setGeneratingClaude(false)
   }
 
   const handleClose = () => {
@@ -119,6 +152,8 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
 
   const handlePdfChange = async (file) => {
     setPdf(file || null)
+    setClaudeSeoReady(false)
+    setClaudeContent(null)
     if (!file) return
 
     setExtractingPdf(true)
@@ -135,9 +170,13 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
         timeout: API_TIMEOUT_LONG_MS,
       })
       const data = res.data?.data || {}
-      if (data.title && !title.trim()) setTitle(data.title)
-      if (data.description && !description.trim()) setDescription(data.description)
-      toast.success('PDF read complete. Title & description auto-filled.')
+      if (seoMode === 'claude') {
+        if (data.title && !title.trim()) setTitle(data.title)
+        if (data.description && !description.trim()) setDescription(data.description)
+        toast.success('PDF read complete. Title & description auto-filled.')
+      } else {
+        toast.success('PDF uploaded. Fill fields manually below.')
+      }
     } catch (err) {
       const msg = err.response?.data?.message || err.message || 'Failed to read PDF'
       toast.error(msg)
@@ -146,11 +185,71 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
     }
   }
 
+  const handleGenerateClaude = async () => {
+    if (!pdf && !isEditMode) {
+      toast.error('Upload a PDF first')
+      return
+    }
+    if (!title.trim()) {
+      toast.error('Add a title before generating SEO')
+      return
+    }
+
+    setGeneratingClaude(true)
+    try {
+      const token = localStorage.getItem('admin_token')
+      const base = getBlogAdminBaseURL()
+      const form = new FormData()
+      if (pdf) form.append('pdf', pdf)
+      if (isEditMode) form.append('paperId', editingPaper._id)
+      form.append('title', title.trim())
+      form.append('description', description.trim())
+      form.append(
+        'metadata',
+        JSON.stringify({
+          offeredBy: offeredBy.trim(),
+          author: author.trim(),
+          category: category.trim(),
+        })
+      )
+
+      const res = await axios.post(`${base}/whitepapers/generate-seo`, form, {
+        headers: {
+          Authorization: token ? `Bearer ${token}` : '',
+          'Content-Type': 'multipart/form-data',
+        },
+        timeout: API_TIMEOUT_LONG_MS,
+      })
+
+      const data = res.data?.data
+      setSeo(seoFormFromPaper(data))
+      setClaudeContent(claudeContentFromResponse(data))
+      setClaudeSeoReady(true)
+      toast.success('Claude SEO generated — edit any field, then publish')
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || 'Failed to generate SEO'
+      toast.error(msg)
+    } finally {
+      setGeneratingClaude(false)
+    }
+  }
+
   const onSubmit = async (e) => {
     e.preventDefault()
     if (!isEditMode && (!pdf || !thumbnail)) {
       toast.error('PDF and thumbnail are required')
       return
+    }
+    if (seoMode === 'manual') {
+      const seoPayload = seoFormToPayload(seo)
+      if (!seoPayload.slug.trim()) {
+        toast.error('URL slug is required in manual SEO section')
+        return
+      }
+      if (!seoPayload.metaTitle.trim()) {
+        toast.error('Google meta title is required in manual SEO section')
+        return
+      }
     }
 
     const form = new FormData()
@@ -167,8 +266,14 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
       })
     )
     form.append('highlightQuestions', JSON.stringify(highlightQuestionsToPayload(highlightQuestions)))
-    if (isEditMode) {
-      form.append('seo', JSON.stringify(seoFormToPayload(seo)))
+    form.append('seoMode', seoMode)
+    const seoPayload = seoFormToPayload(seo)
+    if (seoMode === 'manual') {
+      form.append('seo', JSON.stringify(seoPayload))
+    } else if (claudeSeoReady && claudeContent) {
+      form.append('seo', JSON.stringify(seoPayload))
+      form.append('seoGenerated', 'true')
+      form.append('claudeContent', JSON.stringify(claudeContent))
     }
 
     setSubmitting(true)
@@ -221,7 +326,13 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
               {published ? (isEditMode ? 'Updated' : 'Published') : isEditMode ? 'Edit white paper' : 'New white paper'}
             </h2>
             {!published && (
-              <p className="mt-0.5 text-xs text-gray-500">SEO auto-generated from PDF</p>
+              <p className="mt-0.5 text-xs text-gray-500">
+                {seoMode === 'manual'
+                  ? 'Manual SEO mode'
+                  : claudeSeoReady
+                    ? 'Claude SEO ready — edit fields before publish'
+                    : 'Generate with Claude, then edit before publish'}
+              </p>
             )}
           </div>
           <button
@@ -242,23 +353,27 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
               seo={seo}
               setSeo={setSeo}
               savingSeo={savingSeo}
-              onSaveSeo={async () => {
+              onSaveSeo={async ({ title: saveTitle, description: saveDescription }) => {
                 setSavingSeo(true)
                 try {
                   const token = localStorage.getItem('admin_token')
                   const base = getBlogAdminBaseURL()
                   const res = await axios.patch(
                     `${base}/whitepapers/${published._id}/seo`,
-                    { seo: seoFormToPayload(seo) },
+                    {
+                      seo: seoFormToPayload(seo),
+                      title: saveTitle?.trim(),
+                      description: saveDescription?.trim(),
+                    },
                     { headers: { Authorization: token ? `Bearer ${token}` : '' } }
                   )
                   const data = res.data?.data
                   setPublished(data)
                   setSeo(seoFormFromPaper(data))
-                  toast.success('SEO saved')
+                  toast.success('Changes saved')
                   onPublished?.(data)
                 } catch (err) {
-                  toast.error(err.response?.data?.message || err.message || 'Failed to save SEO')
+                  toast.error(err.response?.data?.message || err.message || 'Failed to save changes')
                 } finally {
                   setSavingSeo(false)
                 }
@@ -268,19 +383,68 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
             <div className="flex flex-col items-center justify-center py-20 text-center">
               <Loader2 className="h-10 w-10 animate-spin text-brand" />
               <p className="mt-4 text-sm font-medium text-gray-900 dark:text-gray-100">
-                {isEditMode ? 'Updating & regenerating SEO…' : 'Uploading & generating SEO…'}
+                {isEditMode
+                  ? seoMode === 'claude' && claudeSeoReady
+                    ? 'Updating white paper with your edits…'
+                    : seoMode === 'claude'
+                      ? 'Updating & regenerating SEO with Claude…'
+                      : 'Updating white paper…'
+                  : seoMode === 'claude' && claudeSeoReady
+                    ? 'Publishing with your edited SEO…'
+                    : seoMode === 'claude'
+                      ? 'Uploading & generating SEO with Claude…'
+                      : 'Uploading with manual SEO…'}
               </p>
               <p className="mt-1 text-xs text-gray-500">Usually 30–90 seconds</p>
             </div>
           ) : (
             <form id="wp-upload-form" onSubmit={onSubmit} className="space-y-5">
+              <div className="space-y-1.5">
+                <label className="label">
+                  PDF file <span className="text-red-500">*</span>
+                </label>
+                <FileInput
+                  accept="application/pdf"
+                  file={pdf}
+                  icon={FileText}
+                  emptyLabel="Choose PDF"
+                  onChange={handlePdfChange}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="label">
+                  Thumbnail <span className="text-red-500">*</span>
+                </label>
+                <FileInput
+                  accept="image/jpeg,image/png,image/webp"
+                  file={thumbnail}
+                  icon={ImageIcon}
+                  emptyLabel="Choose image"
+                  preview={thumbPreview}
+                  onChange={setThumbnail}
+                />
+              </div>
+
+              <SeoModeToggle
+                value={seoMode}
+                onChange={(mode) => {
+                  setSeoMode(mode)
+                  if (mode === 'manual' && !seo.slug && (title.trim() || description.trim())) {
+                    setSeo(seoFormFromBasics(title, description))
+                  }
+                }}
+              />
+
               <p className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-xs leading-relaxed text-gray-600 dark:border-gray-700 dark:bg-gray-800/50 dark:text-gray-400">
-                Upload PDF first. We auto-read it and prefill title, description and SEO context.
+                {seoMode === 'claude'
+                  ? 'Click Generate with Claude to fill SEO fields. Edit anything you want, then publish — your edits are saved.'
+                  : 'Manual mode: you fill title, description, and all SEO fields yourself. Claude will not run on publish.'}
               </p>
 
               {extractingPdf && (
                 <p className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-700 dark:border-blue-900 dark:bg-blue-950/30 dark:text-blue-300">
-                  Reading PDF and extracting content...
+                  Reading PDF…
                 </p>
               )}
 
@@ -292,7 +456,11 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
                   type="text"
                   className="input"
                   value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                  onChange={(e) => {
+                    const next = e.target.value
+                    setTitle(next)
+                    setSeo((prev) => ({ ...prev, seoTitle: next.slice(0, 70) }))
+                  }}
                   maxLength={300}
                   placeholder="Auto-filled from PDF (you can edit)"
                 />
@@ -344,38 +512,35 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
                 onChange={setHighlightQuestions}
               />
 
-              <div className="space-y-1.5">
-                <label className="label">
-                  PDF file <span className="text-red-500">*</span>
-                </label>
-                <FileInput
-                  accept="application/pdf"
-                  file={pdf}
-                  icon={FileText}
-                  emptyLabel="Choose PDF"
-                  onChange={handlePdfChange}
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="label">
-                  Thumbnail <span className="text-red-500">*</span>
-                </label>
-                <FileInput
-                  accept="image/jpeg,image/png,image/webp"
-                  file={thumbnail}
-                  icon={ImageIcon}
-                  emptyLabel="Choose image"
-                  preview={thumbPreview}
-                  onChange={setThumbnail}
-                />
-              </div>
-
-              {isEditMode ? (
-                <WhitePaperSeoFields seo={seo} onChange={setSeo} />
+              {seoMode === 'manual' ? (
+                <WhitePaperSeoFields seo={seo} onChange={setSeo} variant="manual" />
               ) : (
-                <div className="rounded-lg border border-dashed border-gray-200 px-3 py-3 text-xs text-gray-500 dark:border-gray-700">
-                  Google &amp; Open Graph SEO fields (title, keywords, OG tags) will appear here after you publish.
+                <div className="space-y-3">
+                  <button
+                    type="button"
+                    onClick={handleGenerateClaude}
+                    disabled={generatingClaude || (!pdf && !isEditMode) || !title.trim()}
+                    className="btn-secondary flex w-full items-center justify-center gap-2 py-3 disabled:opacity-50"
+                  >
+                    {generatingClaude ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Generating with Claude…
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="h-4 w-4" />
+                        {claudeSeoReady ? 'Regenerate with Claude' : 'Generate with Claude'}
+                      </>
+                    )}
+                  </button>
+                  {claudeSeoReady ? (
+                    <WhitePaperSeoFields seo={seo} onChange={setSeo} variant="claude" />
+                  ) : (
+                    <div className="rounded-lg border border-dashed border-gray-200 px-3 py-3 text-xs text-gray-500 dark:border-gray-700">
+                      Generate first to preview SEO fields, or publish directly and Claude will run on publish.
+                    </div>
+                  )}
                 </div>
               )}
             </form>
@@ -385,7 +550,17 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
         {!published && !submitting && (
           <footer className="shrink-0 border-t border-gray-200 bg-white px-5 py-4 dark:border-gray-800 dark:bg-gray-900">
             <button type="submit" form="wp-upload-form" className="btn-primary w-full justify-center py-3">
-              {isEditMode ? 'Update white paper' : 'Submit & publish'}
+              {isEditMode
+                ? seoMode === 'claude' && claudeSeoReady
+                  ? 'Update with edited SEO'
+                  : seoMode === 'claude'
+                    ? 'Update & regenerate SEO'
+                    : 'Update white paper'
+                : seoMode === 'claude' && claudeSeoReady
+                  ? 'Publish with edited SEO'
+                  : seoMode === 'claude'
+                    ? 'Publish with Claude SEO'
+                    : 'Publish with manual SEO'}
             </button>
           </footer>
         )}
@@ -400,6 +575,40 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
       </aside>
     </div>,
     document.body
+  )
+}
+
+function SeoModeToggle({ value, onChange }) {
+  return (
+    <div className="space-y-1.5">
+      <label className="label mb-0">Content &amp; SEO mode</label>
+      <div className="grid grid-cols-2 gap-2 rounded-xl border border-gray-200 bg-gray-50 p-1 dark:border-gray-700 dark:bg-gray-800/50">
+        <button
+          type="button"
+          onClick={() => onChange('claude')}
+          className={`rounded-lg px-3 py-2.5 text-left text-xs transition-colors ${
+            value === 'claude'
+              ? 'bg-white font-semibold text-brand shadow-sm dark:bg-gray-900'
+              : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
+          }`}
+        >
+          <span className="block text-sm font-semibold">Claude auto</span>
+          <span className="mt-0.5 block text-[11px] font-normal opacity-80">PDF → auto SEO + inside content</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => onChange('manual')}
+          className={`rounded-lg px-3 py-2.5 text-left text-xs transition-colors ${
+            value === 'manual'
+              ? 'bg-white font-semibold text-brand shadow-sm dark:bg-gray-900'
+              : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
+          }`}
+        >
+          <span className="block text-sm font-semibold">Manual fill</span>
+          <span className="mt-0.5 block text-[11px] font-normal opacity-80">You type all fields yourself</span>
+        </button>
+      </div>
+    </div>
   )
 }
 
@@ -430,6 +639,19 @@ function FileInput({ accept, file, icon: Icon, emptyLabel, preview, onChange }) 
 }
 
 function SuccessView({ published, thumbPreview, seo, setSeo, onSaveSeo, savingSeo }) {
+  const [title, setTitle] = useState(published.title || '')
+  const [description, setDescription] = useState(published.description || '')
+
+  useEffect(() => {
+    setTitle(published.title || '')
+    setDescription(published.description || '')
+  }, [published.title, published.description])
+
+  const handleTitleChange = (next) => {
+    setTitle(next)
+    setSeo((prev) => ({ ...prev, seoTitle: next.slice(0, 70) }))
+  }
+
   return (
     <div className="space-y-5">
       <div className="flex items-start gap-3 rounded-lg border border-green-200 bg-green-50 px-4 py-3 dark:border-green-900 dark:bg-green-950/40">
@@ -437,7 +659,7 @@ function SuccessView({ published, thumbPreview, seo, setSeo, onSaveSeo, savingSe
         <div>
           <p className="text-sm font-semibold text-green-900 dark:text-green-100">Published</p>
           <p className="mt-0.5 text-xs text-green-800/90 dark:text-green-200/80">
-            Review Claude SEO below — edit keywords or OG copy, then save.
+            Edit title, description, or SEO below — then save your changes.
           </p>
         </div>
       </div>
@@ -450,15 +672,37 @@ function SuccessView({ published, thumbPreview, seo, setSeo, onSaveSeo, savingSe
         />
       )}
 
+      <div className="space-y-1.5">
+        <label className="label">Title</label>
+        <input
+          type="text"
+          className="input"
+          value={title}
+          onChange={(e) => handleTitleChange(e.target.value)}
+          maxLength={300}
+        />
+      </div>
+
+      <div className="space-y-1.5">
+        <label className="label">Description</label>
+        <textarea
+          className="input min-h-[72px] resize-y py-3"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          maxLength={220}
+        />
+        <p className="text-xs text-gray-400">{description.length}/220 characters</p>
+      </div>
+
       <WhitePaperSeoFields seo={seo} onChange={setSeo} />
 
       <button
         type="button"
-        onClick={onSaveSeo}
+        onClick={() => onSaveSeo({ title, description })}
         disabled={savingSeo}
         className="btn-secondary w-full justify-center py-3 disabled:opacity-50"
       >
-        {savingSeo ? 'Saving SEO…' : 'Save SEO changes'}
+        {savingSeo ? 'Saving…' : 'Save changes'}
       </button>
 
       <a

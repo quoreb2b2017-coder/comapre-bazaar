@@ -16,6 +16,31 @@ export function sectionListPreview(item: WhitePaperInsideSectionItem): string {
   return summary
 }
 
+/** Short teaser for preview lists — never show full body copy. */
+export function truncatePreviewText(text: string, maxChars = 120): string {
+  const cleaned = String(text || '').replace(/\s+/g, ' ').trim()
+  if (!cleaned) return ''
+  if (cleaned.length <= maxChars) return cleaned
+  return `${cleaned.slice(0, maxChars - 1).replace(/\s+\S*$/, '').trim()}…`
+}
+
+export function sectionPreviewTeaser(item: WhitePaperInsideSectionItem, maxChars = 120): string {
+  const summary = sectionDisplaySummary(item)
+  const rawSummary = String(item.summary || '').trim()
+  const body = String(item.body || '').trim()
+
+  let source = summary
+  if (!source && rawSummary && rawSummary !== String(item.title || '').trim()) {
+    source = rawSummary
+  }
+  if (!source && body) {
+    const firstSentence = body.match(/^[^.!?]+[.!?]/)?.[0]?.trim() || body
+    source = firstSentence
+  }
+
+  return truncatePreviewText(source, maxChars)
+}
+
 export function sectionDisplayBody(item: WhitePaperInsideSectionItem): string {
   const body = String(item.body || '').trim()
   if (body && body !== item.summary) return body
@@ -50,10 +75,11 @@ type InsideListProps = {
   variant?: 'static' | 'selectable'
   activeIndex?: number
   onSelect?: (index: number) => void
-  summaryClamp?: 'none' | 'one' | 'two'
+  summaryClamp?: 'none' | 'one' | 'two' | 'three'
   density?: 'compact' | 'comfortable'
   showDividers?: boolean
   className?: string
+  teaserMaxChars?: number
 }
 
 export function WhitePaperInsideList({
@@ -65,6 +91,7 @@ export function WhitePaperInsideList({
   density = 'compact',
   showDividers = true,
   className = '',
+  teaserMaxChars = 120,
 }: InsideListProps) {
   if (!items.length) return null
 
@@ -79,13 +106,16 @@ export function WhitePaperInsideList({
       ? 'line-clamp-1'
       : summaryClamp === 'two'
         ? 'line-clamp-2'
-        : ''
+        : summaryClamp === 'three'
+          ? 'line-clamp-3'
+          : ''
 
   return (
     <ol className={`${listClass} ${className}`.trim()} role={variant === 'selectable' ? 'tablist' : undefined}>
       {items.map((item, index) => {
         const title = sectionDisplayTitle(item)
-        const preview = sectionListPreview(item)
+        const preview =
+          summaryClamp === 'none' ? sectionListPreview(item) : sectionPreviewTeaser(item, teaserMaxChars)
         const selected = variant === 'selectable' && index === activeIndex
 
         const content = (
@@ -98,7 +128,11 @@ export function WhitePaperInsideList({
                 {title}
               </p>
               {preview ? (
-                <p className={`mt-1.5 text-gray-600 ${summaryTextClass} ${summaryClass}`.trim()}>{preview}</p>
+                <p
+                  className={`mt-1.5 overflow-hidden text-gray-600 ${summaryTextClass} ${summaryClass}`.trim()}
+                >
+                  {preview}
+                </p>
               ) : null}
             </div>
           </>
@@ -134,17 +168,24 @@ export function WhitePaperInsideList({
 
 export function WhitePaperInsideHeading({
   sectionCount,
+  previewCount,
   className = '',
 }: {
   sectionCount: number
+  previewCount?: number
   className?: string
 }) {
+  const showing = previewCount ?? sectionCount
+  const hasMore = sectionCount > showing
+
   return (
     <div className={className}>
       <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-400">What&apos;s inside</p>
       <h3 className="mt-1.5 text-base font-semibold leading-snug text-navy">
         {sectionCount > 0
-          ? `${sectionCount} sections of data you can act on today`
+          ? hasMore
+            ? `Preview: ${showing} of ${sectionCount} sections`
+            : `${sectionCount} sections of data you can act on today`
           : 'Key insights from this whitepaper'}
       </h3>
       <p className="mt-1.5 text-xs leading-relaxed text-gray-500">

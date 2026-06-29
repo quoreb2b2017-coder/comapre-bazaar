@@ -71,7 +71,8 @@ export function WhitePaperInsideFullView({
             variant="selectable"
             activeIndex={activeIndex}
             onSelect={setActiveIndex}
-            summaryClamp="none"
+            summaryClamp="two"
+            teaserMaxChars={120}
             density="comfortable"
             className={thumbnailUrl ? 'mt-5' : ''}
           />

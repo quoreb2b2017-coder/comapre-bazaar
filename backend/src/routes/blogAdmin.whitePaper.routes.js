@@ -12,10 +12,17 @@ const {
   shortenDescription,
   parseSeoOverrides,
   applySeoOverrides,
+  parseClaudeContentPayload,
+  applyGeneratedSeoToPaper,
+  shouldUsePreGeneratedClaude,
   uploadPdfToCloudinary,
   uploadThumbnailToCloudinary,
   generateWhitePaperSeo,
   resolveWhitePaperTitle,
+  resolveAdminWhitePaperTitle,
+  syncSeoTitleFromAdminTitle,
+  parseSeoMode,
+  applyManualSeoToPaper,
 } = require('../services/blogAdmin.whitePaper.service')
 const { deleteCloudinaryAsset } = require('../utils/cloudinary-upload')
 const { formatLeadForAdmin } = require('../utils/whitePaperLeadFormat')
@@ -56,6 +63,71 @@ router.post(
       })
     } catch (error) {
       res.status(500).json({ success: false, message: error.message || 'Failed to preview PDF' })
+    }
+  }
+)
+
+// POST /api/v1/blog-admin/whitepapers/generate-seo
+// Claude SEO preview — fill form fields before publish; user can edit then save.
+router.post(
+  '/generate-seo',
+  (req, res, next) => {
+    whitePaperUpload(req, res, (err) => {
+      if (err) {
+        const msg = err.code === 'LIMIT_FILE_SIZE' ? 'File too large (max 25 MB)' : err.message
+        return res.status(400).json({ success: false, message: msg })
+      }
+      next()
+    })
+  },
+  async (req, res) => {
+    try {
+      const pdfFile = req.files?.pdf?.[0]
+      let pdfText = ''
+      if (pdfFile) {
+        try {
+          pdfText = await extractPdfText(pdfFile.buffer)
+        } catch (pdfErr) {
+          console.warn('PDF extract:', pdfErr?.message)
+        }
+      } else if (req.body?.paperId) {
+        const existing = await WhitePaper.findById(req.body.paperId)
+        if (!existing) return res.status(404).json({ success: false, message: 'White paper not found' })
+        pdfText = existing.pdfTextExcerpt || ''
+      } else {
+        return res.status(400).json({ success: false, message: 'PDF file or paperId is required' })
+      }
+
+      let title = String(req.body?.title || '').trim()
+      let description = String(req.body?.description || '').trim()
+      if (!title || !description) {
+        const suggested = extractTitleAndDescriptionFromPdf({
+          pdfText,
+          fileName: pdfFile?.originalname || '',
+        })
+        if (!title) title = suggested.title
+        if (!description) description = suggested.description
+      }
+      title = resolveAdminWhitePaperTitle({
+        rawTitle: title,
+        pdfText,
+        fileName: pdfFile?.originalname || '',
+      })
+      description = shortenDescription(description)
+
+      const metaRaw = parseMetadataInput(req.body?.metadata)
+      const metadata = {
+        offeredBy: String(metaRaw.offeredBy || req.body?.offeredBy || 'Compare Bazaar').trim(),
+        author: String(metaRaw.author || req.body?.author || '').trim(),
+        category: String(metaRaw.category || req.body?.category || '').trim(),
+        extra: String(metaRaw.extra || '').trim(),
+      }
+
+      const seo = await generateWhitePaperSeo({ title, description, metadata, pdfText })
+      res.json({ success: true, data: seo })
+    } catch (error) {
+      console.error('White paper SEO generate error:', error)
+      res.status(500).json({ success: false, message: error.message || 'Failed to generate SEO' })
     }
   }
 )
@@ -275,8 +347,8 @@ router.post('/', (req, res, next) => {
       if (!title) title = suggested.title
       if (!description) description = suggested.description
     }
-    title = resolveWhitePaperTitle({
-      rawTitle: title,
+    title = resolveAdminWhitePaperTitle({
+      rawTitle: String(req.body?.title || title || '').trim(),
       pdfText,
       fileName: pdfFile.originalname,
     })
@@ -309,29 +381,41 @@ router.post('/', (req, res, next) => {
       thumbnailPublicId: thumbUpload.publicId,
     })
 
-    let seo
-    try {
-      seo = await generateWhitePaperSeo({ title, description, metadata, pdfText })
-    } catch (seoErr) {
-      throw new Error(`SEO generation failed: ${seoErr.message}`)
+    const seoMode = parseSeoMode(req.body?.seoMode)
+    const seoOverrides = parseSeoOverrides(req.body?.seo)
+    if (seoMode === 'manual') {
+      applyManualSeoToPaper(draft, {
+        title: draft.title,
+        description: draft.description,
+        seoOverrides,
+      })
+    } else {
+      const preGenerated = shouldUsePreGeneratedClaude(req.body)
+      const claudeContent = parseClaudeContentPayload(req.body?.claudeContent)
+
+      if (preGenerated && claudeContent) {
+        applyGeneratedSeoToPaper(draft, claudeContent)
+        applySeoOverrides(draft, seoOverrides)
+      } else {
+        let seo
+        try {
+          seo = await generateWhitePaperSeo({ title, description, metadata, pdfText })
+        } catch (seoErr) {
+          throw new Error(`SEO generation failed: ${seoErr.message}`)
+        }
+
+        applyGeneratedSeoToPaper(draft, seo)
+        applySeoOverrides(draft, seoOverrides)
+      }
     }
 
-    draft.slug = seo.slug || undefined
-    draft.title = resolveWhitePaperTitle({ rawTitle: title, pdfText, fileName: pdfFile.originalname })
-    draft.seoTitle = seo.seoTitle || draft.title
-    draft.metaTitle = seo.metaTitle || title.slice(0, 70)
-    draft.metaDescription = seo.metaDescription || description.slice(0, 160)
-    draft.metaKeywords = seo.metaKeywords
-    draft.ogTitle = seo.ogTitle
-    draft.ogDescription = seo.ogDescription
-    draft.structuredSeoContent = seo.structuredSeoContent
-    draft.insideOverview = seo.insideOverview || ''
-    draft.insideSections = seo.insideSections || []
-    draft.insidePoints = (seo.insideSections || []).map((s) => s.summary || s.title).filter(Boolean)
-    draft.testimonialsHeading = seo.testimonialsHeading || 'Trusted by operations teams'
-    draft.testimonials = seo.testimonials || []
+    draft.title = resolveAdminWhitePaperTitle({
+      rawTitle: String(req.body?.title || title || '').trim(),
+      pdfText,
+      fileName: pdfFile.originalname,
+    })
+    syncSeoTitleFromAdminTitle(draft, seoOverrides)
     draft.highlightQuestions = resolveHighlightQuestions(req.body?.highlightQuestions)
-    applySeoOverrides(draft, parseSeoOverrides(req.body?.seo))
     draft.pdfTextExcerpt = pdfText.slice(0, 5000)
     draft.status = 'published'
     draft.publishedAt = new Date()
@@ -339,7 +423,10 @@ router.post('/', (req, res, next) => {
 
     res.status(201).json({
       success: true,
-      message: 'White paper published automatically',
+      message:
+        seoMode === 'manual'
+          ? 'White paper published with manual SEO'
+          : 'White paper published automatically',
       data: draft,
       publicUrl: `/resources/whitepaper/${draft.slug}`,
     })
@@ -403,7 +490,7 @@ router.put(
         extra: String(metaRaw.extra || paper.metadata?.extra || '').trim(),
       }
 
-      paper.title = resolveWhitePaperTitle({
+      paper.title = resolveAdminWhitePaperTitle({
         rawTitle: String(req.body?.title || paper.title || '').trim(),
         pdfText: pdfText || '',
         fileName: pdfFile?.originalname || '',
@@ -412,28 +499,37 @@ router.put(
       paper.metadata = metadata
       paper.pdfTextExcerpt = pdfText ? String(pdfText).slice(0, 5000) : paper.pdfTextExcerpt
 
-      const seo = await generateWhitePaperSeo({
-        title: paper.title,
-        description: paper.description,
-        metadata,
-        pdfText: pdfText || '',
-      })
+      const seoMode = parseSeoMode(req.body?.seoMode)
+      const seoOverrides = parseSeoOverrides(req.body?.seo)
+      if (seoMode === 'manual') {
+        applyManualSeoToPaper(paper, {
+          title: paper.title,
+          description: paper.description,
+          seoOverrides,
+        })
+      } else {
+        const preGenerated = shouldUsePreGeneratedClaude(req.body)
+        const claudeContent = parseClaudeContentPayload(req.body?.claudeContent)
 
-      paper.slug = seo.slug || paper.slug
-      paper.seoTitle = seo.seoTitle || paper.title
-      paper.metaTitle = seo.metaTitle || paper.title.slice(0, 70)
-      paper.metaDescription = seo.metaDescription || paper.description.slice(0, 160)
-      paper.metaKeywords = seo.metaKeywords
-      paper.ogTitle = seo.ogTitle
-      paper.ogDescription = seo.ogDescription
-      paper.structuredSeoContent = seo.structuredSeoContent
-      paper.insideOverview = seo.insideOverview || paper.insideOverview || ''
-      paper.insideSections = seo.insideSections || paper.insideSections || []
-      paper.insidePoints = (paper.insideSections || []).map((s) => s.summary || s.title).filter(Boolean)
-      paper.testimonialsHeading = seo.testimonialsHeading || paper.testimonialsHeading || 'Trusted by operations teams'
-      paper.testimonials = seo.testimonials || paper.testimonials || []
+        if (preGenerated && claudeContent) {
+          applyGeneratedSeoToPaper(paper, claudeContent)
+          applySeoOverrides(paper, seoOverrides)
+        } else {
+          const seo = await generateWhitePaperSeo({
+            title: paper.title,
+            description: paper.description,
+            metadata,
+            pdfText: pdfText || '',
+          })
+
+          applyGeneratedSeoToPaper(paper, seo)
+          applySeoOverrides(paper, seoOverrides)
+        }
+      }
+
+      syncSeoTitleFromAdminTitle(paper, seoOverrides)
+
       paper.highlightQuestions = resolveHighlightQuestions(req.body?.highlightQuestions)
-      applySeoOverrides(paper, parseSeoOverrides(req.body?.seo))
       paper.status = 'published'
       if (!paper.publishedAt) paper.publishedAt = new Date()
       paper.processingError = ''
@@ -453,18 +549,28 @@ router.put(
   }
 )
 
-// PATCH /api/v1/blog-admin/whitepapers/:id/seo — save SEO fields only
+// PATCH /api/v1/blog-admin/whitepapers/:id/seo — save SEO + optional title/description
 router.patch('/:id/seo', async (req, res) => {
   try {
     const paper = await WhitePaper.findById(req.params.id)
     if (!paper) return res.status(404).json({ success: false, message: 'Not found' })
 
     const overrides = parseSeoOverrides(req.body?.seo || req.body)
-    if (!overrides) {
+    if (!overrides && !req.body?.title && !req.body?.description) {
       return res.status(400).json({ success: false, message: 'SEO payload is required' })
     }
 
+    if (req.body?.title) {
+      paper.title = resolveAdminWhitePaperTitle({
+        rawTitle: String(req.body.title).trim(),
+        pdfText: paper.pdfTextExcerpt || '',
+      }).slice(0, 300)
+    }
+    if (req.body?.description) {
+      paper.description = shortenDescription(String(req.body.description).trim())
+    }
     applySeoOverrides(paper, overrides)
+    syncSeoTitleFromAdminTitle(paper, overrides)
     await paper.save()
 
     res.json({

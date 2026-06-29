@@ -21,6 +21,26 @@ export const emptySeoForm = () => ({
   structuredSeoContent: '',
 })
 
+export function seoFormFromBasics(title, description) {
+  const cleanTitle = String(title || '').trim()
+  const cleanDesc = String(description || '').trim()
+  const slug = cleanTitle
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 120)
+  return {
+    seoTitle: cleanTitle.slice(0, 70),
+    metaTitle: cleanTitle.slice(0, 60),
+    metaDescription: cleanDesc.slice(0, 160),
+    metaKeywords: '',
+    slug,
+    ogTitle: cleanTitle.slice(0, 70),
+    ogDescription: cleanDesc.slice(0, 200),
+    structuredSeoContent: cleanDesc.slice(0, 280),
+  }
+}
+
 /** @param {Record<string, unknown> | null | undefined} paper */
 export function seoFormFromPaper(paper) {
   if (!paper) return emptySeoForm()
@@ -61,18 +81,22 @@ export function seoFormToPayload(seo) {
  *   seo: WhitePaperSeoForm
  *   onChange: (next: WhitePaperSeoForm) => void
  *   disabled?: boolean
+ *   variant?: 'claude' | 'manual'
  * }} props
  */
-export function WhitePaperSeoFields({ seo, onChange, disabled = false }) {
+export function WhitePaperSeoFields({ seo, onChange, disabled = false, variant = 'claude' }) {
   const set = (key, value) => onChange({ ...seo, [key]: value })
 
   return (
     <div className="space-y-4 rounded-lg border border-brand/20 bg-brand/[0.03] p-4 dark:border-brand/30 dark:bg-brand/5">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-wide text-brand">SEO (Claude generated)</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-brand">
+          {variant === 'manual' ? 'SEO (manual)' : 'SEO (Claude generated)'}
+        </p>
         <p className="mt-1 text-xs leading-relaxed text-gray-500 dark:text-gray-400">
-          Google (meta title, description, keywords) and Open Graph (social share) fields. Review keywords before
-          publishing.
+          {variant === 'manual'
+            ? 'Fill Google meta, keywords, and Open Graph fields yourself before publishing.'
+            : 'Google (meta title, description, keywords) and Open Graph (social share) fields. Review keywords before publishing.'}
         </p>
       </div>
 

@@ -5,11 +5,13 @@ import { resolveWhitePaperInsideSections } from '@/components/whitepaper/WhitePa
 import {
   WhitePaperInsideHeading,
   WhitePaperInsideList,
+  truncatePreviewText,
 } from '@/components/whitepaper/WhitePaperInsideList'
 import { whitePaperDescriptionPath } from '@/lib/resourceDescriptionPaths'
 
 const PREVIEW_SECTION_COUNT = 3
-const PREVIEW_OVERVIEW_MAX = 140
+const PREVIEW_OVERVIEW_MAX = 180
+const PREVIEW_TEASER_MAX = 120
 
 type Props = {
   slug: string
@@ -32,10 +34,7 @@ export function WhitePaperInsideExplorer({
   const overviewText = cleanDisplayText(String(overview || '').trim())
   if (!overviewText && items.length === 0) return null
 
-  const previewOverview =
-    overviewText.length > PREVIEW_OVERVIEW_MAX
-      ? `${overviewText.slice(0, PREVIEW_OVERVIEW_MAX - 1).replace(/\s+\S*$/, '').trim()}…`
-      : overviewText
+  const previewOverview = truncatePreviewText(overviewText, PREVIEW_OVERVIEW_MAX)
 
   const previewSections = items.slice(0, PREVIEW_SECTION_COUNT)
   const hiddenCount = Math.max(0, items.length - PREVIEW_SECTION_COUNT)
@@ -44,18 +43,20 @@ export function WhitePaperInsideExplorer({
     <section className={`text-left ${className}`}>
       <WhitePaperInsideHeading
         sectionCount={items.length}
+        previewCount={previewSections.length}
         className={compact ? '' : 'border-t border-gray-200 pt-5'}
       />
 
       {previewOverview ? (
-        <p className={`text-[13px] leading-relaxed text-gray-600 ${compact ? 'mt-1.5' : 'mt-4'}`}>
+        <p className={`line-clamp-2 text-[13px] leading-relaxed text-gray-600 ${compact ? 'mt-1.5' : 'mt-4'}`}>
           {previewOverview}
         </p>
       ) : null}
 
       <WhitePaperInsideList
         items={previewSections}
-        summaryClamp="one"
+        summaryClamp="two"
+        teaserMaxChars={PREVIEW_TEASER_MAX}
         showDividers={!compact}
         className={compact ? 'mt-1.5' : 'mt-4'}
       />

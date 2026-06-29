@@ -187,6 +187,20 @@ function resolveWhitePaperTitle({ rawTitle = '', pdfText = '', fileName = '' } =
   return formatWhitePaperDisplayTitle(reportTitle, pdfText)
 }
 
+/** Trust admin-typed title — do not re-extract from PDF. */
+function resolveAdminWhitePaperTitle({ rawTitle = '', pdfText = '', fileName = '' } = {}) {
+  const seed = String(rawTitle || '').trim()
+  if (!seed) return resolveWhitePaperTitle({ rawTitle: '', pdfText, fileName })
+  const core = stripPublisherFromTitle(stripCopyrightNotice(normalizeCompareBazaarDomain(seed))) || seed
+  return formatWhitePaperDisplayTitle(core, pdfText) || core.slice(0, 180)
+}
+
+function syncSeoTitleFromAdminTitle(paper, seoOverrides) {
+  if (seoOverrides?.seoTitle) return
+  const cleaned = cleanWhitePaperTitle(String(paper.title || '')).slice(0, 70)
+  if (cleaned) paper.seoTitle = cleaned
+}
+
 function extractTitleAndDescriptionFromPdf({ pdfText = '', fileName = '' }) {
   const text = String(pdfText || '').slice(0, 4000)
   const fallbackTitle = titleFromFilename(fileName) || 'Untitled whitepaper'
@@ -236,8 +250,32 @@ function fallbackSeoFromAdmin({ title, description }) {
     slug: base.slice(0, 120),
     ogTitle: title.slice(0, 70),
     ogDescription: desc.slice(0, 200),
-    structuredSeoContent: description.slice(0, 300),
+    structuredSeoContent: description.slice(0, 280),
+    insideOverview: '',
+    insideSections: [],
+    insidePoints: [],
+    testimonialsHeading: 'Trusted by operations teams',
+    testimonials: [],
   }
+}
+
+function parseSeoMode(raw) {
+  const mode = String(raw || 'claude').trim().toLowerCase()
+  return mode === 'manual' ? 'manual' : 'claude'
+}
+
+function applyManualSeoToPaper(paper, { title, description, seoOverrides }) {
+  const fallback = fallbackSeoFromAdmin({ title, description })
+  paper.seoTitle = fallback.seoTitle
+  paper.metaTitle = fallback.metaTitle
+  paper.metaDescription = fallback.metaDescription
+  paper.metaKeywords = fallback.metaKeywords
+  paper.slug = fallback.slug
+  paper.ogTitle = fallback.ogTitle
+  paper.ogDescription = fallback.ogDescription
+  paper.structuredSeoContent = fallback.structuredSeoContent
+  applySeoOverrides(paper, seoOverrides)
+  if (!paper.slug) paper.slug = fallback.slug
 }
 
 function parseSeoJson(raw, admin) {
@@ -516,6 +554,71 @@ function applySeoOverrides(paper, overrides) {
   if (overrides.structuredSeoContent) paper.structuredSeoContent = overrides.structuredSeoContent
 }
 
+function parseClaudeContentPayload(raw) {
+  if (!raw) return null
+  let data = raw
+  if (typeof data === 'string') {
+    try {
+      data = JSON.parse(data)
+    } catch {
+      return null
+    }
+  }
+  if (!data || typeof data !== 'object') return null
+
+  const metaKeywords = Array.isArray(data.metaKeywords)
+    ? data.metaKeywords.map((k) => String(k).trim()).filter(Boolean).slice(0, 20)
+    : String(data.metaKeywords || '')
+        .split(/[,;\n]/)
+        .map((k) => k.trim())
+        .filter(Boolean)
+        .slice(0, 20)
+
+  const slug = String(data.slug || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9-]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 120)
+
+  return {
+    slug: slug || undefined,
+    seoTitle: String(data.seoTitle || '').trim().slice(0, 70),
+    metaTitle: String(data.metaTitle || '').trim().slice(0, 70),
+    metaDescription: String(data.metaDescription || '').trim().slice(0, 160),
+    metaKeywords,
+    ogTitle: String(data.ogTitle || '').trim().slice(0, 70),
+    ogDescription: String(data.ogDescription || '').trim().slice(0, 200),
+    structuredSeoContent: String(data.structuredSeoContent || '').trim().slice(0, 280),
+    insideOverview: String(data.insideOverview || '').trim().slice(0, 600),
+    insideSections: normalizeInsideSections(data.insideSections, data.insidePoints),
+    testimonialsHeading: String(data.testimonialsHeading || '').trim().slice(0, 80),
+    testimonials: normalizeTestimonials(data.testimonials),
+  }
+}
+
+function applyGeneratedSeoToPaper(paper, seo) {
+  if (!seo) return
+  if (seo.slug) paper.slug = seo.slug
+  paper.seoTitle = seo.seoTitle || paper.seoTitle || paper.title
+  paper.metaTitle = seo.metaTitle || paper.metaTitle || paper.title.slice(0, 70)
+  paper.metaDescription = seo.metaDescription || paper.metaDescription || paper.description.slice(0, 160)
+  if (seo.metaKeywords?.length) paper.metaKeywords = seo.metaKeywords
+  if (seo.ogTitle) paper.ogTitle = seo.ogTitle
+  if (seo.ogDescription) paper.ogDescription = seo.ogDescription
+  if (seo.structuredSeoContent) paper.structuredSeoContent = seo.structuredSeoContent
+  if (seo.insideOverview !== undefined) paper.insideOverview = seo.insideOverview || ''
+  if (seo.insideSections !== undefined) {
+    paper.insideSections = seo.insideSections || []
+    paper.insidePoints = (paper.insideSections || []).map((s) => s.summary || s.title).filter(Boolean)
+  }
+  if (seo.testimonialsHeading) paper.testimonialsHeading = seo.testimonialsHeading
+  if (seo.testimonials !== undefined) paper.testimonials = seo.testimonials || []
+}
+
+function shouldUsePreGeneratedClaude(body) {
+  return body?.seoGenerated === 'true' || body?.seoGenerated === true
+}
+
 async function uploadPdfToCloudinary(buffer) {
   assertCloudinaryConfigured()
   const result = await uploadBufferToCloudinary(buffer, {
@@ -543,10 +646,16 @@ async function uploadThumbnailToCloudinary(buffer) {
 module.exports = {
   parseMetadataInput,
   parseHighlightQuestions,
+  parseSeoMode,
+  applyManualSeoToPaper,
   resolveHighlightQuestions,
   normalizeInsideSections,
   parseSeoOverrides,
   applySeoOverrides,
+  parseClaudeContentPayload,
+  applyGeneratedSeoToPaper,
+  shouldUsePreGeneratedClaude,
+  fallbackSeoFromAdmin,
   extractPdfText,
   extractTitleAndDescriptionFromPdf,
   shortenDescription,
@@ -556,5 +665,7 @@ module.exports = {
   INSIDE_SECTIONS_MIN,
   INSIDE_SECTIONS_MAX,
   resolveWhitePaperTitle,
+  resolveAdminWhitePaperTitle,
+  syncSeoTitleFromAdminTitle,
   cleanWhitePaperTitle,
 }
