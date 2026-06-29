@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowRight, Search } from 'lucide-react'
-import { heroBtn3d, heroInputRow, heroPanel3d, heroTag3d } from '@/lib/hero3dStyles'
+import { heroAccentPanel, heroBtn3d, heroInputRow, heroTag3d } from '@/lib/hero3dStyles'
 
 interface SearchItem {
   href: string
@@ -121,7 +121,7 @@ export function HomeSearchBar({ items, variant = 'default' }: HomeSearchBarProps
 
   if (variant === 'hero') {
     return (
-      <div className={`p-3 sm:p-3.5 ${heroPanel3d}`}>
+      <div className={heroAccentPanel}>
         <p className="mb-2.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#F58220]">
           Search software
         </p>
@@ -154,7 +154,7 @@ export function HomeSearchBar({ items, variant = 'default' }: HomeSearchBarProps
             </div>
             <button
               type="submit"
-              className={`inline-flex shrink-0 items-center gap-1 px-3 py-2 text-[13px] font-semibold text-white ${heroBtn3d}`}
+              className={`inline-flex shrink-0 items-center gap-1 rounded-r-md px-3 py-2 text-[13px] font-semibold text-white ${heroBtn3d}`}
             >
               <span className="hidden sm:inline">Search</span>
               <ArrowRight className="h-3.5 w-3.5 sm:hidden" aria-hidden="true" />

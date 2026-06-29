@@ -42,7 +42,7 @@ export function HomeHeroSection() {
         </div>
 
         <motion.div
-          className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-3 lg:grid-cols-3"
+          className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3"
           variants={staggerContainer}
         >
           {HOME_CATEGORIES.map((cat) => (
@@ -54,7 +54,6 @@ export function HomeHeroSection() {
                 shortTitle={cat.shortTitle}
                 vendors={cat.vendors}
                 title={cat.title}
-                blurb={cat.blurb}
               />
             </motion.div>
           ))}

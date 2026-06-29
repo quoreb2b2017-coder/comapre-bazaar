@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import type { ComponentType } from 'react'
-import { heroBtn3d, heroCard3d } from '@/lib/hero3dStyles'
+import { heroCategoryCard } from '@/lib/hero3dStyles'
 
 type Props = {
   href: string
@@ -9,7 +9,7 @@ type Props = {
   shortTitle: string
   vendors: string
   title: string
-  blurb: string
+  blurb?: string
 }
 
 export function HomeCategoryCard({
@@ -19,29 +19,25 @@ export function HomeCategoryCard({
   shortTitle,
   vendors,
   title,
-  blurb,
 }: Props) {
   return (
-    <div className={`group flex min-h-[132px] flex-col p-2.5 sm:min-h-[136px] sm:p-3 lg:min-h-[128px] lg:p-2.5 ${heroCard3d}`}>
-      <Link href={href} className="flex flex-1 flex-col" aria-label={`${title}, ${vendors}`}>
+    <article className={heroCategoryCard}>
+      <Link href={href} className="flex flex-1 flex-col" aria-label={`${title}, ${vendors} compared`}>
         <Icon
-          className="h-6 w-6 text-[#F58220] transition-transform duration-300 ease-out group-hover:scale-105 lg:h-5 lg:w-5"
+          className="mb-3 h-5 w-5 text-[#F58220] transition-transform duration-300 ease-out group-hover:scale-105"
           aria-hidden={true}
         />
-        <div className="mt-2 lg:mt-1.5">
-          <h2 className="text-base font-semibold text-white mb-0.5 lg:text-[15px]">{shortTitle}</h2>
-          <p className="text-xs text-[#F58220]/90">{vendors}</p>
-        </div>
-        <p className="mt-2 flex-1 text-[11px] leading-relaxed text-white/75 sm:text-xs">{blurb}</p>
+        <h2 className="font-serif text-lg leading-tight text-[#1B2A4A]">{shortTitle}</h2>
+        <p className="mt-1 text-sm text-gray-500">{vendors} compared</p>
       </Link>
 
       <Link
         href={quotesHref}
-        className={`mt-2.5 inline-flex w-fit items-center justify-center rounded-md px-2 py-1 text-[11px] font-semibold text-white ${heroBtn3d}`}
+        className="mt-4 inline-flex w-fit items-center text-sm font-semibold text-[#F58220] transition-colors duration-200 hover:text-[#e67410]"
         aria-label={`Get free quotes for ${shortTitle}`}
       >
-        Free Quotes
+        Free quotes →
       </Link>
-    </div>
+    </article>
   )
 }
