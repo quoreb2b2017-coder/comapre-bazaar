@@ -53,7 +53,15 @@ const whitePaperSchema = new mongoose.Schema(
     },
     /** Admin-entered questions shown on download forms */
     highlightQuestions: {
-      type: [{ type: String, trim: true, maxlength: 500 }],
+      type: [
+        {
+          question: { type: String, trim: true, maxlength: 500 },
+          options: {
+            type: [{ type: String, trim: true, maxlength: 200 }],
+            default: [],
+          },
+        },
+      ],
       default: [],
     },
     /** PDF-derived social proof quotes (Claude-generated on publish) */

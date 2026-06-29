@@ -1,4 +1,5 @@
 import { cmsBackendBase } from '@/lib/cmsBackendBase'
+import type { HighlightQuestion } from '@/lib/highlightQuestions'
 
 export function whitePaperBackendBase(): string {
   return cmsBackendBase()
@@ -27,7 +28,7 @@ export type WhitePaperPublic = {
   insideOverview?: string
   insideSections?: { title: string; summary: string; body?: string; pages?: string }[]
   insidePoints?: string[]
-  highlightQuestions?: string[]
+  highlightQuestions?: HighlightQuestion[]
   testimonialsHeading?: string
   testimonials?: {
     quote: string

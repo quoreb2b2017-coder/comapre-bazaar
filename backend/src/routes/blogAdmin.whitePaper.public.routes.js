@@ -5,15 +5,17 @@ const WhitePaperLead = require('../models/whitePaperLead.model')
 const { cloudinaryForceDownloadUrl, safePdfFileName } = require('../utils/pdf-download')
 const { isWorkEmail } = require('../utils/work-email')
 const { INSIDE_SECTIONS_MAX, resolveWhitePaperTitle, cleanWhitePaperTitle } = require('../services/blogAdmin.whitePaper.service')
+const {
+  parseHighlightQuestions,
+  validateHighlightAnswer,
+} = require('../utils/highlightQuestions')
 
 const router = express.Router()
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 function normalizeCustomAnswers(body, paper) {
-  const questions = Array.isArray(paper?.highlightQuestions)
-    ? paper.highlightQuestions.map((q) => String(q || '').trim()).filter(Boolean)
-    : []
+  const questions = parseHighlightQuestions(paper?.highlightQuestions)
   const raw = body?.highlightAnswers ?? body?.customAnswers
   const byQuestion = {}
   if (Array.isArray(raw)) {
@@ -23,7 +25,11 @@ function normalizeCustomAnswers(body, paper) {
       if (question) byQuestion[question] = answer
     }
   }
-  return questions.map((question) => ({ question, answer: byQuestion[question] || '' }))
+  return questions.map((item) => {
+    const answer = byQuestion[item.question] || ''
+    const check = validateHighlightAnswer(item, answer)
+    return { question: item.question, answer: check.ok ? check.answer : '' }
+  })
 }
 
 function publicFields(p, { includePdf = false } = {}) {
@@ -58,7 +64,7 @@ function publicFields(p, { includePdf = false } = {}) {
           }))
       : [],
     insidePoints: Array.isArray(p.insidePoints) ? p.insidePoints.filter(Boolean).slice(0, INSIDE_SECTIONS_MAX) : [],
-    highlightQuestions: Array.isArray(p.highlightQuestions) ? p.highlightQuestions.filter(Boolean) : [],
+    highlightQuestions: parseHighlightQuestions(p.highlightQuestions),
     testimonialsHeading: p.testimonialsHeading || 'Trusted by operations teams',
     testimonials: Array.isArray(p.testimonials)
       ? p.testimonials

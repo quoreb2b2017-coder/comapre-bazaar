@@ -30,27 +30,9 @@ function parseMetadataInput(raw) {
   }
 }
 
-const HIGHLIGHT_QUESTIONS_MAX = 20
+const { parseHighlightQuestions } = require('../utils/highlightQuestions')
 const INSIDE_SECTIONS_MIN = 3
 const INSIDE_SECTIONS_MAX = 5
-
-function parseHighlightQuestions(raw) {
-  if (raw == null || raw === '') return []
-  let arr = raw
-  if (typeof raw === 'string') {
-    try {
-      arr = JSON.parse(raw)
-    } catch {
-      return []
-    }
-  }
-  if (!Array.isArray(arr)) return []
-  return arr
-    .map((q) => String(q || '').trim())
-    .filter(Boolean)
-    .slice(0, HIGHLIGHT_QUESTIONS_MAX)
-}
-
 const SHORT_DESCRIPTION_MAX = 220
 const SHORT_STRUCTURED_SEO_MAX = 280
 

@@ -9,6 +9,7 @@ import { whitePaperDisplayTitle } from '@/lib/whitePaperDisplay'
 import { whitePaperBackendBase } from '@/lib/whitePaperCms'
 import { isWorkEmail, WORK_EMAIL_ERROR } from '@/lib/workEmail'
 import { WhitePaperHighlightFormFields } from '@/components/whitepaper/WhitePaperHighlightFormFields'
+import { parseHighlightQuestions, type HighlightQuestion } from '@/lib/highlightQuestions'
 import { WhitePaperInsideExplorer } from '@/components/whitepaper/WhitePaperInsideExplorer'
 
 type PaperPreview = {
@@ -18,7 +19,7 @@ type PaperPreview = {
   description?: string
   thumbnailUrl: string
   metadata?: { offeredBy?: string }
-  highlightQuestions?: string[]
+  highlightQuestions?: HighlightQuestion[]
   insideOverview?: string
   insideSections?: { title: string; summary: string; body?: string; pages?: string }[]
   insidePoints?: string[]
@@ -77,7 +78,7 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
   const offeredBy = paper.metadata?.offeredBy || 'Compare Bazaar'
   const base = whitePaperBackendBase()
   const detailHref = `/resources/whitepaper/${paper.slug}`
-  const formQuestions = (paper.highlightQuestions || []).map((q) => String(q || '').trim()).filter(Boolean)
+  const formQuestions: HighlightQuestion[] = parseHighlightQuestions(paper.highlightQuestions)
 
   useEffect(() => {
     setCustomAnswers((prev) => formQuestions.map((_, i) => prev[i] || ''))
@@ -130,8 +131,8 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
           body: JSON.stringify({
             email: email.trim(),
             ...form,
-            highlightAnswers: formQuestions.map((question, index) => ({
-              question,
+            highlightAnswers: formQuestions.map((item, index) => ({
+              question: item.question,
               answer: customAnswers[index] || '',
             })),
           }),
