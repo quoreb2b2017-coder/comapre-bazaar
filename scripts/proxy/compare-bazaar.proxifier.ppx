@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!-- Import: Proxifier → File → Import Profile → select this file -->
+<!-- Then: Profile → Proxy Servers → edit Decodo → add your Decodo username/password -->
+<ProxifierProfile version="102" platform="Windows" product_id="0" product_minver="400">
+	<Options>
+		<Resolve>
+			<AutoModeDetection enabled="true" />
+			<ViaProxy enabled="true" />
+			<BlockNonMatching disabled="false" />
+			<ExclusionList OnlyFromListMode="false">localhost; 127.0.0.1; %ComputerName%; *.local</ExclusionList>
+		</Resolve>
+		<Encryption mode="basic" />
+		<Chain></Chain>
+		<ProcessOtherUsers enabled="false" />
+		<ProcessServices enabled="false" />
+		<HandleDirectConnections enabled="false" />
+	</Options>
+	<ProxyList>
+		<Proxy id="100" type="HTTPS">
+			<Authentication enabled="true">
+				<Username>DECODO_USERNAME</Username>
+				<Password>DECODO_PASSWORD</Password>
+			</Authentication>
+			<Options>48</Options>
+			<Port>7000</Port>
+			<Address>gate.decodo.com</Address>
+		</Proxy>
+	</ProxyList>
+	<ChainList></ChainList>
+	<RuleList>
+		<Rule enabled="true">
+			<Action type="Direct" />
+			<Targets>localhost; 127.0.0.1; %ComputerName%; *.local</Targets>
+			<Name>Localhost - Direct</Name>
+		</Rule>
+		<Rule enabled="true">
+			<Action type="Proxy">100</Action>
+			<Targets>chrome.exe; msedge.exe; firefox.exe; brave.exe; opera.exe</Targets>
+			<Name>Browsers - Decodo HTTPS</Name>
+		</Rule>
+		<Rule enabled="true">
+			<Action type="Direct" />
+			<Name>Default - Direct</Name>
+		</Rule>
+	</RuleList>
+</ProxifierProfile>
