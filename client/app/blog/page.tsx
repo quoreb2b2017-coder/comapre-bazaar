@@ -13,7 +13,8 @@ import { BlogFeaturedCarousel } from '@/components/blog/BlogFeaturedCarousel'
 import { BlogGridCard } from '@/components/blog/BlogListingCards'
 import { BlogLibraryHeroVisual } from '@/components/blog/BlogLibraryHeroVisual'
 import { BlogSubscribeBox } from '@/components/blog/BlogSubscribeBox'
-import { BlogTopicFilterBand } from '@/components/blog/BlogTopicFilterBand'
+import { BlogTopicGuideIndex } from '@/components/blog/BlogTopicGuideIndex'
+import { BlogTopicHeroExtras } from '@/components/blog/BlogTopicHeroExtras'
 import { BlogTopicsStrip } from '@/components/blog/BlogTopicsStrip'
 
 export const revalidate = 120
@@ -72,8 +73,9 @@ export default async function BlogIndexPage({ searchParams }: BlogPageProps) {
 
   const topics = getBlogTopics(allPosts)
   const hasPosts = posts.length > 0
-  const featuredPosts = posts.slice(0, Math.min(5, posts.length))
-  const latestPosts = posts.slice(featuredPosts.length)
+  const isTopicView = Boolean(activeTopicLabel)
+  const hubFeaturedPosts = isTopicView ? [] : posts.slice(0, Math.min(5, posts.length))
+  const hubLatestPosts = isTopicView ? [] : posts.slice(hubFeaturedPosts.length)
 
   return (
     <main className="relative min-h-screen overflow-x-hidden bg-[#F8F9FC]">
@@ -114,20 +116,17 @@ export default async function BlogIndexPage({ searchParams }: BlogPageProps) {
               </h1>
 
               {activeTopicLabel ? (
-                <p className="mt-1 text-[13px] text-gray-500">
-                  {posts.length} guide{posts.length === 1 ? '' : 's'} in this topic
+                <BlogTopicHeroExtras label={activeTopicLabel} count={posts.length} />
+              ) : (
+                <p className="mt-3 max-w-[54ch] text-[15px] leading-relaxed text-gray-600">
+                  Independent buying guides for business software: structured research, clear trade-offs, and
+                  practical shortlists.
                 </p>
-              ) : null}
-
-              <p className="mt-3 max-w-[54ch] text-[15px] leading-relaxed text-gray-600">
-                {activeTopicLabel
-                  ? 'Curated buying guides — structured research, honest trade-offs, and practical shortlists.'
-                  : 'Independent buying guides for business software: structured research, clear trade-offs, and practical shortlists.'}
-              </p>
+              )}
             </header>
 
             <div className="mx-auto w-full max-w-[360px] lg:mx-0 lg:max-w-none lg:justify-self-end">
-              <BlogLibraryHeroVisual posts={allPosts} />
+              <BlogLibraryHeroVisual posts={isTopicView ? posts : allPosts} />
             </div>
           </div>
         </div>
@@ -140,83 +139,66 @@ export default async function BlogIndexPage({ searchParams }: BlogPageProps) {
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(220px,260px)] lg:gap-12">
           <div className="min-w-0">
             {!hasPosts ? (
-              <div className="overflow-hidden rounded-2xl border border-dashed border-gray-200 bg-white shadow-sm">
-                <div className="grid grid-cols-1 items-center gap-6 px-6 py-12 sm:grid-cols-[1fr_minmax(200px,260px)] sm:px-10">
-                  <div className="text-center sm:text-left">
-                    <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-400">
-                      {activeTopicLabel ? 'No articles in this topic' : 'Coming soon'}
-                    </p>
-                    <p className="font-serif text-2xl text-navy">
-                      {activeTopicLabel ? 'Try another topic' : 'New guides in production'}
-                    </p>
-                    <p className="mt-3 max-w-md text-[15px] leading-relaxed text-gray-500">
-                      {activeTopicLabel
-                        ? 'We have not published guides under this topic yet. Browse all articles or pick a different category above.'
-                        : 'Our editorial team publishes new buying guides regularly.'}
-                    </p>
-                    <div className="mt-6 flex flex-wrap gap-4">
-                      <Link
-                        href="/blog"
-                        className="inline-flex items-center text-sm font-semibold text-cb-orange underline underline-offset-4 hover:text-cb-orange-hover"
-                      >
-                        {activeTopicLabel ? 'View all articles' : 'Back to home'}
-                      </Link>
-                      {!activeTopicLabel ? (
-                        <Link
-                          href="/resources/whitepaper"
-                          className="inline-flex items-center text-sm font-semibold text-navy hover:text-cb-orange"
-                        >
-                          Browse whitepapers →
-                        </Link>
-                      ) : null}
-                    </div>
-                  </div>
-                  <div
-                    className="mx-auto flex h-32 w-32 items-center justify-center rounded-2xl border border-gray-100 bg-[#FAFBFD] sm:mx-0"
-                    aria-hidden
+              <div className="py-10 text-center sm:text-left">
+                <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-400">
+                  {activeTopicLabel ? 'No articles in this topic' : 'Coming soon'}
+                </p>
+                <p className="font-serif text-2xl text-navy">
+                  {activeTopicLabel ? 'Try another topic' : 'New guides in production'}
+                </p>
+                <p className="mx-auto mt-3 max-w-md text-[15px] leading-relaxed text-gray-500 sm:mx-0">
+                  {activeTopicLabel
+                    ? 'We have not published guides under this topic yet. Browse all articles or pick a different category above.'
+                    : 'Our editorial team publishes new buying guides regularly.'}
+                </p>
+                <div className="mt-6 flex flex-wrap justify-center gap-4 sm:justify-start">
+                  <Link
+                    href="/blog"
+                    className="inline-flex items-center text-sm font-semibold text-cb-orange underline underline-offset-4 hover:text-cb-orange-hover"
                   >
-                    <BookOpen className="h-12 w-12 text-gray-200" strokeWidth={1} />
-                  </div>
+                    {activeTopicLabel ? 'View all articles' : 'Back to home'}
+                  </Link>
+                  {!activeTopicLabel ? (
+                    <Link
+                      href="/resources/whitepaper"
+                      className="inline-flex items-center text-sm font-semibold text-navy hover:text-cb-orange"
+                    >
+                      Browse whitepapers →
+                    </Link>
+                  ) : null}
                 </div>
               </div>
             ) : (
               <div id="blog-articles" className="scroll-mt-20">
-                {activeTopicLabel && activeTopicSlug ? (
-                  <BlogTopicFilterBand
-                    label={activeTopicLabel}
-                    slug={activeTopicSlug}
-                    count={posts.length}
-                  />
-                ) : null}
+                {isTopicView ? (
+                  <BlogTopicGuideIndex posts={posts} />
+                ) : (
+                  <>
+                    {hubFeaturedPosts.length > 0 ? (
+                      <BlogFeaturedCarousel posts={hubFeaturedPosts} sectionLabel="Featured guide" />
+                    ) : null}
 
-                {featuredPosts.length > 0 ? (
-                  <BlogFeaturedCarousel
-                    posts={featuredPosts}
-                    sectionLabel={activeTopicLabel ? 'Top in this topic' : 'Featured guide'}
-                  />
-                ) : null}
-
-                {latestPosts.length > 0 ? (
-                  <div className={featuredPosts.length > 0 ? 'border-t border-gray-200 pt-8' : ''}>
-                    <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-                      <div>
-                        <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-400">
-                          {activeTopicLabel ? 'All in topic' : 'Latest articles'}
-                        </p>
-                        <h2 className="font-serif text-[1.35rem] font-normal tracking-tight text-navy sm:text-[1.4rem]">
-                          {activeTopicLabel ? activeTopicLabel : 'More from the desk'}
-                        </h2>
+                    {hubLatestPosts.length > 0 ? (
+                      <div className={hubFeaturedPosts.length > 0 ? 'border-t border-gray-200 pt-8' : ''}>
+                        <div className="mb-5">
+                          <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-400">
+                            Latest articles
+                          </p>
+                          <h2 className="font-serif text-[1.35rem] font-normal tracking-tight text-navy sm:text-[1.4rem]">
+                            More from the desk
+                          </h2>
+                        </div>
+                        <ul className="divide-y divide-gray-200/80">
+                          {hubLatestPosts.map((post, i) => (
+                            <li key={post.slug}>
+                              <BlogGridCard post={post} index={i + 1} />
+                            </li>
+                          ))}
+                        </ul>
                       </div>
-                    </div>
-                    <ul className="divide-y divide-gray-200/80">
-                      {latestPosts.map((post, i) => (
-                        <li key={post.slug}>
-                          <BlogGridCard post={post} index={i + 1} />
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : null}
+                    ) : null}
+                  </>
+                )}
 
                 <div className="mt-10">
                   <BlogSubscribeBox slug="blog-index" variant="editorial" />

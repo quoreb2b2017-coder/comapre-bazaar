@@ -9,30 +9,28 @@ interface ComparisonTableProps {
 export function ComparisonTable({ data, caption }: ComparisonTableProps) {
   const renderCellValue = (value: string) => {
     if (value === '✓') {
-      return <CheckIcon className="w-4 h-4 text-[#F27F25] inline-block align-middle" />
+      return <CheckIcon className="inline-block h-4 w-4 align-middle text-cb-orange" />
     }
-
     if (value === '✗') {
-      return <XIcon className="w-4 h-4 text-[#F27F25] inline-block align-middle" />
+      return <XIcon className="inline-block h-4 w-4 align-middle text-gray-300" />
     }
-
     return value
   }
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
-      <table className="w-full text-sm border-collapse">
-        {caption && (
-          <caption className="text-left text-xs text-gray-400 py-2 px-4 bg-gray-50 border-b border-gray-200">
+    <div className="overflow-x-auto rounded-md border border-gray-200">
+      <table className="w-full min-w-[640px] border-collapse text-sm">
+        {caption ? (
+          <caption className="border-b border-gray-200 bg-[#FAFBFD] px-4 py-2.5 text-left text-[11px] leading-snug text-gray-500">
             {caption}
           </caption>
-        )}
+        ) : null}
         <thead>
-          <tr>
+          <tr className="bg-navy text-white">
             {data.headers.map((header, idx) => (
               <th
                 key={idx}
-                className="bg-navy text-white text-xs font-medium px-4 py-3 text-left whitespace-nowrap"
+                className="border-r border-white/10 px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wide last:border-r-0 whitespace-nowrap"
                 scope="col"
               >
                 {header}
@@ -42,16 +40,13 @@ export function ComparisonTable({ data, caption }: ComparisonTableProps) {
         </thead>
         <tbody>
           {data.rows.map((row, rowIdx) => (
-            <tr
-              key={rowIdx}
-              className={rowIdx % 2 === 1 ? 'bg-gray-50' : 'bg-white'}
-            >
+            <tr key={rowIdx} className={rowIdx % 2 === 1 ? 'bg-[#FAFBFD]' : 'bg-white'}>
               {row.cells.map((cell, cellIdx) => (
                 <td
                   key={cellIdx}
-                  className={`px-4 py-3 border-b border-gray-100 ${
-                    cellIdx === 0 ? 'font-semibold text-navy' : 'text-gray-600'
-                  } ${cell === '✓' ? 'text-[#F27F25]' : ''} ${cell === '✗' ? 'text-[#F27F25]' : ''}`}
+                  className={`border-t border-gray-100 px-4 py-3 ${
+                    cellIdx === 0 ? 'font-medium text-navy' : 'text-gray-600'
+                  }`}
                 >
                   {renderCellValue(cell)}
                 </td>

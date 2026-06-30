@@ -7,32 +7,35 @@ interface FaqAccordionProps {
   items: FaqItem[]
 }
 
-function FaqItemComponent({ question, answer }: FaqItem) {
+function FaqItemComponent({ question, answer, index }: FaqItem & { index: number }) {
   const [open, setOpen] = useState(false)
 
   return (
-    <div className="border border-gray-200 rounded-xl overflow-hidden">
+    <div className="border-b border-gray-200 last:border-b-0">
       <button
-        className="w-full flex items-center justify-between px-5 py-4 text-left bg-white hover:bg-gray-50 transition-colors font-medium text-navy text-[15px]"
+        type="button"
+        className="flex w-full items-start gap-4 px-5 py-4 text-left transition-colors hover:bg-[#FAFBFD] sm:px-6"
         onClick={() => setOpen(!open)}
         aria-expanded={open}
       >
-        <span>{question}</span>
+        <span className="mt-0.5 w-6 shrink-0 font-serif text-sm tabular-nums text-gray-300">
+          {String(index + 1).padStart(2, '0')}
+        </span>
+        <span className="min-w-0 flex-1 font-medium leading-snug text-navy">{question}</span>
         <svg
-          className={`w-5 h-5 flex-shrink-0 text-gray-400 transition-transform ${open ? 'rotate-180' : ''}`}
+          className={`mt-0.5 h-4 w-4 shrink-0 text-gray-400 transition-transform ${open ? 'rotate-180' : ''}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
-          aria-hidden="true"
+          aria-hidden
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
 
-      {/* Always in DOM for Googlebot — hidden via CSS only */}
       <div
-        className={`px-5 text-sm text-gray-600 leading-relaxed transition-all duration-200 ${
-          open ? 'pb-5 max-h-[600px] opacity-100' : 'max-h-0 overflow-hidden opacity-0 pb-0'
+        className={`overflow-hidden pl-[3.25rem] pr-5 text-sm leading-relaxed text-gray-600 transition-all duration-200 sm:pl-[4.5rem] sm:pr-6 ${
+          open ? 'max-h-[600px] pb-5 opacity-100' : 'max-h-0 opacity-0 pb-0'
         }`}
       >
         <p>{answer}</p>
@@ -41,12 +44,11 @@ function FaqItemComponent({ question, answer }: FaqItem) {
   )
 }
 
-/** FAQ markup lives in JSON-LD only (see ComparisonRoute) — no microdata here to avoid duplicate FAQPage errors in Search Console. */
 export function FaqAccordion({ items }: FaqAccordionProps) {
   return (
-    <div className="space-y-3">
+    <div>
       {items.map((item, idx) => (
-        <FaqItemComponent key={idx} {...item} />
+        <FaqItemComponent key={idx} {...item} index={idx} />
       ))}
     </div>
   )

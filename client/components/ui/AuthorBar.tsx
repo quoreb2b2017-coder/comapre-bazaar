@@ -9,32 +9,29 @@ interface AuthorBarProps {
 
 export function AuthorBar({ author, reviewer, lastReviewed }: AuthorBarProps) {
   return (
-    <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-3 py-1">
-      {/* Author */}
-      <div className="flex items-center gap-2.5">
+    <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3 border-t border-gray-200 pt-5">
+      <div className="flex items-center gap-3">
         <div
-          className="w-9 h-9 rounded-full bg-brand-light flex items-center justify-center text-brand text-sm font-semibold flex-shrink-0"
-          aria-hidden="true"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-navy/5 text-sm font-semibold text-navy"
+          aria-hidden
         >
           {author.initials}
         </div>
         <div>
-          <p className="text-sm font-semibold text-navy leading-none">{author.name}</p>
-          <p className="text-xs text-gray-400 mt-0.5">{author.credential}</p>
+          <p className="text-sm font-semibold leading-none text-navy">{author.name}</p>
+          <p className="mt-1 text-xs text-gray-500">{author.credential}</p>
         </div>
       </div>
 
-      {/* Dates */}
-      <p className="text-sm text-gray-400">
-        <strong className="text-gray-600">Last reviewed:</strong> {lastReviewed}
-        {' · '}
-        <strong className="text-gray-600">Fact-checked by:</strong> {reviewer}
+      <p className="text-[13px] text-gray-500">
+        <span className="text-gray-600">Last reviewed</span> {lastReviewed}
+        <span className="mx-2 text-gray-300">·</span>
+        <span className="text-gray-600">Fact-checked by</span> {reviewer}
       </p>
 
-      {/* Methodology pill */}
       <Link
         href="/editorial-process"
-        className="ml-auto text-xs font-medium bg-brand-light text-brand px-3 py-1.5 rounded-full hover:bg-blue-100 transition-colors"
+        className="text-[12px] font-semibold text-cb-orange transition-colors hover:text-cb-orange-hover sm:ml-auto"
       >
         How we test →
       </Link>
