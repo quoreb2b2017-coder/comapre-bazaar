@@ -4,7 +4,12 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
 import { whitePaperDisplayTitle, whitePaperFullDescription } from '@/lib/whitePaperDisplay'
-import { buildMetadata, SITE_URL } from '@/lib/seo'
+import { buildWhitePaperShareMetadata, SITE_URL } from '@/lib/seo'
+import {
+  whitePaperAuthorName,
+  whitePaperOfferedBy,
+  whitePaperOgImageUrl,
+} from '@/lib/whitePaperMeta'
 import { fetchPublishedWhitePapers, fetchWhitePaperBySlug } from '@/lib/whitePaperCms'
 import { WhitePaperInsideExplorer } from '@/components/whitepaper/WhitePaperInsideExplorer'
 
@@ -21,32 +26,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const paper = await fetchWhitePaperBySlug(params.slug)
   if (!paper) return { title: 'Whitepaper not found' }
 
-  const googleTitle = whitePaperDisplayTitle(paper.title, paper.metaTitle || paper.seoTitle || paper.title)
-  const googleDesc = paper.metaDescription || paper.description
-  const ogTitle = paper.ogTitle || googleTitle
-  const ogDesc = paper.ogDescription || googleDesc
+  const title = whitePaperDisplayTitle(paper.title, paper.metaTitle || paper.seoTitle || paper.title)
+  const description = paper.metaDescription || paper.description
 
-  const base = buildMetadata({
-    title: googleTitle,
-    description: googleDesc,
-    canonical: `/resources/whitepaper/${paper.slug}`,
-    openGraphType: 'article',
+  return buildWhitePaperShareMetadata({
+    title: paper.ogTitle || title,
+    description: paper.ogDescription || description,
+    canonicalPath: `/resources/whitepaper/${paper.slug}`,
+    publishedAt: paper.publishedAt,
+    keywords: paper.metaKeywords,
+    authorName: whitePaperAuthorName(paper.metadata),
+    ogImageUrl: whitePaperOgImageUrl(paper.thumbnailUrl),
   })
-
-  return {
-    ...base,
-    keywords: paper.metaKeywords?.length ? paper.metaKeywords : undefined,
-    openGraph: {
-      ...base.openGraph,
-      title: ogTitle,
-      description: ogDesc,
-    },
-    twitter: {
-      ...base.twitter,
-      title: ogTitle,
-      description: ogDesc,
-    },
-  }
 }
 
 export default async function WhitepaperDetailPage({ params }: PageProps) {
@@ -54,9 +45,10 @@ export default async function WhitepaperDetailPage({ params }: PageProps) {
   if (!paper) notFound()
 
   const headline = whitePaperDisplayTitle(paper.title, paper.seoTitle)
-  const offeredBy = paper.metadata?.offeredBy || 'Compare Bazaar'
-  const author = paper.metadata?.author || offeredBy
+  const offeredBy = whitePaperOfferedBy(paper.metadata)
+  const author = whitePaperAuthorName(paper.metadata)
   const pageUrl = `${SITE_URL}/resources/whitepaper/${paper.slug}`
+  const coverImage = whitePaperOgImageUrl(paper.thumbnailUrl)
 
   const fullDescription = whitePaperFullDescription({
     insideOverview: paper.insideOverview,
@@ -67,13 +59,22 @@ export default async function WhitepaperDetailPage({ params }: PageProps) {
 
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'DigitalDocument',
-    name: headline,
+    '@type': 'Article',
+    headline,
     description: paper.metaDescription || paper.description,
     url: pageUrl,
-    image: paper.thumbnailUrl,
+    image: coverImage,
     datePublished: paper.publishedAt,
-    author: { '@type': 'Organization', name: offeredBy },
+    author: {
+      '@type': 'Person',
+      name: author,
+      url: `${SITE_URL}/editorial-process`,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Compare Bazaar',
+      url: SITE_URL,
+    },
     offers: {
       '@type': 'Offer',
       price: '0',

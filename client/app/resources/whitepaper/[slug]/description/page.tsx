@@ -8,7 +8,8 @@ import {
   whitePaperMainOverview,
   whitePaperSidebarHighlights,
 } from '@/lib/whitePaperDisplay'
-import { buildMetadata } from '@/lib/seo'
+import { buildWhitePaperShareMetadata } from '@/lib/seo'
+import { whitePaperAuthorName, whitePaperOfferedBy, whitePaperOgImageUrl } from '@/lib/whitePaperMeta'
 import { fetchPublishedWhitePapers, fetchWhitePaperBySlug } from '@/lib/whitePaperCms'
 import { WhitePaperInsideFullView } from '@/components/whitepaper/WhitePaperInsideFullView'
 
@@ -27,11 +28,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!paper) return { title: 'Whitepaper description' }
 
   const title = whitePaperDisplayTitle(paper.title, paper.metaTitle || paper.seoTitle || paper.title)
-  return buildMetadata({
+  return buildWhitePaperShareMetadata({
     title: `Full description: ${title}`,
     description: paper.metaDescription || paper.description,
-    canonical: `/resources/whitepaper/${paper.slug}/description`,
-    openGraphType: 'article',
+    canonicalPath: `/resources/whitepaper/${paper.slug}/description`,
+    publishedAt: paper.publishedAt,
+    keywords: paper.metaKeywords,
+    authorName: whitePaperAuthorName(paper.metadata),
+    ogImageUrl: whitePaperOgImageUrl(paper.thumbnailUrl),
   })
 }
 
@@ -40,7 +44,7 @@ export default async function WhitepaperDescriptionPage({ params }: PageProps) {
   if (!paper) notFound()
 
   const headline = whitePaperDisplayTitle(paper.title, paper.seoTitle)
-  const offeredBy = paper.metadata?.offeredBy || 'Compare Bazaar'
+  const offeredBy = whitePaperOfferedBy(paper.metadata)
   const detailHref = `/resources/whitepaper/${paper.slug}`
   const downloadHref = `/resources/whitepaper/${paper.slug}/download`
 

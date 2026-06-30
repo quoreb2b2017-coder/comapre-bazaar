@@ -142,6 +142,57 @@ export function buildBlogShareMetadata(opts: {
   }
 }
 
+/** Rich previews for whitepaper detail pages (article type, cover image, editorial author). */
+export function buildWhitePaperShareMetadata(opts: {
+  title: string
+  description: string
+  canonicalPath: string
+  publishedAt?: string | Date | null
+  keywords?: string[]
+  authorName?: string
+  ogImageUrl?: string
+}): Metadata {
+  const path = opts.canonicalPath.startsWith('/') ? opts.canonicalPath : `/${opts.canonicalPath}`
+  const url = `${SITE_URL}${path}`
+  const desc = formatShareDescription(opts.description)
+  const imageUrl = opts.ogImageUrl || defaultOgImageUrl()
+  const author = opts.authorName || 'Compare Bazaar Editorial'
+  const pub =
+    opts.publishedAt != null && opts.publishedAt !== ''
+      ? new Date(opts.publishedAt).toISOString()
+      : undefined
+  const absoluteTitle = opts.title.includes('| Compare Bazaar')
+    ? opts.title
+    : `${opts.title} | Compare Bazaar`
+
+  return {
+    title: { absolute: absoluteTitle },
+    description: desc,
+    keywords: opts.keywords?.length ? opts.keywords : undefined,
+    alternates: { canonical: url },
+    authors: [{ name: author, url: `${SITE_URL}/editorial-process` }],
+    openGraph: {
+      title: opts.title,
+      description: desc,
+      url,
+      siteName: SITE_NAME,
+      type: 'article',
+      locale: 'en_US',
+      publishedTime: pub,
+      authors: [author],
+      tags: opts.keywords,
+      images: [{ url: imageUrl, alt: `${opts.title} — Compare Bazaar research report` }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: opts.title,
+      description: desc,
+      images: [imageUrl],
+    },
+    robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
+  }
+}
+
 export function buildBlogPostingJsonLd(opts: {
   headline: string
   description: string

@@ -32,6 +32,19 @@ function normalizeCustomAnswers(body, paper) {
   })
 }
 
+function publicMetadata(metadata) {
+  const offeredBy = String(metadata?.offeredBy || 'Compare Bazaar').trim() || 'Compare Bazaar'
+  const author = String(metadata?.author || '').trim() || 'Compare Bazaar Editorial'
+  return {
+    ...(metadata && typeof metadata === 'object' ? metadata : {}),
+    offeredBy,
+    author,
+    category: String(metadata?.category || '').trim(),
+    extra: String(metadata?.extra || '').trim(),
+    resourceType: metadata?.resourceType === 'report' ? 'report' : 'whitepaper',
+  }
+}
+
 function publicFields(p, { includePdf = false } = {}) {
   const pdfText = p.pdfTextExcerpt || ''
   const displayTitle =
@@ -49,7 +62,7 @@ function publicFields(p, { includePdf = false } = {}) {
     ogTitle: p.ogTitle,
     ogDescription: p.ogDescription,
     thumbnailUrl: p.thumbnailUrl,
-    metadata: p.metadata,
+    metadata: publicMetadata(p.metadata),
     insideOverview: p.insideOverview || '',
     insideSections: Array.isArray(p.insideSections)
       ? p.insideSections

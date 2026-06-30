@@ -38,7 +38,7 @@ function normalizeResourceType(value, fallback = 'whitepaper') {
 function buildWhitePaperMetadata(metaRaw = {}, defaults = {}) {
   return {
     offeredBy: String(metaRaw.offeredBy || defaults.offeredBy || 'Compare Bazaar').trim(),
-    author: String(metaRaw.author || defaults.author || '').trim(),
+    author: String(metaRaw.author || defaults.author || 'Compare Bazaar Editorial').trim(),
     category: String(metaRaw.category || defaults.category || '').trim(),
     extra: String(metaRaw.extra || defaults.extra || '').trim(),
     resourceType: normalizeResourceType(

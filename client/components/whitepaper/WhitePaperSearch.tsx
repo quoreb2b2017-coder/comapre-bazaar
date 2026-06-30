@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Search } from 'lucide-react'
 import { whitePaperDisplayTitle } from '@/lib/whitePaperDisplay'
 import {
@@ -9,6 +9,7 @@ import {
   type WhitePaperResourceType,
 } from '@/lib/whitePaperResourceType'
 import { WhitePaperCard } from './WhitePaperCard'
+import { WhitePaperPagination, WHITEPAPER_PAGE_SIZE } from './WhitePaperPagination'
 import type { WhitePaperPublic } from '@/lib/whitePaperCms'
 
 const FALLBACK_SEARCH_TERMS = ['GPS', 'payroll', 'CRM', 'HR software', 'fleet', 'SMB software']
@@ -96,6 +97,8 @@ export function WhitePaperSearch({ papers }: { papers: WhitePaperPublic[] }) {
   const [category, setCategory] = useState<string | null>(null)
   const [resourceType, setResourceType] = useState<'all' | WhitePaperResourceType>('all')
   const [focused, setFocused] = useState(false)
+  const [page, setPage] = useState(1)
+  const gridRef = useRef<HTMLUListElement>(null)
 
   const rotatorTerms = useMemo(() => buildSearchRotatorTerms(papers), [papers])
   const showRotator = !query && !focused
@@ -134,6 +137,23 @@ export function WhitePaperSearch({ papers }: { papers: WhitePaperPublic[] }) {
         .includes(q)
     })
   }, [papers, query, category, resourceType])
+
+  useEffect(() => {
+    setPage(1)
+  }, [query, category, resourceType])
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / WHITEPAPER_PAGE_SIZE))
+  const safePage = Math.min(page, totalPages)
+
+  const visible = useMemo(() => {
+    const start = (safePage - 1) * WHITEPAPER_PAGE_SIZE
+    return filtered.slice(start, start + WHITEPAPER_PAGE_SIZE)
+  }, [filtered, safePage])
+
+  const goToPage = (nextPage: number) => {
+    setPage(nextPage)
+    gridRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
 
   return (
     <section aria-labelledby="whitepaper-library-heading">
@@ -256,13 +276,24 @@ export function WhitePaperSearch({ papers }: { papers: WhitePaperPublic[] }) {
           )}
         </div>
       ) : (
-        <ul className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-5 sm:gap-y-10 lg:grid-cols-4 lg:gap-x-6">
-          {filtered.map((paper) => (
-            <li key={paper.slug} className="min-w-0">
-              <WhitePaperCard paper={paper} />
-            </li>
-          ))}
-        </ul>
+        <>
+          <ul
+            ref={gridRef}
+            className="grid scroll-mt-24 grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-5 sm:gap-y-10 lg:grid-cols-4 lg:gap-x-6"
+          >
+            {visible.map((paper) => (
+              <li key={paper.slug} className="min-w-0">
+                <WhitePaperCard paper={paper} />
+              </li>
+            ))}
+          </ul>
+
+          <WhitePaperPagination
+            currentPage={safePage}
+            totalItems={filtered.length}
+            onPageChange={goToPage}
+          />
+        </>
       )}
     </section>
   )

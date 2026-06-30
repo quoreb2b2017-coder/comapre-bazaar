@@ -1,36 +1,38 @@
 'use client'
 
 import { motion, useReducedMotion } from 'framer-motion'
-import type { ComponentPropsWithoutRef, ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { easeOut, fadeUp, staggerContainer } from '@/lib/homeMotion'
 
-type RevealElement = 'div' | 'section' | 'article'
-
-type RevealProps<T extends RevealElement = 'div'> = {
+type RevealProps = {
   children: ReactNode
   className?: string
   delay?: number
-  as?: T
-} & Omit<ComponentPropsWithoutRef<T>, 'children' | 'className'>
+  as?: 'div' | 'section' | 'article'
+  id?: string
+  'aria-labelledby'?: string
+}
 
-export function ComparisonReveal<T extends RevealElement = 'div'>({
+export function ComparisonReveal({
   children,
   className,
   delay = 0,
-  as,
-  ...rest
-}: RevealProps<T>) {
+  as = 'div',
+  id,
+  'aria-labelledby': ariaLabelledby,
+}: RevealProps) {
   const reduceMotion = useReducedMotion()
-  const Tag = motion[as ?? 'div']
+  const Tag = motion[as]
 
   return (
     <Tag
+      id={id}
+      aria-labelledby={ariaLabelledby}
       initial={reduceMotion ? false : { opacity: 0, y: 18 }}
       whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-40px' }}
       transition={{ duration: 0.5, delay, ease: easeOut }}
       className={className}
-      {...rest}
     >
       {children}
     </Tag>
