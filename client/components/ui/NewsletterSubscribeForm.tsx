@@ -144,9 +144,9 @@ export function NewsletterSubscribeForm({
   const editorial = variant === 'editorial'
   const shell =
     editorial && compact
-      ? 'mt-6 border-t border-gray-200 pt-6'
+      ? 'mt-6 pt-6'
       : editorial && !compact
-        ? 'mt-14 border-t-2 border-gray-900/10 pt-10'
+        ? 'mt-0 pt-0'
         : compact
           ? 'mt-4 rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-3.5'
           : 'mt-12 rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-6 sm:p-7'
