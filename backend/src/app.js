@@ -31,26 +31,68 @@ function parseTrustProxy(value) {
 
 app.set("trust proxy", parseTrustProxy(process.env.TRUST_PROXY));
 
-const allowedOrigins = new Set(
-  [
+function normalizeOrigin(value) {
+  return String(value || "").trim().replace(/\/$/, "");
+}
+
+/** Live site origins — browser blog-admin calls the API directly on Railway. */
+const DEFAULT_ALLOWED_ORIGINS = [
+  "https://www.compare-bazaar.com",
+  "https://compare-bazaar.com",
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+];
+
+function isCompareBazaarHost(hostname) {
+  const host = String(hostname || "").toLowerCase();
+  return host === "compare-bazaar.com" || host.endsWith(".compare-bazaar.com");
+}
+
+function buildAllowedOrigins() {
+  const list = [
     process.env.FRONTEND_URL,
     process.env.FRONTEND_APP_URL,
+    process.env.WEBSITE_URL,
     ...parseCorsOrigins(process.env.CORS_ORIGINS),
-  ].filter(Boolean)
-);
+    ...DEFAULT_ALLOWED_ORIGINS,
+  ]
+    .map(normalizeOrigin)
+    .filter(Boolean);
+  return new Set(list);
+}
+
+const allowedOrigins = buildAllowedOrigins();
+
+function isOriginAllowed(origin) {
+  const normalized = normalizeOrigin(origin);
+  if (!normalized) return true;
+
+  if (allowedOrigins.has(normalized)) return true;
+
+  try {
+    const url = new URL(normalized);
+    if (isCompareBazaarHost(url.hostname)) {
+      return url.protocol === "https:" || process.env.NODE_ENV !== "production";
+    }
+  } catch {
+    /* ignore malformed origin */
+  }
+
+  return false;
+}
 
 app.use(
   cors({
     origin(origin, callback) {
-      // Allow server-to-server requests and local tools without Origin header.
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.size === 0 || allowedOrigins.has(origin)) {
+      if (isOriginAllowed(origin)) {
         return callback(null, true);
       }
-      return callback(new Error("CORS origin not allowed"));
+      console.warn("[CORS] blocked origin:", origin);
+      return callback(null, false);
     },
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "X-Admin-Token"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Admin-Token", "Accept"],
+    optionsSuccessStatus: 204,
   })
 );
 app.use(express.json({ limit: "10mb" }));
