@@ -15,7 +15,7 @@ export function BlogGridCard({ post, index }: { post: UnifiedBlogCard; index?: n
 
   return (
     <article className="group py-5 first:pt-3 sm:py-6 sm:first:pt-4">
-      <div className="flex gap-4 sm:gap-5">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-5">
         {idxLabel != null ? (
           <span
             className="hidden w-7 shrink-0 pt-0.5 text-right font-serif text-xl tabular-nums leading-none text-gray-200 sm:block"
@@ -27,7 +27,7 @@ export function BlogGridCard({ post, index }: { post: UnifiedBlogCard; index?: n
 
         <Link
           href={`/blog/${post.slug}`}
-          className="relative aspect-square w-[72px] shrink-0 overflow-hidden bg-gray-100 sm:w-[84px]"
+          className="relative aspect-[16/10] w-full shrink-0 overflow-hidden bg-gray-100 sm:aspect-[4/3] sm:w-[168px] md:w-[192px]"
           aria-label={post.title}
         >
           <Image
@@ -35,11 +35,11 @@ export function BlogGridCard({ post, index }: { post: UnifiedBlogCard; index?: n
             alt={post.title}
             fill
             className="object-cover transition-opacity duration-300 group-hover:opacity-90"
-            sizes="84px"
+            sizes="(max-width: 640px) 100vw, 192px"
           />
         </Link>
 
-        <div className="flex min-w-0 flex-1 flex-col border-l border-gray-200 pl-4 sm:pl-5">
+        <div className="flex min-w-0 flex-1 flex-col sm:border-l sm:border-gray-200 sm:pl-5">
           <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-gray-400">
             <BlogTopicLink category={post.category} />
             <span className="mx-2 font-normal tracking-normal text-gray-300">/</span>

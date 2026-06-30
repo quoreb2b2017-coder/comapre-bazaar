@@ -173,6 +173,7 @@ export default async function HomePage() {
           </MotionSection>
         ) : null}
 
+        {/* Our editorial team — hidden for now
         <MotionSection aria-labelledby="team-heading" className="border-t border-gray-100 pt-10 sm:pt-12" delay={0.05}>
           <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#F58220]">Our editorial team</p>
           <h2 id="team-heading" className="mb-2 text-2xl tracking-tight text-navy sm:text-3xl">
@@ -197,6 +198,7 @@ export default async function HomePage() {
             ))}
           </div>
         </MotionSection>
+        */}
 
         <MotionSection
           className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#071a57] via-[#0b2f88] to-[#09236b] p-7 text-center text-white sm:p-10"

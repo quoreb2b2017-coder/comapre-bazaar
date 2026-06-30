@@ -19,7 +19,7 @@ function FeaturedSlide({ post }: { post: UnifiedBlogCard }) {
       <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:gap-6">
         <Link
           href={`/blog/${post.slug}`}
-          className="relative aspect-[16/9] w-full shrink-0 overflow-hidden bg-gray-100 sm:aspect-[16/10] sm:w-[42%] sm:max-w-[320px]"
+          className="relative aspect-[16/9] w-full shrink-0 overflow-hidden bg-gray-100 sm:aspect-[16/10] sm:w-[48%] sm:max-w-[440px] lg:max-w-[480px]"
           aria-label={post.title}
         >
           <Image
@@ -27,7 +27,7 @@ function FeaturedSlide({ post }: { post: UnifiedBlogCard }) {
             alt={post.title}
             fill
             className="object-cover transition-opacity duration-500 group-hover:opacity-95"
-            sizes="(max-width: 640px) 100vw, 320px"
+            sizes="(max-width: 640px) 100vw, 480px"
             priority
           />
         </Link>

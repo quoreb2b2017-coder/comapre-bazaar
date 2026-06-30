@@ -29,7 +29,7 @@ export function BlogTopicLeadArticle({ post }: { post: UnifiedBlogCard }) {
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-10">
         <Link
           href={`/blog/${post.slug}`}
-          className="relative aspect-[16/9] w-full shrink-0 overflow-hidden bg-gray-100 lg:w-[44%] lg:max-w-[400px]"
+          className="relative aspect-[16/9] w-full shrink-0 overflow-hidden bg-gray-100 lg:w-[50%] lg:max-w-[480px]"
           aria-label={post.title}
         >
           <Image
@@ -37,7 +37,7 @@ export function BlogTopicLeadArticle({ post }: { post: UnifiedBlogCard }) {
             alt={post.title}
             fill
             className="object-cover transition-opacity duration-300 group-hover:opacity-95"
-            sizes="(max-width: 1024px) 100vw, 400px"
+            sizes="(max-width: 1024px) 100vw, 480px"
             priority
           />
         </Link>
@@ -114,10 +114,10 @@ function BlogTopicIndexRow({ post, index }: { post: UnifiedBlogCard; index: numb
         {String(index).padStart(2, '0')}
       </span>
 
-      <div className="flex min-w-0 gap-4 sm:gap-5">
+      <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:gap-5">
         <Link
           href={`/blog/${post.slug}`}
-          className="relative aspect-[4/3] w-24 shrink-0 overflow-hidden bg-gray-100 sm:w-28"
+          className="relative aspect-[16/10] w-full shrink-0 overflow-hidden bg-gray-100 sm:aspect-[4/3] sm:w-[140px] md:w-[168px]"
           aria-label={post.title}
         >
           <Image
@@ -125,7 +125,7 @@ function BlogTopicIndexRow({ post, index }: { post: UnifiedBlogCard; index: numb
             alt={post.title}
             fill
             className="object-cover transition-opacity group-hover:opacity-90"
-            sizes="112px"
+            sizes="(max-width: 640px) 100vw, 168px"
           />
         </Link>
 

@@ -33,7 +33,7 @@ export function WhitePaperPagination({
       }
       aria-label={isTop ? 'Whitepaper library pagination (top)' : 'Whitepaper library pagination'}
     >
-      <div className={`flex flex-wrap items-center gap-2 ${isTop ? 'justify-end' : 'justify-center'}`}>
+      <div className="flex flex-wrap items-center justify-end gap-2">
           <button
             type="button"
             disabled={currentPage <= 1}
