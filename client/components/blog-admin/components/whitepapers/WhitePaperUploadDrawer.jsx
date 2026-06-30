@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
-import axios from 'axios'
 import { X, Loader2, CheckCircle2, FileText, ImageIcon, Sparkles } from 'lucide-react'
-import { API_TIMEOUT_LONG_MS } from '../../utils/api'
+import api, { API_TIMEOUT_LONG_MS, blogAdminHttp, requireAdminToken } from '../../utils/api'
 import {
   WhitePaperSeoFields,
   emptySeoForm,
@@ -15,13 +14,6 @@ import {
   highlightQuestionsFromPaper,
   highlightQuestionsToPayload,
 } from './WhitePaperHighlightQuestions'
-
-function getBlogAdminBaseURL() {
-  const fromEnv = process.env.NEXT_PUBLIC_BLOG_ADMIN_API_BASE
-  if (fromEnv && String(fromEnv).trim()) return String(fromEnv).replace(/\/$/, '')
-  if (process.env.NODE_ENV === 'development') return 'http://127.0.0.1:5000/api/v1/blog-admin'
-  return '/api/v1/blog-admin'
-}
 
 function claudeContentFromResponse(data) {
   if (!data) return null
@@ -158,15 +150,10 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
 
     setExtractingPdf(true)
     try {
-      const token = localStorage.getItem('admin_token')
-      const base = getBlogAdminBaseURL()
+      if (!requireAdminToken(toast)) return
       const form = new FormData()
       form.append('pdf', file)
-      const res = await axios.post(`${base}/whitepapers/preview`, form, {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : '',
-          'Content-Type': 'multipart/form-data',
-        },
+      const res = await blogAdminHttp.post('/whitepapers/preview', form, {
         timeout: API_TIMEOUT_LONG_MS,
       })
       const data = res.data?.data || {}
@@ -197,8 +184,7 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
 
     setGeneratingClaude(true)
     try {
-      const token = localStorage.getItem('admin_token')
-      const base = getBlogAdminBaseURL()
+      if (!requireAdminToken(toast)) return
       const form = new FormData()
       if (pdf) form.append('pdf', pdf)
       if (isEditMode) form.append('paperId', editingPaper._id)
@@ -213,11 +199,7 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
         })
       )
 
-      const res = await axios.post(`${base}/whitepapers/generate-seo`, form, {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : '',
-          'Content-Type': 'multipart/form-data',
-        },
+      const res = await blogAdminHttp.post('/whitepapers/generate-seo', form, {
         timeout: API_TIMEOUT_LONG_MS,
       })
 
@@ -279,15 +261,10 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
     setSubmitting(true)
     setPublished(null)
     try {
-      const token = localStorage.getItem('admin_token')
-      const base = getBlogAdminBaseURL()
-      const endpoint = isEditMode ? `${base}/whitepapers/${editingPaper._id}` : `${base}/whitepapers`
+      if (!requireAdminToken(toast)) return
+      const endpoint = isEditMode ? `/whitepapers/${editingPaper._id}` : '/whitepapers'
       const method = isEditMode ? 'put' : 'post'
-      const res = await axios[method](endpoint, form, {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : '',
-          'Content-Type': 'multipart/form-data',
-        },
+      const res = await blogAdminHttp[method](endpoint, form, {
         timeout: API_TIMEOUT_LONG_MS,
       })
       const data = res.data?.data
@@ -356,18 +333,13 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
               onSaveSeo={async ({ title: saveTitle, description: saveDescription }) => {
                 setSavingSeo(true)
                 try {
-                  const token = localStorage.getItem('admin_token')
-                  const base = getBlogAdminBaseURL()
-                  const res = await axios.patch(
-                    `${base}/whitepapers/${published._id}/seo`,
-                    {
-                      seo: seoFormToPayload(seo),
-                      title: saveTitle?.trim(),
-                      description: saveDescription?.trim(),
-                    },
-                    { headers: { Authorization: token ? `Bearer ${token}` : '' } }
-                  )
-                  const data = res.data?.data
+                  if (!requireAdminToken(toast)) return
+                  const res = await api.patch(`/whitepapers/${published._id}/seo`, {
+                    seo: seoFormToPayload(seo),
+                    title: saveTitle?.trim(),
+                    description: saveDescription?.trim(),
+                  })
+                  const data = res.data
                   setPublished(data)
                   setSeo(seoFormFromPaper(data))
                   toast.success('Changes saved')

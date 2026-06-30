@@ -49,6 +49,8 @@ app.use(
       }
       return callback(new Error("CORS origin not allowed"));
     },
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Admin-Token"],
   })
 );
 app.use(express.json({ limit: "10mb" }));

@@ -1,11 +1,20 @@
 const jwt = require("jsonwebtoken");
 const { Admin } = require("../models/adminBlog.model");
 
-const protect = async (req, res, next) => {
-  let token;
+function readBearerToken(req) {
+  const auth = req.headers.authorization;
+  if (auth?.startsWith("Bearer ")) {
+    return String(auth.split(" ")[1] || "").trim();
+  }
+  return "";
+}
 
-  if (req.headers.authorization?.startsWith("Bearer")) {
-    token = req.headers.authorization.split(" ")[1];
+const protect = async (req, res, next) => {
+  let token = readBearerToken(req);
+
+  // Some production proxies strip Authorization; accept explicit backup header.
+  if (!token) {
+    token = String(req.headers["x-admin-token"] || "").trim();
   }
 
   if (!token) {
