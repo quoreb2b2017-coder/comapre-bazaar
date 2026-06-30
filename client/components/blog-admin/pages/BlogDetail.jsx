@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useParams, useOutletContext, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Save, Check, X, Globe, Send, Edit, Eye, Loader2, Copy, RefreshCw } from 'lucide-react'
+import { ArrowLeft, Save, Check, X, Globe, Send, Edit, Eye, Loader2, Copy, RefreshCw, EyeOff } from 'lucide-react'
 import { StatusBadge } from '../components/ui/StatusBadge'
-import { ConfirmModal } from '../components/ui/Modal'
+import { ConfirmModal, unlockPageScroll } from '../components/ui/Modal'
 import api, { API_TIMEOUT_LONG_MS } from '../utils/api'
 
 export const BlogDetail = () => {
@@ -42,6 +42,23 @@ export const BlogDetail = () => {
 
   useEffect(() => { fetch() }, [id])
 
+  useEffect(() => {
+    unlockPageScroll()
+  }, [])
+
+  const applyApprovedState = (payload = {}) => {
+    setBlog((prev) =>
+      prev
+        ? {
+            ...prev,
+            status: 'approved',
+            approvedAt: payload.approvedAt || new Date().toISOString(),
+            rejectionReason: null,
+          }
+        : prev
+    )
+  }
+
   const handleSave = async () => {
     setSaving(true)
     try {
@@ -56,24 +73,134 @@ export const BlogDetail = () => {
     }
   }
 
-  const handleAction = async (action) => {
-    setActionLoading(action)
+  const handleApprove = async () => {
+    if (actionLoading) return
+    setConfirm({ open: false, type: '' })
+    unlockPageScroll()
+    setActionLoading('approve')
+    applyApprovedState()
+
+    const approveRequest = () => api.post(`/blogs/${id}/approve`, {}, { timeout: 12000 })
+    const fallbackRequest = () => api.put(`/blogs/${id}`, { status: 'approved' }, { timeout: 12000 })
+
     try {
       let res
-      if (action === 'approve') res = await api.post(`/blogs/${id}/approve`)
-      else if (action === 'reject') res = await api.post(`/blogs/${id}/reject`)
-      else if (action === 'publish') res = await api.post(`/blogs/${id}/publish`)
-      setBlog(res.data)
-      toast.success(res.message)
-      if (action === 'approve') {
-        window.location.href = '/blog'
-        return
+      try {
+        res = await approveRequest()
+      } catch (primaryErr) {
+        res = await fallbackRequest()
       }
+      applyApprovedState(res?.data || {})
+      toast.success(res?.message || 'Blog approved! Click Publish when ready.')
+    } catch (err) {
+      setBlog((prev) => (prev ? { ...prev, status: 'pending' } : prev))
+      toast.error(err?.message || 'Approve failed — try again')
+    } finally {
+      setActionLoading(null)
+      unlockPageScroll()
+    }
+  }
+
+  const applyPublishedState = (payload = {}) => {
+    setBlog((prev) =>
+      prev
+        ? {
+            ...prev,
+            status: 'published',
+            publishedAt: payload.publishedAt || new Date().toISOString(),
+          }
+        : prev
+    )
+  }
+
+  const handlePublish = async () => {
+    if (actionLoading) return
+    setConfirm({ open: false, type: '' })
+    unlockPageScroll()
+    setActionLoading('publish')
+    applyPublishedState()
+
+    const publishRequest = () => api.post(`/blogs/${id}/publish`, {}, { timeout: 12000 })
+    const fallbackRequest = () => api.put(`/blogs/${id}`, { status: 'published' }, { timeout: 12000 })
+
+    try {
+      let res
+      try {
+        res = await publishRequest()
+      } catch {
+        res = await fallbackRequest()
+      }
+      applyPublishedState(res?.data || {})
+      toast.success(res?.message || 'Blog published! It is live on /blog')
+    } catch (err) {
+      setBlog((prev) => (prev ? { ...prev, status: 'approved' } : prev))
+      toast.error(err?.message || 'Publish failed — try again')
+    } finally {
+      setActionLoading(null)
+      unlockPageScroll()
+    }
+  }
+
+  const handleUnpublish = async () => {
+    if (actionLoading) return
+    setConfirm({ open: false, type: '' })
+    unlockPageScroll()
+    setActionLoading('unpublish')
+
+    const previousStatus = blog?.status
+    setBlog((prev) => (prev ? { ...prev, status: 'approved' } : prev))
+
+    const unpublishRequest = () => api.post(`/blogs/${id}/unpublish`, {}, { timeout: 12000 })
+    const fallbackRequest = () => api.put(`/blogs/${id}`, { status: 'approved' }, { timeout: 12000 })
+
+    try {
+      let res
+      try {
+        res = await unpublishRequest()
+      } catch {
+        res = await fallbackRequest()
+      }
+      setBlog((prev) =>
+        prev
+          ? {
+              ...prev,
+              status: 'approved',
+              ...(res?.data?.approvedAt ? { approvedAt: res.data.approvedAt } : {}),
+            }
+          : prev
+      )
+      toast.success(res?.message || 'Blog unpublished — removed from live site')
+    } catch (err) {
+      setBlog((prev) => (prev ? { ...prev, status: previousStatus || 'published' } : prev))
+      toast.error(err?.message || 'Unpublish failed — try again')
+    } finally {
+      setActionLoading(null)
+      unlockPageScroll()
+    }
+  }
+
+  const handleAction = async (action) => {
+    setActionLoading(action)
+    setConfirm({ open: false, type: '' })
+    unlockPageScroll()
+    try {
+      if (action !== 'reject') return
+      const res = await api.post(`/blogs/${id}/reject`)
+      setBlog((prev) =>
+        prev
+          ? {
+              ...prev,
+              status: 'rejected',
+              rejectedAt: res.data?.rejectedAt || new Date().toISOString(),
+            }
+          : prev
+      )
+      toast.success(res.message)
     } catch (err) {
       toast.error(err.message)
     } finally {
       setActionLoading(null)
-      setConfirm({ open: false, type: '' })
+      unlockPageScroll()
     }
   }
 
@@ -209,20 +336,40 @@ export const BlogDetail = () => {
 
           {blog.status === 'pending' && !editing && (
             <>
-              <button onClick={() => setConfirm({ open: true, type: 'approve' })} className="btn-success" disabled={!!actionLoading}>
-                <Check className="w-4 h-4" /> Approve
+              <button type="button" onClick={handleApprove} className="btn-success" disabled={!!actionLoading}>
+                {actionLoading === 'approve' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                Approve
               </button>
-              <button onClick={() => setConfirm({ open: true, type: 'reject' })} className="btn-danger" disabled={!!actionLoading}>
+              <button type="button" onClick={() => setConfirm({ open: true, type: 'reject' })} className="btn-danger" disabled={!!actionLoading}>
                 <X className="w-4 h-4" /> Reject
               </button>
             </>
           )}
 
           {blog.status === 'approved' && !editing && (
-            <button onClick={() => setConfirm({ open: true, type: 'publish' })} className="btn-primary" disabled={!!actionLoading}>
+            <button type="button" onClick={handlePublish} className="btn-primary" disabled={!!actionLoading}>
               {actionLoading === 'publish' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Globe className="w-4 h-4" />}
               Publish
             </button>
+          )}
+
+          {blog.status === 'published' && !editing && (
+            <>
+              {blog.slug && (
+                <a
+                  href={`/blog/${blog.slug}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-secondary gap-1"
+                >
+                  <Eye className="w-4 h-4" /> Live
+                </a>
+              )}
+              <button type="button" onClick={handleUnpublish} className="btn-secondary" disabled={!!actionLoading}>
+                {actionLoading === 'unpublish' ? <Loader2 className="w-4 h-4 animate-spin" /> : <EyeOff className="w-4 h-4" />}
+                Unpublish
+              </button>
+            </>
           )}
         </div>
       </div>
@@ -388,9 +535,7 @@ export const BlogDetail = () => {
       </div>
 
       {/* Confirm modals */}
-      <ConfirmModal isOpen={confirm.open && confirm.type === 'approve'} onClose={() => setConfirm({ open: false })} onConfirm={() => handleAction('approve')} title="Approve Blog" message="Approve this blog? It will be ready to publish." confirmText="Approve" loading={actionLoading === 'approve'} />
       <ConfirmModal isOpen={confirm.open && confirm.type === 'reject'} onClose={() => setConfirm({ open: false })} onConfirm={() => handleAction('reject')} title="Reject Blog" message="Reject this blog? You can still edit and re-approve it later." confirmText="Reject" danger loading={actionLoading === 'reject'} />
-      <ConfirmModal isOpen={confirm.open && confirm.type === 'publish'} onClose={() => setConfirm({ open: false })} onConfirm={() => handleAction('publish')} title="Publish Blog" message="Publish this blog to your website? It will be made live." confirmText="Publish Now" loading={actionLoading === 'publish'} />
       <ConfirmModal
         isOpen={confirm.open && confirm.type === 'regenerate'}
         onClose={() => setConfirm({ open: false, type: '' })}

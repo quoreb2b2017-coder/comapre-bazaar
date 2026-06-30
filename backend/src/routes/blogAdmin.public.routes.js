@@ -3,8 +3,8 @@ const router = express.Router()
 const Blog = require("../models/automationBlog.model")
 const BlogSubscriber = require("../models/blogSubscriber.model")
 
-/** Visible on Compare Bazaar /blog — approved (editorial OK) or fully published */
-const PUBLIC_STATUSES = ['approved', 'published']
+/** Visible on Compare Bazaar /blog — only explicitly published posts */
+const PUBLIC_STATUSES = ['published']
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 const SOURCE_LABELS = {
@@ -39,7 +39,7 @@ router.post('/:slug/view', async (req, res) => {
   }
 })
 
-// @route   GET /api/v1/blog-admin/public/blogs — approved + published for the live site (no auth)
+// @route   GET /api/v1/blog-admin/public/blogs — published posts for the live site (no auth)
 router.get('/', async (req, res) => {
   try {
     const blogs = sortBlogPostsDesc(
@@ -74,7 +74,7 @@ router.get('/', async (req, res) => {
   }
 })
 
-// @route   GET /api/v1/blog-admin/public/blogs/:slug — single post when approved or published (full HTML body)
+// @route   GET /api/v1/blog-admin/public/blogs/:slug — single post when published (full HTML body)
 router.get('/:slug', async (req, res) => {
   try {
     const slug = String(req.params.slug || '').trim()

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { Search, Filter, Eye, Edit, Check, X, Trash2, Globe, ChevronLeft, ChevronRight, RefreshCw, Send, BarChart2 } from 'lucide-react'
+import { Search, Filter, Eye, Edit, Check, X, Trash2, Globe, ChevronLeft, ChevronRight, RefreshCw, Send, BarChart2, EyeOff } from 'lucide-react'
 import { StatusBadge } from '../ui/StatusBadge'
 import { ConfirmModal } from '../ui/Modal'
 import api from '../../utils/api'
@@ -62,10 +62,26 @@ export const BlogTable = ({ toast }) => {
     setActionLoading(blogId + action)
     try {
       let res
-      if (action === 'approve') res = await api.post(`/blogs/${blogId}/approve`)
-      else if (action === 'reject') res = await api.post(`/blogs/${blogId}/reject`, extra)
-      else if (action === 'publish') res = await api.post(`/blogs/${blogId}/publish`)
-      else if (action === 'delete') res = await api.delete(`/blogs/${blogId}`)
+      if (action === 'approve') {
+        try {
+          res = await api.post(`/blogs/${blogId}/approve`, {}, { timeout: 12000 })
+        } catch {
+          res = await api.put(`/blogs/${blogId}`, { status: 'approved' }, { timeout: 12000 })
+        }
+      } else if (action === 'reject') res = await api.post(`/blogs/${blogId}/reject`, extra)
+      else if (action === 'publish') {
+        try {
+          res = await api.post(`/blogs/${blogId}/publish`, {}, { timeout: 12000 })
+        } catch {
+          res = await api.put(`/blogs/${blogId}`, { status: 'published' }, { timeout: 12000 })
+        }
+      } else if (action === 'unpublish') {
+        try {
+          res = await api.post(`/blogs/${blogId}/unpublish`, {}, { timeout: 12000 })
+        } catch {
+          res = await api.put(`/blogs/${blogId}`, { status: 'approved' }, { timeout: 12000 })
+        }
+      } else if (action === 'delete') res = await api.delete(`/blogs/${blogId}`)
       toast.success(res.message)
       fetchBlogs(pagination.page)
     } catch (err) {
@@ -194,8 +210,14 @@ export const BlogTable = ({ toast }) => {
                         )}
 
                         {blog.status === 'approved' && (
-                          <button onClick={() => confirm('publish', blog)} disabled={!!actionLoading} className="p-1.5 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all" title="Publish">
+                          <button onClick={() => handleAction('publish', blog._id)} disabled={!!actionLoading} className="p-1.5 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all" title="Publish">
                             {actionLoading === blog._id + 'publish' ? <span className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin block" /> : <Globe className="w-4 h-4" />}
+                          </button>
+                        )}
+
+                        {blog.status === 'published' && (
+                          <button onClick={() => handleAction('unpublish', blog._id)} disabled={!!actionLoading} className="p-1.5 rounded-lg text-gray-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-all" title="Unpublish">
+                            {actionLoading === blog._id + 'unpublish' ? <span className="w-4 h-4 border-2 border-amber-400 border-t-transparent rounded-full animate-spin block" /> : <EyeOff className="w-4 h-4" />}
                           </button>
                         )}
 
@@ -298,15 +320,6 @@ export const BlogTable = ({ toast }) => {
         message={`Reject "${confirmModal.blog?.title}"? You can still edit and re-submit it later.`}
         confirmText="Reject"
         danger
-        loading={!!actionLoading}
-      />
-      <ConfirmModal
-        isOpen={confirmModal.open && confirmModal.type === 'publish'}
-        onClose={() => setConfirmModal({ open: false })}
-        onConfirm={() => handleAction('publish', confirmModal.blog?._id)}
-        title="Publish Blog"
-        message={`Publish "${confirmModal.blog?.title}" to your website? This will make it live.`}
-        confirmText="Publish Now"
         loading={!!actionLoading}
       />
     </div>

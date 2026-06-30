@@ -153,12 +153,16 @@ const answerCallbackQuery = async (callbackQueryId, text, botToken) => {
 const editMessage = async (chatId, messageId, text, botToken) => {
   const token = String(botToken || "").trim();
   try {
-    await axios.post(`${TELEGRAM_API(token)}/editMessageText`, {
-      chat_id: chatId,
-      message_id: messageId,
-      text: String(text || "").slice(0, 4096),
-      reply_markup: { inline_keyboard: [] },
-    });
+    await axios.post(
+      `${TELEGRAM_API(token)}/editMessageText`,
+      {
+        chat_id: chatId,
+        message_id: messageId,
+        text: String(text || "").slice(0, 4096),
+        reply_markup: { inline_keyboard: [] },
+      },
+      { timeout: 10000 }
+    );
   } catch (error) {
     console.error("Edit message error:", tgApiError(error));
   }

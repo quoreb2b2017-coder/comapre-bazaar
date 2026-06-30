@@ -1,4 +1,5 @@
 const express = require('express')
+const mongoose = require('mongoose')
 const router = express.Router()
 const Blog = require("../models/automationBlog.model");
 const Settings = require("../models/blogAdminSettings.model");
@@ -119,7 +120,25 @@ router.put('/:id', protect, async (req, res) => {
     const updates = {}
     allowed.forEach((field) => { if (req.body[field] !== undefined) updates[field] = req.body[field] })
 
-    const blog = await Blog.findByIdAndUpdate(req.params.id, updates, { new: true, runValidators: true })
+    if (updates.status === 'approved') {
+      const current = await Blog.findById(req.params.id).select('status')
+      if (!current) return res.status(404).json({ success: false, message: 'Blog not found' })
+      if (current.status === 'pending' || current.status === 'rejected') {
+        updates.approvedAt = new Date()
+        updates.rejectionReason = null
+      }
+    } else if (updates.status === 'rejected') {
+      updates.rejectedAt = new Date()
+    } else if (updates.status === 'published') {
+      updates.publishedAt = new Date()
+    }
+
+    const statusOnly = Object.keys(updates).length <= 3 && updates.status && !updates.content
+    const blog = await Blog.findByIdAndUpdate(req.params.id, updates, {
+      new: true,
+      runValidators: true,
+      ...(statusOnly ? { select: '-content' } : {}),
+    })
     if (!blog) return res.status(404).json({ success: false, message: 'Blog not found' })
     res.json({ success: true, data: blog })
   } catch (error) {
@@ -130,25 +149,36 @@ router.put('/:id', protect, async (req, res) => {
 // @route   POST /api/blogs/:id/approve
 router.post('/:id/approve', protect, async (req, res) => {
   try {
+    const blogId = String(req.params.id || '').trim()
+    if (!mongoose.Types.ObjectId.isValid(blogId)) {
+      return res.status(400).json({ success: false, message: 'Invalid blog id' })
+    }
+
     const blog = await Blog.findByIdAndUpdate(
-      req.params.id,
+      blogId,
       { status: 'approved', approvedAt: new Date(), rejectionReason: null },
-      { new: true }
+      { returnDocument: 'after', select: '_id title slug status approvedAt updatedAt' }
     )
     if (!blog) return res.status(404).json({ success: false, message: 'Blog not found' })
 
-    // Notify via Telegram if message exists
-    const { botToken, chatId } = await resolveTelegramCredentials()
-    if (botToken && chatId && blog.telegramMessageId) {
-      await editMessage(
-        chatId,
-        blog.telegramMessageId,
-        `Approved\n\n${blog.title}\n\nApproved at: ${new Date().toLocaleString()}`,
-        botToken
-      )
-    }
-
     res.json({ success: true, data: blog, message: 'Blog approved successfully!' })
+
+    // Telegram edit can be slow — do not block the admin UI.
+    void (async () => {
+      try {
+        const { botToken, chatId } = await resolveTelegramCredentials()
+        if (botToken && chatId && blog.telegramMessageId) {
+          await editMessage(
+            chatId,
+            blog.telegramMessageId,
+            `Approved\n\n${blog.title}\n\nApproved at: ${new Date().toLocaleString()}`,
+            botToken
+          )
+        }
+      } catch (tgErr) {
+        console.error('Telegram approve notify error:', tgErr.message)
+      }
+    })()
   } catch (error) {
     res.status(500).json({ success: false, message: error.message })
   }
@@ -174,19 +204,35 @@ router.post('/:id/reject', protect, async (req, res) => {
 // @route   POST /api/blogs/:id/publish
 router.post('/:id/publish', protect, async (req, res) => {
   try {
-    const blog = await Blog.findById(req.params.id)
+    const blogId = String(req.params.id || '').trim()
+    if (!mongoose.Types.ObjectId.isValid(blogId)) {
+      return res.status(400).json({ success: false, message: 'Invalid blog id' })
+    }
+
+    const blog = await Blog.findById(blogId)
     if (!blog) return res.status(404).json({ success: false, message: 'Blog not found' })
     if (blog.status !== 'approved') {
       return res.status(400).json({ success: false, message: 'Blog must be approved before publishing.' })
     }
 
-    const updatedBlog = await Blog.findByIdAndUpdate(
-      req.params.id,
-      { status: 'published', publishedAt: new Date() },
-      { new: true }
-    )
+    blog.status = 'published'
+    blog.publishedAt = new Date()
+    await blog.save()
 
-    res.json({ success: true, data: updatedBlog, message: 'Blog published successfully! 🎉' })
+    res.json({
+      success: true,
+      data: {
+        _id: blog._id,
+        title: blog.title,
+        slug: blog.slug,
+        status: blog.status,
+        publishedAt: blog.publishedAt,
+        updatedAt: blog.updatedAt,
+      },
+      message: 'Blog published successfully! 🎉',
+    })
+
+    const updatedBlog = blog.toObject()
 
     // Run slow integrations in background so publish returns quickly.
     void (async () => {
@@ -257,6 +303,36 @@ router.post('/:id/publish', protect, async (req, res) => {
         console.error('Subscriber notification error:', notifyErr.message)
       }
     })()
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message })
+  }
+})
+
+// @route   POST /api/blogs/:id/unpublish
+router.post('/:id/unpublish', protect, async (req, res) => {
+  try {
+    const blogId = String(req.params.id || '').trim()
+    if (!mongoose.Types.ObjectId.isValid(blogId)) {
+      return res.status(400).json({ success: false, message: 'Invalid blog id' })
+    }
+
+    const blog = await Blog.findById(blogId).select('status')
+    if (!blog) return res.status(404).json({ success: false, message: 'Blog not found' })
+    if (blog.status !== 'published') {
+      return res.status(400).json({ success: false, message: 'Only published blogs can be unpublished.' })
+    }
+
+    const updated = await Blog.findByIdAndUpdate(
+      blogId,
+      { status: 'approved' },
+      { returnDocument: 'after', select: '_id title slug status approvedAt publishedAt updatedAt' }
+    )
+
+    res.json({
+      success: true,
+      data: updated,
+      message: 'Blog unpublished — removed from /blog. You can publish again when ready.',
+    })
   } catch (error) {
     res.status(500).json({ success: false, message: error.message })
   }

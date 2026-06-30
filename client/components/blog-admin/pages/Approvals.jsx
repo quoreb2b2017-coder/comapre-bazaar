@@ -12,8 +12,10 @@ import {
   ChevronRight,
   ExternalLink,
   BarChart2,
+  EyeOff,
 } from 'lucide-react'
 import api from '../utils/api'
+import { unlockPageScroll } from '../components/ui/Modal'
 
 const PAGE_SIZE = 5
 
@@ -99,16 +101,33 @@ export const Approvals = () => {
 
   const handleAction = async (action, blogId) => {
     setActionLoading(blogId + action)
+    unlockPageScroll()
     try {
       let res
-      if (action === 'approve') res = await api.post(`/blogs/${blogId}/approve`)
-      else if (action === 'reject') res = await api.post(`/blogs/${blogId}/reject`)
+      if (action === 'approve') {
+        try {
+          res = await api.post(`/blogs/${blogId}/approve`, {}, { timeout: 12000 })
+        } catch {
+          res = await api.put(`/blogs/${blogId}`, { status: 'approved' }, { timeout: 12000 })
+        }
+      } else if (action === 'reject') {
+        res = await api.post(`/blogs/${blogId}/reject`)
+      } else if (action === 'unpublish') {
+        try {
+          res = await api.post(`/blogs/${blogId}/unpublish`, {}, { timeout: 12000 })
+        } catch {
+          res = await api.put(`/blogs/${blogId}`, { status: 'approved' }, { timeout: 12000 })
+        }
+      } else {
+        return
+      }
       toast.success(res.message)
       refreshAll()
     } catch (err) {
       toast.error(err.message)
     } finally {
       setActionLoading(null)
+      unlockPageScroll()
     }
   }
 
@@ -408,6 +427,20 @@ export const Approvals = () => {
                         <ExternalLink className="w-3.5 h-3.5" /> Live
                       </a>
                     ) : null}
+                    <button
+                      type="button"
+                      onClick={() => handleAction('unpublish', blog._id)}
+                      disabled={!!actionLoading}
+                      className="btn-secondary text-xs gap-1"
+                      title="Remove from live /blog"
+                    >
+                      {actionLoading === blog._id + 'unpublish' ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      ) : (
+                        <EyeOff className="w-3.5 h-3.5" />
+                      )}
+                      Unpublish
+                    </button>
                   </div>
                 </div>
               ))}
