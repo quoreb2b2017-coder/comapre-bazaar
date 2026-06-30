@@ -36,7 +36,6 @@ const LIBRARY_PILLARS = [
 
 export default async function WhitepaperIndexPage() {
   const papers = await fetchPublishedWhitePapers()
-  const reportCount = papers.length
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#F8F9FC]">
@@ -68,13 +67,6 @@ export default async function WhitepaperIndexPage() {
                   <BookOpen className="h-3.5 w-3.5" strokeWidth={2} aria-hidden />
                   Compare Bazaar · Research Library
                 </span>
-                {reportCount > 0 ? (
-                  <span className="text-[13px] text-gray-500">
-                    <span className="font-semibold tabular-nums text-navy">{reportCount}</span>
-                    {' '}
-                    published report{reportCount === 1 ? '' : 's'}
-                  </span>
-                ) : null}
               </div>
 
               <h1 className="max-w-[16ch] font-serif text-[2rem] font-normal leading-[1.06] tracking-tight text-navy sm:text-[2.5rem] lg:text-[2.625rem]">
@@ -106,7 +98,7 @@ export default async function WhitepaperIndexPage() {
             </header>
 
             <div className="order-first lg:order-none lg:pb-6">
-              <WhitePaperLibraryHeroVisual papers={papers} reportCount={reportCount} />
+              <WhitePaperLibraryHeroVisual papers={papers} />
             </div>
           </div>
         </div>
@@ -133,7 +125,7 @@ export default async function WhitepaperIndexPage() {
                   and vendor comparisons.
                 </p>
               </div>
-              <WhitePaperLibraryHeroVisual papers={[]} reportCount={0} />
+              <WhitePaperLibraryHeroVisual papers={[]} />
             </div>
           </div>
         ) : (

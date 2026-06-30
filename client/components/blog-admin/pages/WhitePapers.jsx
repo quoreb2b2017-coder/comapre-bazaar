@@ -138,6 +138,7 @@ export const WhitePapers = () => {
               <thead>
                 <tr className="border-b border-gray-200 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:border-gray-700">
                   <th className="py-3 pr-4">Title</th>
+                  <th className="py-3 pr-4">Type</th>
                   <th className="py-3 pr-4">Status</th>
                   <th className="py-3 pr-4 text-right">Views</th>
                   <th className="py-3 pr-4 text-right">Downloads</th>
@@ -151,6 +152,9 @@ export const WhitePapers = () => {
                     <td className="py-3 pr-4">
                       <p className="font-medium text-gray-900 dark:text-gray-100">{p.seoTitle || p.title}</p>
                       <p className="mt-0.5 font-mono text-[11px] text-gray-400">/resources/whitepaper/{p.slug}</p>
+                    </td>
+                    <td className="py-3 pr-4">
+                      <ResourceTypeBadge type={p.metadata?.resourceType} />
                     </td>
                     <td className="py-3 pr-4">
                       <StatusBadge status={p.status} />
@@ -293,6 +297,21 @@ function StatCard({ label, value, className = '' }) {
       <p className="text-xs font-medium uppercase tracking-wide text-gray-500">{label}</p>
       <p className="mt-1 text-2xl font-semibold tabular-nums text-gray-900 dark:text-gray-100">{value ?? 0}</p>
     </div>
+  )
+}
+
+function ResourceTypeBadge({ type }) {
+  const isReport = type === 'report'
+  return (
+    <span
+      className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+        isReport
+          ? 'bg-violet-50 text-violet-700 dark:bg-violet-950/40 dark:text-violet-300'
+          : 'bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300'
+      }`}
+    >
+      {isReport ? 'Report' : 'Whitepaper'}
+    </span>
   )
 }
 

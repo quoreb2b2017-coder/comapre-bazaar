@@ -24,6 +24,7 @@ export type WhitePaperPublic = {
     author?: string
     category?: string
     extra?: string
+    resourceType?: 'whitepaper' | 'report'
   }
   insideOverview?: string
   insideSections?: { title: string; summary: string; body?: string; pages?: string }[]

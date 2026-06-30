@@ -5,6 +5,7 @@ const WhitePaper = require('../models/whitePaper.model')
 const WhitePaperLead = require('../models/whitePaperLead.model')
 const {
   parseMetadataInput,
+  buildWhitePaperMetadata,
   parseHighlightQuestions,
   resolveHighlightQuestions,
   extractPdfText,
@@ -117,12 +118,11 @@ router.post(
       description = shortenDescription(description)
 
       const metaRaw = parseMetadataInput(req.body?.metadata)
-      const metadata = {
-        offeredBy: String(metaRaw.offeredBy || req.body?.offeredBy || 'Compare Bazaar').trim(),
-        author: String(metaRaw.author || req.body?.author || '').trim(),
-        category: String(metaRaw.category || req.body?.category || '').trim(),
-        extra: String(metaRaw.extra || '').trim(),
-      }
+      const metadata = buildWhitePaperMetadata(metaRaw, {
+        offeredBy: req.body?.offeredBy,
+        author: req.body?.author,
+        category: req.body?.category,
+      })
 
       let seo
       try {
@@ -362,12 +362,11 @@ router.post('/', (req, res, next) => {
     description = shortenDescription(description)
 
     const metaRaw = parseMetadataInput(req.body?.metadata)
-    const metadata = {
-      offeredBy: String(metaRaw.offeredBy || req.body?.offeredBy || 'Compare Bazaar').trim(),
-      author: String(metaRaw.author || req.body?.author || '').trim(),
-      category: String(metaRaw.category || req.body?.category || '').trim(),
-      extra: String(metaRaw.extra || '').trim(),
-    }
+    const metadata = buildWhitePaperMetadata(metaRaw, {
+      offeredBy: req.body?.offeredBy,
+      author: req.body?.author,
+      category: req.body?.category,
+    })
 
     const [pdfUpload, thumbUpload] = await Promise.all([
       uploadPdfToCloudinary(pdfFile.buffer),
@@ -505,12 +504,13 @@ router.put(
       }
 
       const metaRaw = parseMetadataInput(req.body?.metadata)
-      const metadata = {
-        offeredBy: String(metaRaw.offeredBy || req.body?.offeredBy || paper.metadata?.offeredBy || 'Compare Bazaar').trim(),
-        author: String(metaRaw.author || req.body?.author || paper.metadata?.author || '').trim(),
-        category: String(metaRaw.category || req.body?.category || paper.metadata?.category || '').trim(),
-        extra: String(metaRaw.extra || paper.metadata?.extra || '').trim(),
-      }
+      const metadata = buildWhitePaperMetadata(metaRaw, {
+        offeredBy: req.body?.offeredBy || paper.metadata?.offeredBy,
+        author: req.body?.author || paper.metadata?.author,
+        category: req.body?.category || paper.metadata?.category,
+        resourceType: paper.metadata?.resourceType,
+        extra: paper.metadata?.extra,
+      })
 
       paper.title = resolveAdminWhitePaperTitle({
         rawTitle: String(req.body?.title || paper.title || '').trim(),

@@ -40,10 +40,9 @@ function LibraryIllustration() {
 
 type Props = {
   papers: WhitePaperPublic[]
-  reportCount: number
 }
 
-export function WhitePaperLibraryHeroVisual({ papers, reportCount }: Props) {
+export function WhitePaperLibraryHeroVisual({ papers }: Props) {
   const featured = papers.slice(0, 3)
 
   if (featured.length === 1) {
@@ -68,7 +67,7 @@ export function WhitePaperLibraryHeroVisual({ papers, reportCount }: Props) {
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#EEF2FF] text-[#1D4ED8]">
             <FileText className="h-4 w-4" strokeWidth={1.75} aria-hidden />
           </span>
-          <span className="text-[13px] font-semibold text-navy">1 free PDF report</span>
+          <span className="text-[13px] font-semibold text-navy">Free PDF reports</span>
         </div>
       </div>
     )
@@ -127,9 +126,7 @@ export function WhitePaperLibraryHeroVisual({ papers, reportCount }: Props) {
           <span className="block text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-400">
             Research library
           </span>
-          <span className="block text-[13px] font-semibold text-navy">
-            {reportCount} free PDF report{reportCount === 1 ? '' : 's'}
-          </span>
+          <span className="block text-[13px] font-semibold text-navy">Free PDF reports</span>
         </span>
       </div>
 

@@ -30,6 +30,24 @@ function parseMetadataInput(raw) {
   }
 }
 
+function normalizeResourceType(value, fallback = 'whitepaper') {
+  const v = String(value || fallback).trim().toLowerCase()
+  return v === 'report' ? 'report' : 'whitepaper'
+}
+
+function buildWhitePaperMetadata(metaRaw = {}, defaults = {}) {
+  return {
+    offeredBy: String(metaRaw.offeredBy || defaults.offeredBy || 'Compare Bazaar').trim(),
+    author: String(metaRaw.author || defaults.author || '').trim(),
+    category: String(metaRaw.category || defaults.category || '').trim(),
+    extra: String(metaRaw.extra || defaults.extra || '').trim(),
+    resourceType: normalizeResourceType(
+      metaRaw.resourceType || defaults.resourceType,
+      defaults.resourceType || 'whitepaper'
+    ),
+  }
+}
+
 const { parseHighlightQuestions } = require('../utils/highlightQuestions')
 const INSIDE_SECTIONS_MIN = 3
 const INSIDE_SECTIONS_MAX = 5
@@ -641,6 +659,8 @@ async function uploadThumbnailToCloudinary(buffer) {
 
 module.exports = {
   parseMetadataInput,
+  normalizeResourceType,
+  buildWhitePaperMetadata,
   parseHighlightQuestions,
   parseSeoMode,
   applyManualSeoToPaper,

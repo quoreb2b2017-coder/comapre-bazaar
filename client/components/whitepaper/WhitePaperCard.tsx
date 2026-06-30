@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { whitePaperDisplayTitle, whitePaperDisplayDescription } from '@/lib/whitePaperDisplay'
+import { whitePaperResourceLabel, whitePaperResourceType } from '@/lib/whitePaperResourceType'
 
 import type { WhitePaperPublic } from '@/lib/whitePaperCms'
 
@@ -16,6 +17,7 @@ export function WhitePaperCard({ paper }: WhitePaperCardProps) {
   const title = whitePaperDisplayTitle(paper.title, paper.seoTitle)
   const description = whitePaperDisplayDescription(paper)
   const category = paper.metadata?.category?.trim()
+  const resourceLabel = whitePaperResourceLabel(whitePaperResourceType(paper.metadata))
 
   return (
     <article className="group flex h-full flex-col">
@@ -44,11 +46,16 @@ export function WhitePaperCard({ paper }: WhitePaperCardProps) {
       </div>
 
       <div className="mt-3 flex flex-1 flex-col">
-        {category ? (
-          <p className="mb-1.5 text-[9px] font-semibold uppercase tracking-[0.16em] text-[#1D4ED8]">
-            {category}
+        <div className="mb-1.5 flex flex-wrap items-center gap-x-2 gap-y-1">
+          <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-gray-500">
+            {resourceLabel}
           </p>
-        ) : null}
+          {category ? (
+            <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-[#1D4ED8]">
+              {category}
+            </p>
+          ) : null}
+        </div>
 
         <h2 className="flex-1">
           <Link

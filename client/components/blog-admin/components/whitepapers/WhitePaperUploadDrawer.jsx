@@ -40,6 +40,7 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
   const [offeredBy, setOfferedBy] = useState('Compare Bazaar')
   const [author, setAuthor] = useState('')
   const [category, setCategory] = useState('')
+  const [resourceType, setResourceType] = useState('whitepaper')
   const [pdf, setPdf] = useState(null)
   const [thumbnail, setThumbnail] = useState(null)
   const [thumbPreview, setThumbPreview] = useState(null)
@@ -64,6 +65,7 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
     if (!editingPaper) {
       setSeo(emptySeoForm())
       setHighlightQuestions([])
+      setResourceType('whitepaper')
       setSeoMode('claude')
       setClaudeSeoReady(false)
       setClaudeContent(null)
@@ -74,6 +76,7 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
     setOfferedBy(editingPaper.metadata?.offeredBy || 'Compare Bazaar')
     setAuthor(editingPaper.metadata?.author || '')
     setCategory(editingPaper.metadata?.category || '')
+    setResourceType(editingPaper.metadata?.resourceType === 'report' ? 'report' : 'whitepaper')
     setPdf(null)
     setThumbnail(null)
     setThumbPreview(editingPaper.thumbnailUrl || null)
@@ -105,6 +108,7 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
     setOfferedBy('Compare Bazaar')
     setAuthor('')
     setCategory('')
+    setResourceType('whitepaper')
     setPdf(null)
     setThumbnail(null)
     setThumbPreview(null)
@@ -177,6 +181,13 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
     }
   }
 
+  const metadataPayload = () => ({
+    offeredBy: offeredBy.trim(),
+    author: author.trim(),
+    category: category.trim(),
+    resourceType,
+  })
+
   const handleGenerateClaude = async () => {
     if (!pdf && !isEditMode) {
       toast.error('Upload a PDF first')
@@ -195,14 +206,7 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
       if (isEditMode) form.append('paperId', editingPaper._id)
       form.append('title', title.trim())
       form.append('description', description.trim())
-      form.append(
-        'metadata',
-        JSON.stringify({
-          offeredBy: offeredBy.trim(),
-          author: author.trim(),
-          category: category.trim(),
-        })
-      )
+      form.append('metadata', JSON.stringify(metadataPayload()))
 
       const res = await blogAdminHttp.post('/whitepapers/generate-seo', form, {
         timeout: API_TIMEOUT_LONG_MS,
@@ -244,14 +248,7 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
     if (thumbnail) form.append('thumbnail', thumbnail)
     form.append('title', title.trim())
     form.append('description', description.trim())
-    form.append(
-      'metadata',
-      JSON.stringify({
-        offeredBy: offeredBy.trim(),
-        author: author.trim(),
-        category: category.trim(),
-      })
-    )
+    form.append('metadata', JSON.stringify(metadataPayload()))
     form.append('highlightQuestions', JSON.stringify(highlightQuestionsToPayload(highlightQuestions)))
     form.append('seoMode', seoMode)
     const seoPayload = seoFormToPayload(seo)
@@ -377,6 +374,8 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
             </div>
           ) : (
             <form id="wp-upload-form" onSubmit={onSubmit} className="space-y-5">
+              <ResourceTypeToggle value={resourceType} onChange={setResourceType} />
+
               <div className="space-y-1.5">
                 <label className="label">
                   PDF file <span className="text-red-500">*</span>
@@ -553,6 +552,46 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
       </aside>
     </div>,
     document.body
+  )
+}
+
+function ResourceTypeToggle({ value, onChange }) {
+  return (
+    <div className="space-y-1.5">
+      <label className="label mb-0">
+        Resource type <span className="text-red-500">*</span>
+      </label>
+      <div className="grid grid-cols-2 gap-2 rounded-xl border border-gray-200 bg-gray-50 p-1 dark:border-gray-700 dark:bg-gray-800/50">
+        <button
+          type="button"
+          onClick={() => onChange('whitepaper')}
+          className={`rounded-lg px-3 py-2.5 text-left text-xs transition-colors ${
+            value === 'whitepaper'
+              ? 'bg-white font-semibold text-brand shadow-sm dark:bg-gray-900'
+              : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
+          }`}
+        >
+          <span className="block text-sm font-semibold">Whitepaper</span>
+          <span className="mt-0.5 block text-[11px] font-normal opacity-80">
+            Long-form research PDF for download
+          </span>
+        </button>
+        <button
+          type="button"
+          onClick={() => onChange('report')}
+          className={`rounded-lg px-3 py-2.5 text-left text-xs transition-colors ${
+            value === 'report'
+              ? 'bg-white font-semibold text-brand shadow-sm dark:bg-gray-900'
+              : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
+          }`}
+        >
+          <span className="block text-sm font-semibold">Report</span>
+          <span className="mt-0.5 block text-[11px] font-normal opacity-80">
+            Shorter benchmark or buying guide PDF
+          </span>
+        </button>
+      </div>
+    </div>
   )
 }
 

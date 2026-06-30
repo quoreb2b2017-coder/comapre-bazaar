@@ -11,6 +11,11 @@ const whitePaperSchema = new mongoose.Schema(
       author: { type: String, trim: true },
       category: { type: String, trim: true },
       extra: { type: String, trim: true },
+      resourceType: {
+        type: String,
+        enum: ['whitepaper', 'report'],
+        default: 'whitepaper',
+      },
     },
     slug: { type: String, unique: true, index: true },
     status: {
