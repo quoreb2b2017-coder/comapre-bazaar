@@ -11,14 +11,14 @@ export function HomeHeroSection() {
   const reduceMotion = useReducedMotion()
 
   return (
-    <header className="border-b border-gray-100 bg-white px-4 py-8 sm:px-6 sm:py-9 lg:px-10 lg:py-10">
+    <header className="border-b border-gray-100 bg-white">
       <motion.div
-        className="mx-auto max-w-6xl lg:max-w-7xl"
+        className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-9 lg:max-w-7xl lg:px-10 lg:py-10"
         initial={reduceMotion ? false : 'hidden'}
         animate="visible"
         variants={staggerContainer}
       >
-        <div className="mb-6 grid grid-cols-1 gap-5 lg:grid-cols-[1fr_minmax(220px,280px)] lg:items-start lg:gap-6">
+        <div className="mb-8 grid grid-cols-1 gap-5 lg:grid-cols-[1fr_minmax(220px,280px)] lg:items-start lg:gap-6">
           <motion.div variants={fadeUp}>
             <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#F58220]">
               Independent B2B Software Research
@@ -32,7 +32,8 @@ export function HomeHeroSection() {
             </h1>
             <div className="mb-3 h-1 w-16 rounded-full bg-[#F58220]" aria-hidden="true" />
             <p className="max-w-xl text-sm text-gray-600 sm:text-base">
-              Side-by-side comparisons, pricing breakdowns, and unbiased shortlists - built for US small businesses.
+              Side-by-side comparisons, pricing breakdowns, and unbiased shortlists — built for US
+              small businesses.
             </p>
           </motion.div>
 
@@ -41,12 +42,15 @@ export function HomeHeroSection() {
           </motion.div>
         </div>
 
-        <motion.div
-          className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3"
-          variants={staggerContainer}
-        >
+        <motion.div variants={fadeUp} className="mb-4">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-400">
+            Browse by category
+          </p>
+        </motion.div>
+
+        <div className="grid grid-cols-2 gap-3.5 sm:gap-4 lg:grid-cols-3 lg:gap-5">
           {HOME_CATEGORIES.map((cat) => (
-            <motion.div key={cat.href} variants={fadeUp}>
+            <div key={cat.href} className="min-w-0">
               <HomeCategoryCard
                 href={cat.href}
                 quotesHref={cat.quotesHref}
@@ -54,12 +58,14 @@ export function HomeHeroSection() {
                 shortTitle={cat.shortTitle}
                 vendors={cat.vendors}
                 title={cat.title}
+                cardTagline={cat.cardTagline}
+                variant="navy"
               />
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
 
-        <motion.div variants={fadeUp}>
+        <motion.div variants={fadeUp} className="mt-8">
           <NewsletterSubscribeForm sourceSlug="homepage" variant="hero" />
         </motion.div>
       </motion.div>

@@ -17,6 +17,8 @@ export type HomeCategory = {
   title: string
   desc: string
   blurb: string
+  /** Short line on homepage hero cards */
+  cardTagline: string
 }
 
 export const HOME_CATEGORIES: HomeCategory[] = [
@@ -29,6 +31,7 @@ export const HOME_CATEGORIES: HomeCategory[] = [
     title: 'Best VoIP & Business Phone Systems',
     desc: 'RingCentral, Nextiva, and Ooma compared on call quality, mobile apps, and SMB pricing.',
     blurb: 'Compare call quality, mobile apps, and real per-user pricing before you sign a contract.',
+    cardTagline: 'Compare the best VoIP & business phone systems.',
   },
   {
     href: '/human-resources/best-payroll-software',
@@ -39,6 +42,7 @@ export const HOME_CATEGORIES: HomeCategory[] = [
     title: 'Best Payroll Software for Small Business',
     desc: 'ADP, Gusto, OnPay, and Rippling compared on tax compliance, contractor support, and integrations.',
     blurb: 'See which tools handle taxes, contractors, and direct deposit without surprise fees.',
+    cardTagline: 'Compare the best payroll software for SMBs.',
   },
   {
     href: '/human-resources',
@@ -49,6 +53,7 @@ export const HOME_CATEGORIES: HomeCategory[] = [
     title: 'Best HR Software for 2026',
     desc: 'BambooHR, Rippling, Workday compared on onboarding, performance tools, and company size fit.',
     blurb: 'Find HR software that fits your team - onboarding, PTO, and people ops in one place.',
+    cardTagline: 'Compare the best HR software for your team.',
   },
   {
     href: '/marketing/best-crm-software',
@@ -59,6 +64,7 @@ export const HOME_CATEGORIES: HomeCategory[] = [
     title: 'Best CRM Software of 2026',
     desc: 'Compare HubSpot, Salesforce, Zoho, and 8 more on pipeline management, automation, and pricing.',
     blurb: 'Shortlist CRMs by pipeline tools, automation, and what you will actually pay as you grow.',
+    cardTagline: 'Compare the best CRM software for 2026.',
   },
   {
     href: '/technology/gps-fleet-management-software',
@@ -69,6 +75,7 @@ export const HOME_CATEGORIES: HomeCategory[] = [
     title: 'Best GPS Fleet Management Software',
     desc: 'Samsara, Motive, and Verizon Connect compared on tracking, safety, and fleet visibility.',
     blurb: 'Track vehicles, cut fuel waste, and keep drivers safer with tools built for small fleets.',
+    cardTagline: 'Compare the best GPS fleet management tools.',
   },
   {
     href: '/marketing/best-email-marketing-services',
@@ -79,6 +86,7 @@ export const HOME_CATEGORIES: HomeCategory[] = [
     title: 'Best Email Marketing Services',
     desc: 'Mailchimp, Klaviyo, ActiveCampaign ranked on deliverability, automation depth, and list pricing.',
     blurb: 'Compare deliverability, automations, and list pricing before your next campaign goes out.',
+    cardTagline: 'Compare the best email marketing platforms.',
   },
 ]
 

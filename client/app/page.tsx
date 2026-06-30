@@ -84,14 +84,6 @@ export default async function HomePage() {
         />
       ) : null}
 
-      <div className="bg-gradient-to-r from-[#071a57] via-[#0a246d] to-[#071a57] text-white/85 text-center py-2 px-4">
-        <p className="text-xs sm:text-sm">
-          Reviewed by <strong className="text-white">independent experts</strong> ·
-          No paid placements in rankings ·{' '}
-          <strong className="text-white">Updated monthly</strong> · Trusted by 50,000+ business buyers
-        </p>
-      </div>
-
       <HomeHeroSection />
 
       <div className="border-b border-gray-100 bg-white py-3 px-4">
