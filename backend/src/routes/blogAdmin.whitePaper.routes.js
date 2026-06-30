@@ -449,10 +449,24 @@ router.post('/', (req, res, next) => {
         /* ignore */
       }
     }
-    const message =
+
+    let message =
       error.message ||
       (error.http_code ? `Cloudinary error (${error.http_code})` : 'Failed to publish white paper')
-    res.status(500).json({ success: false, message })
+
+    if (/Cloudinary is not configured/i.test(message)) {
+      message = 'Cloudinary is not configured on the server. Set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET on the backend host.'
+    } else if (error.name === 'ValidationError') {
+      message = Object.values(error.errors || {})
+        .map((e) => e.message)
+        .filter(Boolean)
+        .join('; ') || message
+    } else if (error.code === 11000) {
+      message = 'A white paper with this slug already exists. Change the URL slug and try again.'
+    }
+
+    const status = error.name === 'ValidationError' || error.code === 11000 ? 400 : 500
+    res.status(status).json({ success: false, message })
   }
 })
 
