@@ -563,80 +563,80 @@
 
   /* ─── Compare page (/compare) ───────────────────────────────────────── */
   .compare-page {
-    @apply min-h-screen bg-gradient-to-b from-white via-cb-orange-light/40 to-white;
+    @apply min-h-screen bg-[#F3F5F9];
   }
   .compare-page-inner {
-    @apply mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10;
+    @apply mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8;
   }
   .compare-hero {
-    @apply mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-cb-orange-border pb-6;
+    @apply mb-6 overflow-hidden border border-gray-200 bg-white px-5 py-5 sm:px-6 sm:py-6;
   }
   .compare-eyebrow {
-    @apply text-xs font-semibold uppercase tracking-widest text-cb-orange;
+    @apply text-[10px] font-semibold uppercase tracking-[0.18em] text-cb-orange;
   }
   .compare-title {
-    @apply mt-1 font-serif text-2xl font-semibold tracking-tight text-navy sm:text-3xl;
+    @apply mt-2 font-serif text-[1.5rem] font-normal leading-tight tracking-tight text-navy sm:text-[1.75rem];
   }
   .compare-subtitle {
-    @apply mt-2 max-w-xl text-sm leading-relaxed text-gray-600;
+    @apply mt-2 max-w-2xl text-[14px] leading-relaxed text-gray-600;
   }
   .compare-btn-primary {
-    @apply inline-flex items-center justify-center rounded-xl bg-gradient-to-br from-cb-orange via-cb-orange-mid to-cb-orange-hover px-5 py-2.5 text-sm font-semibold text-white shadow-[0_12px_24px_-14px_rgba(236,116,22,0.55)] transition-all hover:brightness-105;
+    @apply inline-flex items-center justify-center rounded-md bg-cb-orange px-4 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-cb-orange-hover;
   }
   .compare-btn-secondary {
-    @apply inline-flex items-center justify-center rounded-xl border border-cb-orange bg-white px-5 py-2.5 text-sm font-semibold text-cb-orange transition-colors hover:bg-cb-orange-light;
+    @apply inline-flex items-center justify-center rounded-md border border-gray-200 bg-white px-4 py-2.5 text-[13px] font-semibold text-navy transition-colors hover:border-gray-300 hover:bg-[#FAFBFD];
   }
   .compare-btn-ghost {
-    @apply inline-flex items-center gap-2 rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition-colors hover:bg-gray-50;
+    @apply inline-flex items-center gap-2 rounded-md border border-gray-200 bg-white px-3.5 py-2 text-[13px] font-semibold text-gray-700 transition-colors hover:border-gray-300 hover:text-cb-orange;
   }
   .compare-card {
-    @apply overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-[0_18px_40px_-28px_rgba(15,31,61,0.35)];
+    @apply overflow-hidden border border-gray-200 bg-white;
   }
   .compare-card-header {
-    @apply border-t-4 border-t-cb-orange bg-gradient-to-r from-cb-orange-light via-white to-white px-5 py-5 sm:px-6;
+    @apply border-b border-gray-200 bg-[#FAFBFD] px-5 py-4 sm:px-6;
   }
   .compare-card-header-navy {
-    @apply border-t-navy bg-gradient-to-r from-gray-50 via-white to-white;
+    @apply border-b border-gray-200 border-l-[3px] border-l-navy bg-white;
   }
   .compare-score-badge {
-    @apply flex h-14 w-14 flex-shrink-0 flex-col items-center justify-center rounded-full bg-gradient-to-br from-cb-orange via-cb-orange-mid to-cb-orange-hover text-white shadow-[0_14px_28px_-16px_rgba(245,130,32,0.75)];
+    @apply flex h-12 w-12 flex-shrink-0 flex-col items-center justify-center rounded-md border border-gray-200 bg-white text-navy;
   }
   .compare-section-label {
-    @apply text-xs font-semibold uppercase tracking-wider text-gray-500;
+    @apply text-[10px] font-semibold uppercase tracking-[0.14em] text-gray-500;
   }
   .compare-picker {
-    @apply flex h-full flex-col rounded-2xl border border-cb-orange-border bg-gradient-to-b from-cb-orange-light to-white p-5 shadow-sm lg:sticky lg:top-24;
+    @apply flex h-full flex-col border border-gray-200 bg-white p-4 sm:p-5 lg:sticky lg:top-24;
   }
   .compare-active-bar {
-    @apply mb-6 flex flex-wrap items-center gap-2 rounded-2xl border border-cb-orange-border bg-cb-orange-soft/80 px-4 py-3;
+    @apply flex flex-wrap items-center gap-2 border border-gray-200 bg-white px-4 py-3;
   }
   .compare-table-shell {
-    @apply overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-[0_20px_50px_-28px_rgba(15,31,61,0.35)];
+    @apply overflow-hidden border border-gray-200 bg-white;
   }
   .compare-table-head {
-    @apply border-b border-navy-light/20 bg-gradient-to-r from-navy via-navy-mid to-navy-light px-5 py-4 sm:px-6;
+    @apply border-b border-gray-200 bg-[#FAFBFD] px-5 py-4 sm:px-6;
   }
   .compare-table-sticky {
     @apply sticky left-0 z-10 min-w-[148px] bg-gray-50 font-semibold text-navy shadow-[4px_0_12px_-6px_rgba(15,31,61,0.12)];
   }
   .compare-vs-badge {
-    @apply pointer-events-none absolute -left-4 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-cb-orange-border bg-white text-xs font-bold text-cb-orange shadow-md lg:flex;
+    @apply pointer-events-none absolute -left-3 top-1/2 z-10 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-cb-orange-border bg-white text-[11px] font-bold text-cb-orange shadow-md lg:flex;
   }
 
   .compare-select-step {
     @apply pb-8;
   }
   .compare-select-layout {
-    @apply mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(280px,340px)] lg:items-start;
+    @apply mt-5 grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(280px,340px)] lg:items-start;
   }
   .compare-select-main {
     @apply min-w-0;
   }
   .compare-vs-pill {
-    @apply inline-flex h-10 w-10 items-center justify-center rounded-full border border-cb-orange-border bg-cb-orange-light text-xs font-bold text-cb-orange;
+    @apply inline-flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-[#FAFBFD] text-[10px] font-bold uppercase tracking-wide text-gray-500;
   }
   .compare-base-banner {
-    @apply rounded-2xl border border-navy-light/30 bg-gradient-to-r from-navy via-navy-mid to-navy-light px-5 py-5 shadow-[0_20px_40px_-24px_rgba(15,31,61,0.45)] sm:px-6;
+    @apply border border-gray-200 border-l-[3px] border-l-cb-orange bg-white px-5 py-4 sm:px-6;
   }
   .compare-select-card {
     @apply rounded-2xl border p-4;
@@ -671,7 +671,7 @@
   }
 
   .compare-table-shell-expanded {
-    @apply shadow-[0_24px_60px_-32px_rgba(15,31,61,0.45)];
+    @apply shadow-none;
   }
   .compare-table-scroll {
     @apply overflow-x-auto;
@@ -743,7 +743,7 @@
     @apply text-sm font-semibold text-brand hover:underline;
   }
   .compare-scroll-hint {
-    @apply rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-medium text-white/80;
+    @apply rounded-md border border-gray-200 bg-white px-3 py-1 text-[11px] font-medium text-gray-500;
   }
   .compare-score-pill {
     @apply inline-flex min-w-[4.5rem] items-center justify-center rounded-xl border border-cb-orange-border bg-white px-3 py-2 text-base font-bold text-navy shadow-sm;

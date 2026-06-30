@@ -68,7 +68,7 @@ export function CompareSelectionStep({
 
   if (relatedProducts.length === 0) {
     return (
-      <p className="rounded-xl border border-dashed border-gray-300 px-4 py-6 text-sm text-gray-600">
+      <p className="border border-dashed border-gray-300 bg-white px-4 py-6 text-sm text-gray-600">
         No other products available to compare.
       </p>
     )
@@ -78,31 +78,31 @@ export function CompareSelectionStep({
     <div className="compare-select-step">
       <div className="compare-base-banner">
         <div className="flex flex-wrap items-center gap-4">
-          <span className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/30 bg-white/15 text-base font-bold text-white">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-gray-200 bg-[#FAFBFD] text-sm font-bold text-navy">
             {baseProduct.logo}
-          </span>
+          </div>
           <div className="min-w-0 flex-1">
-            <p className="text-xs font-semibold uppercase tracking-widest text-cb-orange-light">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-cb-orange">
               Your base pick
             </p>
-            <p className="font-serif text-xl font-semibold text-white">{baseProduct.name}</p>
-            <p className="text-sm text-white/80">{baseProduct.tagline}</p>
+            <p className="font-serif text-lg leading-snug text-navy">{baseProduct.name}</p>
+            <p className="text-[13px] text-gray-600">{baseProduct.tagline}</p>
           </div>
           <div className="compare-score-badge shrink-0">
-            <span className="text-lg font-bold leading-none">{baseProduct.score}</span>
-            <span className="text-[10px] opacity-90">/ 5</span>
+            <span className="font-serif text-lg font-normal leading-none">{baseProduct.score}</span>
+            <span className="text-[9px] uppercase tracking-wide text-gray-400">/ 5</span>
           </div>
         </div>
       </div>
 
       <div className="compare-select-layout">
         <div className="compare-select-main min-w-0">
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 bg-white px-4 py-3 sm:px-5">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-cb-orange">
-                {activeProduct ? `Against ${baseShort}` : `Your ${baseShort} summary`}
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-gray-400">
+                {activeProduct ? `Preview vs ${baseShort}` : `${baseShort} overview`}
               </p>
-              <h2 className="font-serif text-xl font-semibold text-navy sm:text-2xl">
+              <h2 className="font-serif text-lg leading-snug text-navy sm:text-xl">
                 {activeProduct ? activeProduct.name : baseProduct.name}
               </h2>
               <div className="mt-1">
@@ -113,14 +113,14 @@ export function CompareSelectionStep({
               </div>
             </div>
             <span className="compare-vs-pill" aria-hidden="true">
-              VS
+              vs
             </span>
           </div>
 
           <CompareProductPanel product={activeProduct ?? baseProduct} variant={activeProduct ? 'secondary' : 'primary'} />
 
-          <p className="mt-3 text-center text-xs text-gray-500 lg:hidden">
-            Use the list on the right to preview competitors and add them to comparison.
+          <p className="mt-3 text-center text-[12px] text-gray-500 lg:hidden">
+            Select competitors from the list below to add them to your comparison.
           </p>
         </div>
 

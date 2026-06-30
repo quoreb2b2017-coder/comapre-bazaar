@@ -42,8 +42,8 @@ export function CompareProductPanel({
             </div>
           </div>
           <div className="compare-score-badge" aria-label={`Score ${product.score} out of 5`}>
-            <span className="text-lg font-bold leading-none">{product.score}</span>
-            <span className="text-[10px] opacity-90">/ 5</span>
+            <span className="font-serif text-lg leading-none">{product.score}</span>
+            <span className="text-[9px] uppercase tracking-wide text-gray-400">/ 5</span>
           </div>
         </div>
       </div>

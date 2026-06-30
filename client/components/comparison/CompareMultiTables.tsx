@@ -89,13 +89,13 @@ export function CompareMultiTables({ products, lastReviewed, officialTable }: Co
         <div className="compare-table-head">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-widest text-cb-orange-light">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-cb-orange">
                 Side-by-side comparison
               </p>
-              <h2 className="font-serif text-xl font-semibold text-white sm:text-2xl">
+              <h2 className="font-serif text-xl font-normal tracking-tight text-navy sm:text-[1.35rem]">
                 Main points & official pricing
               </h2>
-              <p className="mt-1 max-w-2xl text-sm leading-relaxed text-white/80">
+              <p className="mt-1.5 max-w-2xl text-[13px] leading-relaxed text-gray-600">
                 {lastReviewed
                   ? `${colCount} products · prices aligned to our category guide (${lastReviewed}). Confirm on each vendor site before purchase.`
                   : `${colCount} products compared with official-style pricing, main strengths, and short watch-outs.`}

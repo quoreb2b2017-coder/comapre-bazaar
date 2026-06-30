@@ -32,10 +32,10 @@ export function ProductCard({
   return (
     <article
       id={product.id}
-      className={cn('px-5 py-6 sm:px-6 sm:py-7', product.isTopPick && 'bg-[#FFFBF7]')}
+      className={cn('px-5 py-5 sm:px-6 sm:py-6', product.isTopPick && 'bg-[#FFFBF7]')}
     >
       {/* Header row */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-[auto_1fr_auto] sm:items-start sm:gap-5">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-[auto_1fr_auto] sm:items-start sm:gap-4">
         <div className="flex items-center gap-3 sm:flex-col sm:items-center sm:gap-2">
           {rank != null ? (
             <span className="font-serif text-lg tabular-nums leading-none text-gray-300 sm:text-xl">
@@ -92,9 +92,9 @@ export function ProductCard({
       </div>
 
       {/* Pros / cons */}
-      <div className="mt-5 grid grid-cols-1 gap-px overflow-hidden rounded-md border border-gray-200 bg-gray-200 sm:grid-cols-2">
-        <div className="bg-[#FAFBFD] p-4 sm:p-5">
-          <h4 className="mb-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-gray-500">Pros</h4>
+      <div className="mt-4 grid grid-cols-1 gap-px overflow-hidden rounded-md border border-gray-200 bg-gray-200 sm:grid-cols-2">
+        <div className="bg-[#FAFBFD] p-3.5 sm:p-4">
+          <h4 className="mb-2.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-gray-500">Pros</h4>
           <ul className="space-y-2">
             {product.pros.map((pro, i) => (
               <li key={i} className="flex gap-2 text-[13px] leading-snug text-gray-700">
@@ -104,8 +104,8 @@ export function ProductCard({
             ))}
           </ul>
         </div>
-        <div className="bg-white p-4 sm:p-5">
-          <h4 className="mb-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-gray-500">Cons</h4>
+        <div className="bg-white p-3.5 sm:p-4">
+          <h4 className="mb-2.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-gray-500">Cons</h4>
           <ul className="space-y-2">
             {product.cons.map((con, i) => (
               <li key={i} className="flex gap-2 text-[13px] leading-snug text-gray-700">
@@ -118,7 +118,7 @@ export function ProductCard({
       </div>
 
       {/* Footer toolbar */}
-      <div className="mt-5 flex flex-col gap-4 border-t border-gray-100 pt-5 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mt-4 flex flex-col gap-3 border-t border-gray-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-gray-400">
             {product.pricingLabel}

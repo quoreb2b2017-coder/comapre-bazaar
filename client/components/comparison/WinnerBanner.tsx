@@ -9,8 +9,8 @@ export function WinnerBanner({ summary, embedded = false }: WinnerBannerProps) {
     <div
       className={
         embedded
-          ? 'border-l-[3px] border-cb-orange pl-4 sm:pl-5'
-          : 'mb-8 border border-gray-200 border-l-[3px] border-l-cb-orange bg-white px-5 py-4 sm:px-6 sm:py-5'
+          ? 'border-l-[3px] border-cb-orange pl-3.5 sm:pl-4'
+          : 'mb-6 border border-gray-200 border-l-[3px] border-l-cb-orange bg-white px-5 py-3.5 sm:px-6 sm:py-4'
       }
       role="note"
       aria-label="Top pick summary"

@@ -9,7 +9,7 @@ interface AuthorBarProps {
 
 export function AuthorBar({ author, reviewer, lastReviewed }: AuthorBarProps) {
   return (
-    <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3 border-t border-gray-200 pt-5">
+    <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2.5 border-t border-gray-200 pt-4">
       <div className="flex items-center gap-3">
         <div
           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-navy/5 text-sm font-semibold text-navy"

@@ -1,7 +1,9 @@
 'use client'
 
 import { useState } from 'react'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import type { FaqItem } from '@/types'
+import { easeOut } from '@/lib/homeMotion'
 
 interface FaqAccordionProps {
   items: FaqItem[]
@@ -9,12 +11,13 @@ interface FaqAccordionProps {
 
 function FaqItemComponent({ question, answer, index }: FaqItem & { index: number }) {
   const [open, setOpen] = useState(false)
+  const reduceMotion = useReducedMotion()
 
   return (
     <div className="border-b border-gray-200 last:border-b-0">
       <button
         type="button"
-        className="flex w-full items-start gap-4 px-5 py-4 text-left transition-colors hover:bg-[#FAFBFD] sm:px-6"
+        className="flex w-full items-start gap-3 px-5 py-3.5 text-left transition-colors duration-200 hover:bg-[#FAFBFD] sm:px-6"
         onClick={() => setOpen(!open)}
         aria-expanded={open}
       >
@@ -22,24 +25,35 @@ function FaqItemComponent({ question, answer, index }: FaqItem & { index: number
           {String(index + 1).padStart(2, '0')}
         </span>
         <span className="min-w-0 flex-1 font-medium leading-snug text-navy">{question}</span>
-        <svg
-          className={`mt-0.5 h-4 w-4 shrink-0 text-gray-400 transition-transform ${open ? 'rotate-180' : ''}`}
+        <motion.svg
+          animate={{ rotate: open ? 180 : 0 }}
+          transition={{ duration: reduceMotion ? 0 : 0.25, ease: easeOut }}
+          className="mt-0.5 h-4 w-4 shrink-0 text-gray-400"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
           aria-hidden
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
+        </motion.svg>
       </button>
 
-      <div
-        className={`overflow-hidden pl-[3.25rem] pr-5 text-sm leading-relaxed text-gray-600 transition-all duration-200 sm:pl-[4.5rem] sm:pr-6 ${
-          open ? 'max-h-[600px] pb-5 opacity-100' : 'max-h-0 opacity-0 pb-0'
-        }`}
-      >
-        <p>{answer}</p>
-      </div>
+      <AnimatePresence initial={false}>
+        {open ? (
+          <motion.div
+            key="content"
+            initial={reduceMotion ? false : { height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: reduceMotion ? 0 : 0.28, ease: easeOut }}
+            className="overflow-hidden"
+          >
+            <p className="px-5 pb-4 pl-[3.25rem] text-sm leading-relaxed text-gray-600 sm:px-6 sm:pl-[4.5rem]">
+              {answer}
+            </p>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </div>
   )
 }
