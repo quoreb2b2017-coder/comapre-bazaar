@@ -14,20 +14,69 @@ function resolveDirectBlogAdminBase() {
   return ''
 }
 
-/**
- * Blog-admin API base URL for browser calls.
- * Production uploads (PDF up to 25 MB) must NOT use the Next.js rewrite — Vercel caps proxied bodies ~4.5 MB.
- * Set NEXT_PUBLIC_BACKEND_URL on Vercel to your public Railway/API host.
- */
-export function getBlogAdminBaseURL() {
+let cachedBaseURL = null
+let resolveBasePromise = null
+
+function devBaseURL() {
+  return 'http://127.0.0.1:5000/api/v1/blog-admin'
+}
+
+function syncFallbackBaseURL() {
   const direct = resolveDirectBlogAdminBase()
   if (direct) return direct
+  if (process.env.NODE_ENV === 'development') return devBaseURL()
+  return cachedBaseURL || '/api/v1/blog-admin'
+}
 
-  if (process.env.NODE_ENV === 'development') {
-    return 'http://127.0.0.1:5000/api/v1/blog-admin'
+function applyBaseURLToClients(baseURL) {
+  blogAdminHttp.defaults.baseURL = baseURL
+  api.defaults.baseURL = baseURL
+}
+
+/**
+ * Resolve blog-admin API base for browser calls.
+ * Production uploads must hit the backend directly (not the Next.js rewrite).
+ */
+export async function ensureBlogAdminBaseURL() {
+  const direct = resolveDirectBlogAdminBase()
+  if (direct) {
+    cachedBaseURL = direct
+    applyBaseURLToClients(direct)
+    return direct
   }
 
-  return '/api/v1/blog-admin'
+  if (process.env.NODE_ENV === 'development') {
+    cachedBaseURL = devBaseURL()
+    applyBaseURLToClients(cachedBaseURL)
+    return cachedBaseURL
+  }
+
+  // Production: prefer direct backend (set via BACKEND_URL → NEXT_PUBLIC_BACKEND_URL at build).
+  // Fall back to same-origin proxy only when no public backend URL is configured.
+  if (cachedBaseURL && cachedBaseURL.startsWith('http')) {
+    return cachedBaseURL
+  }
+
+  if (!resolveBasePromise) {
+    resolveBasePromise = fetch('/api/blog-admin-config', { cache: 'no-store' })
+      .then(async (res) => {
+        if (!res.ok) return '/api/v1/blog-admin'
+        const json = await res.json()
+        const base = String(json?.apiBase || '').trim().replace(/\/$/, '')
+        if (base && json?.direct && base.startsWith('http')) return base
+        return '/api/v1/blog-admin'
+      })
+      .catch(() => '/api/v1/blog-admin')
+  }
+
+  cachedBaseURL = await resolveBasePromise
+  applyBaseURLToClients(cachedBaseURL)
+  return cachedBaseURL
+}
+
+/** Sync read — may be rewrite path until ensureBlogAdminBaseURL() runs. */
+export function getBlogAdminBaseURL() {
+  return syncFallbackBaseURL()
 }
 
 export function getAdminToken() {
@@ -55,13 +104,18 @@ function attachAuthHeaders(config) {
   return config
 }
 
+async function prepareRequest(config) {
+  config.baseURL = await ensureBlogAdminBaseURL()
+  return attachAuthHeaders(config)
+}
+
 /** Raw axios client — use for multipart uploads (returns full Axios response). */
 export const blogAdminHttp = axios.create({
   baseURL: getBlogAdminBaseURL(),
-  timeout: 30000,
+  timeout: 180000,
 })
 
-blogAdminHttp.interceptors.request.use(attachAuthHeaders, (error) => Promise.reject(error))
+blogAdminHttp.interceptors.request.use(prepareRequest, (error) => Promise.reject(error))
 
 blogAdminHttp.interceptors.response.use(
   (response) => response,
@@ -73,11 +127,13 @@ blogAdminHttp.interceptors.response.use(
     }
     let message = error.response?.data?.message || error.message || 'Something went wrong'
     if (error.response?.status === 413) {
-      message =
-        'Upload too large for the site proxy. Set NEXT_PUBLIC_BACKEND_URL on Vercel to your public API URL and redeploy.'
+      message = 'Upload too large for the site proxy. Ensure BACKEND_URL is set on Vercel and redeploy.'
     }
     if (error.code === 'ECONNABORTED' || /timeout/i.test(String(message))) {
       message = 'Request timed out. Large PDF uploads can take up to 3 minutes — try again.'
+    }
+    if (error.response?.status === 500 && getBlogAdminBaseURL() === '/api/v1/blog-admin') {
+      message = `${message} (Tip: set BACKEND_URL on Vercel so uploads bypass the site proxy.)`
     }
     return Promise.reject(new Error(message))
   }
@@ -91,7 +147,7 @@ const api = axios.create({
 /** Use for `/generate-blog` — shorter drafts usually finish well under this (raise if you tune prompts for very long posts). */
 export const API_TIMEOUT_LONG_MS = 180000
 
-api.interceptors.request.use(attachAuthHeaders, (error) => Promise.reject(error))
+api.interceptors.request.use(prepareRequest, (error) => Promise.reject(error))
 
 api.interceptors.response.use(
   (response) => response.data,

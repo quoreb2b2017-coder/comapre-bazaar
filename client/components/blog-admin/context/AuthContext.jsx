@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react'
-import api from '../utils/api'
+import api, { ensureBlogAdminBaseURL } from '../utils/api'
 import { getPublicSiteHomeUrl } from '../utils/publicSite'
 import { afterNextPaint } from '../utils/deferPaint'
 
@@ -15,6 +15,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     authStartedAt.current = typeof performance !== 'undefined' ? performance.now() : Date.now()
+    ensureBlogAdminBaseURL().catch(() => {})
 
     const finishNoSession = () => {
       afterNextPaint(() => setLoading(false))

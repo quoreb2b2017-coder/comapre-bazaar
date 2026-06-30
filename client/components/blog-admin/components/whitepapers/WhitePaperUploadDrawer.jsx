@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { X, Loader2, CheckCircle2, FileText, ImageIcon, Sparkles } from 'lucide-react'
-import api, { API_TIMEOUT_LONG_MS, blogAdminHttp, requireAdminToken } from '../../utils/api'
+import api, { API_TIMEOUT_LONG_MS, blogAdminHttp, ensureBlogAdminBaseURL, requireAdminToken } from '../../utils/api'
 import {
   WhitePaperSeoFields,
   emptySeoForm,
@@ -84,6 +84,11 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
     setClaudeSeoReady(false)
     setClaudeContent(null)
   }, [open, editingPaper])
+
+  useEffect(() => {
+    if (!open) return
+    ensureBlogAdminBaseURL().catch(() => {})
+  }, [open])
 
   useEffect(() => {
     if (!open) return
@@ -235,8 +240,8 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
     }
 
     const form = new FormData()
-    form.append('pdf', pdf)
-    form.append('thumbnail', thumbnail)
+    if (pdf) form.append('pdf', pdf)
+    if (thumbnail) form.append('thumbnail', thumbnail)
     form.append('title', title.trim())
     form.append('description', description.trim())
     form.append(
@@ -262,6 +267,7 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
     setPublished(null)
     try {
       if (!requireAdminToken(toast)) return
+      await ensureBlogAdminBaseURL()
       const endpoint = isEditMode ? `/whitepapers/${editingPaper._id}` : '/whitepapers'
       const method = isEditMode ? 'put' : 'post'
       const res = await blogAdminHttp[method](endpoint, form, {
