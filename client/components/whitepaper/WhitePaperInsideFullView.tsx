@@ -1,17 +1,12 @@
 'use client'
 
-import { useState } from 'react'
 import Image from 'next/image'
-import { cleanDisplayText } from '@/lib/cleanDisplayText'
+import type { WhitePaperSidebarHighlight } from '@/lib/whitePaperDisplay'
 import {
-  resolveWhitePaperInsideSections,
-  type WhitePaperInsideSectionItem,
-} from '@/components/whitepaper/WhitePaperInsideSection'
-import {
-  sectionDetailParagraphs,
-  sectionDisplayTitle,
+  WhitePaperInsideHeading,
   WhitePaperInsideList,
 } from '@/components/whitepaper/WhitePaperInsideList'
+import type { WhitePaperInsideSectionItem } from '@/components/whitepaper/whitePaperInsideTypes'
 import {
   WhitePaperTestimonials,
   type WhitePaperTestimonial,
@@ -19,8 +14,7 @@ import {
 
 type Props = {
   overview?: string
-  sections?: WhitePaperInsideSectionItem[]
-  points?: string[]
+  sidebarHighlights?: WhitePaperSidebarHighlight[]
   testimonials?: WhitePaperTestimonial[]
   testimonialsHeading?: string
   thumbnailUrl?: string
@@ -28,84 +22,80 @@ type Props = {
   offeredBy?: string
 }
 
+function highlightsToSections(highlights: WhitePaperSidebarHighlight[]): WhitePaperInsideSectionItem[] {
+  return highlights.map((item) => ({
+    title: item.title,
+    summary: item.text,
+  }))
+}
+
 export function WhitePaperInsideFullView({
   overview = '',
-  sections,
-  points = [],
+  sidebarHighlights = [],
   testimonials = [],
   testimonialsHeading,
   thumbnailUrl,
   thumbnailAlt = 'Whitepaper cover',
   offeredBy = 'Compare Bazaar',
 }: Props) {
-  const [activeIndex, setActiveIndex] = useState(0)
+  const highlights = sidebarHighlights.filter((item) => item.text)
+  const overviewText = overview.trim()
+  const sidebarItems = highlightsToSections(highlights)
 
-  const items = resolveWhitePaperInsideSections(sections, points)
-  const overviewText = cleanDisplayText(String(overview || '').trim())
-  const active = items[activeIndex] ?? items[0]
-
-  if (!items.length || !active) return null
-
-  const detailParagraphs = sectionDetailParagraphs(active)
-  const pagesLabel = String(active.pages || '').trim()
+  if (!overviewText && !sidebarItems.length) return null
 
   return (
     <div className="space-y-8">
-      <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[340px_minmax(0,1fr)] lg:gap-8 xl:grid-cols-[360px_minmax(0,1fr)]">
-        <div className="w-full shrink-0">
+      <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,280px)_minmax(0,1fr)] lg:gap-10 xl:grid-cols-[minmax(0,300px)_minmax(0,1fr)] xl:gap-12">
+        {/* Left — thumbnail + numbered section previews */}
+        <aside className="w-full shrink-0 space-y-5 lg:sticky lg:top-8 lg:self-start">
           {thumbnailUrl ? (
-            <div className="relative mx-auto aspect-[4/5] w-full max-w-[340px] bg-[#f4f4f4] p-2 lg:mx-0 lg:max-w-none">
+            <div className="relative mx-auto aspect-[4/5] w-full max-w-[260px] bg-[#f4f6fb] p-2 sm:max-w-[280px] lg:mx-0 lg:max-w-none">
               <Image
                 src={thumbnailUrl}
                 alt={thumbnailAlt}
                 fill
                 className="object-contain"
-                sizes="(max-width: 1024px) 340px, 360px"
+                sizes="(max-width: 1024px) 280px, 300px"
                 priority
               />
             </div>
           ) : null}
 
-          <WhitePaperInsideList
-            items={items}
-            variant="selectable"
-            activeIndex={activeIndex}
-            onSelect={setActiveIndex}
-            summaryClamp="two"
-            teaserMaxChars={120}
-            density="comfortable"
-            className={thumbnailUrl ? 'mt-5' : ''}
-          />
-        </div>
-
-        <div className="min-w-0 lg:pt-1" role="tabpanel">
-          {overviewText ? (
-            <p className="text-[15px] leading-[1.75] text-gray-600 sm:text-base">{overviewText}</p>
+          {sidebarItems.length > 0 ? (
+            <div className={thumbnailUrl ? 'border-t border-gray-200 pt-5' : ''}>
+              <WhitePaperInsideHeading sectionCount={sidebarItems.length} />
+              <WhitePaperInsideList
+                items={sidebarItems}
+                variant="static"
+                summaryClamp="two"
+                teaserMaxChars={130}
+                density="comfortable"
+                showDividers
+                className="mt-4"
+              />
+            </div>
           ) : null}
+        </aside>
 
-          <div className={overviewText ? 'mt-5 border-t border-gray-100 pt-5' : ''}>
-            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-              <h2 className="text-xl font-semibold tracking-tight text-navy sm:text-2xl">
-                {sectionDisplayTitle(active)}
-              </h2>
-              {pagesLabel ? (
-                <span className="text-sm font-medium text-gray-400">{pagesLabel}</span>
-              ) : null}
-            </div>
+        {/* Right — full overview */}
+        <div className="min-w-0">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-400">Overview</p>
+          <h2 className="mt-1.5 font-serif text-xl font-normal leading-snug text-navy sm:text-2xl">
+            What you&apos;ll learn from this report
+          </h2>
 
-            <div className="mt-3 space-y-3">
-              {detailParagraphs.map((paragraph, index) => (
-                <p
-                  key={`${activeIndex}-detail-${index}`}
-                  className="text-[16px] leading-[1.75] text-gray-700 sm:text-[17px]"
-                >
-                  {paragraph}
-                </p>
-              ))}
-            </div>
-          </div>
+          {overviewText ? (
+            <p className="mt-5 max-w-[65ch] text-[15px] leading-[1.85] text-gray-700 sm:text-base sm:leading-[1.9]">
+              {overviewText}
+            </p>
+          ) : (
+            <p className="mt-5 text-sm leading-relaxed text-gray-500">
+              Download the PDF for the complete analysis, benchmarks, and implementation guidance.
+            </p>
+          )}
 
-          <p className="mt-6 border-t border-gray-100 pt-4 text-sm text-gray-500">
+          <p className="mt-8 border-t border-gray-200 pt-4 text-sm text-gray-500">
             Summarized from this PDF · Offered free by{' '}
             <span className="font-semibold text-navy">{offeredBy}</span>
           </p>

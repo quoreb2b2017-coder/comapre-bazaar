@@ -93,15 +93,6 @@ function normalizeCompareBazaarDomain(text) {
   return String(text || '').replace(DOMAIN_RE, COMPARE_BAZAAR_DOMAIN)
 }
 
-function cleanWhitePaperTitle(raw = '') {
-  let s = stripEmDashes(stripCopyrightNotice(normalizeCompareBazaarDomain(raw)))
-  s = s.replace(/\.\s*compare-bazaar\.?\s*$/i, '')
-  s = s.replace(/\s+\|\s*compare-bazaar\.com\s*$/i, '')
-  s = s.replace(/\s+\.\s*$/,'')
-  s = s.replace(/\s{2,}/g, ' ').trim()
-  return s.slice(0, 180)
-}
-
 function isCompareBazaarBranded(text = '') {
   DOMAIN_RE.lastIndex = 0
   return DOMAIN_RE.test(String(text || ''))
@@ -109,12 +100,25 @@ function isCompareBazaarBranded(text = '') {
 
 function stripPublisherFromTitle(text = '') {
   return String(text || '')
-    .replace(new RegExp(`^${COMPARE_BAZAAR_DOMAIN}\\s*[-–—|:]\\s*`, 'i'), '')
+    .replace(new RegExp(`^${COMPARE_BAZAAR_DOMAIN}\\s*[-–—|,:\\s]+`, 'i'), '')
     .replace(new RegExp(`^${COMPARE_BAZAAR_DOMAIN}\\s+`, 'i'), '')
-    .replace(new RegExp(`\\s*[-–—|:]\\s*${COMPARE_BAZAAR_DOMAIN}\\s*$`, 'i'), '')
+    .replace(new RegExp(`\\s*[-–—|,:\\s]+\\s*${COMPARE_BAZAAR_DOMAIN}\\s*$`, 'i'), '')
     .replace(new RegExp(COMPARE_BAZAAR_DOMAIN, 'gi'), '')
+    .replace(/^[,:\s|]+/, '')
     .replace(/\s+/g, ' ')
     .trim()
+}
+
+function cleanWhitePaperTitle(raw = '') {
+  let s = stripCopyrightNotice(normalizeCompareBazaarDomain(raw))
+  s = stripPublisherFromTitle(s)
+  s = stripEmDashes(s)
+  s = s.replace(/\.\s*compare-bazaar\.?\s*$/i, '')
+  s = s.replace(/\s+\|\s*compare-bazaar\.com\s*$/i, '')
+  s = s.replace(/\s+\.\s*$/, '')
+  s = s.replace(/^[,:\s|]+/, '')
+  s = s.replace(/\s{2,}/g, ' ').trim()
+  return s.slice(0, 180)
 }
 
 function scoreReportTitleCandidate(text) {
@@ -160,17 +164,10 @@ function extractReportTitleFromPdfChunk(pdfText = '', fileName = '') {
   return candidates[0] || fallback
 }
 
-function formatWhitePaperDisplayTitle(reportTitle, pdfText = '') {
+function formatWhitePaperDisplayTitle(reportTitle) {
   const cleaned = cleanWhitePaperTitle(reportTitle)
   if (!cleaned) return ''
-
-  const branded =
-    isCompareBazaarBranded(String(pdfText || '').slice(0, 2500)) || isCompareBazaarBranded(cleaned)
-
-  if (!branded) return cleaned.slice(0, 180)
-
-  const core = stripPublisherFromTitle(cleaned) || cleaned
-  return `${COMPARE_BAZAAR_DOMAIN} — ${core}`.slice(0, 180)
+  return cleaned.slice(0, 180)
 }
 
 function resolveWhitePaperTitle({ rawTitle = '', pdfText = '', fileName = '' } = {}) {
@@ -184,7 +181,7 @@ function resolveWhitePaperTitle({ rawTitle = '', pdfText = '', fileName = '' } =
     ? fromPdf
     : stripPublisherFromTitle(stripCopyrightNotice(seed)) || fromPdf
 
-  return formatWhitePaperDisplayTitle(reportTitle, pdfText)
+  return formatWhitePaperDisplayTitle(reportTitle)
 }
 
 /** Trust admin-typed title — do not re-extract from PDF. */
@@ -192,12 +189,12 @@ function resolveAdminWhitePaperTitle({ rawTitle = '', pdfText = '', fileName = '
   const seed = String(rawTitle || '').trim()
   if (!seed) return resolveWhitePaperTitle({ rawTitle: '', pdfText, fileName })
   const core = stripPublisherFromTitle(stripCopyrightNotice(normalizeCompareBazaarDomain(seed))) || seed
-  return formatWhitePaperDisplayTitle(core, pdfText) || core.slice(0, 180)
+  return formatWhitePaperDisplayTitle(core) || core.slice(0, 180)
 }
 
 function syncSeoTitleFromAdminTitle(paper, seoOverrides) {
   if (seoOverrides?.seoTitle) return
-  const cleaned = cleanWhitePaperTitle(String(paper.title || '')).slice(0, 70)
+  const cleaned = stripPublisherFromTitle(cleanWhitePaperTitle(String(paper.title || ''))).slice(0, 70)
   if (cleaned) paper.seoTitle = cleaned
 }
 
@@ -409,8 +406,7 @@ Admin metadata: ${JSON.stringify(metadata)}
 
 Rules for seoTitle, metaTitle, and ogTitle:
 - Use the exact report title from the PDF cover (year + topic when present), not copyright/footer text
-- For Compare Bazaar PDFs, format as: compare-bazaar.com — {Report Title}
-- Always write the domain lowercase as compare-bazaar.com (never Compare-bazaar.com)
+- Do NOT include compare-bazaar.com, website URLs, or publisher branding in titles
 - NEVER include copyright lines (© 2026...), duplicate publisher names, or "all rights reserved"
 
 PDF content excerpt:

@@ -3,8 +3,11 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
-import { cleanDisplayText } from '@/lib/cleanDisplayText'
-import { whitePaperDisplayTitle } from '@/lib/whitePaperDisplay'
+import {
+  whitePaperDisplayTitle,
+  whitePaperMainOverview,
+  whitePaperSidebarHighlights,
+} from '@/lib/whitePaperDisplay'
 import { buildMetadata } from '@/lib/seo'
 import { fetchPublishedWhitePapers, fetchWhitePaperBySlug } from '@/lib/whitePaperCms'
 import { WhitePaperInsideFullView } from '@/components/whitepaper/WhitePaperInsideFullView'
@@ -41,8 +44,8 @@ export default async function WhitepaperDescriptionPage({ params }: PageProps) {
   const detailHref = `/resources/whitepaper/${paper.slug}`
   const downloadHref = `/resources/whitepaper/${paper.slug}/download`
 
-  const introRaw = cleanDisplayText(paper.structuredSeoContent?.trim() || paper.description?.trim() || '')
-  const overview = paper.insideOverview?.trim() || introRaw
+  const overview = whitePaperMainOverview(paper)
+  const sidebarHighlights = whitePaperSidebarHighlights(paper)
 
   return (
     <main className="min-h-screen bg-white">
@@ -73,14 +76,13 @@ export default async function WhitepaperDescriptionPage({ params }: PageProps) {
           {headline}
         </h1>
         <p className="mt-2 text-sm text-gray-600">
-          Select a section to read the complete summary from this report.
+          Key highlights on the left · full overview on the right.
         </p>
 
         <div className="mt-8 border-t border-gray-200 pt-8">
           <WhitePaperInsideFullView
             overview={overview}
-            sections={paper.insideSections}
-            points={paper.insidePoints}
+            sidebarHighlights={sidebarHighlights}
             testimonials={paper.testimonials}
             testimonialsHeading={paper.testimonialsHeading}
             thumbnailUrl={paper.thumbnailUrl}

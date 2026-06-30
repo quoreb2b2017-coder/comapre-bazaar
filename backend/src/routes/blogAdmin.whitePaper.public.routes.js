@@ -34,15 +34,14 @@ function normalizeCustomAnswers(body, paper) {
 
 function publicFields(p, { includePdf = false } = {}) {
   const pdfText = p.pdfTextExcerpt || ''
-  const displayTitle = resolveWhitePaperTitle({
-    rawTitle: p.seoTitle || p.title,
-    pdfText,
-  })
+  const displayTitle =
+    cleanWhitePaperTitle(p.seoTitle || p.title || '') ||
+    resolveWhitePaperTitle({ rawTitle: p.seoTitle || p.title, pdfText })
   const base = {
     slug: p.slug,
-    title: resolveWhitePaperTitle({ rawTitle: p.title, pdfText }) || displayTitle,
+    title: cleanWhitePaperTitle(p.title || '') || displayTitle,
     seoTitle: displayTitle,
-    description: p.description,
+    description: String(p.description || p.metaDescription || '').trim(),
     structuredSeoContent: p.structuredSeoContent,
     metaTitle: cleanWhitePaperTitle(p.metaTitle || displayTitle).slice(0, 70),
     metaDescription: p.metaDescription,

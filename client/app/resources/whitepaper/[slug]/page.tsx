@@ -3,8 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
-import { cleanDisplayText } from '@/lib/cleanDisplayText'
-import { whitePaperDisplayTitle } from '@/lib/whitePaperDisplay'
+import { whitePaperDisplayTitle, whitePaperFullDescription } from '@/lib/whitePaperDisplay'
 import { buildMetadata, SITE_URL } from '@/lib/seo'
 import { fetchPublishedWhitePapers, fetchWhitePaperBySlug } from '@/lib/whitePaperCms'
 import { WhitePaperInsideExplorer } from '@/components/whitepaper/WhitePaperInsideExplorer'
@@ -59,11 +58,12 @@ export default async function WhitepaperDetailPage({ params }: PageProps) {
   const author = paper.metadata?.author || offeredBy
   const pageUrl = `${SITE_URL}/resources/whitepaper/${paper.slug}`
 
-  const introRaw = cleanDisplayText(paper.structuredSeoContent?.trim() || paper.description?.trim() || '')
-  const intro =
-    introRaw.length > 240
-      ? `${introRaw.slice(0, 237).replace(/\s+\S*$/, '').trim()}…`
-      : introRaw
+  const fullDescription = whitePaperFullDescription({
+    insideOverview: paper.insideOverview,
+    description: paper.description,
+    metaDescription: paper.metaDescription,
+    structuredSeoContent: paper.structuredSeoContent,
+  })
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -145,8 +145,8 @@ export default async function WhitepaperDetailPage({ params }: PageProps) {
               {headline}
             </h1>
 
-            {intro && !paper.insideOverview?.trim() ? (
-              <p className="mt-4 text-sm leading-relaxed text-gray-600">{intro}</p>
+            {fullDescription && !paper.insideOverview?.trim() ? (
+              <p className="mt-4 text-sm leading-relaxed text-gray-600">{fullDescription}</p>
             ) : null}
 
             <Link
@@ -160,7 +160,7 @@ export default async function WhitepaperDetailPage({ params }: PageProps) {
 
         <WhitePaperInsideExplorer
           slug={paper.slug}
-          overview={paper.insideOverview || intro}
+          overview={paper.insideOverview || fullDescription}
           sections={paper.insideSections}
           points={paper.insidePoints}
           className="mt-8 border-t border-gray-200 pt-8 lg:mt-10"

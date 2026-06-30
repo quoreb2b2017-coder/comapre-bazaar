@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { whitePaperDisplayTitle } from '@/lib/whitePaperDisplay'
+import { whitePaperDisplayTitle, whitePaperDisplayDescription } from '@/lib/whitePaperDisplay'
 
 import type { WhitePaperPublic } from '@/lib/whitePaperCms'
 
@@ -14,6 +14,7 @@ type WhitePaperCardProps = {
 export function WhitePaperCard({ paper }: WhitePaperCardProps) {
   const detailHref = `/resources/whitepaper/${paper.slug}`
   const title = whitePaperDisplayTitle(paper.title, paper.seoTitle)
+  const description = whitePaperDisplayDescription(paper)
   const category = paper.metadata?.category
 
   return (
@@ -54,6 +55,9 @@ export function WhitePaperCard({ paper }: WhitePaperCardProps) {
             {title}
           </Link>
         </h2>
+        {description ? (
+          <p className="mt-2 line-clamp-3 text-[12px] leading-snug text-gray-500">{description}</p>
+        ) : null}
         <div className="mt-3 border-t border-gray-100 pt-3">
           <Link
             href={`${detailHref}/download`}
