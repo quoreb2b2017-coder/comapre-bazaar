@@ -277,6 +277,13 @@ export function WhitePaperSearch({ papers }: { papers: WhitePaperPublic[] }) {
         </div>
       ) : (
         <>
+          <WhitePaperPagination
+            placement="top"
+            currentPage={safePage}
+            totalItems={filtered.length}
+            onPageChange={goToPage}
+          />
+
           <ul
             ref={gridRef}
             className="grid scroll-mt-24 grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-5 sm:gap-y-10 lg:grid-cols-4 lg:gap-x-6"
@@ -289,6 +296,7 @@ export function WhitePaperSearch({ papers }: { papers: WhitePaperPublic[] }) {
           </ul>
 
           <WhitePaperPagination
+            placement="bottom"
             currentPage={safePage}
             totalItems={filtered.length}
             onPageChange={goToPage}

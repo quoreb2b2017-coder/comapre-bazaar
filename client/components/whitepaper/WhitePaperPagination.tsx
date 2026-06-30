@@ -8,33 +8,32 @@ type Props = {
   currentPage: number
   totalItems: number
   onPageChange: (page: number) => void
+  placement?: 'top' | 'bottom'
 }
 
 export { PAGE_SIZE as WHITEPAPER_PAGE_SIZE }
 
-export function WhitePaperPagination({ currentPage, totalItems, onPageChange }: Props) {
+export function WhitePaperPagination({
+  currentPage,
+  totalItems,
+  onPageChange,
+  placement = 'bottom',
+}: Props) {
   const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE))
   if (totalPages <= 1) return null
 
-  const from = (currentPage - 1) * PAGE_SIZE + 1
-  const to = Math.min(currentPage * PAGE_SIZE, totalItems)
+  const isTop = placement === 'top'
 
   return (
     <nav
-      className="mt-10 border-t border-gray-200/80 pt-8"
-      aria-label="Whitepaper library pagination"
+      className={
+        isTop
+          ? 'mb-6 border-b border-gray-200/80 pb-5'
+          : 'mt-10 border-t border-gray-200/80 pt-8'
+      }
+      aria-label={isTop ? 'Whitepaper library pagination (top)' : 'Whitepaper library pagination'}
     >
-      <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
-        <p className="text-[13px] text-gray-500">
-          Showing{' '}
-          <span className="font-semibold tabular-nums text-navy">
-            {from}–{to}
-          </span>{' '}
-          of{' '}
-          <span className="font-semibold tabular-nums text-navy">{totalItems}</span> reports
-        </p>
-
-        <div className="flex flex-wrap items-center justify-center gap-2">
+      <div className={`flex flex-wrap items-center gap-2 ${isTop ? 'justify-end' : 'justify-center'}`}>
           <button
             type="button"
             disabled={currentPage <= 1}
@@ -73,7 +72,6 @@ export function WhitePaperPagination({ currentPage, totalItems, onPageChange }: 
             Next
             <ChevronRight className="h-4 w-4" aria-hidden />
           </button>
-        </div>
       </div>
     </nav>
   )
