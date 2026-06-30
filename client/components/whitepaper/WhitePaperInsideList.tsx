@@ -76,10 +76,12 @@ type InsideListProps = {
   activeIndex?: number
   onSelect?: (index: number) => void
   summaryClamp?: 'none' | 'one' | 'two' | 'three'
+  leadSummaryClamp?: 'none' | 'one' | 'two' | 'three'
   density?: 'compact' | 'comfortable'
   showDividers?: boolean
   className?: string
   teaserMaxChars?: number
+  leadTeaserMaxChars?: number
 }
 
 export function WhitePaperInsideList({
@@ -88,10 +90,12 @@ export function WhitePaperInsideList({
   activeIndex = 0,
   onSelect,
   summaryClamp = 'none',
+  leadSummaryClamp,
   density = 'compact',
   showDividers = true,
   className = '',
   teaserMaxChars = 120,
+  leadTeaserMaxChars,
 }: InsideListProps) {
   if (!items.length) return null
 
@@ -101,12 +105,12 @@ export function WhitePaperInsideList({
   const indexClass = comfortable ? 'text-xs' : 'text-[11px]'
   const listClass = showDividers ? 'divide-y divide-gray-100' : 'space-y-1'
 
-  const summaryClass =
-    summaryClamp === 'one'
+  const clampClass = (clamp: InsideListProps['summaryClamp']) =>
+    clamp === 'one'
       ? 'line-clamp-1'
-      : summaryClamp === 'two'
+      : clamp === 'two'
         ? 'line-clamp-2'
-        : summaryClamp === 'three'
+        : clamp === 'three'
           ? 'line-clamp-3'
           : ''
 
@@ -114,8 +118,10 @@ export function WhitePaperInsideList({
     <ol className={`${listClass} ${className}`.trim()} role={variant === 'selectable' ? 'tablist' : undefined}>
       {items.map((item, index) => {
         const title = sectionDisplayTitle(item)
+        const itemClamp = index === 0 && leadSummaryClamp ? leadSummaryClamp : summaryClamp
+        const itemTeaserMax = index === 0 && leadTeaserMaxChars ? leadTeaserMaxChars : teaserMaxChars
         const preview =
-          summaryClamp === 'none' ? sectionListPreview(item) : sectionPreviewTeaser(item, teaserMaxChars)
+          itemClamp === 'none' ? sectionListPreview(item) : sectionPreviewTeaser(item, itemTeaserMax)
         const selected = variant === 'selectable' && index === activeIndex
 
         const content = (
@@ -129,7 +135,7 @@ export function WhitePaperInsideList({
               </p>
               {preview ? (
                 <p
-                  className={`mt-1.5 overflow-hidden text-gray-600 ${summaryTextClass} ${summaryClass}`.trim()}
+                  className={`mt-1.5 overflow-hidden text-gray-600 ${summaryTextClass} ${clampClass(itemClamp)}`.trim()}
                 >
                   {preview}
                 </p>

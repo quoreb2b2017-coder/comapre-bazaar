@@ -69,7 +69,9 @@ export function WhitePaperInsideFullView({
                 items={sidebarItems}
                 variant="static"
                 summaryClamp="two"
+                leadSummaryClamp="three"
                 teaserMaxChars={130}
+                leadTeaserMaxChars={400}
                 density="comfortable"
                 showDividers
                 className="mt-4"

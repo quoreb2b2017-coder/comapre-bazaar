@@ -53,6 +53,7 @@ export function whitePaperFullDescription(paper: WhitePaperContentFields): strin
 const SIDEBAR_HIGHLIGHT_MAX = 4
 const SIDEBAR_HIGHLIGHT_MIN = 3
 const SIDEBAR_TEASER_CHARS = 145
+const SIDEBAR_LEAD_TEASER_CHARS = 400
 
 function normKey(text: string): string {
   return text.toLowerCase().replace(/\s+/g, ' ').trim()
@@ -77,6 +78,44 @@ function teaserText(text: string, max = SIDEBAR_TEASER_CHARS): string {
   const lastSpace = cut.lastIndexOf(' ')
   const trimmed = lastSpace > max * 0.55 ? cut.slice(0, lastSpace) : cut
   return `${trimmed.trim()}…`
+}
+
+function sidebarItemText(text: string, index: number): string {
+  const max = index === 0 ? SIDEBAR_LEAD_TEASER_CHARS : SIDEBAR_TEASER_CHARS
+  return teaserText(text, max)
+}
+
+function leadSidebarText(paper: WhitePaperContentFields): string {
+  const sentences = collectOverviewSentences(paper)
+  if (sentences.length >= 3) return sentences.slice(0, 3).join(' ')
+  if (sentences.length) return sentences.join(' ')
+  return whitePaperMainOverview(paper)
+}
+
+function enrichSidebarHighlights(
+  highlights: WhitePaperSidebarHighlight[],
+  paper: WhitePaperContentFields
+): WhitePaperSidebarHighlight[] {
+  if (!highlights.length) return highlights
+
+  const lead = leadSidebarText(paper)
+  const normalized = highlights.map((item, index) => ({
+    title: item.title,
+    text: sidebarItemText(item.text, index),
+  }))
+
+  if (!lead) return normalized
+
+  const first = normalized[0]
+  const weakLead = first.text.length < 200
+  const genericTitle = /^topic \d+$/i.test(first.title) || /^key takeaway \d+$/i.test(first.title)
+
+  normalized[0] = {
+    title: genericTitle || !first.title ? 'What this report covers' : first.title,
+    text: sidebarItemText(weakLead ? lead : first.text.length < lead.length ? lead : first.text, 0),
+  }
+
+  return normalized
 }
 
 function sentenceList(text: string): string[] {
@@ -168,13 +207,19 @@ function highlightsFromSections(
     const title = cleanDisplayText(String(section.title || `Section ${index + 1}`).trim())
     const summary = cleanDisplayText(String(section.summary || '').trim())
     const body = cleanDisplayText(String(section.body || '').trim())
+    const isLead = highlights.length === 0
 
+    if (summary && body && isLead) {
+      const rich = [summary, ...sentenceList(body).slice(0, 2)].join(' ')
+      highlights.push({ title, text: sidebarItemText(rich, 0) })
+      continue
+    }
     if (summary) {
-      highlights.push({ title, text: teaserText(summary) })
+      highlights.push({ title, text: sidebarItemText(summary, highlights.length) })
       continue
     }
     if (body) {
-      highlights.push({ title, text: teaserText(body) })
+      highlights.push({ title, text: sidebarItemText(body, highlights.length) })
     }
   }
 
@@ -189,65 +234,98 @@ function highlightsFromSections(
     for (const sentence of sentenceList(body)) {
       if (highlights.length >= SIDEBAR_HIGHLIGHT_MAX) break
       if (isDuplicateText(sentence, highlights.map((item) => item.text))) continue
-      highlights.push({ title, text: teaserText(sentence) })
+      highlights.push({ title, text: sidebarItemText(sentence, highlights.length) })
     }
   }
 
   return highlights.slice(0, SIDEBAR_HIGHLIGHT_MAX)
 }
 
-const HIGHLIGHT_LABELS = ['Why it matters', 'What you get', 'How to use it', "Who it's for"]
+const HIGHLIGHT_LABELS = ['What this report covers', 'Key benchmark', 'How teams use it', "Who it's for"]
+
+function highlightsFromSentences(sentences: string[]): WhitePaperSidebarHighlight[] {
+  return sentences.slice(0, SIDEBAR_HIGHLIGHT_MAX).map((sentence, index) => ({
+    title: HIGHLIGHT_LABELS[index] || `Insight ${index + 1}`,
+    text: sidebarItemText(index === 0 ? sentences.slice(0, 3).join(' ') || sentence : sentence, index),
+  }))
+}
+
+function highlightsFromQuestions(
+  questions: { question: string }[],
+  paper: WhitePaperContentFields
+): WhitePaperSidebarHighlight[] {
+  const sentences = collectOverviewSentences(paper)
+  const highlights: WhitePaperSidebarHighlight[] = [
+    {
+      title: 'What this report covers',
+      text: sidebarItemText(leadSidebarText(paper), 0),
+    },
+  ]
+
+  const extraSentences = sentences.slice(3)
+  for (let i = 1; i < SIDEBAR_HIGHLIGHT_MAX; i += 1) {
+    const sentence = extraSentences[i - 1]
+    if (sentence) {
+      highlights.push({
+        title: HIGHLIGHT_LABELS[i] || `Insight ${i + 1}`,
+        text: sidebarItemText(sentence, i),
+      })
+      continue
+    }
+    const question = questions[i - 1]?.question
+    if (!question) break
+    highlights.push({
+      title: question,
+      text: sidebarItemText(question, i),
+    })
+  }
+
+  return highlights.slice(0, SIDEBAR_HIGHLIGHT_MAX)
+}
 
 /** 3–4 short highlight blocks for the full description page (left column). */
 export function whitePaperSidebarHighlights(paper: WhitePaperContentFields): WhitePaperSidebarHighlight[] {
   const sections = (paper.insideSections || []).filter((s) => s && (s.title || s.summary || s.body))
   if (sections.length) {
     const fromSections = highlightsFromSections(sections)
-    if (fromSections.length >= SIDEBAR_HIGHLIGHT_MIN) return fromSections
+    if (fromSections.length >= SIDEBAR_HIGHLIGHT_MIN) {
+      return enrichSidebarHighlights(fromSections, paper)
+    }
+  }
+
+  const sentences = collectOverviewSentences(paper)
+  if (sentences.length >= SIDEBAR_HIGHLIGHT_MIN) {
+    return enrichSidebarHighlights(highlightsFromSentences(sentences), paper)
   }
 
   const points = (paper.insidePoints || []).map((p) => String(p || '').trim()).filter(Boolean)
   if (points.length >= SIDEBAR_HIGHLIGHT_MIN) {
-    return points.slice(0, SIDEBAR_HIGHLIGHT_MAX).map((point, index) => ({
-      title: `Key takeaway ${index + 1}`,
-      text: teaserText(point),
-    }))
+    return enrichSidebarHighlights(
+      points.slice(0, SIDEBAR_HIGHLIGHT_MAX).map((point, index) => ({
+        title: HIGHLIGHT_LABELS[index] || `Insight ${index + 1}`,
+        text: sidebarItemText(point, index),
+      })),
+      paper
+    )
   }
 
   const questions = parseHighlightQuestions(paper.highlightQuestions)
   if (questions.length >= SIDEBAR_HIGHLIGHT_MIN) {
-    return questions.slice(0, SIDEBAR_HIGHLIGHT_MAX).map((item, index) => ({
-      title: `Topic ${index + 1}`,
-      text: teaserText(item.question),
-    }))
+    return enrichSidebarHighlights(highlightsFromQuestions(questions, paper), paper)
   }
 
-  const overviewText = whitePaperOverviewParagraphs(paper).join(' ')
-  const sentences = sentenceList(overviewText)
-
-  if (sentences.length >= SIDEBAR_HIGHLIGHT_MIN) {
-    return sentences.slice(0, SIDEBAR_HIGHLIGHT_MAX).map((sentence, index) => ({
-      title: HIGHLIGHT_LABELS[index] || `Highlight ${index + 1}`,
-      text: teaserText(sentence),
-    }))
+  const overviewText = whitePaperMainOverview(paper)
+  if (overviewText) {
+    return enrichSidebarHighlights(
+      [
+        {
+          title: 'What this report covers',
+          text: sidebarItemText(overviewText, 0),
+        },
+      ],
+      paper
+    )
   }
 
-  const overviewParas = whitePaperOverviewParagraphs(paper)
-  if (overviewParas[0] && overviewParas[0].length > 180) {
-    const words = overviewParas[0].split(/\s+/)
-    const chunkSize = Math.max(12, Math.ceil(words.length / SIDEBAR_HIGHLIGHT_MAX))
-    const highlights: WhitePaperSidebarHighlight[] = []
-    for (let i = 0; i < SIDEBAR_HIGHLIGHT_MAX && i * chunkSize < words.length; i += 1) {
-      highlights.push({
-        title: HIGHLIGHT_LABELS[i] || `Point ${i + 1}`,
-        text: teaserText(words.slice(i * chunkSize, (i + 1) * chunkSize).join(' ')),
-      })
-    }
-    if (highlights.length >= SIDEBAR_HIGHLIGHT_MIN) return highlights
-  }
-
-  return overviewParas.slice(0, SIDEBAR_HIGHLIGHT_MAX).map((paragraph, index) => ({
-    title: index === 0 ? 'Overview' : `Insight ${index + 1}`,
-    text: teaserText(paragraph),
-  }))
+  return []
 }

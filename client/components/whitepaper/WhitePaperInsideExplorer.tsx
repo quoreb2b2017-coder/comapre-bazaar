@@ -44,7 +44,6 @@ export function WhitePaperInsideExplorer({
       <WhitePaperInsideHeading
         sectionCount={items.length}
         previewCount={previewSections.length}
-        className={compact ? '' : 'border-t border-gray-200 pt-5'}
       />
 
       {previewOverview ? (
