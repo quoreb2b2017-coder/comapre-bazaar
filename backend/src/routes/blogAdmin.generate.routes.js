@@ -104,7 +104,7 @@ router.post('/', protect, async (req, res) => {
 
       if (existingBlogId) {
         savedBlog = await Blog.findByIdAndUpdate(existingBlogId, draftPayload, {
-          new: true,
+          returnDocument: 'after',
           runValidators: true,
         })
         if (!savedBlog) {

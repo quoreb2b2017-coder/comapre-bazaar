@@ -103,7 +103,7 @@ router.post('/:slug/view', async (req, res) => {
     const paper = await WhitePaper.findOneAndUpdate(
       { slug, status: 'published' },
       { $inc: { viewCount: 1 } },
-      { new: true }
+      { returnDocument: 'after' }
     ).lean()
     if (!paper) return res.status(404).json({ success: false, message: 'Not found' })
     res.json({ success: true, viewCount: paper.viewCount })
@@ -215,7 +215,7 @@ router.post('/:slug/download-complete', async (req, res) => {
         profileCompleted: true,
         downloadedAt: new Date(),
       },
-      { upsert: true, new: true, setDefaultsOnInsert: true }
+      { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true }
     )
 
     if (isFirstDownload) {

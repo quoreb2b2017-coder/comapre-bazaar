@@ -185,7 +185,7 @@ async function handleTelegramCallback(callback_query, botToken) {
     const blog = await Blog.findByIdAndUpdate(
       blogId,
       { status: "approved", approvedAt: new Date(), rejectionReason: null },
-      { new: true }
+      { returnDocument: 'after' }
     );
     await answerCallbackQuery(queryId, blog ? "Approved." : "Blog not found", token);
     if (message && blog) {
@@ -203,7 +203,7 @@ async function handleTelegramCallback(callback_query, botToken) {
     const blog = await Blog.findByIdAndUpdate(
       blogId,
       { status: "rejected", rejectedAt: new Date(), rejectionReason: "Rejected from Telegram" },
-      { new: true }
+      { returnDocument: 'after' }
     );
     await answerCallbackQuery(queryId, blog ? "Rejected." : "Blog not found", token);
     if (message && blog) {

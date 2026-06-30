@@ -135,7 +135,7 @@ router.put('/:id', protect, async (req, res) => {
 
     const statusOnly = Object.keys(updates).length <= 3 && updates.status && !updates.content
     const blog = await Blog.findByIdAndUpdate(req.params.id, updates, {
-      new: true,
+      returnDocument: 'after',
       runValidators: true,
       ...(statusOnly ? { select: '-content' } : {}),
     })
@@ -191,7 +191,7 @@ router.post('/:id/reject', protect, async (req, res) => {
     const blog = await Blog.findByIdAndUpdate(
       req.params.id,
       { status: 'rejected', rejectedAt: new Date(), rejectionReason: reason || 'No reason provided' },
-      { new: true }
+      { returnDocument: 'after' }
     )
     if (!blog) return res.status(404).json({ success: false, message: 'Blog not found' })
 
