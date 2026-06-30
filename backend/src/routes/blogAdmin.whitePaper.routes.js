@@ -18,6 +18,7 @@ const {
   uploadPdfToCloudinary,
   uploadThumbnailToCloudinary,
   generateWhitePaperSeo,
+  fallbackSeoFromAdmin,
   resolveWhitePaperTitle,
   resolveAdminWhitePaperTitle,
   syncSeoTitleFromAdminTitle,
@@ -123,7 +124,13 @@ router.post(
         extra: String(metaRaw.extra || '').trim(),
       }
 
-      const seo = await generateWhitePaperSeo({ title, description, metadata, pdfText })
+      let seo
+      try {
+        seo = await generateWhitePaperSeo({ title, description, metadata, pdfText })
+      } catch (seoErr) {
+        console.warn('White paper SEO generate fallback:', seoErr?.message || seoErr)
+        seo = fallbackSeoFromAdmin({ title, description })
+      }
       res.json({ success: true, data: seo })
     } catch (error) {
       console.error('White paper SEO generate error:', error)
@@ -401,7 +408,8 @@ router.post('/', (req, res, next) => {
         try {
           seo = await generateWhitePaperSeo({ title, description, metadata, pdfText })
         } catch (seoErr) {
-          throw new Error(`SEO generation failed: ${seoErr.message}`)
+          console.warn('White paper publish SEO fallback:', seoErr?.message || seoErr)
+          seo = fallbackSeoFromAdmin({ title, description })
         }
 
         applyGeneratedSeoToPaper(draft, seo)
@@ -515,12 +523,18 @@ router.put(
           applyGeneratedSeoToPaper(paper, claudeContent)
           applySeoOverrides(paper, seoOverrides)
         } else {
-          const seo = await generateWhitePaperSeo({
-            title: paper.title,
-            description: paper.description,
-            metadata,
-            pdfText: pdfText || '',
-          })
+          let seo
+          try {
+            seo = await generateWhitePaperSeo({
+              title: paper.title,
+              description: paper.description,
+              metadata,
+              pdfText: pdfText || '',
+            })
+          } catch (seoErr) {
+            console.warn('White paper update SEO fallback:', seoErr?.message || seoErr)
+            seo = fallbackSeoFromAdmin({ title: paper.title, description: paper.description })
+          }
 
           applyGeneratedSeoToPaper(paper, seo)
           applySeoOverrides(paper, seoOverrides)
