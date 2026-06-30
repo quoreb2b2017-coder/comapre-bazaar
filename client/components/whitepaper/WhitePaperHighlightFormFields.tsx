@@ -24,7 +24,7 @@ function Field({
 }) {
   return (
     <div className="space-y-1">
-      <label htmlFor={htmlFor} className="block text-xs font-medium text-gray-700">
+      <label htmlFor={htmlFor} className="block text-[12px] font-medium leading-snug text-gray-700">
         {label}
         {required ? <span className="text-red-600"> *</span> : null}
       </label>
@@ -37,11 +37,13 @@ export function WhitePaperHighlightFormFields({ questions, values, onChange, inp
   const items = (questions || []).filter((q) => String(q.question || '').trim())
   if (!items.length) return null
 
-  const textInputClass = `${inputClass} h-9 rounded-lg px-3 shadow-[0_1px_2px_rgba(15,31,61,0.04)] transition-all duration-200 hover:border-gray-300 focus:border-cb-orange focus:ring-2 focus:ring-cb-orange/15`
+  const textInputClass = `${inputClass} h-10 rounded-lg px-3.5 shadow-[0_1px_2px_rgba(15,31,61,0.04)] transition-all duration-200 hover:border-gray-300 focus:border-[#1D4ED8]/40 focus:ring-[3px] focus:ring-[#1D4ED8]/8`
 
   return (
-    <fieldset className="mt-3 rounded-xl border border-gray-100 bg-gray-50/50 p-3.5">
-      <legend className="mb-2 block px-0.5 text-[13px] font-semibold text-navy">A few quick questions</legend>
+    <fieldset className="mt-3 rounded-xl border border-gray-200/80 bg-[#FAFBFD] p-4">
+      <legend className="mb-3 block px-0.5 text-[13px] font-semibold text-navy">
+        A few quick questions
+      </legend>
       <div className="flex flex-col gap-3">
         {items.map((item, index) => {
           const label = cleanDisplayText(item.question)
