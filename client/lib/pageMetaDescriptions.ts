@@ -157,9 +157,9 @@ export const QUOTE_PAGE_CONFIGS = {
     baseH1: 'Get Free Quotes from Top Website Builders',
     vendorH1Category: 'Website Builder',
   },
-  'marketing/best-crm-software/get-free-quote': {
+  'marketing/best-crm-software/get-free-quotes': {
     baseTitle: 'Best CRM Software 2026',
-    canonical: '/marketing/best-crm-software/get-free-quote',
+    canonical: '/marketing/best-crm-software/get-free-quotes',
     baseDescription:
       'Get free quotes from top Crm Software providers. Compare pricing and features to find the right fit for your team.',
     vendorCategoryLabel: 'CRM software',
