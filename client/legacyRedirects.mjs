@@ -57,12 +57,18 @@ export const LEGACY_REDIRECTS = [
   { source: '/marketing-solutions', destination: '/marketing' },
 ]
 
-/** Case-insensitive legacy lookup for middleware. */
+/** Case-insensitive legacy lookup for middleware. Skips when already at destination. */
 export function resolveLegacyRedirect(pathname) {
   for (const { source, destination } of LEGACY_REDIRECTS) {
-    if (pathname === source || pathname.toLowerCase() === source.toLowerCase()) {
-      return destination
+    const matches = pathname === source || pathname.toLowerCase() === source.toLowerCase()
+    if (!matches) continue
+
+    // Avoid loops: /marketing/best-crm-software must not match /Marketing/best-crm-software forever.
+    if (pathname === destination || pathname.toLowerCase() === destination.toLowerCase()) {
+      return null
     }
+
+    return destination
   }
   return null
 }

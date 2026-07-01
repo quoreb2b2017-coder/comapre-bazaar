@@ -23,7 +23,11 @@ const nextConfig = {
     ],
   },
   async redirects() {
-    return LEGACY_REDIRECTS.map(({ source, destination }) => ({
+    // Only path remaps — omit case-only normalizations (handled by middleware lowercasing).
+    // Including case-only rules here loops: /marketing/… matches /Marketing/… on Vercel.
+    return LEGACY_REDIRECTS.filter(
+      ({ source, destination }) => source.toLowerCase() !== destination.toLowerCase()
+    ).map(({ source, destination }) => ({
       source,
       destination,
       permanent: true,
