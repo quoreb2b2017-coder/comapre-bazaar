@@ -31,19 +31,8 @@ export async function generateMetadata({ searchParams }: BlogPageProps): Promise
   const topicParam = Array.isArray(rawTopic) ? rawTopic[0] : rawTopic
 
   if (topicParam) {
-    let allPosts: Awaited<ReturnType<typeof loadUnifiedBlogIndex>> = []
-    try {
-      allPosts = await loadUnifiedBlogIndex()
-    } catch {
-      allPosts = []
-    }
-    const topicLabel = resolveTopicFromSlug(topicParam, allPosts)
-    if (topicLabel) {
-      return buildMetadata({
-        title: `${topicLabel} — Blog`,
-        description: `Compare Bazaar guides and articles about ${topicLabel}.`,
-        canonical: `/blog?topic=${encodeURIComponent(topicToSlug(topicLabel))}`,
-      })
+    return {
+      robots: { index: false, follow: true },
     }
   }
 

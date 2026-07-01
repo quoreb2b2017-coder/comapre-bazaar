@@ -22,6 +22,23 @@ const nextConfig = {
   },
   async redirects() {
     return [
+      // Fix 3: consolidate duplicate CRM pages
+      {
+        source: '/sales/best-crm-software',
+        destination: '/marketing/best-crm-software',
+        permanent: true,
+      },
+      {
+        source: '/sales/best-crm-software/get-free-quotes',
+        destination: '/marketing/best-crm-software/get-free-quotes',
+        permanent: true,
+      },
+      // Fix 8: normalise get-free-quote → get-free-quotes
+      {
+        source: '/marketing/best-crm-software/get-free-quote',
+        destination: '/marketing/best-crm-software/get-free-quotes',
+        permanent: true,
+      },
       {
         source: '/technology/best-employee-management-software',
         destination: '/human-resources/best-employee-management-software',

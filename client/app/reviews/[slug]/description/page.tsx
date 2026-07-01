@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
-import { buildMetadata, SITE_URL } from '@/lib/seo'
+import { SITE_URL } from '@/lib/seo'
 import { ReviewInsideFullView } from '@/components/reviews/ReviewInsideFullView'
 import { getReviewInsidePayload, generateStaticParams as reviewStaticParams } from '../page'
 
@@ -16,25 +16,12 @@ export function generateStaticParams() {
 }
 
 export function generateMetadata({ params }: PageProps): Metadata {
-  const data = getReviewInsidePayload(params.slug)
-  if (!data) {
-    return buildMetadata({
-      title: 'Review description',
-      description: 'Full software review description.',
-      canonical: `/reviews/${params.slug}/description`,
-    })
+  return {
+    robots: { index: false, follow: false },
+    alternates: {
+      canonical: `${SITE_URL}/reviews/${params.slug}`,
+    },
   }
-
-  const canonical = `/reviews/${data.review.slug}/description`
-  const title = `Full description: ${data.review.name} Review`
-
-  return buildMetadata({
-    title,
-    description: data.overview,
-    canonical,
-    ogTitle: `${title} | Compare Bazaar`,
-    ogUrl: `${SITE_URL}${canonical}`,
-  })
 }
 
 export default function ReviewDescriptionPage({ params }: PageProps) {

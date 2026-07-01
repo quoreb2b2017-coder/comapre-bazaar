@@ -1,15 +1,9 @@
 import type { MetadataRoute } from 'next'
 import { comparisonPages } from '@/data/comparisons'
 import { hubPages } from '@/data/hubs'
-import {
-  fetchPublishedBlogSummaries,
-  getBlogTopicsFromSummaries,
-  loadUnifiedBlogIndex,
-} from '@/lib/blogCms'
+import { fetchPublishedBlogSummaries } from '@/lib/blogCms'
 import { QUOTE_PAGE_CONFIGS } from '@/lib/pageMetaDescriptions'
-import { buildReviewVendorQuotePath } from '@/lib/reviewQuoteCta'
 import { fetchPublishedWhitePapers } from '@/lib/whitePaperCms'
-import { getReviewInsidePayload, generateStaticParams as reviewStaticParams } from '@/app/reviews/[slug]/page'
 
 const BASE_URL = 'https://www.compare-bazaar.com'
 
@@ -17,13 +11,10 @@ const BASE_URL = 'https://www.compare-bazaar.com'
 const SITEMAP_REDIRECT_PATHS = new Set([
   '/technology/best-employee-management-software',
   '/technology/best-employee-management-software/get-free-quotes',
+  '/sales/best-crm-software',
+  '/sales/best-crm-software/get-free-quotes',
+  '/marketing/best-crm-software/get-free-quote',
 ])
-
-/** XML sitemaps require escaped ampersands inside query-string URLs. */
-function sitemapUrl(pathOrUrl: string): string {
-  const absolute = pathOrUrl.startsWith('http') ? pathOrUrl : `${BASE_URL}${pathOrUrl}`
-  return absolute.replace(/&/g, '&amp;')
-}
 
 function isSitemapPath(path: string): boolean {
   const normalized = path.startsWith('/') ? path : `/${path}`
@@ -94,15 +85,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const leadGenRoutes: MetadataRoute.Sitemap = [...quoteConfigRoutes, ...quoteHubRoutes]
 
-  // ── 6. Compare detail URLs (?category=&brand=) ───────────────────────────
-  const compareDetailRoutes: MetadataRoute.Sitemap = comparisonPages.flatMap((page) =>
-    page.products.map((product) => ({
-      url: sitemapUrl(`/compare?category=${encodeURIComponent(page.slug)}&brand=${encodeURIComponent(product.id)}`),
-      lastModified: now,
-      changeFrequency: 'weekly' as const,
-      priority: 0.6,
-    }))
-  )
+  // ── 6. Compare detail URLs (?category=&brand=) — excluded: thin filter pages ─
 
   // ── 7. Review pages ───────────────────────────────────────────────────────
   const reviewSlugs = Array.from(
@@ -116,31 +99,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.75,
   }))
 
-  // ── 8. Review full-description pages ──────────────────────────────────────
-  const reviewDescriptionRoutes: MetadataRoute.Sitemap = reviewStaticParams()
-    .filter(({ slug }) => getReviewInsidePayload(slug) !== null)
-    .map(({ slug }) => ({
-      url: `${BASE_URL}/reviews/${slug}/description`,
-      lastModified: now,
-      changeFrequency: 'monthly' as const,
-      priority: 0.55,
-    }))
+  // ── 8. Review full-description pages — excluded: canonical points to main review ─
 
-  // ── 9. Vendor quote landings (?ref=review&product=&vendor=) ─────────────
-  const vendorQuoteRoutes: MetadataRoute.Sitemap = comparisonPages.flatMap((page) =>
-    page.products
-      .map((product) => {
-        const path = buildReviewVendorQuotePath(product.reviewSlug, product.name, page.canonical)
-        if (!path || !isSitemapPath(path.split('?')[0])) return null
-        return {
-          url: sitemapUrl(path),
-          lastModified: now,
-          changeFrequency: 'yearly' as const,
-          priority: 0.25,
-        }
-      })
-      .filter((entry): entry is NonNullable<typeof entry> => entry !== null)
-  )
+  // ── 9. Vendor quote landings (?ref=review…) — excluded: tracking params, not real pages ─
 
   // ── 10. Blog posts + topic filters (single CMS fetch) ─────────────────────
   const cmsPosts = await fetchPublishedBlogSummaries()
@@ -152,55 +113,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.65,
   }))
 
-  let blogTopicRoutes: MetadataRoute.Sitemap = getBlogTopicsFromSummaries(cmsPosts).map((topic) => ({
-    url: sitemapUrl(`/blog?topic=${encodeURIComponent(topic.slug)}`),
-    lastModified: now,
-    changeFrequency: 'weekly' as const,
-    priority: 0.5,
-  }))
-
-  // Fallback when CMS is empty/offline: derive topics from local blog index
-  if (blogTopicRoutes.length === 0) {
-    try {
-      const blogIndex = await loadUnifiedBlogIndex()
-      blogTopicRoutes = getBlogTopicsFromSummaries(
-        blogIndex.map((post) => ({
-          slug: post.slug,
-          title: post.title,
-          excerpt: post.excerpt,
-          publishedAt: post.publishedAt,
-          tags: [post.category],
-        }))
-      ).map((topic) => ({
-        url: sitemapUrl(`/blog?topic=${encodeURIComponent(topic.slug)}`),
-        lastModified: now,
-        changeFrequency: 'weekly' as const,
-        priority: 0.5,
-      }))
-    } catch {
-      blogTopicRoutes = []
-    }
-  }
-
-  // ── 11. Whitepapers ───────────────────────────────────────────────────────
+// ── 11. Whitepapers ───────────────────────────────────────────────────────
   const whitePapers = await fetchPublishedWhitePapers()
-  const whitePaperRoutes: MetadataRoute.Sitemap = whitePapers.flatMap((paper) => {
-    const lastModified = paper.publishedAt ? new Date(paper.publishedAt) : now
-    return [
-      {
-        url: `${BASE_URL}/resources/whitepaper/${paper.slug}`,
-        lastModified,
-        changeFrequency: 'monthly' as const,
-        priority: 0.6,
-      },
-      {
-        url: `${BASE_URL}/resources/whitepaper/${paper.slug}/description`,
-        lastModified,
-        changeFrequency: 'monthly' as const,
-        priority: 0.55,
-      },
-    ]
-  })
+  const whitePaperRoutes: MetadataRoute.Sitemap = whitePapers.map((paper) => ({
+    url: `${BASE_URL}/resources/whitepaper/${paper.slug}`,
+    lastModified: paper.publishedAt ? new Date(paper.publishedAt) : now,
+    changeFrequency: 'monthly' as const,
+    priority: 0.6,
+  }))
 
   // ── Merge: first-write-wins dedupe ────────────────────────────────────────
   const combined = [
@@ -209,12 +129,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...hubRoutes,
     ...comparisonRoutes,
     ...leadGenRoutes,
-    ...compareDetailRoutes,
     ...reviewRoutes,
-    ...reviewDescriptionRoutes,
-    ...vendorQuoteRoutes,
     ...blogRoutes,
-    ...blogTopicRoutes,
     ...whitePaperRoutes,
   ]
 

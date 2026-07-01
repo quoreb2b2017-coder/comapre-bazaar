@@ -7,10 +7,10 @@ type PageProps = {
 }
 
 export function generateMetadata({ searchParams }: PageProps): Metadata {
-  return buildQuotePageMetadata('marketing/best-crm-software/get-free-quote', searchParams)
+  return buildQuotePageMetadata('marketing/best-crm-software/get-free-quotes', searchParams)
 }
 
 export default function Page({ searchParams }: PageProps) {
-  const heading = buildQuotePageHeading('marketing/best-crm-software/get-free-quote', searchParams)
+  const heading = buildQuotePageHeading('marketing/best-crm-software/get-free-quotes', searchParams)
   return <QuoteFormClient heading={heading} />
 }
