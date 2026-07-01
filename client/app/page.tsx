@@ -47,17 +47,6 @@ const FAQS = [
   },
 ]
 
-const ADDITIONAL_RESOURCES = [
-  { href: '/technology/get-free-quotes', label: 'All Software Quotes' },
-  { href: '/business-planning', label: 'Business Planning' },
-  { href: '/start-a-business', label: 'Start a Business' },
-  { href: '/resources/whitepaper', label: 'Whitepaper' },
-  { href: '/contact-us/careers', label: 'Careers' },
-  { href: '/advertise', label: 'Advertise' },
-  { href: '/limit-the-use', label: 'Limit the Use' },
-  { href: '/copyright-policy', label: 'Copyright Policy' },
-]
-
 const itemListSchema = buildItemListSchema(
   'Business Software Categories',
   HOME_CATEGORIES.map((c) => ({ name: c.title, href: c.href, description: c.desc }))
@@ -86,18 +75,20 @@ export default async function HomePage() {
 
       <HomeHeroSection />
 
-      <div className="border-b border-gray-100 bg-white py-3 px-4">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-2.5 px-1">
-          <span className="rounded bg-[#F58220] px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-white">
-            How we review
-          </span>
-          <p className="text-sm text-gray-600">
-            Every comparison is based on hands-on testing, pricing verification, and structured scoring
-            across 12+ criteria, never influenced by vendor payments.{' '}
-            <Link href="/editorial-process" className="font-semibold text-navy underline underline-offset-2 hover:text-[#F58220]">
-              Read our editorial process →
-            </Link>
-          </p>
+      <div className="border-b border-gray-100 bg-white">
+        <div className="mx-auto max-w-6xl px-4 py-3 sm:px-6 lg:max-w-7xl lg:px-10">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <span className="rounded bg-[#F58220] px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-white">
+              How we review
+            </span>
+            <p className="text-sm text-gray-600">
+              Every comparison is based on hands-on testing, pricing verification, and structured scoring
+              across 12+ criteria, never influenced by vendor payments.{' '}
+              <Link href="/editorial-process" className="font-semibold text-navy underline underline-offset-2 hover:text-[#F58220]">
+                Read our editorial process →
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
 
@@ -221,24 +212,6 @@ export default async function HomePage() {
 
         <MotionSection delay={0.05}>
           <HomeFaqSection faqs={FAQS} />
-        </MotionSection>
-
-        <MotionSection className="border-t border-gray-100 pt-8 sm:pt-10" aria-label="Additional resources" delay={0.05}>
-          <h2 className="mb-1 text-lg tracking-tight text-navy sm:text-xl">Additional Resources</h2>
-          <p className="mb-3 text-sm text-gray-500">
-            Policy pages, planning resources, and company information.
-          </p>
-          <nav className="flex flex-wrap gap-x-4 gap-y-2">
-            {ADDITIONAL_RESOURCES.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="text-sm text-gray-600 transition-colors hover:text-[#F58220]"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
         </MotionSection>
 
       </div>

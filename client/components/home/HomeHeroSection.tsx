@@ -1,9 +1,9 @@
 'use client'
 
 import { motion, useReducedMotion } from 'framer-motion'
-import { HOME_CATEGORIES, HERO_SEARCH_ITEMS } from '@/data/homeCategories'
+import { HOME_CATEGORIES } from '@/data/homeCategories'
 import { HomeCategoryCard } from '@/components/ui/HomeCategoryCard'
-import { HomeSearchBar } from '@/components/ui/HomeSearchBar'
+import { HomeHeroMagnifierVisual } from '@/components/home/HomeHeroMagnifierVisual'
 import { NewsletterSubscribeForm } from '@/components/ui/NewsletterSubscribeForm'
 import { fadeUp, staggerContainer } from '@/lib/homeMotion'
 
@@ -18,7 +18,7 @@ export function HomeHeroSection() {
         animate="visible"
         variants={staggerContainer}
       >
-        <div className="mb-8 grid grid-cols-1 gap-5 lg:grid-cols-[1fr_minmax(220px,280px)] lg:items-start lg:gap-6">
+        <div className="mb-8 grid grid-cols-1 gap-5 lg:grid-cols-[1fr_minmax(300px,380px)] lg:items-start lg:gap-6">
           <motion.div variants={fadeUp}>
             <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#F58220]">
               Independent B2B Software Research
@@ -32,13 +32,13 @@ export function HomeHeroSection() {
             </h1>
             <div className="mb-3 h-1 w-16 rounded-full bg-[#F58220]" aria-hidden="true" />
             <p className="max-w-xl text-sm text-gray-600 sm:text-base">
-              Side-by-side comparisons, pricing breakdowns, and unbiased shortlists — built for US
+              Side-by-side comparisons, pricing breakdowns, and unbiased shortlists - built for US
               small businesses.
             </p>
           </motion.div>
 
-          <motion.div variants={fadeUp} className="lg:justify-self-end lg:w-full lg:max-w-[280px]">
-            <HomeSearchBar items={HERO_SEARCH_ITEMS} variant="hero" />
+          <motion.div variants={fadeUp} className="overflow-visible lg:justify-self-end lg:w-full lg:max-w-[380px]">
+            <HomeHeroMagnifierVisual categories={HOME_CATEGORIES} />
           </motion.div>
         </div>
 
