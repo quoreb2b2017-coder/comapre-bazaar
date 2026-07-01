@@ -3,9 +3,13 @@ import { comparisonPages } from '@/data/comparisons'
 import { hubPages } from '@/data/hubs'
 import { fetchPublishedBlogSummaries } from '@/lib/blogCms'
 import { QUOTE_PAGE_CONFIGS } from '@/lib/pageMetaDescriptions'
+import { buildReviewVendorQuotePath } from '@/lib/reviewQuoteCta'
 import { fetchPublishedWhitePapers } from '@/lib/whitePaperCms'
 
 const BASE_URL = 'https://www.compare-bazaar.com'
+
+/** Regenerate on each request so CMS blog/whitepaper URLs stay current when backend is available. */
+export const revalidate = 3600
 
 /** Paths that 301 to another canonical — omit from sitemap to avoid duplicate entries. */
 const SITEMAP_REDIRECT_PATHS = new Set([
@@ -19,6 +23,25 @@ const SITEMAP_REDIRECT_PATHS = new Set([
 function isSitemapPath(path: string): boolean {
   const normalized = path.startsWith('/') ? path : `/${path}`
   return !SITEMAP_REDIRECT_PATHS.has(normalized)
+}
+
+function uniqueReviewProducts() {
+  const seen = new Set<string>()
+  const entries: { reviewSlug: string; name: string; categoryPath: string }[] = []
+
+  for (const page of comparisonPages) {
+    for (const product of page.products) {
+      if (!product.reviewSlug || seen.has(product.reviewSlug)) continue
+      seen.add(product.reviewSlug)
+      entries.push({
+        reviewSlug: product.reviewSlug,
+        name: product.name,
+        categoryPath: page.canonical,
+      })
+    }
+  }
+
+  return entries
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -37,6 +60,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/business-planning`,   lastModified: now, changeFrequency: 'monthly', priority: 0.4 },
     { url: `${BASE_URL}/advertise`,           lastModified: now, changeFrequency: 'yearly',  priority: 0.4 },
     { url: `${BASE_URL}/contact`,             lastModified: now, changeFrequency: 'yearly',  priority: 0.4 },
+    { url: `${BASE_URL}/human-resources/buddy-punch`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
   ]
 
   // ── 2. Legal / compliance ─────────────────────────────────────────────────
@@ -85,12 +109,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const leadGenRoutes: MetadataRoute.Sitemap = [...quoteConfigRoutes, ...quoteHubRoutes]
 
-  // ── 6. Compare detail URLs (?category=&brand=) — excluded: thin filter pages ─
+  // ── 6. Compare brand pages (?category=&brand=) ───────────────────────────
+  const compareRoutes: MetadataRoute.Sitemap = comparisonPages.flatMap((page) =>
+    page.products.map((product) => ({
+      url: `${BASE_URL}/compare?category=${encodeURIComponent(page.slug)}&brand=${encodeURIComponent(product.id)}`,
+      lastModified: now,
+      changeFrequency: 'monthly' as const,
+      priority: 0.55,
+    }))
+  )
 
   // ── 7. Review pages ───────────────────────────────────────────────────────
-  const reviewSlugs = Array.from(
-    new Set(comparisonPages.flatMap((page) => page.products.map((product) => product.reviewSlug)))
-  )
+  const reviewSlugs = uniqueReviewProducts().map((entry) => entry.reviewSlug)
 
   const reviewRoutes: MetadataRoute.Sitemap = reviewSlugs.map((slug) => ({
     url: `${BASE_URL}/reviews/${slug}`,
@@ -99,11 +129,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.75,
   }))
 
-  // ── 8. Review full-description pages — excluded: canonical points to main review ─
+  // ── 8. Review-sourced vendor quote landings (?ref=review&product=&vendor=) ─
+  const vendorQuoteRoutes: MetadataRoute.Sitemap = uniqueReviewProducts().flatMap((entry) => {
+    const path = buildReviewVendorQuotePath(entry.reviewSlug, entry.name, entry.categoryPath)
+    if (!path) return []
 
-  // ── 9. Vendor quote landings (?ref=review…) — excluded: tracking params, not real pages ─
+    return [{
+      url: `${BASE_URL}${path}`,
+      lastModified: now,
+      changeFrequency: 'yearly' as const,
+      priority: 0.35,
+    }]
+  })
 
-  // ── 10. Blog posts + topic filters (single CMS fetch) ─────────────────────
+  // ── 9. Blog posts (CMS) ───────────────────────────────────────────────────
   const cmsPosts = await fetchPublishedBlogSummaries()
 
   const blogRoutes: MetadataRoute.Sitemap = cmsPosts.map((post) => ({
@@ -113,7 +152,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.65,
   }))
 
-// ── 11. Whitepapers ───────────────────────────────────────────────────────
+// ── 10. Whitepapers (CMS) ───────────────────────────────────────────────────
   const whitePapers = await fetchPublishedWhitePapers()
   const whitePaperRoutes: MetadataRoute.Sitemap = whitePapers.map((paper) => ({
     url: `${BASE_URL}/resources/whitepaper/${paper.slug}`,
@@ -129,7 +168,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...hubRoutes,
     ...comparisonRoutes,
     ...leadGenRoutes,
+    ...compareRoutes,
     ...reviewRoutes,
+    ...vendorQuoteRoutes,
     ...blogRoutes,
     ...whitePaperRoutes,
   ]
