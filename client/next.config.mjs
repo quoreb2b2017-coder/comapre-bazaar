@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
+import { LEGACY_REDIRECTS } from './legacyRedirects.mjs'
+
 const backendPublicUrl = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || ''
 
 const nextConfig = {
@@ -21,90 +23,11 @@ const nextConfig = {
     ],
   },
   async redirects() {
-    return [
-      // Fix 3: consolidate duplicate CRM pages
-      {
-        source: '/sales/best-crm-software',
-        destination: '/marketing/best-crm-software',
-        permanent: true,
-      },
-      {
-        source: '/sales/best-crm-software/get-free-quotes',
-        destination: '/marketing/best-crm-software/get-free-quotes',
-        permanent: true,
-      },
-      // Fix 8: normalise get-free-quote → get-free-quotes
-      {
-        source: '/marketing/best-crm-software/get-free-quote',
-        destination: '/marketing/best-crm-software/get-free-quotes',
-        permanent: true,
-      },
-      {
-        source: '/technology/best-employee-management-software',
-        destination: '/human-resources/best-employee-management-software',
-        permanent: true,
-      },
-      {
-        source: '/technology/best-employee-management-software/get-free-quotes',
-        destination: '/human-resources/best-employee-management-software/get-free-quotes',
-        permanent: true,
-      },
-      {
-        source: '/technology/best-employee-management-software',
-        destination: '/human-resources/best-employee-management-software',
-        permanent: true,
-      },
-      {
-        source: '/Contact-us/About-us',
-        destination: '/about',
-        permanent: true,
-      },
-      {
-        source: '/Contact-us/Contact',
-        destination: '/contact',
-        permanent: true,
-      },
-      {
-        source: '/Resources/Blogs',
-        destination: '/blog',
-        permanent: true,
-      },
-      {
-        source: '/Resources/software-comparison-methodology',
-        destination: '/editorial-process',
-        permanent: true,
-      },
-      {
-        source: '/Resources/smb-software-pricing-report-2026',
-        destination: '/resources/whitepaper',
-        permanent: true,
-      },
-      {
-        source: '/Resources/link-building-playbook',
-        destination: '/resources/whitepaper',
-        permanent: true,
-      },
-      {
-        source: '/BusinessPayroll',
-        destination: '/human-resources/best-payroll-software',
-        permanent: true,
-      },
-      {
-        source: '/do-not-sell-my-info',
-        destination: '/do-not-sell',
-        permanent: true,
-      },
-      {
-        source: '/accessibility-statement',
-        destination: '/accessibility',
-        permanent: true,
-      },
-      {
-        source: '/marketing-solutions',
-        destination: '/marketing',
-        permanent: true,
-      },
-    ]
+    return LEGACY_REDIRECTS.map(({ source, destination }) => ({
+      source,
+      destination,
+      permanent: true,
+    }))
   },
   async rewrites() {
     // Blog-admin API is handled by app/api/v1/blog-admin/[[...path]]/route.ts (multipart-safe proxy).

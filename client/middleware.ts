@@ -1,11 +1,19 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { resolveLegacyRedirect } from './legacyRedirects.mjs'
 
-/** Lowercase URL paths so indexed /Technology/* and /Sales/* URLs 301 to canonical routes. */
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
-  const lowercased = pathname.toLowerCase()
 
+  const legacyDestination = resolveLegacyRedirect(pathname)
+  if (legacyDestination) {
+    const url = request.nextUrl.clone()
+    url.pathname = legacyDestination
+    url.search = request.nextUrl.search
+    return NextResponse.redirect(url, { status: 301 })
+  }
+
+  const lowercased = pathname.toLowerCase()
   if (pathname !== lowercased) {
     const url = request.nextUrl.clone()
     url.pathname = lowercased
