@@ -21,6 +21,7 @@ import type { MetadataRoute } from 'next'
 //  /_next/                       | NO          | Keep disallowed ✓
 // ─────────────────────────────────────────────────────────────────────────────
 
+
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
