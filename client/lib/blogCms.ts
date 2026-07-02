@@ -1,4 +1,4 @@
-import { pickTopicCoverUrl, resolveBlogCoverUrl } from '@/lib/blogTopicCovers'
+import { pickTopicCoverUrl } from '@/lib/blogTopicCovers'
 import { cmsBackendBase } from '@/lib/cmsBackendBase'
 
 /** Server-side base URL for Express. Browser callers should use cmsBackendBase() (same-origin proxy). */
@@ -223,12 +223,12 @@ export async function fetchPublishedBlogBySlug(slug: string): Promise<CmsBlogDet
   }
 }
 
-async function cmsSummaryToUnified(b: CmsBlogSummary): Promise<UnifiedBlogCard> {
+function cmsSummaryToUnified(b: CmsBlogSummary): UnifiedBlogCard {
   const { stripFrom, stripTo } = stripGradientForSlug(b.slug)
   const rt =
     typeof b.readingTime === 'number' && b.readingTime > 0 ? `${b.readingTime} min read` : '8 min read'
   const category = (b.tags && b.tags[0]) || b.topic || 'Editorial'
-  const coverUrl = await resolveBlogCoverUrl(b)
+  const coverUrl = pickTopicCoverUrl(b)
   const viewCount = typeof b.viewCount === 'number' && b.viewCount >= 0 ? b.viewCount : 0
   return {
     slug: b.slug,
@@ -254,8 +254,7 @@ const byPublishedDesc = (a: UnifiedBlogCard, b: UnifiedBlogCard) =>
  */
 export async function loadUnifiedBlogIndex(): Promise<UnifiedBlogCard[]> {
   const cms = await fetchPublishedBlogSummaries()
-  const rows = await Promise.all(cms.map((b) => cmsSummaryToUnified(b)))
-  return rows.sort(byPublishedDesc)
+  return cms.map(cmsSummaryToUnified).sort(byPublishedDesc)
 }
 
 export async function loadUnifiedRelated(currentSlug: string, limit = 3): Promise<UnifiedBlogCard[]> {

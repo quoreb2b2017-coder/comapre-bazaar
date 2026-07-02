@@ -1,24 +1,15 @@
 'use client'
 
-import dynamic from 'next/dynamic'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { Pencil } from 'lucide-react'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
 import { CompareActiveBar } from '@/components/comparison/compare/CompareActiveBar'
 import { ComparePageHeader } from '@/components/comparison/compare/ComparePageHeader'
 import { CompareSelectionStep } from '@/components/comparison/compare/CompareSelectionStep'
-import { CompareTablesSkeleton } from '@/components/comparison/compare/ComparePageSkeleton'
-import { comparisonPhaseMotion } from '@/components/comparison/ComparisonMotion'
+import { CompareMultiTables } from '@/components/comparison/CompareMultiTables'
 import { MAX_COMPARE } from '@/components/comparison/compare/constants'
 import type { ComparePagePayload } from '@/components/comparison/compare/types'
 import type { Product } from '@/types'
-
-const CompareMultiTables = dynamic(
-  () =>
-    import('@/components/comparison/CompareMultiTables').then((mod) => mod.CompareMultiTables),
-  { loading: () => <CompareTablesSkeleton /> }
-)
 
 function buildCompareUrl(slug: string, brandId: string, vsIds: string[]) {
   const params = new URLSearchParams()
@@ -106,9 +97,6 @@ export function ComparePageClient({
     setPhase('select')
   }, [])
 
-  const reduceMotion = useReducedMotion()
-  const phaseMotion = reduceMotion ? {} : comparisonPhaseMotion
-
   // Sync only when URL-driven brand/vs changes — not on every client render.
   useEffect(() => {
     const ids = initialVsKey ? initialVsKey.split(',').filter(Boolean) : []
@@ -131,47 +119,43 @@ export function ComparePageClient({
           backHref={page.canonical}
         />
 
-        <AnimatePresence mode="wait">
-          {phase === 'select' ? (
-            <motion.div key="select" {...phaseMotion}>
-              <CompareSelectionStep
-                baseProduct={baseProduct}
-                relatedProducts={relatedProducts}
-                selectedIds={vsIds}
-                atMax={atMax}
-                onToggle={toggleProduct}
-                onCompare={openComparison}
-                onClear={clearSelection}
+        {phase === 'select' ? (
+          <CompareSelectionStep
+            baseProduct={baseProduct}
+            relatedProducts={relatedProducts}
+            selectedIds={vsIds}
+            atMax={atMax}
+            onToggle={toggleProduct}
+            onCompare={openComparison}
+            onClear={clearSelection}
+          />
+        ) : (
+          <div>
+            <div className="mb-4 flex flex-wrap items-center gap-3">
+              <CompareActiveBar
+                comparedProducts={comparedProducts}
+                onReset={clearSelection}
+                selectedCount={vsIds.length}
               />
-            </motion.div>
-          ) : (
-            <motion.div key="results" {...phaseMotion}>
-              <div className="mb-4 flex flex-wrap items-center gap-3">
-                <CompareActiveBar
-                  comparedProducts={comparedProducts}
-                  onReset={clearSelection}
-                  selectedCount={vsIds.length}
-                />
-                <button
-                  type="button"
-                  onClick={editSelection}
-                  className="compare-btn-secondary inline-flex shrink-0 items-center gap-2 !py-2"
-                >
-                  <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
-                  Edit selection
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={editSelection}
+                className="compare-btn-secondary inline-flex shrink-0 items-center gap-2 !py-2"
+              >
+                <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
+                Edit selection
+              </button>
+            </div>
 
-              <section aria-label="Comparison table">
-                <CompareMultiTables
-                  products={comparedProducts}
-                  lastReviewed={page.lastReviewed}
-                  officialTable={page.officialTable}
-                />
-              </section>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            <section aria-label="Comparison table">
+              <CompareMultiTables
+                products={comparedProducts}
+                lastReviewed={page.lastReviewed}
+                officialTable={page.officialTable}
+              />
+            </section>
+          </div>
+        )}
       </div>
     </main>
   )

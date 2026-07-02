@@ -8,13 +8,13 @@ import { blogPosts } from '@/data/blogPosts'
 import {
   fetchPublishedBlogBySlug,
   loadUnifiedBlogIndex,
-  loadUnifiedRelated,
   plainBlogExcerpt,
   splitCmsHeroFromBody,
   stripGradientForSlug,
   type CmsBlogDetail,
+  type UnifiedBlogCard,
 } from '@/lib/blogCms'
-import { pickTopicCoverUrl, resolveBlogCoverUrl } from '@/lib/blogTopicCovers'
+import { pickTopicCoverUrl } from '@/lib/blogTopicCovers'
 import { injectBlogAutoLinks } from '@/lib/blogAutoLink'
 import { BlogSubscribeBox } from '@/components/blog/BlogSubscribeBox'
 import { BlogShareBar } from '@/components/blog/BlogShareBar'
@@ -23,6 +23,7 @@ type Props = { params: { slug: string } }
 const SITE_URL = 'https://www.compare-bazaar.com'
 
 export const dynamicParams = true
+export const revalidate = 120
 
 export function generateStaticParams() {
   return blogPosts.map((post) => ({ slug: post.slug }))
@@ -103,7 +104,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const headline = (cms.metaTitle && cms.metaTitle.trim()) || cms.title
     const rawDesc = cms.metaDescription || cms.excerpt || formatShareDescription(cms.content?.slice(0, 600))
     const kw = [...new Set([...(cms.keywords || []), ...(cms.tags || [])])].slice(0, 24)
-    const thumbnailOg = await resolveBlogCoverUrl({
+    const thumbnailOg = pickTopicCoverUrl({
       slug: cms.slug,
       title: cms.title,
       topic: cms.topic,
@@ -151,11 +152,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   })
 }
 
-function RelatedBlock({
-  related,
-}: {
-  related: Awaited<ReturnType<typeof loadUnifiedRelated>>
-}) {
+function RelatedBlock({ related }: { related: UnifiedBlogCard[] }) {
   if (related.length === 0) return null
   return (
     <section className="mt-16 w-full border-t border-gray-100 pt-12">
@@ -266,7 +263,13 @@ function BlogTitlesRail({
   )
 }
 
-async function CmsBlogArticle({ cms }: { cms: CmsBlogDetail }) {
+async function CmsBlogArticle({
+  cms,
+  allPosts,
+}: {
+  cms: CmsBlogDetail
+  allPosts: Awaited<ReturnType<typeof loadUnifiedBlogIndex>>
+}) {
   const { stripFrom, stripTo } = stripGradientForSlug(cms.slug)
   const category = (cms.tags && cms.tags[0]) || cms.topic || 'Editorial'
   const readLabel =
@@ -277,8 +280,8 @@ async function CmsBlogArticle({ cms }: { cms: CmsBlogDetail }) {
     day: 'numeric',
     year: 'numeric',
   })
-  const related = await loadUnifiedRelated(cms.slug, 3)
-  const latestSidebar = (await loadUnifiedBlogIndex())
+  const related = allPosts.filter((item) => item.slug !== cms.slug).slice(0, 3)
+  const latestSidebar = allPosts
     .filter((item) => item.slug !== cms.slug)
     .slice(0, 8)
     .map((item) => ({ slug: item.slug, title: item.title }))
@@ -406,14 +409,17 @@ async function CmsBlogArticle({ cms }: { cms: CmsBlogDetail }) {
 }
 
 export default async function BlogPostPage({ params }: Props) {
-  const cms = await fetchPublishedBlogBySlug(params.slug)
-  if (cms) return <CmsBlogArticle cms={cms} />
+  const [cms, allPosts] = await Promise.all([
+    fetchPublishedBlogBySlug(params.slug),
+    loadUnifiedBlogIndex(),
+  ])
+  if (cms) return <CmsBlogArticle cms={cms} allPosts={allPosts} />
 
   const post = blogPosts.find((item) => item.slug === params.slug)
   if (!post) notFound()
 
-  const relatedPosts = await loadUnifiedRelated(post.slug, 3)
-  const latestSidebar = (await loadUnifiedBlogIndex())
+  const relatedPosts = allPosts.filter((item) => item.slug !== post.slug).slice(0, 3)
+  const latestSidebar = allPosts
     .filter((item) => item.slug !== post.slug)
     .slice(0, 8)
     .map((item) => ({ slug: item.slug, title: item.title }))

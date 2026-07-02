@@ -1,25 +1,16 @@
 'use client'
 
-import { motion, useReducedMotion } from 'framer-motion'
 import { HOME_CATEGORIES } from '@/data/homeCategories'
 import { HomeCategoryCard } from '@/components/ui/HomeCategoryCard'
 import { HomeHeroMagnifierVisual } from '@/components/home/HomeHeroMagnifierVisual'
 import { NewsletterSubscribeForm } from '@/components/ui/NewsletterSubscribeForm'
-import { fadeUp, staggerContainer } from '@/lib/homeMotion'
 
 export function HomeHeroSection() {
-  const reduceMotion = useReducedMotion()
-
   return (
     <header className="border-b border-gray-100 bg-white">
-      <motion.div
-        className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-9 lg:max-w-7xl lg:px-10 lg:py-10"
-        initial={reduceMotion ? false : 'hidden'}
-        animate="visible"
-        variants={staggerContainer}
-      >
+      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-9 lg:max-w-7xl lg:px-10 lg:py-10">
         <div className="mb-8 grid grid-cols-1 gap-5 lg:grid-cols-[1fr_minmax(300px,380px)] lg:items-start lg:gap-6">
-          <motion.div variants={fadeUp}>
+          <div>
             <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#F58220]">
               Independent B2B Software Research
             </p>
@@ -35,18 +26,16 @@ export function HomeHeroSection() {
               Side-by-side comparisons, pricing breakdowns, and unbiased shortlists - built for US
               small businesses.
             </p>
-          </motion.div>
+          </div>
 
-          <motion.div variants={fadeUp} className="overflow-visible lg:justify-self-end lg:w-full lg:max-w-[380px]">
+          <div className="overflow-visible lg:justify-self-end lg:w-full lg:max-w-[380px]">
             <HomeHeroMagnifierVisual categories={HOME_CATEGORIES} />
-          </motion.div>
+          </div>
         </div>
 
-        <motion.div variants={fadeUp} className="mb-4">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-400">
-            Browse by category
-          </p>
-        </motion.div>
+        <p className="mb-4 text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-400">
+          Browse by category
+        </p>
 
         <div className="grid grid-cols-2 gap-3.5 sm:gap-4 lg:grid-cols-3 lg:gap-5">
           {HOME_CATEGORIES.map((cat) => (
@@ -65,10 +54,10 @@ export function HomeHeroSection() {
           ))}
         </div>
 
-        <motion.div variants={fadeUp} className="mt-8">
+        <div className="mt-8">
           <NewsletterSubscribeForm sourceSlug="homepage" variant="hero" />
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     </header>
   )
 }

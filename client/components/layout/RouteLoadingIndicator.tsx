@@ -3,35 +3,37 @@
 import { useEffect, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
 
-const MIN_VISIBLE_MS = 650
-const MIN_VISIBLE_COMPARE_MS = 120
+const FADE_MS = 180
 const MAX_VISIBLE_MS = 9000
 
 export function RouteLoadingIndicator() {
   const pathname = usePathname()
   const [visible, setVisible] = useState(false)
-  const startedAtRef = useRef<number>(0)
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const forceHideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isNavigatingRef = useRef(false)
   const activeAnchorRef = useRef<HTMLAnchorElement | null>(null)
 
-  const minVisibleRef = useRef(MIN_VISIBLE_MS)
-
   useEffect(() => {
     if (!isNavigatingRef.current) return
 
-    const elapsed = Date.now() - startedAtRef.current
-    const delay = Math.max(minVisibleRef.current - elapsed, 0)
-    if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
-    hideTimerRef.current = setTimeout(() => {
+    const finish = () => {
       setVisible(false)
       isNavigatingRef.current = false
       if (activeAnchorRef.current) {
         activeAnchorRef.current.classList.remove('cb-link-pending')
         activeAnchorRef.current = null
       }
-    }, delay)
+    }
+
+    if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
+    if (forceHideTimerRef.current) {
+      clearTimeout(forceHideTimerRef.current)
+      forceHideTimerRef.current = null
+    }
+
+    // Route changed — hide right away with a short smooth fade.
+    hideTimerRef.current = setTimeout(finish, FADE_MS)
   }, [pathname])
 
   useEffect(() => {
@@ -45,6 +47,7 @@ export function RouteLoadingIndicator() {
         forceHideTimerRef.current = null
       }
     }
+
     const handleDocumentClick = (event: MouseEvent) => {
       const target = event.target as HTMLElement | null
       const anchor = target?.closest('a') as HTMLAnchorElement | null
@@ -63,7 +66,6 @@ export function RouteLoadingIndicator() {
           nextUrl.search === currentUrl.search &&
           nextUrl.hash === currentUrl.hash
 
-        // Compare picker updates query params client-side; skip overlay for compare-only changes.
         const isCompareQueryTweak =
           nextUrl.pathname === '/compare' &&
           currentUrl.pathname === '/compare' &&
@@ -73,19 +75,16 @@ export function RouteLoadingIndicator() {
 
         if (!isInternal || isSameRoute || isCompareQueryTweak) return
 
-        const isOpeningCompare =
-          nextUrl.pathname === '/compare' && currentUrl.pathname !== '/compare'
-
         clearTimers()
-        startedAtRef.current = Date.now()
         isNavigatingRef.current = true
         setVisible(true)
-        minVisibleRef.current = isOpeningCompare ? MIN_VISIBLE_COMPARE_MS : MIN_VISIBLE_MS
+
         if (activeAnchorRef.current && activeAnchorRef.current !== anchor) {
           activeAnchorRef.current.classList.remove('cb-link-pending')
         }
         activeAnchorRef.current = anchor
         anchor.classList.add('cb-link-pending')
+
         forceHideTimerRef.current = setTimeout(() => {
           setVisible(false)
           isNavigatingRef.current = false
@@ -112,20 +111,34 @@ export function RouteLoadingIndicator() {
 
   return (
     <div
-      className={`fixed inset-0 z-[120] flex items-center justify-center transition-opacity duration-300 ${
-        visible ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
+      className={`fixed inset-0 z-[120] transition-opacity duration-[180ms] ease-out ${
+        visible ? 'pointer-events-none opacity-100' : 'pointer-events-none opacity-0'
       }`}
       aria-live="polite"
-      aria-label="Route loading indicator"
+      aria-busy={visible}
+      aria-label={visible ? 'Loading' : undefined}
     >
-      <div className="absolute inset-0 bg-slate-900/26 backdrop-blur-[2px]" />
-      <div className="absolute left-0 right-0 top-0 h-[3px] overflow-hidden bg-white/40">
-        <div className="cb-route-progress h-full w-[35%] rounded-full bg-gradient-to-r from-[#ff8633] via-[#ff9f55] to-[#ffd2a8]" />
+      <div
+        className={`absolute inset-0 bg-slate-900/10 transition-opacity duration-[180ms] ease-out ${
+          visible ? 'opacity-100' : 'opacity-0'
+        }`}
+      />
+      <div className="absolute left-0 right-0 top-0 h-[3px] overflow-hidden bg-white/60">
+        <div
+          className={`cb-route-progress h-full w-[35%] rounded-full bg-gradient-to-r from-[#ff8633] via-[#ff9f55] to-[#ffd2a8] transition-opacity duration-150 ${
+            visible ? 'opacity-100' : 'opacity-0'
+          }`}
+        />
       </div>
-      <div className="relative flex items-center gap-3 rounded-full border border-white/70 bg-white/95 px-5 py-3 shadow-[0_18px_42px_-20px_rgba(8,20,60,0.55)]">
-        <span className="h-5 w-5 animate-spin rounded-full border-2 border-[#ff8633]/30 border-t-[#ff8633]" />
-        <span className="text-sm font-semibold text-[#000e54]">Opening page</span>
-        <span className="cb-loading-dots" aria-hidden="true" />
+      <div
+        className={`absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2 transition-all duration-[180ms] ease-out ${
+          visible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
+        }`}
+      >
+        <span
+          className="block h-10 w-10 animate-spin rounded-full border-[3px] border-[#ff8633]/20 border-t-[#ff8633] bg-white/90 shadow-[0_8px_24px_-8px_rgba(8,20,60,0.35)]"
+          aria-hidden="true"
+        />
       </div>
     </div>
   )
