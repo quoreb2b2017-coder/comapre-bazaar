@@ -1,17 +1,37 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import { usePathname } from 'next/navigation'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { usePathname, useSearchParams } from 'next/navigation'
 
-const FADE_MS = 180
+const FADE_MS = 160
 const MAX_VISIBLE_MS = 9000
+
+function buildRouteSignature(pathname: string, search: string) {
+  return search ? `${pathname}?${search}` : pathname
+}
+
+function isBlogIndexSoftNav(nextUrl: URL, currentUrl: URL) {
+  return (
+    nextUrl.pathname === '/blog' &&
+    currentUrl.pathname === '/blog' &&
+    (nextUrl.search !== currentUrl.search || nextUrl.hash !== currentUrl.hash)
+  )
+}
 
 export function RouteLoadingIndicator() {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const search = searchParams.toString()
+  const routeSignature = useMemo(
+    () => buildRouteSignature(pathname, search),
+    [pathname, search]
+  )
+
   const [visible, setVisible] = useState(false)
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const forceHideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isNavigatingRef = useRef(false)
+  const targetRouteRef = useRef<string | null>(null)
   const activeAnchorRef = useRef<HTMLAnchorElement | null>(null)
 
   useEffect(() => {
@@ -20,11 +40,17 @@ export function RouteLoadingIndicator() {
     const finish = () => {
       setVisible(false)
       isNavigatingRef.current = false
+      targetRouteRef.current = null
       if (activeAnchorRef.current) {
         activeAnchorRef.current.classList.remove('cb-link-pending')
         activeAnchorRef.current = null
       }
     }
+
+    const target = targetRouteRef.current
+    const reachedTarget = !target || routeSignature === target
+
+    if (!reachedTarget) return
 
     if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
     if (forceHideTimerRef.current) {
@@ -32,9 +58,8 @@ export function RouteLoadingIndicator() {
       forceHideTimerRef.current = null
     }
 
-    // Route changed — hide right away with a short smooth fade.
     hideTimerRef.current = setTimeout(finish, FADE_MS)
-  }, [pathname])
+  }, [routeSignature])
 
   useEffect(() => {
     const clearTimers = () => {
@@ -73,10 +98,13 @@ export function RouteLoadingIndicator() {
 
         if (anchor.hasAttribute('data-cb-soft-nav')) return
 
-        if (!isInternal || isSameRoute || isCompareQueryTweak) return
+        if (!isInternal || isSameRoute || isCompareQueryTweak || isBlogIndexSoftNav(nextUrl, currentUrl)) {
+          return
+        }
 
         clearTimers()
         isNavigatingRef.current = true
+        targetRouteRef.current = buildRouteSignature(nextUrl.pathname, nextUrl.search.slice(1))
         setVisible(true)
 
         if (activeAnchorRef.current && activeAnchorRef.current !== anchor) {
@@ -88,6 +116,7 @@ export function RouteLoadingIndicator() {
         forceHideTimerRef.current = setTimeout(() => {
           setVisible(false)
           isNavigatingRef.current = false
+          targetRouteRef.current = null
           if (activeAnchorRef.current) {
             activeAnchorRef.current.classList.remove('cb-link-pending')
             activeAnchorRef.current = null
@@ -111,7 +140,7 @@ export function RouteLoadingIndicator() {
 
   return (
     <div
-      className={`fixed inset-0 z-[120] transition-opacity duration-[180ms] ease-out ${
+      className={`fixed inset-0 z-[120] transition-opacity duration-[160ms] ease-out ${
         visible ? 'pointer-events-none opacity-100' : 'pointer-events-none opacity-0'
       }`}
       aria-live="polite"
@@ -119,7 +148,7 @@ export function RouteLoadingIndicator() {
       aria-label={visible ? 'Loading' : undefined}
     >
       <div
-        className={`absolute inset-0 bg-slate-900/10 transition-opacity duration-[180ms] ease-out ${
+        className={`absolute inset-0 bg-slate-900/10 transition-opacity duration-[160ms] ease-out ${
           visible ? 'opacity-100' : 'opacity-0'
         }`}
       />
@@ -131,7 +160,7 @@ export function RouteLoadingIndicator() {
         />
       </div>
       <div
-        className={`absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2 transition-all duration-[180ms] ease-out ${
+        className={`absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2 transition-all duration-[160ms] ease-out ${
           visible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
         }`}
       >

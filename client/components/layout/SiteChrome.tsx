@@ -27,7 +27,9 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
   }
   return (
     <>
-      <RouteLoadingIndicator />
+      <Suspense fallback={null}>
+        <RouteLoadingIndicator />
+      </Suspense>
       <SiteNav />
       <main className="flex-1">{children}</main>
       <ArrowNavigation />
