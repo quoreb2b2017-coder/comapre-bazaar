@@ -18,10 +18,12 @@ import {
   WhitePapers,
   WhitePaperDownloads,
   WhitePaperCreate,
+  SuperAdminGoogleAnalytics,
 } from './lazyRoutes'
 import { useToast } from './hooks/useToast'
 import { BlogAdminPageLoader } from './components/ui/PageLoader'
 import { RouteSuspense } from './components/ui/RouteSuspense'
+import { GoogleAnalyticsAdmin } from './GoogleAnalyticsAdmin'
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth()
@@ -37,6 +39,17 @@ const PublicRoute = ({ children }) => {
     return <BlogAdminPageLoader label="Preparing sign in…" />
   }
   return !isAuthenticated ? children : <Navigate to="/" replace />
+}
+
+const SuperAdminRoute = ({ children }) => {
+  const { admin, loading } = useAuth()
+  if (loading) {
+    return <BlogAdminPageLoader label="Checking access…" />
+  }
+  if (admin?.role !== 'super_admin') {
+    return <Navigate to="/" replace />
+  }
+  return children
 }
 
 function AppRoutes() {
@@ -72,6 +85,14 @@ function AppRoutes() {
           <Route path="whitepapers" element={<RouteSuspense><WhitePapers /></RouteSuspense>} />
           <Route path="whitepapers/downloads" element={<RouteSuspense><WhitePaperDownloads /></RouteSuspense>} />
           <Route path="whitepapers/new" element={<RouteSuspense><WhitePaperCreate /></RouteSuspense>} />
+          <Route
+            path="super-admin/google-analytics"
+            element={
+              <SuperAdminRoute>
+                <RouteSuspense><SuperAdminGoogleAnalytics /></RouteSuspense>
+              </SuperAdminRoute>
+            }
+          />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
@@ -89,6 +110,7 @@ function App() {
           v7_relativeSplatPath: true,
         }}
       >
+        <GoogleAnalyticsAdmin />
         <AppRoutes />
       </BrowserRouter>
     </AuthProvider>

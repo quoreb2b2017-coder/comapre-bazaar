@@ -17,6 +17,7 @@
   "description": "",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.91.1",
+    "@google-analytics/data": "^6.1.0",
     "axios": "^1.7.2",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.10.0",

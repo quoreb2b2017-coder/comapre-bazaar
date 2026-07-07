@@ -18,3 +18,16 @@ export function applyGoogleAnalyticsConsent(granted: boolean) {
     ad_personalization: status,
   })
 }
+
+export function trackGoogleAnalyticsPageView(pagePath: string) {
+  if (typeof window === 'undefined' || typeof window.gtag !== 'function' || !GA_MEASUREMENT_ID) return
+  window.gtag('event', 'page_view', {
+    page_path: pagePath,
+    page_location: window.location.href,
+    page_title: document.title,
+  })
+}
+
+export function blogAdminPagePath(pathname: string, search = '') {
+  return `/blog-admin${pathname === '/' ? '' : pathname}${search}`
+}

@@ -27,6 +27,11 @@ export const TrendsAssistant = lazy(() =>
 export const Analytics = lazy(() =>
   import(/* webpackChunkName: "blog-admin-analytics" */ './pages/Analytics').then((m) => ({ default: m.Analytics })),
 )
+export const SuperAdminGoogleAnalytics = lazy(() =>
+  import(/* webpackChunkName: "blog-admin-super-admin-ga" */ './pages/SuperAdminGoogleAnalytics').then((m) => ({
+    default: m.SuperAdminGoogleAnalytics,
+  })),
+)
 export const CookiesReport = lazy(() =>
   import(/* webpackChunkName: "blog-admin-cookies" */ './pages/CookiesReport').then((m) => ({ default: m.CookiesReport })),
 )

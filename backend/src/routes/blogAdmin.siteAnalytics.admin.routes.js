@@ -1,6 +1,11 @@
 const express = require("express");
-const { protect } = require("../middlewares/blogAdminAuth.middleware");
+const { protect, authorize } = require("../middlewares/blogAdminAuth.middleware");
 const SiteAnalyticsEvent = require("../models/siteAnalyticsEvent.model");
+const {
+  fetchGoogleAnalyticsReport,
+  getGoogleAnalyticsSetupStatus,
+  isGoogleAnalyticsConfigured,
+} = require("../services/googleAnalytics.service");
 
 const router = express.Router();
 
@@ -118,6 +123,32 @@ async function customEventSummary(fromDate) {
     },
   };
 }
+
+router.get("/site-analytics/google-analytics/status", protect, authorize("super_admin"), (_req, res) => {
+  res.json({ success: true, data: getGoogleAnalyticsSetupStatus() });
+});
+
+router.get("/site-analytics/google-analytics/report", protect, authorize("super_admin"), async (req, res) => {
+  try {
+    if (!isGoogleAnalyticsConfigured()) {
+      return res.status(503).json({
+        success: false,
+        message: "Google Analytics API is not configured on the server",
+        data: getGoogleAnalyticsSetupStatus(),
+      });
+    }
+
+    const data = await fetchGoogleAnalyticsReport(req.query.range);
+    res.json({ success: true, data });
+  } catch (error) {
+    console.error("google-analytics report:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message || "Failed to sync Google Analytics data",
+      data: getGoogleAnalyticsSetupStatus(),
+    });
+  }
+});
 
 router.get("/site-analytics/report", protect, async (_req, res) => {
   try {
