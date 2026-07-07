@@ -18,6 +18,7 @@ import { ReviewInsideExplorer } from '@/components/reviews/ReviewInsideExplorer'
 import { ReviewQuotePopup } from '@/components/reviews/ReviewQuotePopup'
 import { ReviewHeroBanner } from '@/components/reviews/ReviewHeroBanner'
 import { ReviewVendorVisitButton } from '@/components/reviews/ReviewVendorVisitButton'
+import { REMOTE_VENDOR_OUTBOUND_URL } from '@/lib/vendorOutboundUrls'
 import {
   ReviewContentStack,
   ReviewFactGrid,
@@ -902,6 +903,30 @@ const PAYROLL_REVIEW_DETAILS: Record<string, CrmDetail> = {
     faqs: [
       { q: 'Is ADP good for small businesses?', a: 'Yes, especially when compliance confidence and payroll reliability are top priorities.' },
       { q: 'What is ADP main drawback?', a: 'Quote-based pricing and module expansion can increase total cost over time.' },
+    ],
+  },
+  'remote-payroll-review': {
+    summary: 'Remote is the strongest choice on our payroll list for companies paying people in more than one country, with 100% owned entities in 90+ countries, published pricing, and no upfront EOR deposits.',
+    onboarding: 'EOR onboarding typically takes 3–5 business days. Global Payroll setup includes a quote-based implementation fee to configure your entities before recurring payroll delivery.',
+    automation: 'Remote automates global payroll, local tax withholding, statutory filings, EOR compliance, contractor payments, and equity administration from one platform built on wholly owned legal infrastructure.',
+    pricingReality: 'Global Payroll lists at $29 per employee per month plus quote-based implementation and delivery fees. EOR is $599 per employee per month on annual billing ($699 monthly). Contractor management starts at $29 per contractor per month.',
+    reviewer: 'Marcus Williams',
+    reviewerRole: 'Payroll & HR Software Analyst',
+    updatedOn: 'July 2026',
+    publishedOn: 'July 2026',
+    bestFor: ['Companies hiring full-time employees in countries without a local entity', 'Teams of 10–100 people across multiple jurisdictions', 'Startups granting equity to international hires', 'Finance teams wanting deposit-free EOR'],
+    notIdealFor: ['US-only businesses where OnPay or Gusto deliver more value', 'Companies hiring outside Remote\'s 90+ EOR countries', 'Teams scaling past 100 employees needing enterprise payroll consolidation'],
+    scorecard: [
+      { metric: 'Global coverage', score: '9.0/10' },
+      { metric: 'Pricing transparency', score: '9.2/10' },
+      { metric: 'Compliance depth', score: '9.4/10' },
+      { metric: 'Owned-entity model', score: '9.6/10' },
+      { metric: 'Value for money', score: '8.8/10' },
+    ],
+    faqs: [
+      { q: 'How much does Remote payroll cost in 2026?', a: 'Global Payroll is $29 per employee per month plus quote-based implementation and delivery fees. EOR is $599 per employee per month on annual billing or $699 monthly. Contractor management is $29 per contractor per month, and the HR platform is free for up to 12 direct employees.' },
+      { q: 'Does Remote require a deposit?', a: 'No upfront deposits are required for EOR hires. Remote collects reserve payments only in rare, high-risk circumstances, while competitors like Deel quote security deposits by country.' },
+      { q: 'Is Remote cheaper than Deel?', a: 'On EOR the list prices match at $599. Remote is cheaper on contractors at $29 versus $49 and requires no deposits, while Deel offers broader country coverage.' },
     ],
   },
   'zoho-payroll-review': {
@@ -2203,6 +2228,7 @@ function resolveReviewDetail(review: ReviewEntry): CrmDetail | undefined {
 const REVIEW_VENDOR_URL_OVERRIDES: Record<string, string> = {
   'nextiva-review': 'https://trial.nextiva.com/compare-bazaar-free-quotes',
   'buddy-punch-review': 'https://buddypunch.com/?utm_medium=referral&utm_source=growsumo&utm_content=5c38dddbf7fc&utm_campaign=affiliate&pscd=try.buddypunch.com&ps_partner_key=NWMzOGRkZGJmN2Zj&ps_xid=tpuDCq8PiZfjny&gsxid=tpuDCq8PiZfjny&gspk=NWMzOGRkZGJmN2Zj',
+  'remote-payroll-review': REMOTE_VENDOR_OUTBOUND_URL,
 }
 
 const reviewEntries: ReviewEntry[] = comparisonPages.flatMap((page) =>
@@ -2769,6 +2795,8 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
         return { from: '#065F46', to: '#16A34A' }
       case 'adp-review':
         return { from: '#0B2A6F', to: '#1E40AF' }
+      case 'remote-payroll-review':
+        return { from: '#0B2A6F', to: '#7C3AED' }
       case 'zoho-payroll-review':
         return { from: '#0B2A6F', to: '#0284C7' }
       case 'bamboohr-review':

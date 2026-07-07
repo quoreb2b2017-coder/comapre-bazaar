@@ -13,6 +13,7 @@ const WHITELISTED_REVIEW_SLUGS = new Set([
   'papaya-eor-review',
   'papaya-contractor-review',
   'papaya-workforce-review',
+  'remote-payroll-review',
   'software-advice-review',
 ])
 
@@ -23,6 +24,7 @@ const WHITELISTED_NAME_PREFIXES = [
   'gusto',
   'nextiva',
   'papaya',
+  'remote',
   'software advice',
 ]
 
@@ -36,6 +38,10 @@ export function isWhitelistedVendor(reviewSlug: string, productName?: string): b
 /** @deprecated use isWhitelistedVendor */
 export const isActiveFullReview = isWhitelistedVendor
 
+const CUSTOM_REVIEW_PATHS: Record<string, string> = {
+  'remote-payroll-review': '/human-resources/remote-payroll',
+}
+
 export function fullReviewHref(reviewSlug: string): string {
-  return `/reviews/${reviewSlug}`
+  return CUSTOM_REVIEW_PATHS[reviewSlug] ?? `/reviews/${reviewSlug}`
 }

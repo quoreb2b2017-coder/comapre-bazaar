@@ -18,6 +18,8 @@ export const LEGACY_REDIRECTS = [
   { source: '/Human-Resources/best-employee-management-software', destination: '/human-resources/best-employee-management-software' },
   { source: '/Human-Resources/deel-hr-payroll', destination: '/human-resources/deel-hr-payroll' },
   { source: '/Human-Resources/papaya-global-payroll', destination: '/human-resources/papaya-global-payroll' },
+  { source: '/Human-Resources/remote-payroll', destination: '/human-resources/remote-payroll' },
+  { source: '/reviews/remote-payroll-review', destination: '/human-resources/remote-payroll' },
 
   // ── Legacy slug-style URLs ─────────────────────────────────────────────────
   { source: '/BestCRMSoftware', destination: '/marketing/best-crm-software' },
