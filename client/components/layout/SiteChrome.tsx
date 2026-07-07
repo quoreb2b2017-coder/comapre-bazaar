@@ -7,6 +7,7 @@ import { SiteNav } from '@/components/layout/SiteNav'
 import { SiteFooter } from '@/components/layout/SiteFooter'
 import { RouteLoadingIndicator } from '@/components/layout/RouteLoadingIndicator'
 import ArrowNavigation from '@/components/ArrowNavigation'
+import { GoogleAnalyticsConsent } from '@/components/analytics/GoogleAnalyticsConsent'
 import { SiteAnalyticsBeacon } from '@/components/consent/SiteAnalyticsBeacon'
 import { CookieConsentBanner } from '@/components/consent/CookieConsentBanner'
 
@@ -35,6 +36,7 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
       <ArrowNavigation />
       <CompareBazaarChat />
       <Suspense fallback={null}>
+        <GoogleAnalyticsConsent />
         <SiteAnalyticsBeacon />
       </Suspense>
       <CookieConsentBanner />

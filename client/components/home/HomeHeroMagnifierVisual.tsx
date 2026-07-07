@@ -73,9 +73,7 @@ export function HomeHeroMagnifierVisual({ categories }: { categories: HomeCatego
     [categories]
   )
 
-  const [activeIndex, setActiveIndex] = useState(() =>
-    searchCategories.length > 1 ? Math.floor(Math.random() * searchCategories.length) : 0
-  )
+  const [activeIndex, setActiveIndex] = useState(0)
   const [lensPoint, setLensPoint] = useState({ x: 0, y: 0 })
   const [ready, setReady] = useState(false)
 
@@ -133,6 +131,12 @@ export function HomeHeroMagnifierVisual({ categories }: { categories: HomeCatego
       setActiveIndex(0)
     }
   }, [activeIndex, count])
+
+  useEffect(() => {
+    if (count > 1) {
+      setActiveIndex(Math.floor(Math.random() * count))
+    }
+  }, [count])
 
   useEffect(() => {
     if (reduceMotion || count < 2) return
