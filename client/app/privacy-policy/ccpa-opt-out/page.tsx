@@ -45,7 +45,15 @@ const RIGHTS = [
   { title: 'Right to non-discrimination', body: 'We will not discriminate against you for exercising any of your privacy rights. You will not receive a different level of service or different prices as a result of submitting a privacy request.' },
 ]
 
-const OPT_OUT_METHODS = [
+type OptOutMethod = {
+  title: string
+  body: string
+  href?: string
+  highlight?: boolean
+  external?: boolean
+}
+
+const OPT_OUT_METHODS: OptOutMethod[] = [
   {
     title: 'Submit the form',
     body: 'Complete the request form on this page with your contact details.',
