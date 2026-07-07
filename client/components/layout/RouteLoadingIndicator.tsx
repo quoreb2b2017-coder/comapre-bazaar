@@ -21,9 +21,9 @@ function isBlogIndexSoftNav(nextUrl: URL, currentUrl: URL) {
 export function RouteLoadingIndicator() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const search = searchParams.toString()
+  const search = searchParams?.toString() ?? ''
   const routeSignature = useMemo(
-    () => buildRouteSignature(pathname, search),
+    () => buildRouteSignature(pathname ?? '/', search),
     [pathname, search]
   )
 
