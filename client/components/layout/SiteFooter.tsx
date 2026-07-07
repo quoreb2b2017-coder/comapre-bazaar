@@ -36,7 +36,7 @@ const LEGAL = [
   { label: 'Privacy Policy', href: '/privacy-policy' },
   { label: 'Terms of Use', href: '/terms-of-use' },
   { label: 'Accessibility', href: '/accessibility' },
-  { label: 'Do Not Sell My Info', href: '/do-not-sell' },
+  { label: 'California – Do Not Sell My Info', href: '/privacy-policy/ccpa-opt-out' },
   { label: 'Limit the Use', href: '/limit-the-use' },
   { label: 'Copyright Policy', href: '/copyright-policy' },
 ]

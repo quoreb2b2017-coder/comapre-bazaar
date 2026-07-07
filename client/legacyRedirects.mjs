@@ -52,7 +52,8 @@ export const LEGACY_REDIRECTS = [
   { source: '/Resources/link-building-playbook', destination: '/resources/whitepaper' },
 
   // ── Misc legacy paths ──────────────────────────────────────────────────────
-  { source: '/do-not-sell-my-info', destination: '/do-not-sell' },
+  { source: '/do-not-sell', destination: '/privacy-policy/ccpa-opt-out' },
+  { source: '/do-not-sell-my-info', destination: '/privacy-policy/ccpa-opt-out' },
   { source: '/accessibility-statement', destination: '/accessibility' },
   { source: '/marketing-solutions', destination: '/marketing' },
 ]

@@ -2,6 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
+import { QuoteBreadcrumb } from "@/components/quotes/QuoteBreadcrumb";
+import {
+  QuoteBottomCta,
+  QuoteHowItWorksSection,
+  QuoteTestimonialsSection,
+  QuoteWhyCompareSection,
+} from "@/components/quotes/QuoteLandingSections";
 import {
   BarChart3,
   CheckCircle2,
@@ -12,7 +19,6 @@ import {
   Shield,
   ShieldCheck,
   Sparkles,
-  Star,
   Target,
   Users,
   Zap,
@@ -20,6 +26,12 @@ import {
 } from "lucide-react";
 import { QuoteFormScrollBody } from "@/components/quotes/QuoteFormScrollBody";
 import { quoteLandingPageCss } from "@/lib/quoteLandingPageCss";
+
+const HOW_STEPS = [
+  { tag: "2 min", num: "01", title: "Capture team + stack", body: "Headcount, CRM posture, and industry anchor fit-based routing." },
+  { tag: "24h", num: "02", title: "Align vendors", body: "Responses reference tools from our comparison, Pipedrive, HubSpot, Zoho, Salesforce, etc." },
+  { tag: "You choose", num: "03", title: "Compare & pilot", body: "Review proposals in parallel; engage only winners you shortlist." },
+];
 
 const VENDORS = [
   { name: "Zoho CRM", dot: "#E62129" },
@@ -277,19 +289,14 @@ export default function SalesCRMGetQuotesPage({ heading }: QuoteFormClientProps)
 
       <style suppressHydrationWarning dangerouslySetInnerHTML={{ __html: quoteLandingPageCss }} />
 
-      <div className="bc">
-        <div className="ct">
-          <div className="bc-row">
-            <a href="https://www.compare-bazaar.com">Home</a>
-            <span className="bc-sep">›</span>
-            <a href="https://www.compare-bazaar.com/sales">Sales</a>
-            <span className="bc-sep">›</span>
-            <a href="https://www.compare-bazaar.com/sales/best-crm-software">Best CRM Software</a>
-            <span className="bc-sep">›</span>
-            <span className="bc-cur">Get Free Quotes</span>
-          </div>
-        </div>
-      </div>
+      <QuoteBreadcrumb
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Sales", href: "/sales" },
+          { label: "Best CRM Software", href: "/sales/best-crm-software" },
+          { label: "Get Free Quotes" },
+        ]}
+      />
 
       <div className="hero-shell">
         <div className="hero">
@@ -673,106 +680,31 @@ export default function SalesCRMGetQuotesPage({ heading }: QuoteFormClientProps)
         </div>
       </div>
 
-      <div className="sec-alt">
-        <section className="sec" style={{ paddingTop: 48, paddingBottom: 56 }}>
-          <div className="ct">
-            <div className="stag">How It Works</div>
-            <h2 className="sh">Sales CRM shortlist in three steps</h2>
-            <p className={"s" + "sub"}>Context → matched vendors → compare quotes without endless discovery calls.</p>
-            <div className="howg">
-              {[
-                { tag: "2 min", num: "01", title: "Capture team + stack", body: "Headcount, CRM posture, and industry anchor fit-based routing." },
-                { tag: "24h", num: "02", title: "Align vendors", body: "Responses reference tools from our comparison, Pipedrive, HubSpot, Zoho, Salesforce, etc." },
-                { tag: "You choose", num: "03", title: "Compare & pilot", body: "Review proposals in parallel; engage only winners you shortlist." },
-              ].map((c) => (
-                <div key={c.num} className="hc">
-                  <span className="howt">{c.tag}</span>
-                  <div className="hwn">{c.num}</div>
-                  <h3>{c.title}</h3>
-                  <p>{c.body}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      </div>
+      <QuoteHowItWorksSection
+        tag="How It Works"
+        title="Sales CRM shortlist in three steps"
+        subtitle="Context → matched vendors → compare quotes without endless discovery calls."
+        steps={HOW_STEPS}
+      />
 
-      <section className="sec">
-        <div className="ct">
-          <div className="stag">Buyer Stories</div>
-          <h2 className="sh">Rev teams that moved faster</h2>
-          <p className={"s" + "sub"}>Pipeline-led orgs comparing forecasting depth vs speed-to-value CRMs.</p>
-          <div className="tg">
-            {TESTIMONIALS.map((t) => (
-              <div key={t.name} className="tc">
-                <span className="rtag">✓ {t.result}</span>
-                <div className="tstars" aria-label="5 out of 5 stars">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} size={15} fill="#FBBF24" color="#FBBF24" strokeWidth={0} aria-hidden />
-                  ))}
-                </div>
-                <p className="tbody">&ldquo;{t.body}&rdquo;</p>
-                <div className="ta">
-                  <div className="av" style={{ background: t.avatarBg, color: t.avatarText }}>
-                    {t.initials}
-                  </div>
-                  <div>
-                    <div className="an">{t.name}</div>
-                    <div className="ar">
-                      {t.role}, {t.company}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <QuoteTestimonialsSection
+        tag="Buyer Stories"
+        title="Rev teams that moved faster"
+        subtitle="Pipeline-led orgs comparing forecasting depth vs speed-to-value CRMs."
+        testimonials={TESTIMONIALS}
+      />
 
-      <div className="sec-alt">
-        <section className="sec" style={{ paddingTop: 48, paddingBottom: 56 }}>
-          <div className="ct">
-            <div className="stag">Why Compare Bazaar</div>
-            <h2 className="sh">Buyer-first sales tech</h2>
-            <p className={"s" + "sub"}>Editorial testing, not pay-to-rank vendor blasts.</p>
-            <div className="whyg">
-              {WHY_ITEMS.map((w) => {
-                const Icon = w.icon;
-                return (
-                  <div key={w.title} className="wc">
-                    <div className="wi">
-                      <Icon aria-hidden />
-                    </div>
-                    <div>
-                      <h4>{w.title}</h4>
-                      <p>{w.body}</p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-      </div>
+      <QuoteWhyCompareSection
+        tag="Why Compare Bazaar"
+        title="Buyer-first sales tech"
+        subtitle="Editorial testing, not pay-to-rank vendor blasts."
+        items={WHY_ITEMS}
+      />
 
-      <div className="ct">
-        <div className="cta-band">
-          <div style={{ position: "relative", zIndex: 1 }}>
-            <h2>Ready to compare sales CRMs?</h2>
-            <p>Jump to the form, three steps to aligned vendor quotes.</p>
-          </div>
-          <a
-            href="#"
-            className="btn-wh"
-            onClick={(e) => {
-              e.preventDefault();
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }}
-          >
-            Get Free Quotes →
-          </a>
-        </div>
-      </div>
+      <QuoteBottomCta
+        title="Ready to compare sales CRMs?"
+        subtitle="Jump to the form, three steps to aligned vendor quotes."
+      />
     </>
   );
 }

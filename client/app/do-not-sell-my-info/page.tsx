@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
 
 export default function DoNotSellMyInfoRedirectPage() {
-  redirect('/do-not-sell')
+  redirect('/privacy-policy/ccpa-opt-out')
 }

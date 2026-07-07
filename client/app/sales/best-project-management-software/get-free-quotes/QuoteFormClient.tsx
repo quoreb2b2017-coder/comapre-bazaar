@@ -2,6 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
+import { QuoteBreadcrumb } from "@/components/quotes/QuoteBreadcrumb";
+import {
+  QuoteBottomCta,
+  QuoteHowItWorksSection,
+  QuoteTestimonialsSection,
+  QuoteWhyCompareSection,
+} from "@/components/quotes/QuoteLandingSections";
 import {
   CheckCircle2,
   KanbanSquare,
@@ -10,12 +17,17 @@ import {
   Shield,
   ShieldCheck,
   Sparkles,
-  Star,
   Zap,
   type LucideIcon,
 } from "lucide-react";
 import { QuoteFormScrollBody } from "@/components/quotes/QuoteFormScrollBody";
 import { quoteLandingPageCss } from "@/lib/quoteLandingPageCss";
+
+const HOW_STEPS = [
+  { tag: "Fast", num: "01", title: "Quantify teamwork", body: "Sizing, workflows, timelines, budgets, distilled once for vendor alignment." },
+  { tag: "Matched", num: "02", title: "PM vendors respond", body: "Proposals cite stacks from Compare Bazaar testing, Monday, ClickUp, Asana, Jira, etc." },
+  { tag: "Decide", num: "03", title: "Pilot with confidence", body: "Skip shelfware demos; negotiate with finalists that fit automation + visibility needs." },
+];
 
 const VENDORS = [
   { name: "Monday.com", dot: "#FF3D57" },
@@ -53,6 +65,7 @@ interface FormData {
   currentTool: string;
   features: string[];
   notes: string;
+  emailUpdates: boolean;
 }
 
 const TESTIMONIALS = [
@@ -124,6 +137,7 @@ const emptyForm = (): FormData => ({
   currentTool: "",
   features: [],
   notes: "",
+  emailUpdates: false,
 });
 
 type QuoteFormClientProps = { heading: string }
@@ -143,7 +157,7 @@ export default function ProjectManagementGetQuotesPage({ heading }: QuoteFormCli
   const web3formsAccessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY || "";
   const canSubmitWithConfig = Boolean(recaptchaSiteKey && web3formsAccessKey);
 
-  const setField = (k: keyof FormData, v: string | string[]) =>
+  const setField = (k: keyof FormData, v: string | string[] | boolean) =>
     setForm((f) => ({ ...f, [k]: v as never }));
 
   const toggleFeature = (f: string) =>
@@ -223,6 +237,7 @@ export default function ProjectManagementGetQuotesPage({ heading }: QuoteFormCli
         current_tool: form.currentTool,
         must_have_features: form.features.join(", "),
         notes: form.notes,
+        email_updates: form.emailUpdates ? "Yes" : "No",
         form_source: "Sales > Best Project Management Software > Get Free Quotes",
         captcha_token: captchaToken,
       };
@@ -259,21 +274,14 @@ export default function ProjectManagementGetQuotesPage({ heading }: QuoteFormCli
     <>
       <style suppressHydrationWarning dangerouslySetInnerHTML={{ __html: quoteLandingPageCss }} />
 
-      <div className="bc">
-        <div className="ct">
-          <div className="bc-row">
-            <a href="https://www.compare-bazaar.com">Home</a>
-            <span className="bc-sep">›</span>
-            <a href="https://www.compare-bazaar.com/sales">Sales</a>
-            <span className="bc-sep">›</span>
-            <a href="https://www.compare-bazaar.com/sales/best-project-management-software">
-              Best Project Management Software
-            </a>
-            <span className="bc-sep">›</span>
-            <span className="bc-cur">Get Free Quotes</span>
-          </div>
-        </div>
-      </div>
+      <QuoteBreadcrumb
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Sales", href: "/sales" },
+          { label: "Best Project Management Software", href: "/sales/best-project-management-software" },
+          { label: "Get Free Quotes" },
+        ]}
+      />
 
       <div className="hero-shell">
         <div className="hero">
@@ -616,6 +624,14 @@ export default function ProjectManagementGetQuotesPage({ heading }: QuoteFormCli
                                 placeholder="Anything specific to approvals, tooling, integrations…"
                               />
                             </div>
+                            <label className="chk-row">
+                              <input
+                                type="checkbox"
+                                checked={form.emailUpdates}
+                                onChange={(e) => setField("emailUpdates", e.target.checked)}
+                              />
+                              <span>Send me PM tips and Compare Bazaar updates (optional).</span>
+                            </label>
                             <div className="cap-wrap">
                               {mounted && <ReCAPTCHA
                                 ref={captchaRef}
@@ -662,121 +678,31 @@ export default function ProjectManagementGetQuotesPage({ heading }: QuoteFormCli
         </div>
       </div>
 
-      <div className="sec-alt">
-        <section className="sec" style={{ paddingTop: 48, paddingBottom: 56 }}>
-          <div className="ct">
-            <div className="stag">How It Works</div>
-            <h2 className="sh">Project tooling without spreadsheet chaos</h2>
-            <p className={"s" + "sub"}>Facts → credible shortlists → trials with vendors that mirror your workloads.</p>
-            <div className="howg">
-              {[
-                {
-                  tag: "Fast",
-                  num: "01",
-                  title: "Quantify teamwork",
-                  body: "Sizing, workflows, timelines, budgets, distilled once for vendor alignment.",
-                },
-                {
-                  tag: "Matched",
-                  num: "02",
-                  title: "PM vendors respond",
-                  body: "Proposals cite stacks from Compare Bazaar testing, Monday, ClickUp, Asana, Jira, etc.",
-                },
-                {
-                  tag: "Decide",
-                  num: "03",
-                  title: "Pilot with confidence",
-                  body: "Skip shelfware demos; negotiate with finalists that fit automation + visibility needs.",
-                },
-              ].map((c) => (
-                <div key={c.num} className="hc">
-                  <span className="howt">{c.tag}</span>
-                  <div className="hwn">{c.num}</div>
-                  <h3>{c.title}</h3>
-                  <p>{c.body}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      </div>
+      <QuoteHowItWorksSection
+        tag="How It Works"
+        title="Project tooling without spreadsheet chaos"
+        subtitle="Facts → credible shortlists → trials with vendors that mirror your workloads."
+        steps={HOW_STEPS}
+      />
 
-      <section className="sec">
-        <div className="ct">
-          <div className="stag">Buyer Stories</div>
-          <h2 className="sh">Teams shipping PM decisions faster</h2>
-          <p className={"s" + "sub"}>Ops & eng leaders balancing Gantt fidelity with doc-light collaboration.</p>
-          <div className="tg">
-            {TESTIMONIALS.map((t) => (
-              <div key={t.name} className="tc">
-                <span className="rtag">✓ {t.result}</span>
-                <div className="tstars" aria-label="5 out of 5 stars">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} size={15} fill="#FBBF24" color="#FBBF24" strokeWidth={0} aria-hidden />
-                  ))}
-                </div>
-                <p className="tbody">&ldquo;{t.body}&rdquo;</p>
-                <div className="ta">
-                  <div className="av" style={{ background: t.avatarBg, color: t.avatarText }}>
-                    {t.initials}
-                  </div>
-                  <div>
-                    <div className="an">{t.name}</div>
-                    <div className="ar">
-                      {t.role}, {t.company}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <QuoteTestimonialsSection
+        tag="Buyer Stories"
+        title="Teams shipping PM decisions faster"
+        subtitle="Ops & eng leaders balancing Gantt fidelity with doc-light collaboration."
+        testimonials={TESTIMONIALS}
+      />
 
-      <div className="sec-alt">
-        <section className="sec" style={{ paddingTop: 48, paddingBottom: 56 }}>
-          <div className="ct">
-            <div className="stag">Why Compare Bazaar</div>
-            <h2 className="sh">Editorially grounded PM picks</h2>
-            <p className={"s" + "sub"}>Hands-on scoring keeps vendor routing honest.</p>
-            <div className="whyg">
-              {WHY_ITEMS.map((w) => {
-                const Icon = w.icon;
-                return (
-                  <div key={w.title} className="wc">
-                    <div className="wi">
-                      <Icon aria-hidden />
-                    </div>
-                    <div>
-                      <h4>{w.title}</h4>
-                      <p>{w.body}</p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-      </div>
+      <QuoteWhyCompareSection
+        tag="Why Compare Bazaar"
+        title="Editorially grounded PM picks"
+        subtitle="Hands-on scoring keeps vendor routing honest."
+        items={WHY_ITEMS}
+      />
 
-      <div className="ct">
-        <div className="cta-band">
-          <div style={{ position: "relative", zIndex: 1 }}>
-            <h2>Need PM vendor quotes?</h2>
-            <p>Jump up and finish three quick steps, we mirror the stacks we benchmark.</p>
-          </div>
-          <a
-            href="#"
-            className="btn-wh"
-            onClick={(e) => {
-              e.preventDefault();
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }}
-          >
-            Get Free Quotes →
-          </a>
-        </div>
-      </div>
+      <QuoteBottomCta
+        title="Need PM vendor quotes?"
+        subtitle="Jump up and finish three quick steps, we mirror the stacks we benchmark."
+      />
     </>
   );
 }

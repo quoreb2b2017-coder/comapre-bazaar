@@ -2,6 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
+import { QuoteBreadcrumb } from "@/components/quotes/QuoteBreadcrumb";
+import {
+  QuoteBottomCta,
+  QuoteHowItWorksSection,
+  QuoteTestimonialsSection,
+  QuoteWhyCompareSection,
+} from "@/components/quotes/QuoteLandingSections";
 import {
   BarChart3,
   CheckCircle2,
@@ -14,13 +21,18 @@ import {
   ShoppingCart,
   Smartphone,
   Sparkles,
-  Star,
   Target,
   Zap,
   type LucideIcon,
 } from "lucide-react";
 import { QuoteFormScrollBody } from "@/components/quotes/QuoteFormScrollBody";
 import { quoteLandingPageCss } from "@/lib/quoteLandingPageCss";
+
+const HOW_STEPS = [
+  { tag: "2 minutes", num: "01", title: "Outline your build", body: "Tell us about pages, storefront needs, and team size so proposals reflect real workload." },
+  { tag: "Within 24 hours", num: "02", title: "Receive tailored quotes", body: "Matched vendors respond with pricing ranges, onboarding timelines, and feature highlights." },
+  { tag: "You decide", num: "03", title: "Pick your builder", body: "Compare side-by-side. Proceed only with platforms that meet design and growth goals." },
+];
 
 interface FormData {
   firstName: string;
@@ -305,21 +317,14 @@ export default function WebsiteBuildingQuotePage({ heading }: QuoteFormClientPro
 
       <style suppressHydrationWarning dangerouslySetInnerHTML={{ __html: quoteLandingPageCss }} />
 
-      <div className="bc">
-        <div className="ct">
-          <div className="bc-row">
-            <a href="https://www.compare-bazaar.com">Home</a>
-            <span className="bc-sep">›</span>
-            <a href="https://www.compare-bazaar.com/marketing">Marketing</a>
-            <span className="bc-sep">›</span>
-            <a href="https://www.compare-bazaar.com/marketing/best-website-building-platform">
-              Best Website Building Platform
-            </a>
-            <span className="bc-sep">›</span>
-            <span className="bc-cur">Get Free Quotes</span>
-          </div>
-        </div>
-      </div>
+      <QuoteBreadcrumb
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Marketing", href: "/marketing" },
+          { label: "Best Website Building Platform", href: "/marketing/best-website-building-platform" },
+          { label: "Get Free Quotes" },
+        ]}
+      />
 
       <div className="hero-shell">
         <div className="hero">
@@ -771,127 +776,31 @@ export default function WebsiteBuildingQuotePage({ heading }: QuoteFormClientPro
         </div>
       </div>
 
-      <div className="sec-alt">
-        <section className="sec" style={{ paddingTop: 48, paddingBottom: 56 }}>
-          <div className="ct">
-            <div className="stag">How It Works</div>
-            <h2 className="sh">Launch-ready comparisons without agency overhead</h2>
-            <p className="ssub">
-              Capture scope once. We route builders that align with templates, commerce, and SEO expectations.
-            </p>
-            <div className="howg">
-              {[
-                {
-                  tag: "2 minutes",
-                  num: "01",
-                  title: "Outline your build",
-                  body: "Tell us about pages, storefront needs, and team size so proposals reflect real workload.",
-                },
-                {
-                  tag: "Within 24 hours",
-                  num: "02",
-                  title: "Receive tailored quotes",
-                  body: "Matched vendors respond with pricing ranges, onboarding timelines, and feature highlights.",
-                },
-                {
-                  tag: "You decide",
-                  num: "03",
-                  title: "Pick your builder",
-                  body: "Compare side-by-side. Proceed only with platforms that meet design and growth goals.",
-                },
-              ].map((c) => (
-                <div key={c.num} className="hc">
-                  <span className="howt">{c.tag}</span>
-                  <div className="hwn">{c.num}</div>
-                  <h3>{c.title}</h3>
-                  <p>{c.body}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      </div>
+      <QuoteHowItWorksSection
+        tag="How It Works"
+        title="Launch-ready comparisons without agency overhead"
+        subtitle="Capture scope once. We route builders that align with templates, commerce, and SEO expectations."
+        steps={HOW_STEPS}
+      />
 
-      <section className="sec">
-        <div className="ct">
-          <div className="stag">Buyer Stories</div>
-          <h2 className="sh">Teams that shipped faster with clearer builder quotes</h2>
-          <p className="ssub">
-            Owners and marketers who wanted credible comparisons, not endless cold outreach.
-          </p>
-          <div className="tg">
-            {TESTIMONIALS.map((t) => (
-              <div key={t.name} className="tc">
-                <span className="rtag">✓ {t.result}</span>
-                <div className="tstars" aria-label="5 out of 5 stars">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} size={15} fill="#FBBF24" color="#FBBF24" strokeWidth={0} aria-hidden />
-                  ))}
-                </div>
-                <p className="tbody">&ldquo;{t.body}&rdquo;</p>
-                <div className="ta">
-                  <div className="av" style={{ background: t.avatarBg, color: t.avatarText }}>
-                    {t.initials}
-                  </div>
-                  <div>
-                    <div className="an">{t.name}</div>
-                    <div className="ar">
-                      {t.role}, {t.company}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <QuoteTestimonialsSection
+        tag="Buyer Stories"
+        title="Teams that shipped faster with clearer builder quotes"
+        subtitle="Owners and marketers who wanted credible comparisons, not endless cold outreach."
+        testimonials={TESTIMONIALS}
+      />
 
-      <div className="sec-alt">
-        <section className="sec" style={{ paddingTop: 48, paddingBottom: 56 }}>
-          <div className="ct">
-            <div className="stag">Why Compare Bazaar</div>
-            <h2 className="sh">Guidance for teams picking a website platform</h2>
-            <p className="ssub">
-              Independent reviews, structured matching, and transparent next steps, built for operators and creatives alike.
-            </p>
-            <div className="whyg">
-              {WHY_ITEMS.map((w) => {
-                const Icon = w.icon;
-                return (
-                  <div key={w.title} className="wc">
-                    <div className="wi">
-                      <Icon aria-hidden />
-                    </div>
-                    <div>
-                      <h4>{w.title}</h4>
-                      <p>{w.body}</p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-      </div>
+      <QuoteWhyCompareSection
+        tag="Why Compare Bazaar"
+        title="Guidance for teams picking a website platform"
+        subtitle="Independent reviews, structured matching, and transparent next steps, built for operators and creatives alike."
+        items={WHY_ITEMS}
+      />
 
-      <div className="ct">
-        <div className="cta-band">
-          <div style={{ position: "relative", zIndex: 1 }}>
-            <h2>Ready to pick your website builder?</h2>
-            <p>Share scope once, receive comparable quotes within a day.</p>
-          </div>
-          <a
-            href="#"
-            className="btn-wh"
-            onClick={(e) => {
-              e.preventDefault();
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }}
-          >
-            Get Free Quotes →
-          </a>
-        </div>
-      </div>
+      <QuoteBottomCta
+        title="Ready to pick your website builder?"
+        subtitle="Share scope once, receive comparable quotes within a day."
+      />
     </>
   );
 }

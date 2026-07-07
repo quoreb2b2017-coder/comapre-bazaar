@@ -2,19 +2,31 @@
 
 import { useEffect, useRef, useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
+import { QuoteBreadcrumb } from "@/components/quotes/QuoteBreadcrumb";
+import {
+  QuoteBottomCta,
+  QuoteHowItWorksSection,
+  QuoteTestimonialsSection,
+  QuoteWhyCompareSection,
+} from "@/components/quotes/QuoteLandingSections";
 import {
   CheckCircle2,
   MessageCircle,
   Shield,
   ShieldCheck,
   Sparkles,
-  Star,
   Target,
   Zap,
   type LucideIcon,
 } from "lucide-react";
 import { QuoteFormScrollBody } from "@/components/quotes/QuoteFormScrollBody";
 import { quoteLandingPageCss } from "@/lib/quoteLandingPageCss";
+
+const HOW_STEPS = [
+  { tag: "2 minutes", num: "01", title: "Describe payroll operations", body: "Headcount, frequency, incumbent tooling, and preferred vendors shape accurate proposals." },
+  { tag: "Within 24 hours", num: "02", title: "We align vendors", body: "Quotes emphasize compliance, contractor handling, and accounting integrations relevant to you." },
+  { tag: "Your pace", num: "03", title: "Choose or walk away", body: "Book demos only with payroll stacks that fit, no obligation." },
+];
 
 /** Vendor pills aligned with `payroll-software` comparison page picks */
 const VENDORS = [
@@ -264,19 +276,14 @@ export default function PayrollGetQuotesForm({ heading }: QuoteFormClientProps) 
 
       <style suppressHydrationWarning dangerouslySetInnerHTML={{ __html: quoteLandingPageCss }} />
 
-      <div className="bc">
-        <div className="ct">
-          <div className="bc-row">
-            <a href="https://www.compare-bazaar.com">Home</a>
-            <span className="bc-sep">›</span>
-            <a href="https://www.compare-bazaar.com/human-resources">Human Resources</a>
-            <span className="bc-sep">›</span>
-            <a href="https://www.compare-bazaar.com/human-resources/best-payroll-software">Best Payroll Software</a>
-            <span className="bc-sep">›</span>
-            <span className="bc-cur">Get Free Quotes</span>
-          </div>
-        </div>
-      </div>
+      <QuoteBreadcrumb
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Human Resources", href: "/human-resources" },
+          { label: "Best Payroll Software", href: "/human-resources/best-payroll-software" },
+          { label: "Get Free Quotes" },
+        ]}
+      />
 
       <div className="hero-shell">
         <div className="hero">
@@ -653,123 +660,31 @@ export default function PayrollGetQuotesForm({ heading }: QuoteFormClientProps) 
         </div>
       </div>
 
-      <div className="sec-alt">
-        <section className="sec" style={{ paddingTop: 48, paddingBottom: 56 }}>
-          <div className="ct">
-            <div className="stag">How It Works</div>
-            <h2 className="sh">Payroll shortlisting in three steps</h2>
-            <p className="ssub">
-              One intake → matched vendors → you compare filing depth and pricing on your timeline.
-            </p>
-            <div className="howg">
-              {[
-                {
-                  tag: "2 minutes",
-                  num: "01",
-                  title: "Describe payroll operations",
-                  body: "Headcount, frequency, incumbent tooling, and preferred vendors shape accurate proposals.",
-                },
-                {
-                  tag: "Within 24 hours",
-                  num: "02",
-                  title: "We align vendors",
-                  body: "Quotes emphasize compliance, contractor handling, and accounting integrations relevant to you.",
-                },
-                {
-                  tag: "Your pace",
-                  num: "03",
-                  title: "Choose or walk away",
-                  body: "Book demos only with payroll stacks that fit, no obligation.",
-                },
-              ].map((c) => (
-                <div key={c.num} className="hc">
-                  <span className="howt">{c.tag}</span>
-                  <div className="hwn">{c.num}</div>
-                  <h3>{c.title}</h3>
-                  <p>{c.body}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      </div>
+      <QuoteHowItWorksSection
+        tag="How It Works"
+        title="Payroll shortlisting in three steps"
+        subtitle="One intake → matched vendors → you compare filing depth and pricing on your timeline."
+        steps={HOW_STEPS}
+      />
 
-      <section className="sec">
-        <div className="ct">
-          <div className="stag">Buyer Stories</div>
-          <h2 className="sh">Teams that clarified payroll options faster</h2>
-          <p className="ssub">Finance and HR leads comparing SMB payroll vs enterprise filing paths.</p>
-          <div className="tg">
-            {TESTIMONIALS.map((t) => (
-              <div key={t.name} className="tc">
-                <span className="rtag">✓ {t.result}</span>
-                <div className="tstars" aria-label="5 out of 5 stars">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} size={15} fill="#FBBF24" color="#FBBF24" strokeWidth={0} aria-hidden />
-                  ))}
-                </div>
-                <p className="tbody">&ldquo;{t.body}&rdquo;</p>
-                <div className="ta">
-                  <div className="av" style={{ background: t.avatarBg, color: t.avatarText }}>
-                    {t.initials}
-                  </div>
-                  <div>
-                    <div className="an">{t.name}</div>
-                    <div className="ar">
-                      {t.role}, {t.company}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <QuoteTestimonialsSection
+        tag="Buyer Stories"
+        title="Teams that clarified payroll options faster"
+        subtitle="Finance and HR leads comparing SMB payroll vs enterprise filing paths."
+        testimonials={TESTIMONIALS}
+      />
 
-      <div className="sec-alt">
-        <section className="sec" style={{ paddingTop: 48, paddingBottom: 56 }}>
-          <div className="ct">
-            <div className="stag">Why Compare Bazaar</div>
-            <h2 className="sh">Buyer-first payroll matching</h2>
-            <p className="ssub">Independent rankings plus structured quote routing, not pay-to-rank placements.</p>
-            <div className="whyg">
-              {WHY_ITEMS.map((w) => {
-                const Icon = w.icon;
-                return (
-                  <div key={w.title} className="wc">
-                    <div className="wi">
-                      <Icon aria-hidden />
-                    </div>
-                    <div>
-                      <h4>{w.title}</h4>
-                      <p>{w.body}</p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-      </div>
+      <QuoteWhyCompareSection
+        tag="Why Compare Bazaar"
+        title="Buyer-first payroll matching"
+        subtitle="Independent rankings plus structured quote routing, not pay-to-rank placements."
+        items={WHY_ITEMS}
+      />
 
-      <div className="ct">
-        <div className="cta-band">
-          <div style={{ position: "relative", zIndex: 1 }}>
-            <h2>Ready to compare payroll platforms?</h2>
-            <p>Jump back to the form, quotes tailored to your headcount and pay cycle.</p>
-          </div>
-          <a
-            href="#"
-            className="btn-wh"
-            onClick={(e) => {
-              e.preventDefault();
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }}
-          >
-            Get Free Quotes →
-          </a>
-        </div>
-      </div>
+      <QuoteBottomCta
+        title="Ready to compare payroll platforms?"
+        subtitle="Jump back to the form, quotes tailored to your headcount and pay cycle."
+      />
     </>
   );
 }

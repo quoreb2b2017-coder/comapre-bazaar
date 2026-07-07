@@ -2,6 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
+import { QuoteBreadcrumb } from "@/components/quotes/QuoteBreadcrumb";
+import {
+  QuoteBottomCta,
+  QuoteHowItWorksSection,
+  QuoteTestimonialsSection,
+  QuoteWhyCompareSection,
+} from "@/components/quotes/QuoteLandingSections";
 import {
   Activity,
   BarChart3,
@@ -14,13 +21,18 @@ import {
   Shield,
   ShieldCheck,
   Sparkles,
-  Star,
   Users,
   Zap,
   type LucideIcon,
 } from "lucide-react";
 import { QuoteFormScrollBody } from "@/components/quotes/QuoteFormScrollBody";
 import { quoteLandingPageCss } from "@/lib/quoteLandingPageCss";
+
+const HOW_STEPS = [
+  { tag: "3 min", num: "01", title: "Quantify workloads", body: "Agents, incumbent telephony, and monthly volume anchors realistic seat + consumption pricing." },
+  { tag: "~24h", num: "02", title: "Matched vendors respond", body: "Proposals cite platforms from Compare Bazaar testing, SMB through AI-heavy enterprise suites." },
+  { tag: "Pilot", num: "03", title: "Compare & negotiate", body: "IVR depth, QA, integrations, omnichannel parity, weighed side-by-side." },
+];
 
 const VENDORS = [
   { name: "GoTo", dot: "#6D4AFF" },
@@ -299,21 +311,14 @@ export default function CallCenterGetQuotesPage({ heading }: QuoteFormClientProp
 
       <style suppressHydrationWarning dangerouslySetInnerHTML={{ __html: quoteLandingPageCss }} />
 
-      <div className="bc">
-        <div className="ct">
-          <div className="bc-row">
-            <a href="https://www.compare-bazaar.com">Home</a>
-            <span className="bc-sep">›</span>
-            <a href="https://www.compare-bazaar.com/sales">Sales</a>
-            <span className="bc-sep">›</span>
-            <a href="https://www.compare-bazaar.com/sales/best-call-center-management-software">
-              Best Call Center Software
-            </a>
-            <span className="bc-sep">›</span>
-            <span className="bc-cur">Get Free Quotes</span>
-          </div>
-        </div>
-      </div>
+      <QuoteBreadcrumb
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Sales", href: "/sales" },
+          { label: "Best Call Center Software", href: "/sales/best-call-center-management-software" },
+          { label: "Get Free Quotes" },
+        ]}
+      />
 
       <div className="hero-shell">
         <div className="hero">
@@ -740,121 +745,31 @@ export default function CallCenterGetQuotesPage({ heading }: QuoteFormClientProp
         </div>
       </div>
 
-      <div className="sec-alt">
-        <section className="sec" style={{ paddingTop: 48, paddingBottom: 56 }}>
-          <div className="ct">
-            <div className="stag">How It Works</div>
-            <h2 className="sh">Contact center sourcing in three steps</h2>
-            <p className={"s" + "sub"}>Operations truth → scoped vendors → demos with finalists only.</p>
-            <div className="howg">
-              {[
-                {
-                  tag: "3 min",
-                  num: "01",
-                  title: "Quantify workloads",
-                  body: "Agents, incumbent telephony, and monthly volume anchors realistic seat + consumption pricing.",
-                },
-                {
-                  tag: "~24h",
-                  num: "02",
-                  title: "Matched vendors respond",
-                  body: "Proposals cite platforms from Compare Bazaar testing, SMB through AI-heavy enterprise suites.",
-                },
-                {
-                  tag: "Pilot",
-                  num: "03",
-                  title: "Compare & negotiate",
-                  body: "IVR depth, QA, integrations, omnichannel parity, weighed side-by-side.",
-                },
-              ].map((c) => (
-                <div key={c.num} className="hc">
-                  <span className="howt">{c.tag}</span>
-                  <div className="hwn">{c.num}</div>
-                  <h3>{c.title}</h3>
-                  <p>{c.body}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      </div>
+      <QuoteHowItWorksSection
+        tag="How It Works"
+        title="Contact center sourcing in three steps"
+        subtitle="Operations truth → scoped vendors → demos with finalists only."
+        steps={HOW_STEPS}
+      />
 
-      <section className="sec">
-        <div className="ct">
-          <div className="stag">Buyer Stories</div>
-          <h2 className="sh">Teams that stabilized CX procurements</h2>
-          <p className={"s" + "sub"}>Support leaders comparing turnkey CCaaS versus programmable stacks.</p>
-          <div className="tg">
-            {TESTIMONIALS.map((t) => (
-              <div key={t.name} className="tc">
-                <span className="rtag">✓ {t.result}</span>
-                <div className="tstars" aria-label="5 out of 5 stars">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} size={15} fill="#FBBF24" color="#FBBF24" strokeWidth={0} aria-hidden />
-                  ))}
-                </div>
-                <p className="tbody">&ldquo;{t.body}&rdquo;</p>
-                <div className="ta">
-                  <div className="av" style={{ background: t.avatarBg, color: t.avatarText }}>
-                    {t.initials}
-                  </div>
-                  <div>
-                    <div className="an">{t.name}</div>
-                    <div className="ar">
-                      {t.role}, {t.company}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <QuoteTestimonialsSection
+        tag="Buyer Stories"
+        title="Teams that stabilized CX procurements"
+        subtitle="Support leaders comparing turnkey CCaaS versus programmable stacks."
+        testimonials={TESTIMONIALS}
+      />
 
-      <div className="sec-alt">
-        <section className="sec" style={{ paddingTop: 48, paddingBottom: 56 }}>
-          <div className="ct">
-            <div className="stag">Why Compare Bazaar</div>
-            <h2 className="sh">CX tech without vendor bingo</h2>
-            <p className={"s" + "sub"}>Editorially scored platforms, placements follow fit, not sponsorship.</p>
-            <div className="whyg">
-              {WHY_ITEMS.map((w) => {
-                const Icon = w.icon;
-                return (
-                  <div key={w.title} className="wc">
-                    <div className="wi">
-                      <Icon aria-hidden />
-                    </div>
-                    <div>
-                      <h4>{w.title}</h4>
-                      <p>{w.body}</p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-      </div>
+      <QuoteWhyCompareSection
+        tag="Why Compare Bazaar"
+        title="CX tech without vendor bingo"
+        subtitle="Editorially scored platforms, placements follow fit, not sponsorship."
+        items={WHY_ITEMS}
+      />
 
-      <div className="ct">
-        <div className="cta-band">
-          <div style={{ position: "relative", zIndex: 1 }}>
-            <h2>Need call center vendor quotes?</h2>
-            <p>Jump to the sticky form, we’ll mirror the stacks we already benchmarked.</p>
-          </div>
-          <a
-            href="#"
-            className="btn-wh"
-            onClick={(e) => {
-              e.preventDefault();
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }}
-          >
-            Get Free Quotes →
-          </a>
-        </div>
-      </div>
+      <QuoteBottomCta
+        title="Need call center vendor quotes?"
+        subtitle="Jump to the sticky form, we’ll mirror the stacks we already benchmarked."
+      />
     </>
   );
 }

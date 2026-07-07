@@ -12,7 +12,7 @@ import type { MetadataRoute } from 'next'
 //  ─────────────────────────────────────────────────────
 //  /*/get-free-quote(s)          | YES (0.3)   | Remove from disallow → allow crawl
 //  /advertise                    | YES (0.4)   | Remove from disallow → allow crawl
-//  /do-not-sell                  | YES (0.1)   | Remove from disallow → allow crawl
+//  /privacy-policy/ccpa-opt-out   | YES (0.1)   | Remove from disallow → allow crawl
 //  /limit-the-use                | YES (0.1)   | Remove from disallow → allow crawl
 //  /contact-us/careers           | NO          | Keep disallowed ✓
 //  /cookie-preferences           | NO          | Keep disallowed ✓

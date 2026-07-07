@@ -2,19 +2,31 @@
 
 import { useEffect, useRef, useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
+import { QuoteBreadcrumb } from "@/components/quotes/QuoteBreadcrumb";
+import {
+  QuoteBottomCta,
+  QuoteHowItWorksSection,
+  QuoteTestimonialsSection,
+  QuoteWhyCompareSection,
+} from "@/components/quotes/QuoteLandingSections";
 import {
   CheckCircle2,
   MessageCircle,
   Shield,
   ShieldCheck,
   Sparkles,
-  Star,
   Target,
   Zap,
   type LucideIcon,
 } from "lucide-react";
 import { QuoteFormScrollBody } from "@/components/quotes/QuoteFormScrollBody";
 import { quoteLandingPageCss } from "@/lib/quoteLandingPageCss";
+
+const HOW_STEPS = [
+  { tag: "2 minutes", num: "01", title: "Frame your rollout", body: "Install vs swap vs expansion sets vendor expectations for hardware leases and managed cutovers." },
+  { tag: "Within 24 hours", num: "02", title: "Tailored UC quotes", body: "Responses emphasize Compare Bazaar editorial picks, Ooma, Nextiva, Zoom Phone, Vonage, RingCentral." },
+  { tag: "Ops-led", num: "03", title: "Pick winners quickly", body: "Compare unlimited domestic tiers, fax survivability, and CRM integrations side-by-side." },
+];
 
 /** VoIP platforms from `business-phone-systems` comparison page */
 const VENDORS = [
@@ -244,19 +256,14 @@ export default function BusinessPhoneSystemGetQuotesForm({ heading }: QuoteFormC
 
       <style suppressHydrationWarning dangerouslySetInnerHTML={{ __html: quoteLandingPageCss }} />
 
-      <div className="bc">
-        <div className="ct">
-          <div className="bc-row">
-            <a href="https://www.compare-bazaar.com">Home</a>
-            <span className="bc-sep">›</span>
-            <a href="https://www.compare-bazaar.com/technology">Technology</a>
-            <span className="bc-sep">›</span>
-            <a href="https://www.compare-bazaar.com/technology/business-phone-systems">Business Phone Systems</a>
-            <span className="bc-sep">›</span>
-            <span className="bc-cur">Get Free Quotes</span>
-          </div>
-        </div>
-      </div>
+      <QuoteBreadcrumb
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Technology", href: "/technology" },
+          { label: "Business Phone Systems", href: "/technology/business-phone-systems" },
+          { label: "Get Free Quotes" },
+        ]}
+      />
 
       <div className="hero-shell">
         <div className="hero">
@@ -581,121 +588,31 @@ export default function BusinessPhoneSystemGetQuotesForm({ heading }: QuoteFormC
         </div>
       </div>
 
-      <div className="sec-alt">
-        <section className="sec" style={{ paddingTop: 48, paddingBottom: 56 }}>
-          <div className="ct">
-            <div className="stag">How It Works</div>
-            <h2 className="sh">Modern calling procurement in three beats</h2>
-            <p className={"s" + "sub"}>Scenario clarity → aligned UC bundles → pilots without redundant vendor theater.</p>
-            <div className="howg">
-              {[
-                {
-                  tag: "2 minutes",
-                  num: "01",
-                  title: "Frame your rollout",
-                  body: "Install vs swap vs expansion sets vendor expectations for hardware leases and managed cutovers.",
-                },
-                {
-                  tag: "Within 24 hours",
-                  num: "02",
-                  title: "Tailored UC quotes",
-                  body: "Responses emphasize Compare Bazaar editorial picks, Ooma, Nextiva, Zoom Phone, Vonage, RingCentral.",
-                },
-                {
-                  tag: "Ops-led",
-                  num: "03",
-                  title: "Pick winners quickly",
-                  body: "Compare unlimited domestic tiers, fax survivability, and CRM integrations side-by-side.",
-                },
-              ].map((c) => (
-                <div key={c.num} className="hc">
-                  <span className="howt">{c.tag}</span>
-                  <div className="hwn">{c.num}</div>
-                  <h3>{c.title}</h3>
-                  <p>{c.body}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      </div>
+      <QuoteHowItWorksSection
+        tag="How It Works"
+        title="Modern calling procurement in three beats"
+        subtitle="Scenario clarity → aligned UC bundles → pilots without redundant vendor theater."
+        steps={HOW_STEPS}
+      />
 
-      <section className="sec">
-        <div className="ct">
-          <div className="stag">Buyer Stories</div>
-          <h2 className="sh">Teams that accelerated VoIP decisions</h2>
-          <p className={"s" + "sub"}>Hybrid workforce operators pairing Zoom ecosystems with PSTN reliability.</p>
-          <div className="tg">
-            {TESTIMONIALS.map((t) => (
-              <div key={t.name} className="tc">
-                <span className="rtag">✓ {t.result}</span>
-                <div className="tstars" aria-label="5 out of 5 stars">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} size={15} fill="#FBBF24" color="#FBBF24" strokeWidth={0} aria-hidden />
-                  ))}
-                </div>
-                <p className="tbody">&ldquo;{t.body}&rdquo;</p>
-                <div className="ta">
-                  <div className="av" style={{ background: t.avatarBg, color: t.avatarText }}>
-                    {t.initials}
-                  </div>
-                  <div>
-                    <div className="an">{t.name}</div>
-                    <div className="ar">
-                      {t.role}, {t.company}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <QuoteTestimonialsSection
+        tag="Buyer Stories"
+        title="Teams that accelerated VoIP decisions"
+        subtitle="Hybrid workforce operators pairing Zoom ecosystems with PSTN reliability."
+        testimonials={TESTIMONIALS}
+      />
 
-      <div className="sec-alt">
-        <section className="sec" style={{ paddingTop: 48, paddingBottom: 56 }}>
-          <div className="ct">
-            <div className="stag">Why Compare Bazaar</div>
-            <h2 className="sh">Independent VoIP guidance</h2>
-            <p className={"s" + "sub"}>Hands-on testing drives shortlists, not vendor sponsorship lanes.</p>
-            <div className="whyg">
-              {WHY_ITEMS.map((w) => {
-                const Icon = w.icon;
-                return (
-                  <div key={w.title} className="wc">
-                    <div className="wi">
-                      <Icon aria-hidden />
-                    </div>
-                    <div>
-                      <h4>{w.title}</h4>
-                      <p>{w.body}</p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-      </div>
+      <QuoteWhyCompareSection
+        tag="Why Compare Bazaar"
+        title="Independent VoIP guidance"
+        subtitle="Hands-on testing drives shortlists, not vendor sponsorship lanes."
+        items={WHY_ITEMS}
+      />
 
-      <div className="ct">
-        <div className="cta-band">
-          <div style={{ position: "relative", zIndex: 1 }}>
-            <h2>Ready for VoIP quotes?</h2>
-            <p>Jump back up, three steps connect you with UC vendors matching our editorial roster.</p>
-          </div>
-          <a
-            href="#"
-            className="btn-wh"
-            onClick={(e) => {
-              e.preventDefault();
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }}
-          >
-            Get Free Quotes →
-          </a>
-        </div>
-      </div>
+      <QuoteBottomCta
+        title="Ready for VoIP quotes?"
+        subtitle="Jump back up, three steps connect you with UC vendors matching our editorial roster."
+      />
     </>
   );
 }

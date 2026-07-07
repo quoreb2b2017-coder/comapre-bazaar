@@ -15,6 +15,8 @@ const SITEMAP_REDIRECT_PATHS = new Set([
   '/sales/best-crm-software',
   '/sales/best-crm-software/get-free-quotes',
   '/marketing/best-crm-software/get-free-quote',
+  '/do-not-sell',
+  '/do-not-sell-my-info',
 ])
 
 function isSitemapPath(path: string): boolean {
@@ -71,7 +73,7 @@ export async function getSitemapEntries(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITEMAP_BASE_URL}/copyright-policy`, lastModified: now, changeFrequency: 'yearly', priority: 0.2 },
     { url: `${SITEMAP_BASE_URL}/accessibility`, lastModified: now, changeFrequency: 'yearly', priority: 0.2 },
     { url: `${SITEMAP_BASE_URL}/limit-the-use`, lastModified: now, changeFrequency: 'yearly', priority: 0.1 },
-    { url: `${SITEMAP_BASE_URL}/do-not-sell`, lastModified: now, changeFrequency: 'yearly', priority: 0.1 },
+    { url: `${SITEMAP_BASE_URL}/privacy-policy/ccpa-opt-out`, lastModified: now, changeFrequency: 'yearly', priority: 0.1 },
   ]
 
   const hubRoutes: MetadataRoute.Sitemap = hubPages.map((hub) => ({

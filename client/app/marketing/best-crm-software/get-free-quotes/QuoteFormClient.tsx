@@ -19,6 +19,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
+import { QuoteBreadcrumb } from "@/components/quotes/QuoteBreadcrumb";
+import {
+  QuoteBottomCta,
+  QuoteHowItWorksSection,
+  QuoteTestimonialsSection,
+  QuoteWhyCompareSection,
+} from "@/components/quotes/QuoteLandingSections";
 import { QuoteFormScrollBody } from "@/components/quotes/QuoteFormScrollBody";
 import { quoteLandingPageCss } from "@/lib/quoteLandingPageCss";
 import {
@@ -36,9 +43,14 @@ import {
   Target,
   Users,
   Zap,
-  Star,
   type LucideIcon,
 } from "lucide-react";
+
+const HOW_STEPS = [
+  { tag: "2 minutes", num: "01", title: "Describe Your Requirements", body: "Our three-step form captures your team size, industry, must-have features, and buying timeline. No irrelevant questions, no long-winded surveys." },
+  { tag: "Within 24 hours", num: "02", title: "We Match and Notify You", body: "Our specialists review your profile and match it to the vendors in our network who are the strongest fit. You receive 3–5 tailored quotes by email." },
+  { tag: "On your schedule", num: "03", title: "Compare, Choose, or Walk Away", body: "Review the quotes side-by-side. Request demos only from vendors you like. There is no obligation and no pressure to decide quickly." },
+];
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface FormData {
@@ -47,6 +59,7 @@ interface FormData {
   phone: string; zipCode: string;
   teamSize: string; industry: string;
   crmStatus: string; features: string[]; timeline: string;
+  emailUpdates: boolean;
 }
 
 // ─── Static data ─────────────────────────────────────────────────────────────
@@ -115,7 +128,7 @@ export default function CRMQuotePage({ heading }: QuoteFormClientProps) {
   const [form, setForm]           = useState<FormData>({
     firstName:"", lastName:"", workEmail:"", company:"",
     phone:"", zipCode:"", teamSize:"", industry:"",
-    crmStatus:"", features:[], timeline:"",
+    crmStatus:"", features:[], timeline:"", emailUpdates:false,
   });
 
   const set = (k: keyof FormData, v: string) => setForm(f => ({ ...f, [k]: v }));
@@ -163,6 +176,7 @@ export default function CRMQuotePage({ heading }: QuoteFormClientProps) {
         crm_status: form.crmStatus,
         required_features: form.features.join(", "),
         timeline: form.timeline,
+        email_updates: form.emailUpdates ? "Yes" : "No",
         form_source: "CRM Quote Page - Compare Bazaar",
         captcha_token: captchaToken,
       };
@@ -206,20 +220,14 @@ export default function CRMQuotePage({ heading }: QuoteFormClientProps) {
         dangerouslySetInnerHTML={{ __html: quoteLandingPageCss }}
       />
 
-      {/* Breadcrumb */}
-      <div className="bc">
-        <div className="ct">
-          <div className="bc-row">
-            <a href="https://www.compare-bazaar.com">Home</a>
-            <span className="bc-sep">›</span>
-            <a href="https://www.compare-bazaar.com/marketing">Marketing</a>
-            <span className="bc-sep">›</span>
-            <a href="https://www.compare-bazaar.com/marketing/best-crm-software">Best CRM Software</a>
-            <span className="bc-sep">›</span>
-            <span className="bc-cur">Get Free Quotes</span>
-          </div>
-        </div>
-      </div>
+      <QuoteBreadcrumb
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Marketing", href: "/marketing" },
+          { label: "Best CRM Software", href: "/marketing/best-crm-software" },
+          { label: "Get Free Quotes" },
+        ]}
+      />
 
       {/* Hero */}
       <div className="hero-shell">
@@ -378,6 +386,14 @@ export default function CRMQuotePage({ heading }: QuoteFormClientProps) {
                               ))}
                             </div>
                           </div>
+                          <label className="chk-row">
+                            <input
+                              type="checkbox"
+                              checked={form.emailUpdates}
+                              onChange={(e) => setForm((f) => ({ ...f, emailUpdates: e.target.checked }))}
+                            />
+                            <span>Send me CRM tips and Compare Bazaar updates (optional).</span>
+                          </label>
                           <div className="cap-wrap">
                             {mounted && <ReCAPTCHA
                               ref={captchaRef}
@@ -412,93 +428,32 @@ export default function CRMQuotePage({ heading }: QuoteFormClientProps) {
       </div>
       </div>
 
-      {/* How It Works */}
-      <div className="sec-alt">
-        <section className="sec" style={{paddingTop:48,paddingBottom:56}}>
-          <div className="ct">
-            <div className="stag">How It Works</div>
-            <h2 className="sh">From your first click to a signed contract in three steps</h2>
-            <p className="ssub">No repeated intake forms. No unsolicited sales calls. Submit once and we'll handle the rest.</p>
-            <div className="howg">
-              {[
-                {tag:"2 minutes",num:"01",title:"Describe Your Requirements",body:"Our three-step form captures your team size, industry, must-have features, and buying timeline. No irrelevant questions, no long-winded surveys."},
-                {tag:"Within 24 hours",num:"02",title:"We Match and Notify You",body:"Our specialists review your profile and match it to the vendors in our network who are the strongest fit. You receive 3–5 tailored quotes by email."},
-                {tag:"On your schedule",num:"03",title:"Compare, Choose, or Walk Away",body:"Review the quotes side-by-side. Request demos only from vendors you like. There is no obligation and no pressure to decide quickly."},
-              ].map(c=>(
-                <div key={c.num} className="hc">
-                  <span className="howt">{c.tag}</span>
-                  <div className="hwn">{c.num}</div>
-                  <h3>{c.title}</h3>
-                  <p>{c.body}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      </div>
+      <QuoteHowItWorksSection
+        tag="How It Works"
+        title="From your first click to a signed contract in three steps"
+        subtitle="No repeated intake forms. No unsolicited sales calls. Submit once and we'll handle the rest."
+        steps={HOW_STEPS}
+      />
 
-      {/* Testimonials */}
-      <section className="sec">
-        <div className="ct">
-          <div className="stag">Buyer Stories</div>
-          <h2 className="sh">Results from businesses that used Compare Bazaar</h2>
-          <p className="ssub">Over 2,400 organisations have found their CRM through our matching process. Here are three of their experiences.</p>
-          <div className="tg">
-            {TESTIMONIALS.map(t=>(
-              <div key={t.name} className="tc">
-                <span className="rtag">✓ {t.result}</span>
-                <div className="tstars" aria-label="5 out of 5 stars">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} size={15} fill="#FBBF24" color="#FBBF24" strokeWidth={0} aria-hidden />
-                  ))}
-                </div>
-                <p className="tbody">"{t.body}"</p>
-                <div className="ta">
-                  <div className="av" style={{background:t.avatarBg,color:t.avatarText}}>{t.initials}</div>
-                  <div><div className="an">{t.name}</div><div className="ar">{t.role}, {t.company}</div></div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <QuoteTestimonialsSection
+        tag="Buyer Stories"
+        title="Results from businesses that used Compare Bazaar"
+        subtitle="Over 2,400 organisations have found their CRM through our matching process. Here are three of their experiences."
+        testimonials={TESTIMONIALS}
+      />
 
-      {/* Why Compare Bazaar */}
-      <div className="sec-alt">
-        <section className="sec" style={{paddingTop:48,paddingBottom:56}}>
-          <div className="ct">
-            <div className="stag">Why Compare Bazaar</div>
-            <h2 className="sh">Built to serve buyers, not vendors</h2>
-            <p className="ssub">Our editorial rankings are independent. Our matching process is based on fit. We only benefit when you find something that works for your business.</p>
-            <div className="whyg">
-              {WHY_ITEMS.map(w=>{
-                const Icon = w.icon as LucideIcon;
-                return (
-                <div key={w.title} className="wc">
-                  <div className="wi"><Icon aria-hidden /></div>
-                  <div><h4>{w.title}</h4><p>{w.body}</p></div>
-                </div>
-              )})}
-            </div>
-          </div>
-        </section>
-      </div>
+      <QuoteWhyCompareSection
+        tag="Why Compare Bazaar"
+        title="Built to serve buyers, not vendors"
+        subtitle="Our editorial rankings are independent. Our matching process is based on fit. We only benefit when you find something that works for your business."
+        items={WHY_ITEMS}
+      />
 
-      {/* Bottom CTA */}
-      <div className="ct">
-        <div className="cta-band">
-          <div style={{ position: "relative", zIndex: 1 }}>
-            <h2>Ready to find the right CRM for your business?</h2>
-            <p>Join 2,400+ businesses. Free matched quotes delivered within 24 hours.</p>
-          </div>
-          <a href="#" onClick={e=>{e.preventDefault();window.scrollTo({top:0,behavior:"smooth"})}} className="btn-wh">
-            Get Free Quotes →
-          </a>
-        </div>
-      </div>
+      <QuoteBottomCta
+        title="Ready to find the right CRM for your business?"
+        subtitle="Join 2,400+ businesses. Free matched quotes delivered within 24 hours."
+      />
 
-      {/* Footer */}
-     
     </>
   );
 }

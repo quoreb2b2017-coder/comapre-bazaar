@@ -2,19 +2,31 @@
 
 import { useEffect, useRef, useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
+import { QuoteBreadcrumb } from "@/components/quotes/QuoteBreadcrumb";
+import {
+  QuoteBottomCta,
+  QuoteHowItWorksSection,
+  QuoteTestimonialsSection,
+  QuoteWhyCompareSection,
+} from "@/components/quotes/QuoteLandingSections";
 import {
   CheckCircle2,
   MessageCircle,
   Shield,
   ShieldCheck,
   Sparkles,
-  Star,
   Target,
   Zap,
   type LucideIcon,
 } from "lucide-react";
 import { QuoteFormScrollBody } from "@/components/quotes/QuoteFormScrollBody";
 import { quoteLandingPageCss } from "@/lib/quoteLandingPageCss";
+
+const HOW_STEPS = [
+  { tag: "3 minutes", num: "01", title: "Define fleet reality", body: "Asset counts, dominant vehicle classes, and ZIP anchoring help vendors quote hardware + SaaS accurately." },
+  { tag: "Same-day routing", num: "02", title: "Matched telematics stacks", body: "Responses emphasize platforms from our comparison matrix, Samsara, Motive, Verizon Connect, Fleetio, etc." },
+  { tag: "Ops-led", num: "03", title: "Deploy at your cadence", body: "Compare bundled dashcam + GPS vs maintenance-first stacks before signing contracts." },
+];
 
 /** Platforms from `gps-fleet-management` comparison page */
 const VENDORS = [
@@ -245,19 +257,14 @@ export default function GPSFleetGetQuotesForm({ heading }: QuoteFormClientProps)
 
       <style suppressHydrationWarning dangerouslySetInnerHTML={{ __html: quoteLandingPageCss }} />
 
-      <div className="bc">
-        <div className="ct">
-          <div className="bc-row">
-            <a href="https://www.compare-bazaar.com">Home</a>
-            <span className="bc-sep">›</span>
-            <a href="https://www.compare-bazaar.com/technology">Technology</a>
-            <span className="bc-sep">›</span>
-            <a href="https://www.compare-bazaar.com/technology/gps-fleet-management-software">GPS Fleet Management</a>
-            <span className="bc-sep">›</span>
-            <span className="bc-cur">Get Free Quotes</span>
-          </div>
-        </div>
-      </div>
+      <QuoteBreadcrumb
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Technology", href: "/technology" },
+          { label: "GPS Fleet Management", href: "/technology/gps-fleet-management-software" },
+          { label: "Get Free Quotes" },
+        ]}
+      />
 
       <div className="hero-shell">
         <div className="hero">
@@ -592,123 +599,31 @@ export default function GPSFleetGetQuotesForm({ heading }: QuoteFormClientProps)
         </div>
       </div>
 
-      <div className="sec-alt">
-        <section className="sec" style={{ paddingTop: 48, paddingBottom: 56 }}>
-          <div className="ct">
-            <div className="stag">How It Works</div>
-            <h2 className="sh">From fleet intake to vendor pilots</h2>
-            <p className={"s" + "sub"}>
-              Operational truth → aligned GPS proposals → hardware/software pilots only where ROI is clear.
-            </p>
-            <div className="howg">
-              {[
-                {
-                  tag: "3 minutes",
-                  num: "01",
-                  title: "Define fleet reality",
-                  body: "Asset counts, dominant vehicle classes, and ZIP anchoring help vendors quote hardware + SaaS accurately.",
-                },
-                {
-                  tag: "Same-day routing",
-                  num: "02",
-                  title: "Matched telematics stacks",
-                  body: "Responses emphasize platforms from our comparison matrix, Samsara, Motive, Verizon Connect, Fleetio, etc.",
-                },
-                {
-                  tag: "Ops-led",
-                  num: "03",
-                  title: "Deploy at your cadence",
-                  body: "Compare bundled dashcam + GPS vs maintenance-first stacks before signing contracts.",
-                },
-              ].map((c) => (
-                <div key={c.num} className="hc">
-                  <span className="howt">{c.tag}</span>
-                  <div className="hwn">{c.num}</div>
-                  <h3>{c.title}</h3>
-                  <p>{c.body}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      </div>
+      <QuoteHowItWorksSection
+        tag="How It Works"
+        title="From fleet intake to vendor pilots"
+        subtitle="Operational truth → aligned GPS proposals → hardware/software pilots only where ROI is clear."
+        steps={HOW_STEPS}
+      />
 
-      <section className="sec">
-        <div className="ct">
-          <div className="stag">Fleet Buyer Stories</div>
-          <h2 className="sh">Operations teams that de-risked telematics buys</h2>
-          <p className={"s" + "sub"}>Mixed-duty fleets translating GPS quotes into measurable idle & safety gains.</p>
-          <div className="tg">
-            {TESTIMONIALS.map((t) => (
-              <div key={t.name} className="tc">
-                <span className="rtag">✓ {t.result}</span>
-                <div className="tstars" aria-label="5 out of 5 stars">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} size={15} fill="#FBBF24" color="#FBBF24" strokeWidth={0} aria-hidden />
-                  ))}
-                </div>
-                <p className="tbody">&ldquo;{t.body}&rdquo;</p>
-                <div className="ta">
-                  <div className="av" style={{ background: t.avatarBg, color: t.avatarText }}>
-                    {t.initials}
-                  </div>
-                  <div>
-                    <div className="an">{t.name}</div>
-                    <div className="ar">
-                      {t.role}, {t.company}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <QuoteTestimonialsSection
+        tag="Fleet Buyer Stories"
+        title="Operations teams that de-risked telematics buys"
+        subtitle="Mixed-duty fleets translating GPS quotes into measurable idle & safety gains."
+        testimonials={TESTIMONIALS}
+      />
 
-      <div className="sec-alt">
-        <section className="sec" style={{ paddingTop: 48, paddingBottom: 56 }}>
-          <div className="ct">
-            <div className="stag">Why Compare Bazaar</div>
-            <h2 className="sh">Fleet-grade independence</h2>
-            <p className={"s" + "sub"}>Hands-on telematics scoring informs who enters your quote pool, not sponsorship slots.</p>
-            <div className="whyg">
-              {WHY_ITEMS.map((w) => {
-                const Icon = w.icon;
-                return (
-                  <div key={w.title} className="wc">
-                    <div className="wi">
-                      <Icon aria-hidden />
-                    </div>
-                    <div>
-                      <h4>{w.title}</h4>
-                      <p>{w.body}</p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-      </div>
+      <QuoteWhyCompareSection
+        tag="Why Compare Bazaar"
+        title="Fleet-grade independence"
+        subtitle="Hands-on telematics scoring informs who enters your quote pool, not sponsorship slots."
+        items={WHY_ITEMS}
+      />
 
-      <div className="ct">
-        <div className="cta-band">
-          <div style={{ position: "relative", zIndex: 1 }}>
-            <h2>Ready for GPS fleet quotes?</h2>
-            <p>Scroll up, finish three quick steps, and compare aligned vendors.</p>
-          </div>
-          <a
-            href="#"
-            className="btn-wh"
-            onClick={(e) => {
-              e.preventDefault();
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }}
-          >
-            Get Free Quotes →
-          </a>
-        </div>
-      </div>
+      <QuoteBottomCta
+        title="Ready for GPS fleet quotes?"
+        subtitle="Scroll up, finish three quick steps, and compare aligned vendors."
+      />
     </>
   );
 }

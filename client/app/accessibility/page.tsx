@@ -23,7 +23,7 @@ const LEGAL_LINKS = [
   { label: 'Privacy Policy', href: '/privacy-policy' },
   { label: 'Terms of Use', href: '/terms-of-use' },
   { label: 'Advertising Disclosure', href: '/advertising-disclosure' },
-  { label: 'Do Not Sell My Info', href: '/do-not-sell' },
+  { label: 'California – Do Not Sell My Info', href: '/privacy-policy/ccpa-opt-out' },
 ]
 
 const STANDARDS = [
