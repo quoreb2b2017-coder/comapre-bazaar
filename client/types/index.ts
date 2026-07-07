@@ -19,6 +19,8 @@ export interface Product {
   pricingAmount: string
   pricingPeriod: string
   vendorUrl: string      // real URL, not "#"
+  /** When set, "Get free quotes" opens this outbound URL instead of the category quote form. */
+  quoteUrl?: string
   reviewSlug: string
   isTopPick?: boolean
   affiliateActive?: boolean  // if false, vendor buttons are hover-blocked

@@ -26,6 +26,10 @@ export const REMOTE_VENDOR_OUTBOUND_URL = withCompareBazaarUtms('https://remote.
   content: 'product-card',
 })
 
+/** Remote Impact affiliate — Get free quotes / get started only (not Visit website). */
+export const REMOTE_GET_FREE_QUOTES_URL =
+  'https://remote.com/lp/get-started?irclickid=V3aQ2yyMexyZUqyxnCRf6SLEUkuVVgSNPXUzUs0&utm_source=impact&utm_medium=affiliate&utm_mediapartner=Compare-Bazaar&utm_mediaid=&utm_adid=1349460&utm_partnerid=7319987&utm_campaign=&irgwc=1&afsrc=1'
+
 export function remoteOutboundUrl(options?: {
   path?: string
   content?: string

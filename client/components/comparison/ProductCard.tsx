@@ -130,7 +130,16 @@ export function ProductCard({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          {quoteHref ? (
+          {product.quoteUrl ? (
+            <a
+              href={product.quoteUrl}
+              target="_blank"
+              rel="sponsored noopener noreferrer"
+              className="inline-flex rounded-md bg-cb-orange px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-cb-orange-hover"
+            >
+              Get free quotes
+            </a>
+          ) : quoteHref ? (
             <Link
               href={quoteHref}
               className="inline-flex rounded-md bg-cb-orange px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-cb-orange-hover"

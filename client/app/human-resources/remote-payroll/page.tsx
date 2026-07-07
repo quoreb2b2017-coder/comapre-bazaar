@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { CheckCircle2, Globe, Shield, Star, XCircle } from 'lucide-react'
 import { buildMetadata } from '@/lib/seo'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
-import { remoteOutboundUrl } from '@/lib/vendorOutboundUrls'
+import { remoteOutboundUrl, REMOTE_GET_FREE_QUOTES_URL } from '@/lib/vendorOutboundUrls'
 
 export const metadata: Metadata = buildMetadata({
   title: 'Remote Payroll Review 2026: Pricing, Pros, Cons & Comparison',
@@ -137,12 +137,14 @@ export default function RemotePayrollPage() {
               >
                 Visit Remote →
               </a>
-              <Link
-                href="/human-resources/best-payroll-software/get-free-quotes"
+              <a
+                href={REMOTE_GET_FREE_QUOTES_URL}
+                target="_blank"
+                rel="sponsored noopener noreferrer"
                 className="rounded-xl bg-white/15 border border-white/30 text-white font-semibold px-6 py-3 text-sm hover:bg-white/25 transition-colors"
               >
-                Compare Payroll Quotes
-              </Link>
+                Get Free Quotes from Remote
+              </a>
             </div>
           </div>
         </header>
