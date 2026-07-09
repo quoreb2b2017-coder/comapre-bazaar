@@ -435,7 +435,7 @@ router.post('/', (req, res, next) => {
           ? 'White paper published with manual SEO'
           : 'White paper published automatically',
       data: draft,
-      publicUrl: `/resources/whitepaper/${draft.slug}`,
+      publicUrl: `/resources/whitepapers/${draft.slug}`,
     })
   } catch (error) {
     console.error('White paper submit error:', error)
@@ -568,7 +568,7 @@ router.put(
         success: true,
         message: 'White paper updated successfully',
         data: paper,
-        publicUrl: `/resources/whitepaper/${paper.slug}`,
+        publicUrl: `/resources/whitepapers/${paper.slug}`,
       })
     } catch (error) {
       console.error('White paper update error:', error)
@@ -605,7 +605,7 @@ router.patch('/:id/seo', async (req, res) => {
       success: true,
       message: 'SEO updated',
       data: paper,
-      publicUrl: `/resources/whitepaper/${paper.slug}`,
+      publicUrl: `/resources/whitepapers/${paper.slug}`,
     })
   } catch (error) {
     res.status(500).json({ success: false, message: error.message })

@@ -37,20 +37,10 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
 
-      // ── AI training crawlers ───────────────────────────────────────────────
-      // These bots respect robots.txt. Block if you don't want your editorial
-      // content used for LLM training without compensation. Remove these three
-      // blocks if you want AI visibility (citations in ChatGPT, Perplexity etc).
+      // Block pure training-dataset scrapers only. Allow search/answer-engine crawlers
+      // (GPTBot, Claude-Web, PerplexityBot, etc.) so comparison content can be cited.
       {
-        userAgent: 'GPTBot',    // OpenAI
-        disallow: '/',
-      },
-      {
-        userAgent: 'Claude-Web', // Anthropic
-        disallow: '/',
-      },
-      {
-        userAgent: 'CCBot',     // Common Crawl / AI training datasets
+        userAgent: 'CCBot',
         disallow: '/',
       },
     ],

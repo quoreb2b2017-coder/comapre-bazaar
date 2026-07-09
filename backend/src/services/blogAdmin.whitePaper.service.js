@@ -416,7 +416,7 @@ async function generateWhitePaperSeo({ title, description, metadata, pdfText }) 
 Analyze this white paper and admin inputs. Return ONLY valid JSON (no markdown prose).
 
 Site: ${site}
-Public URL pattern: /resources/whitepaper/{slug}
+Public URL pattern: /resources/whitepapers/{slug}
 
 Admin title: ${title}
 Admin description: ${description}

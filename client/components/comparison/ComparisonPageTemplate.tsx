@@ -6,6 +6,7 @@ import { ComparisonSidebar } from '@/components/comparison/ComparisonSidebar'
 import { WinnerBanner } from '@/components/comparison/WinnerBanner'
 import { ComparisonSectionHeader } from '@/components/comparison/ComparisonSectionHeader'
 import { ComparisonPageHero } from '@/components/comparison/ComparisonPageHero'
+import { HubRelatedContent, VerificationStamp } from '@/components/seo/seo-components'
 import {
   ComparisonReveal,
   ComparisonSidebarReveal,
@@ -15,9 +16,11 @@ import {
 
 interface ComparisonPageProps {
   data: ComparisonPageData
+  hubSlug?: string | null
+  lastVerified?: string
 }
 
-export function ComparisonPageTemplate({ data }: ComparisonPageProps) {
+export function ComparisonPageTemplate({ data, hubSlug, lastVerified }: ComparisonPageProps) {
   const vendorCount = data.products.length
 
   return (
@@ -26,6 +29,12 @@ export function ComparisonPageTemplate({ data }: ComparisonPageProps) {
 
       <div className="bg-[#F3F5F9]">
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
+          {lastVerified ? (
+            <div className="mb-6 rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm text-gray-600">
+              <VerificationStamp lastVerified={lastVerified} />
+            </div>
+          ) : null}
+
           <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_240px] lg:gap-8">
             <div className="min-w-0 space-y-6">
               <ComparisonReveal className="overflow-hidden border border-gray-200 bg-white">
@@ -102,6 +111,14 @@ export function ComparisonPageTemplate({ data }: ComparisonPageProps) {
                   <FaqAccordion items={data.faqs} />
                 </div>
               </ComparisonReveal>
+
+              {hubSlug ? (
+                <ComparisonReveal delay={0.08}>
+                  <div className="overflow-hidden border border-gray-200 bg-white px-5 py-6 sm:px-6">
+                    <HubRelatedContent hubSlug={hubSlug} />
+                  </div>
+                </ComparisonReveal>
+              ) : null}
             </div>
 
             <ComparisonSidebarReveal className="lg:sticky lg:top-24">

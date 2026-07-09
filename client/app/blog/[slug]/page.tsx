@@ -1,8 +1,11 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { buildBlogPostingJsonLd, buildBlogShareMetadata, buildMetadata, formatShareDescription } from '@/lib/seo'
+import { buildBlogShareMetadata, buildMetadata, formatShareDescription } from '@/lib/seo'
 import { JsonLd } from '@/components/seo/JsonLd'
+import { PostRelatedContent } from '@/components/seo/seo-components'
+import { lastVerifiedForPost, normalizeBlogSlug } from '@/lib/content-map'
+import { blogPostingGraph, buildGraph } from '@/lib/schema'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
 import { blogPosts } from '@/data/blogPosts'
 import {
@@ -27,6 +30,33 @@ export const revalidate = 120
 
 export function generateStaticParams() {
   return blogPosts.map((post) => ({ slug: post.slug }))
+}
+
+function buildBlogArticleSchema(opts: {
+  slug: string
+  headline: string
+  description: string
+  datePublished?: string
+  dateModified?: string
+  authorName?: string
+}) {
+  const normalizedSlug = normalizeBlogSlug(opts.slug)
+  const verified = lastVerifiedForPost(opts.slug)
+  const dateModified = verified
+    ? new Date(verified).toISOString()
+    : opts.dateModified || opts.datePublished
+
+  return buildGraph(
+    blogPostingGraph({
+      url: `${SITE_URL}/blog/${normalizedSlug}`,
+      headline: opts.headline,
+      description: opts.description,
+      image: `${SITE_URL}/api/og?slug=${encodeURIComponent(normalizedSlug)}`,
+      datePublished: opts.datePublished || dateModified || new Date().toISOString(),
+      dateModified: dateModified || opts.datePublished || new Date().toISOString(),
+      author: { name: opts.authorName || 'Compare Bazaar Editorial', url: `${SITE_URL}/editorial-process` },
+    })
+  )
 }
 
 function isoDate(d: string | Date | undefined | null) {
@@ -290,13 +320,13 @@ async function CmsBlogArticle({
   const hasHeroBanner = heroHtml != null
   const sourceBodyHtml = hasHeroBanner ? bodyHtml : cms.content
   const { html: anchoredBodyHtml, toc } = addHeadingAnchors(injectBlogAutoLinks(sourceBodyHtml))
-  const articleSchema = buildBlogPostingJsonLd({
+  const articleSchema = buildBlogArticleSchema({
+    slug: cms.slug,
     headline,
     description: cms.metaDescription || cms.excerpt || formatShareDescription(cms.content?.slice(0, 800)),
-    path: `/blog/${cms.slug}`,
     datePublished: isoDate(cms.publishedAt ?? cms.approvedAt),
     dateModified: isoDate(cms.updatedAt ?? cms.publishedAt ?? cms.approvedAt),
-    keywords: [...new Set([...(cms.keywords || []), ...(cms.tags || [])])].slice(0, 24),
+    authorName: 'Compare Bazaar Editorial',
   })
 
   const metaRow = (
@@ -362,6 +392,8 @@ async function CmsBlogArticle({
             <div className="blog-cms-html max-w-none text-gray-700" dangerouslySetInnerHTML={{ __html: heroHtml }} />
           </div>
         ) : null}
+
+        <PostRelatedContent postSlug={normalizeBlogSlug(cms.slug)} />
 
         <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-[minmax(0,48rem)_minmax(220px,300px)] lg:items-stretch lg:gap-14 xl:gap-16">
           <article className={`${measureClass} ${bodyInsetClass} order-2 lg:order-1 flex min-w-0 flex-col`}>
@@ -446,12 +478,12 @@ export default async function BlogPostPage({ params }: Props) {
   }))
   const toc = sections.map((s) => ({ id: s.id, label: s.heading }))
 
-  const legacyArticleSchema = buildBlogPostingJsonLd({
+  const legacyArticleSchema = buildBlogArticleSchema({
+    slug: post.slug,
     headline: post.title,
     description: post.excerpt,
-    path: `/blog/${post.slug}`,
     datePublished: isoDate(post.publishedAt),
-    keywords: [post.category],
+    authorName: post.authorName,
   })
 
   return (
@@ -490,6 +522,8 @@ export default async function BlogPostPage({ params }: Props) {
               <span>{post.authorName}</span>
             </div>
           </header>
+
+          <PostRelatedContent postSlug={normalizeBlogSlug(post.slug)} />
 
           <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-[minmax(0,48rem)_minmax(220px,300px)] lg:items-stretch lg:gap-14 xl:gap-16">
             <article className="order-2 lg:order-1 mx-auto min-w-0 w-full max-w-3xl lg:mx-0 lg:max-w-none">

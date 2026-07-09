@@ -26,7 +26,7 @@ function formatLeadForAdmin(lead, paper) {
     whitePaperId: lead.whitePaperId,
     whitePaperTitle: title,
     whitePaperSlug: slug,
-    whitePaperUrl: slug ? `/resources/whitepaper/${slug}` : '',
+    whitePaperUrl: slug ? `/resources/whitepapers/${slug}` : '',
     email: lead.email || '',
     firstName: lead.firstName || '',
     lastName: lead.lastName || '',

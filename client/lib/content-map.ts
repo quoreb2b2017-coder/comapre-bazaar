@@ -40,7 +40,7 @@ export const hubs: Hub[] = [
   { slug: 'voip', name: 'Business Phone Systems', path: '/technology/business-phone-systems', pillar: 'technology', primaryKeyword: 'best business phone systems' },
   { slug: 'gps-fleet', name: 'GPS Fleet Management', path: '/technology/gps-fleet-management-software', pillar: 'technology', primaryKeyword: 'best gps fleet management software', whitepapers: ['fleet-telematics-pricing-benchmark'] },
   { slug: 'payroll', name: 'Payroll Software', path: '/human-resources/best-payroll-software', pillar: 'human-resources', primaryKeyword: 'best payroll software', whitepapers: ['payroll-trends-report'] },
-  { slug: 'hr', name: 'HR Software', path: '/human-resources/best-hr-software', pillar: 'human-resources', primaryKeyword: 'best hr software', whitepapers: ['pay-transparency-report'] },
+  { slug: 'hr', name: 'HR Software', path: '/human-resources/best-employee-management-software', pillar: 'human-resources', primaryKeyword: 'best hr software', whitepapers: ['pay-transparency-report'] },
   { slug: 'call-center', name: 'Call Center Software', path: '/sales/best-call-center-management-software', pillar: 'sales', primaryKeyword: 'best call center software' },
   { slug: 'project-management', name: 'Project Management', path: '/sales/best-project-management-software', pillar: 'sales', primaryKeyword: 'best project management software' },
 ]

@@ -1,8 +1,10 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { SiteChrome } from '@/components/layout/SiteChrome'
+import { JsonLd } from '@/components/seo/JsonLd'
 import { GA_MEASUREMENT_ID } from '@/lib/googleAnalytics'
-import { buildOrganizationSchema, buildWebSiteSchema, SITE_URL } from '@/lib/seo'
+import { buildGraph, organizationGraph } from '@/lib/schema'
+import { SITE_URL } from '@/lib/seo'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -60,14 +62,7 @@ export default function RootLayout({
             />
           </>
         ) : null}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(buildOrganizationSchema()) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(buildWebSiteSchema()) }}
-        />
+        <JsonLd schema={buildGraph(...organizationGraph())} />
       </head>
       <body className="flex flex-col min-h-screen overflow-x-hidden">
         <SiteChrome>{children}</SiteChrome>

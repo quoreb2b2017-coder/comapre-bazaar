@@ -1,8 +1,16 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import type { ComparisonPageData } from '@/types'
-import { SITE_URL, buildMetadata, buildBreadcrumbSchema, buildFaqSchema } from '@/lib/seo'
+import { SITE_URL, buildMetadata } from '@/lib/seo'
+import { hubSlugForCanonical, parseReviewDateToIso } from '@/lib/hubSeo'
 import { ComparisonPageTemplate } from '@/components/comparison/ComparisonPageTemplate'
+import { JsonLd } from '@/components/seo/JsonLd'
+import {
+  breadcrumbGraph,
+  buildGraph,
+  comparisonHubGraph,
+  faqGraph,
+} from '@/lib/schema'
 
 interface ComparisonRouteProps {
   data: ComparisonPageData | undefined
@@ -24,22 +32,45 @@ export function ComparisonRoute({ data }: ComparisonRouteProps) {
   if (!data) notFound()
 
   const pageUrl = `${SITE_URL}${data.canonical}`
-  const breadcrumbSchema = buildBreadcrumbSchema(data.breadcrumbs)
-  const faqSchema = data.faqs.length > 0 ? buildFaqSchema(data.faqs, pageUrl) : null
+  const hubSlug = hubSlugForCanonical(data.canonical)
+  const lastVerified = parseReviewDateToIso(data.lastReviewed)
+
+  const breadcrumbItems = data.breadcrumbs
+    .filter((item) => item.href)
+    .map((item) => ({
+      name: item.label,
+      url: `${SITE_URL}${item.href}`,
+    }))
+
+  const graphNodes: object[] = [
+    breadcrumbGraph(breadcrumbItems),
+    comparisonHubGraph({
+      url: pageUrl,
+      name: data.h1,
+      description: data.metaDescription,
+      vendors: data.products.map((product, index) => ({
+        name: product.name,
+        position: index + 1,
+        url: product.reviewSlug ? `${SITE_URL}/reviews/${product.reviewSlug}` : undefined,
+      })),
+    }),
+  ]
+
+  if (data.faqs.length > 0) {
+    graphNodes.push(
+      faqGraph(
+        data.faqs.map((faq) => ({
+          q: faq.question,
+          a: faq.answer,
+        }))
+      )
+    )
+  }
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
-      {faqSchema ? (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-        />
-      ) : null}
-      <ComparisonPageTemplate data={data} />
+      <JsonLd schema={buildGraph(...graphNodes)} />
+      <ComparisonPageTemplate data={data} hubSlug={hubSlug} lastVerified={lastVerified} />
     </>
   )
 }

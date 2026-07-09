@@ -45,11 +45,18 @@ export function HubRelatedContent({ hubSlug }: { hubSlug: string }) {
   if (!related.length || !hub) return null
   return (
     <aside aria-labelledby="further-reading">
-      <h2 id="further-reading">Further reading on {hub.name}</h2>
-      <ul>
+      <h2 id="further-reading" className="mb-4 font-serif text-xl text-navy tracking-tight">
+        Further reading on {hub.name}
+      </h2>
+      <ul className="space-y-3">
         {related.map((p) => (
           <li key={p.slug}>
-            <Link href={`/blog/${p.slug}`}>{p.title}</Link>
+            <Link
+              href={`/blog/${p.slug}`}
+              className="text-sm font-medium text-brand hover:text-brand-hover hover:underline"
+            >
+              {p.title}
+            </Link>
           </li>
         ))}
       </ul>
@@ -60,29 +67,40 @@ export function HubRelatedContent({ hubSlug }: { hubSlug: string }) {
 export function PostRelatedContent({ postSlug }: { postSlug: string }) {
   const hub = primaryHubForPost(postSlug)
   const siblings = siblingPosts(postSlug)
+  if (!hub && siblings.length === 0) return null
   return (
-    <aside aria-labelledby="related-guides">
-      {hub && (
-        <p>
+    <aside
+      aria-labelledby="related-guides"
+      className="my-8 rounded-xl border border-brand/20 bg-[#FFFAF5] px-5 py-5 sm:px-6"
+    >
+      {hub ? (
+        <p className="mb-4 text-[15px] leading-relaxed text-gray-700">
           Ready to shortlist?{' '}
-          <Link href={hub.path}>
+          <Link href={hub.path} className="font-semibold text-brand hover:text-brand-hover hover:underline">
             Compare the {hub.name.toLowerCase()} we&apos;ve tested and priced
           </Link>
           .
         </p>
-      )}
-      {siblings.length > 0 && (
+      ) : null}
+      {siblings.length > 0 ? (
         <>
-          <h2 id="related-guides">Related guides</h2>
-          <ul>
+          <h2 id="related-guides" className="mb-3 font-serif text-lg text-navy tracking-tight">
+            Related guides
+          </h2>
+          <ul className="space-y-2">
             {siblings.map((p) => (
               <li key={p.slug}>
-                <Link href={`/blog/${p.slug}`}>{p.title}</Link>
+                <Link
+                  href={`/blog/${p.slug}`}
+                  className="text-sm font-medium text-navy hover:text-brand hover:underline"
+                >
+                  {p.title}
+                </Link>
               </li>
             ))}
           </ul>
         </>
-      )}
+      ) : null}
     </aside>
   )
 }
