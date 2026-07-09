@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { comparisonPages } from '@/data/comparisons'
 import { hubPages } from '@/data/hubs'
+import { lastVerifiedForPost, normalizeBlogSlug } from '@/lib/content-map'
 import { fetchPublishedBlogSummaries } from '@/lib/blogCms'
 import { QUOTE_PAGE_CONFIGS } from '@/lib/pageMetaDescriptions'
 import { buildReviewVendorQuotePath } from '@/lib/reviewQuoteCta'
@@ -15,8 +16,9 @@ const SITEMAP_REDIRECT_PATHS = new Set([
   '/sales/best-crm-software',
   '/sales/best-crm-software/get-free-quotes',
   '/marketing/best-crm-software/get-free-quote',
-  '/do-not-sell',
+  '/privacy-policy/ccpa-opt-out',
   '/do-not-sell-my-info',
+  '/resources/whitepapers',
 ])
 
 function isSitemapPath(path: string): boolean {
@@ -58,7 +60,7 @@ export async function getSitemapEntries(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITEMAP_BASE_URL}/editorial-process`, lastModified: now, changeFrequency: 'yearly', priority: 0.5 },
     { url: `${SITEMAP_BASE_URL}/about`, lastModified: now, changeFrequency: 'yearly', priority: 0.5 },
     { url: `${SITEMAP_BASE_URL}/resources`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
-    { url: `${SITEMAP_BASE_URL}/resources/whitepaper`, lastModified: now, changeFrequency: 'monthly', priority: 0.4 },
+    { url: `${SITEMAP_BASE_URL}/resources/whitepapers`, lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
     { url: `${SITEMAP_BASE_URL}/start-a-business`, lastModified: now, changeFrequency: 'monthly', priority: 0.4 },
     { url: `${SITEMAP_BASE_URL}/business-planning`, lastModified: now, changeFrequency: 'monthly', priority: 0.4 },
     { url: `${SITEMAP_BASE_URL}/advertise`, lastModified: now, changeFrequency: 'yearly', priority: 0.4 },
@@ -73,7 +75,7 @@ export async function getSitemapEntries(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITEMAP_BASE_URL}/copyright-policy`, lastModified: now, changeFrequency: 'yearly', priority: 0.2 },
     { url: `${SITEMAP_BASE_URL}/accessibility`, lastModified: now, changeFrequency: 'yearly', priority: 0.2 },
     { url: `${SITEMAP_BASE_URL}/limit-the-use`, lastModified: now, changeFrequency: 'yearly', priority: 0.1 },
-    { url: `${SITEMAP_BASE_URL}/privacy-policy/ccpa-opt-out`, lastModified: now, changeFrequency: 'yearly', priority: 0.1 },
+    { url: `${SITEMAP_BASE_URL}/do-not-sell`, lastModified: now, changeFrequency: 'yearly', priority: 0.1 },
   ]
 
   const hubRoutes: MetadataRoute.Sitemap = hubPages.map((hub) => ({
@@ -138,16 +140,25 @@ export async function getSitemapEntries(): Promise<MetadataRoute.Sitemap> {
 
   const cmsPosts = await fetchPublishedBlogSummaries()
 
-  const blogRoutes: MetadataRoute.Sitemap = cmsPosts.map((post) => ({
-    url: `${SITEMAP_BASE_URL}/blog/${post.slug}`,
-    lastModified: post.publishedAt ? new Date(post.publishedAt) : now,
-    changeFrequency: 'monthly' as const,
-    priority: 0.65,
-  }))
+  const blogRoutes: MetadataRoute.Sitemap = cmsPosts.map((post) => {
+    const verified = lastVerifiedForPost(post.slug)
+    const lastModified = verified
+      ? new Date(verified)
+      : post.publishedAt
+        ? new Date(post.publishedAt)
+        : now
+
+    return {
+      url: `${SITEMAP_BASE_URL}/blog/${normalizeBlogSlug(post.slug)}`,
+      lastModified,
+      changeFrequency: 'monthly' as const,
+      priority: 0.65,
+    }
+  })
 
   const whitePapers = await fetchPublishedWhitePapers()
   const whitePaperRoutes: MetadataRoute.Sitemap = whitePapers.map((paper) => ({
-    url: `${SITEMAP_BASE_URL}/resources/whitepaper/${paper.slug}`,
+    url: `${SITEMAP_BASE_URL}/resources/whitepapers/${paper.slug}`,
     lastModified: paper.publishedAt ? new Date(paper.publishedAt) : now,
     changeFrequency: 'monthly' as const,
     priority: 0.6,

@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return buildWhitePaperShareMetadata({
     title: `Full description: ${title}`,
     description: paper.metaDescription || paper.description,
-    canonicalPath: `/resources/whitepaper/${paper.slug}/description`,
+    canonicalPath: `/resources/whitepapers/${paper.slug}/description`,
     publishedAt: paper.publishedAt,
     keywords: paper.metaKeywords,
     authorName: whitePaperAuthorName(paper.metadata),
@@ -45,8 +45,8 @@ export default async function WhitepaperDescriptionPage({ params }: PageProps) {
 
   const headline = whitePaperDisplayTitle(paper.title, paper.seoTitle)
   const offeredBy = whitePaperOfferedBy(paper.metadata)
-  const detailHref = `/resources/whitepaper/${paper.slug}`
-  const downloadHref = `/resources/whitepaper/${paper.slug}/download`
+  const detailHref = `/resources/whitepapers/${paper.slug}`
+  const downloadHref = `/resources/whitepapers/${paper.slug}/download`
 
   const overview = whitePaperMainOverview(paper)
   const sidebarHighlights = whitePaperSidebarHighlights(paper)
@@ -58,7 +58,7 @@ export default async function WhitepaperDescriptionPage({ params }: PageProps) {
           items={[
             { label: 'Home', href: '/' },
             { label: 'Resources', href: '/resources' },
-            { label: 'Whitepapers', href: '/resources/whitepaper' },
+            { label: 'Whitepapers', href: '/resources/whitepapers' },
             { label: headline.length > 32 ? `${headline.slice(0, 32)}…` : headline, href: detailHref },
             { label: 'Full description' },
           ]}

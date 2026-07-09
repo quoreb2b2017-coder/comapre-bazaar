@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 import { LEGACY_REDIRECTS } from './legacyRedirects.mjs'
+import { SEO_REDIRECTS } from './seoRedirects.mjs'
 
 const backendPublicUrl = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || ''
 
@@ -23,15 +24,15 @@ const nextConfig = {
     ],
   },
   async redirects() {
-    // Only path remaps — omit case-only normalizations (handled by middleware lowercasing).
-    // Including case-only rules here loops: /marketing/… matches /Marketing/… on Vercel.
-    return LEGACY_REDIRECTS.filter(
+    // SEO layer first (subdomain, slug hygiene, canonical paths), then legacy path remaps.
+    const legacy = LEGACY_REDIRECTS.filter(
       ({ source, destination }) => source.toLowerCase() !== destination.toLowerCase()
     ).map(({ source, destination }) => ({
       source,
       destination,
       permanent: true,
     }))
+    return [...SEO_REDIRECTS, ...legacy]
   },
   async rewrites() {
     // Blog-admin API is handled by app/api/v1/blog-admin/[[...path]]/route.ts (multipart-safe proxy).

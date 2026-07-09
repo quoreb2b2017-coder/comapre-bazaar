@@ -59,7 +59,7 @@ export function WhitePaperLeadsTable({
                           target="_blank"
                           rel="noopener noreferrer"
                           className="line-clamp-2 font-medium leading-snug"
-                          title={r.whitePaperSlug ? `/resources/whitepaper/${r.whitePaperSlug}` : r.whitePaperTitle}
+                          title={r.whitePaperSlug ? `/resources/whitepapers/${r.whitePaperSlug}` : r.whitePaperTitle}
                         >
                           {r.whitePaperTitle}
                         </a>

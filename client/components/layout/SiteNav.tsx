@@ -63,7 +63,7 @@ const NAV_ITEMS: NavItem[] = [
     dropdownWide: true,
     children: [
       { label: 'Blog', href: '/blog', description: 'Buying guides & practical comparisons' },
-      { label: 'Whitepapers', href: '/resources/whitepaper', description: 'Downloadable research for buyers' },
+      { label: 'Whitepapers', href: '/resources/whitepapers', description: 'Downloadable research for buyers' },
       { label: 'Editorial process', href: '/editorial-process', description: 'How we test and rank vendors' },
       { label: 'Browse all software', href: '/browse-all-software', description: 'Jump into any comparison hub' },
     ],

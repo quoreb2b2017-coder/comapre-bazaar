@@ -13,7 +13,7 @@ const LEGAL_LINKS = [
   { label: 'Terms of Use', href: '/terms-of-use' },
   { label: 'Advertising Disclosure', href: '/advertising-disclosure' },
   { label: 'Accessibility Statement', href: '/accessibility' },
-  { label: 'California – Do Not Sell My Info', href: '/privacy-policy/ccpa-opt-out' },
+  { label: 'California – Do Not Sell My Info', href: '/do-not-sell' },
 ]
 
 export default function PrivacyPolicyPage() {
@@ -59,7 +59,7 @@ export default function PrivacyPolicyPage() {
           <li><strong>Correction:</strong> Request correction of inaccurate or incomplete information.</li>
           <li><strong>Deletion:</strong> Request deletion of your personal information, subject to certain legal exceptions.</li>
           <li><strong>Opt-out of marketing:</strong> Unsubscribe from marketing emails at any time using the link in our emails or by contacting us directly.</li>
-          <li><strong>Do Not Sell / Do Not Share:</strong> California residents may opt out of the sale or sharing of personal information. See our <Link href="/privacy-policy/ccpa-opt-out">California – Do Not Sell My Info</Link> page.</li>
+          <li><strong>Do Not Sell / Do Not Share:</strong> California residents may opt out of the sale or sharing of personal information. See our <Link href="/do-not-sell">California – Do Not Sell My Info</Link> page.</li>
           <li><strong>Cookie preferences:</strong> Control cookies through your browser settings.</li>
         </ul>
         <p>To exercise any of these rights, contact us at <a href="mailto:privacy@compare-bazaar.com">privacy@compare-bazaar.com</a>.</p>

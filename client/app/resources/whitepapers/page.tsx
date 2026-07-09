@@ -13,7 +13,7 @@ export const metadata: Metadata = buildMetadata({
   title: 'Software Whitepapers & Research Reports',
   description:
     'Free B2B software whitepapers and research reports from Compare Bazaar. Download guides on CRM, payroll, AI, and operations.',
-  canonical: '/resources/whitepaper',
+  canonical: '/resources/whitepapers',
 })
 
 const LIBRARY_PILLARS = [

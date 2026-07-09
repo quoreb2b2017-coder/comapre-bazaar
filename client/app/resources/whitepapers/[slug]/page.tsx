@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return buildWhitePaperShareMetadata({
     title: paper.ogTitle || title,
     description: paper.ogDescription || description,
-    canonicalPath: `/resources/whitepaper/${paper.slug}`,
+    canonicalPath: `/resources/whitepapers/${paper.slug}`,
     publishedAt: paper.publishedAt,
     keywords: paper.metaKeywords,
     authorName: whitePaperAuthorName(paper.metadata),
@@ -47,7 +47,7 @@ export default async function WhitepaperDetailPage({ params }: PageProps) {
   const headline = whitePaperDisplayTitle(paper.title, paper.seoTitle)
   const offeredBy = whitePaperOfferedBy(paper.metadata)
   const author = whitePaperAuthorName(paper.metadata)
-  const pageUrl = `${SITE_URL}/resources/whitepaper/${paper.slug}`
+  const pageUrl = `${SITE_URL}/resources/whitepapers/${paper.slug}`
   const coverImage = whitePaperOgImageUrl(paper.thumbnailUrl)
 
   const fullDescription = whitePaperFullDescription({
@@ -93,7 +93,7 @@ export default async function WhitepaperDetailPage({ params }: PageProps) {
             items={[
               { label: 'Home', href: '/' },
               { label: 'Resources', href: '/resources' },
-              { label: 'Whitepapers', href: '/resources/whitepaper' },
+              { label: 'Whitepapers', href: '/resources/whitepapers' },
               { label: headline.length > 40 ? `${headline.slice(0, 40)}…` : headline },
             ]}
             className="text-sm"
@@ -123,7 +123,7 @@ export default async function WhitepaperDetailPage({ params }: PageProps) {
               <p>
                 <span className="text-gray-500">See all resources from: </span>
                 <Link
-                  href="/resources/whitepaper"
+                  href="/resources/whitepapers"
                   className="font-semibold text-cb-orange hover:text-cb-orange-hover hover:underline"
                 >
                   {author}
@@ -132,7 +132,7 @@ export default async function WhitepaperDetailPage({ params }: PageProps) {
             </div>
 
             <Link
-              href="/resources/whitepaper"
+              href="/resources/whitepapers"
               className="mt-5 inline-block text-left text-xs font-medium text-gray-500 hover:text-navy hover:underline lg:mt-6"
             >
               ← Back to all whitepapers
@@ -151,7 +151,7 @@ export default async function WhitepaperDetailPage({ params }: PageProps) {
             ) : null}
 
             <Link
-              href={`/resources/whitepaper/${paper.slug}/download`}
+              href={`/resources/whitepapers/${paper.slug}/download`}
               className="mt-4 inline-block bg-cb-orange px-6 py-2.5 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-cb-orange-hover"
             >
               Download now

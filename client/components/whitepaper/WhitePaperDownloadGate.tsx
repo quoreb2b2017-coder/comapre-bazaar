@@ -77,7 +77,7 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
   const headline = whitePaperDisplayTitle(paper.title, paper.seoTitle)
   const offeredBy = paper.metadata?.offeredBy || 'Compare Bazaar'
   const base = whitePaperBackendBase()
-  const detailHref = `/resources/whitepaper/${paper.slug}`
+  const detailHref = `/resources/whitepapers/${paper.slug}`
   const formQuestions: HighlightQuestion[] = parseHighlightQuestions(paper.highlightQuestions)
 
   useEffect(() => {
@@ -163,7 +163,7 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
     <main className="min-h-screen bg-white">
       <div className="mx-auto max-w-5xl px-4 py-3 sm:px-6">
         <Link
-          href="/resources/whitepaper"
+          href="/resources/whitepapers"
           className="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-cb-orange"
         >
           <ArrowLeft className="h-3.5 w-3.5" aria-hidden />

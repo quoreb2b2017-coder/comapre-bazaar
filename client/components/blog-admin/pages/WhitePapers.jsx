@@ -151,7 +151,7 @@ export const WhitePapers = () => {
                   <tr key={p._id} className="border-b border-gray-100 dark:border-gray-800">
                     <td className="py-3 pr-4">
                       <p className="font-medium text-gray-900 dark:text-gray-100">{p.seoTitle || p.title}</p>
-                      <p className="mt-0.5 font-mono text-[11px] text-gray-400">/resources/whitepaper/{p.slug}</p>
+                      <p className="mt-0.5 font-mono text-[11px] text-gray-400">/resources/whitepapers/{p.slug}</p>
                     </td>
                     <td className="py-3 pr-4">
                       <ResourceTypeBadge type={p.metadata?.resourceType} />
@@ -171,7 +171,7 @@ export const WhitePapers = () => {
                         </button>
                         {p.status === 'published' && p.slug ? (
                           <a
-                            href={`/resources/whitepaper/${p.slug}`}
+                            href={`/resources/whitepapers/${p.slug}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="btn-secondary text-xs px-2 py-1"
@@ -249,7 +249,7 @@ export const WhitePapers = () => {
                   <h3 className="mt-1 truncate text-lg font-semibold text-gray-900 dark:text-gray-100">
                     {leadsPaper.seoTitle || leadsPaper.title}
                   </h3>
-                  <p className="mt-0.5 font-mono text-xs text-gray-400">/resources/whitepaper/{leadsPaper.slug}</p>
+                  <p className="mt-0.5 font-mono text-xs text-gray-400">/resources/whitepapers/{leadsPaper.slug}</p>
                 </div>
                 <button type="button" className="btn-secondary shrink-0 text-sm" onClick={() => setLeadsPaper(null)}>
                   Close

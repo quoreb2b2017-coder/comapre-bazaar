@@ -149,7 +149,7 @@ export default async function BlogIndexPage({ searchParams }: BlogPageProps) {
                   </Link>
                   {!activeTopicLabel ? (
                     <Link
-                      href="/resources/whitepaper"
+                      href="/resources/whitepapers"
                       className="inline-flex items-center text-sm font-semibold text-navy hover:text-cb-orange"
                     >
                       Browse whitepapers →
@@ -223,7 +223,7 @@ export default async function BlogIndexPage({ searchParams }: BlogPageProps) {
                   Free whitepapers &amp; reports
                 </p>
                 <Link
-                  href="/resources/whitepaper"
+                  href="/resources/whitepapers"
                   className="mt-2 inline-flex items-center text-[12px] font-semibold text-cb-orange hover:text-cb-orange-hover"
                 >
                   Browse →

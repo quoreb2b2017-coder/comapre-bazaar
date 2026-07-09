@@ -13,7 +13,7 @@ const LEGAL_LINKS = [
   { label: 'Privacy Policy', href: '/privacy-policy' },
   { label: 'Advertising Disclosure', href: '/advertising-disclosure' },
   { label: 'Accessibility Statement', href: '/accessibility' },
-  { label: 'California – Do Not Sell My Info', href: '/privacy-policy/ccpa-opt-out' },
+  { label: 'California – Do Not Sell My Info', href: '/do-not-sell' },
 ]
 
 export default function TermsOfUsePage() {

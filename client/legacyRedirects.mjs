@@ -50,12 +50,10 @@ export const LEGACY_REDIRECTS = [
   { source: '/Contact-us/Contact', destination: '/contact' },
   { source: '/Resources/Blogs', destination: '/blog' },
   { source: '/Resources/software-comparison-methodology', destination: '/editorial-process' },
-  { source: '/Resources/smb-software-pricing-report-2026', destination: '/resources/whitepaper' },
-  { source: '/Resources/link-building-playbook', destination: '/resources/whitepaper' },
+  { source: '/Resources/smb-software-pricing-report-2026', destination: '/resources/whitepapers' },
+  { source: '/Resources/link-building-playbook', destination: '/resources/whitepapers' },
 
   // ── Misc legacy paths ──────────────────────────────────────────────────────
-  { source: '/do-not-sell', destination: '/privacy-policy/ccpa-opt-out' },
-  { source: '/do-not-sell-my-info', destination: '/privacy-policy/ccpa-opt-out' },
   { source: '/accessibility-statement', destination: '/accessibility' },
   { source: '/marketing-solutions', destination: '/marketing' },
 ]

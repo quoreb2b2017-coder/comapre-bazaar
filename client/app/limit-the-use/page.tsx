@@ -22,7 +22,7 @@ export default function LimitTheUsePage() {
         service delivery and legal compliance.
       </p>
       <p className="text-gray-600 leading-relaxed">
-        Please submit your request through our <Link className="text-brand hover:underline" href="/privacy-policy/ccpa-opt-out">California – Do Not Sell My Info</Link> page.
+        Please submit your request through our <Link className="text-brand hover:underline" href="/do-not-sell">California – Do Not Sell My Info</Link> page.
       </p>
     </main>
   )

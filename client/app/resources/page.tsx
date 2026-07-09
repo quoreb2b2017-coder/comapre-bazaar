@@ -38,7 +38,7 @@ const FEATURED = [
     title: 'Whitepapers',
     description:
       'Longer research-style downloads on topics that matter at procurement time: pricing traps, integration scope, and rollout risks.',
-    href: '/resources/whitepaper',
+    href: '/resources/whitepapers',
     cta: 'View whitepapers',
     icon: FileText,
     chip: 'Downloadable PDFs',

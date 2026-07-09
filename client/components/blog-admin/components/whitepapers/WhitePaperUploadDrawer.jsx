@@ -723,7 +723,7 @@ function SuccessView({ published, thumbPreview, seo, setSeo, onSaveSeo, savingSe
       </button>
 
       <a
-        href={`/resources/whitepaper/${published.slug}`}
+        href={`/resources/whitepapers/${published.slug}`}
         target="_blank"
         rel="noopener noreferrer"
         className="btn-primary flex w-full justify-center"

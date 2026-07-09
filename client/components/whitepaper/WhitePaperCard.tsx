@@ -13,7 +13,7 @@ type WhitePaperCardProps = {
 
 /** Flat catalog tile — cover image + text, no card background */
 export function WhitePaperCard({ paper }: WhitePaperCardProps) {
-  const detailHref = `/resources/whitepaper/${paper.slug}`
+  const detailHref = `/resources/whitepapers/${paper.slug}`
   const title = whitePaperDisplayTitle(paper.title, paper.seoTitle)
   const description = whitePaperDisplayDescription(paper)
   const category = paper.metadata?.category?.trim()
