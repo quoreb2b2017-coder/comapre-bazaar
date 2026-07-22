@@ -18,6 +18,7 @@ import {
   type UnifiedBlogCard,
 } from '@/lib/blogCms'
 import { pickTopicCoverUrl } from '@/lib/blogTopicCovers'
+import { publicSchemaAuthor } from '@/lib/publicEditorDisplay'
 import { injectBlogAutoLinks } from '@/lib/blogAutoLink'
 import { BlogSubscribeBox } from '@/components/blog/BlogSubscribeBox'
 import { BlogShareBar } from '@/components/blog/BlogShareBar'
@@ -38,7 +39,6 @@ function buildBlogArticleSchema(opts: {
   description: string
   datePublished?: string
   dateModified?: string
-  authorName?: string
 }) {
   const normalizedSlug = normalizeBlogSlug(opts.slug)
   const verified = lastVerifiedForPost(opts.slug)
@@ -54,7 +54,7 @@ function buildBlogArticleSchema(opts: {
       image: `${SITE_URL}/api/og?slug=${encodeURIComponent(normalizedSlug)}`,
       datePublished: opts.datePublished || dateModified || new Date().toISOString(),
       dateModified: dateModified || opts.datePublished || new Date().toISOString(),
-      author: { name: opts.authorName || 'Compare Bazaar Editorial', url: `${SITE_URL}/editorial-process` },
+      author: publicSchemaAuthor(),
     })
   )
 }
@@ -156,7 +156,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       modifiedAt: cms.updatedAt ?? cms.publishedAt ?? cms.approvedAt,
       section: (cms.tags && cms.tags[0]) || cms.topic,
       keywords: kw.length ? kw : undefined,
-      authorName: 'Compare Bazaar Editorial',
     })
   }
   const post = blogPosts.find((item) => item.slug === params.slug)
@@ -180,7 +179,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     publishedAt: post.publishedAt,
     section: post.category,
     keywords: [post.category],
-    authorName: post.authorName,
   })
 }
 
@@ -328,7 +326,6 @@ async function CmsBlogArticle({
     description: cms.metaDescription || cms.excerpt || formatShareDescription(cms.content?.slice(0, 800)),
     datePublished: isoDate(cms.publishedAt ?? cms.approvedAt),
     dateModified: isoDate(cms.updatedAt ?? cms.publishedAt ?? cms.approvedAt),
-    authorName: 'Compare Bazaar Editorial',
   })
 
   const metaRow = (
@@ -338,8 +335,6 @@ async function CmsBlogArticle({
       <span>{readLabel}</span>
       <span className="text-gray-300">·</span>
       <time dateTime={publishedRaw.toISOString()}>{publishedLabel}</time>
-      <span className="text-gray-300">·</span>
-      <span>Compare Bazaar Editorial</span>
     </div>
   )
 
@@ -407,9 +402,8 @@ async function CmsBlogArticle({
             <section className="mt-16 border-t border-gray-100 pt-10">
               <div className="border-l-2 border-brand/35 pl-5 sm:pl-6">
                 <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-gray-400">
-                  About this publication
+                  About this guide
                 </p>
-                <p className="mb-1 font-medium text-navy">Compare Bazaar Editorial</p>
                 <p className="max-w-[52ch] text-[15px] leading-relaxed text-gray-600">
                   Independent software comparisons and buying guides for growing businesses.
                 </p>
@@ -485,7 +479,6 @@ export default async function BlogPostPage({ params }: Props) {
     headline: post.title,
     description: post.excerpt,
     datePublished: isoDate(post.publishedAt),
-    authorName: post.authorName,
   })
 
   return (
@@ -520,8 +513,6 @@ export default async function BlogPostPage({ params }: Props) {
               <span>{post.readTime}</span>
               <span className="text-gray-300">·</span>
               <span>Published {publishedLabel}</span>
-              <span className="text-gray-300">·</span>
-              <span>{post.authorName}</span>
             </div>
           </header>
 
@@ -551,15 +542,6 @@ export default async function BlogPostPage({ params }: Props) {
               </div>
 
               <BlogSubscribeBox slug={post.slug} variant="editorial" />
-
-              <section className="mt-16 border-t border-gray-100 pt-10">
-                <div className="border-l-2 border-brand/35 pl-5 sm:pl-6">
-                  <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-gray-400">About the author</p>
-                  <p className="mb-1 font-medium text-navy">{post.authorName}</p>
-                  <p className="mb-3 text-[13px] text-gray-500">{post.authorRole}</p>
-                  <p className="max-w-[52ch] text-[15px] leading-relaxed text-gray-600">{post.authorBio}</p>
-                </div>
-              </section>
 
               <RelatedBlock related={relatedPosts} />
 

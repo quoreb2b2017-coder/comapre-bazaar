@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { CalendarDays, FileClock, ShieldCheck, UserCircle2 } from 'lucide-react'
+import { CalendarDays, FileClock, ShieldCheck } from 'lucide-react'
 import { ReviewVendorVisitButton } from '@/components/reviews/ReviewVendorVisitButton'
 
 export type ReviewHeroBannerProps = {
@@ -40,8 +40,8 @@ export function ReviewHeroBanner({
   categoryBadge,
   compareLabel,
   featureTags = [],
-  reviewer,
-  reviewerRole,
+  reviewer: _reviewer,
+  reviewerRole: _reviewerRole,
   updatedOn,
   publishedOn,
   quoteHref,
@@ -136,17 +136,8 @@ export function ReviewHeroBanner({
           </div>
         </div>
 
-        <div className="mt-4 border-t border-white/15 pt-2.5">
+          <div className="mt-4 border-t border-white/15 pt-2.5">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-white/75 sm:text-xs">
-            {reviewer ? (
-              <p className="flex items-center gap-1.5">
-                <UserCircle2 className="h-3.5 w-3.5 shrink-0 text-white/60" aria-hidden />
-                <span>
-                  <strong className="font-medium text-white/90">{reviewer}</strong>
-                  {reviewerRole ? ` · ${reviewerRole}` : ''}
-                </span>
-              </p>
-            ) : null}
             <p className="flex items-center gap-1.5">
               <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-white/60" aria-hidden />
               <span>Independent editorial review</span>

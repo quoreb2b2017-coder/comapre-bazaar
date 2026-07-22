@@ -65,8 +65,6 @@ export function BlogGridCard({ post, index }: { post: UnifiedBlogCard; index?: n
               <Clock className="h-3 w-3 opacity-60" aria-hidden />
               {post.readTime}
             </span>
-            <span className="text-gray-300">·</span>
-            <span>{post.authorName}</span>
             <Link
               href={`/blog/${post.slug}`}
               className="ml-auto text-[12px] font-semibold uppercase tracking-[0.12em] text-navy transition-colors hover:text-cb-orange sm:ml-4"

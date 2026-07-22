@@ -106,7 +106,7 @@ export function ComparisonPageTemplate({ data, hubSlug, lastVerified }: Comparis
                     id="faqs-heading"
                     step={3}
                     title="Frequently asked questions"
-                    description={`Answered by ${data.author.name}`}
+                    description="Expert answer from our software buying guides."
                   />
                   <FaqAccordion items={data.faqs} />
                 </div>

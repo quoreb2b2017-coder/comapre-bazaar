@@ -5,8 +5,8 @@ import { notFound } from 'next/navigation'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
 import { whitePaperDisplayTitle, whitePaperFullDescription } from '@/lib/whitePaperDisplay'
 import { buildWhitePaperShareMetadata, SITE_URL } from '@/lib/seo'
+import { PUBLIC_PUBLISHER_NAME } from '@/lib/publicEditorDisplay'
 import {
-  whitePaperAuthorName,
   whitePaperOfferedBy,
   whitePaperOgImageUrl,
 } from '@/lib/whitePaperMeta'
@@ -35,7 +35,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     canonicalPath: `/resources/whitepapers/${paper.slug}`,
     publishedAt: paper.publishedAt,
     keywords: paper.metaKeywords,
-    authorName: whitePaperAuthorName(paper.metadata),
     ogImageUrl: whitePaperOgImageUrl(paper.thumbnailUrl),
   })
 }
@@ -46,7 +45,6 @@ export default async function WhitepaperDetailPage({ params }: PageProps) {
 
   const headline = whitePaperDisplayTitle(paper.title, paper.seoTitle)
   const offeredBy = whitePaperOfferedBy(paper.metadata)
-  const author = whitePaperAuthorName(paper.metadata)
   const pageUrl = `${SITE_URL}/resources/whitepapers/${paper.slug}`
   const coverImage = whitePaperOgImageUrl(paper.thumbnailUrl)
 
@@ -66,9 +64,9 @@ export default async function WhitepaperDetailPage({ params }: PageProps) {
     image: coverImage,
     datePublished: paper.publishedAt,
     author: {
-      '@type': 'Person',
-      name: author,
-      url: `${SITE_URL}/editorial-process`,
+      '@type': 'Organization',
+      name: PUBLIC_PUBLISHER_NAME,
+      url: SITE_URL,
     },
     publisher: {
       '@type': 'Organization',
@@ -126,7 +124,7 @@ export default async function WhitepaperDetailPage({ params }: PageProps) {
                   href="/resources/whitepapers"
                   className="font-semibold text-cb-orange hover:text-cb-orange-hover hover:underline"
                 >
-                  {author}
+                  {PUBLIC_PUBLISHER_NAME}
                 </Link>
               </p>
             </div>

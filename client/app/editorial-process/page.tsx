@@ -25,13 +25,6 @@ const CRITERIA = [
   { title: 'Editorial consensus', body: "Agreement across our team's independent test scores before publishing." },
 ]
 
-const TEAM = [
-  { initials: 'SK', name: 'Sarah Kim', role: 'CRM & Sales Tech Editor', exp: 'Former Salesforce consultant · 9 yrs' },
-  { initials: 'MR', name: 'Marcus Rivera', role: 'Payroll & HR Software Lead', exp: 'ex-ADP implementation · 11 yrs' },
-  { initials: 'PW', name: 'Priya Winters', role: 'Marketing Tech Reviewer', exp: 'B2B SaaS marketing · 7 yrs' },
-  { initials: 'JL', name: 'James Liu', role: 'Business Technology Editor', exp: 'IT procurement specialist · 8 yrs' },
-]
-
 export default function EditorialProcessPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
@@ -123,22 +116,6 @@ export default function EditorialProcessPage() {
           makes major pricing, feature, or policy changes, we update the relevant page within 5
           business days. Every page displays a &ldquo;Last reviewed&rdquo; date.
         </p>
-
-        <h2>Our editorial team</h2>
-        <p>All reviews are written and edited by named experts with verifiable professional experience.</p>
-      </div>
-
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-6 mb-10">
-        {TEAM.map(({ initials, name, role, exp }) => (
-          <div key={name} className="bg-white border border-gray-200 rounded-2xl p-4 text-center">
-            <div className="w-12 h-12 rounded-full bg-brand-light flex items-center justify-center text-brand font-semibold mx-auto mb-2" aria-hidden="true">
-              {initials}
-            </div>
-            <p className="font-semibold text-navy text-sm">{name}</p>
-            <p className="text-xs text-brand mt-0.5">{role}</p>
-            <p className="text-xs text-gray-400 mt-1">{exp}</p>
-          </div>
-        ))}
       </div>
 
       <div className="prose-editorial">

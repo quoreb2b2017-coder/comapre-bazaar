@@ -51,7 +51,7 @@ export function ComparisonPageHero({ data, vendorCount }: ComparisonPageHeroProp
           </div>
         </dl>
 
-        <AuthorBar author={data.author} reviewer={data.reviewer} lastReviewed={data.lastReviewed} />
+        <AuthorBar lastReviewed={data.lastReviewed} />
       </div>
     </header>
   )

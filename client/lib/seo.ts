@@ -111,7 +111,7 @@ export function buildBlogShareMetadata(opts: {
     opts.modifiedAt != null && opts.modifiedAt !== ''
       ? new Date(opts.modifiedAt).toISOString()
       : pub
-  const author = opts.authorName || SITE_NAME
+  const author = SITE_NAME
 
   return {
     title: { absolute: `${opts.title} | Compare Bazaar Blog` },
@@ -156,7 +156,7 @@ export function buildWhitePaperShareMetadata(opts: {
   const url = `${SITE_URL}${path}`
   const desc = formatShareDescription(opts.description)
   const imageUrl = opts.ogImageUrl || defaultOgImageUrl()
-  const author = opts.authorName || 'Compare Bazaar Editorial'
+  const author = SITE_NAME
   const pub =
     opts.publishedAt != null && opts.publishedAt !== ''
       ? new Date(opts.publishedAt).toISOString()

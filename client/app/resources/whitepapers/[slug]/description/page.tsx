@@ -9,7 +9,7 @@ import {
   whitePaperSidebarHighlights,
 } from '@/lib/whitePaperDisplay'
 import { buildWhitePaperShareMetadata } from '@/lib/seo'
-import { whitePaperAuthorName, whitePaperOfferedBy, whitePaperOgImageUrl } from '@/lib/whitePaperMeta'
+import { whitePaperOfferedBy, whitePaperOgImageUrl } from '@/lib/whitePaperMeta'
 import { fetchPublishedWhitePapers, fetchWhitePaperBySlug } from '@/lib/whitePaperCms'
 import { WhitePaperInsideFullView } from '@/components/whitepaper/WhitePaperInsideFullView'
 
@@ -34,7 +34,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     canonicalPath: `/resources/whitepapers/${paper.slug}/description`,
     publishedAt: paper.publishedAt,
     keywords: paper.metaKeywords,
-    authorName: whitePaperAuthorName(paper.metadata),
     ogImageUrl: whitePaperOgImageUrl(paper.thumbnailUrl),
   })
 }

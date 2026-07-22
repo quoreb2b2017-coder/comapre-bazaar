@@ -113,7 +113,8 @@ export function blogPostingGraph(opts: {
     datePublished: opts.datePublished,
     dateModified: opts.dateModified,
     author: {
-      '@type': 'Person',
+      '@type': 'Organization',
+      '@id': ORG_ID,
       name: opts.author.name,
       ...(opts.author.url ? { url: opts.author.url } : {}),
     },
