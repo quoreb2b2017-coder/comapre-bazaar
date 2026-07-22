@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Search, Filter, Eye, Edit, Check, X, Trash2, Globe, ChevronLeft, ChevronRight, RefreshCw, Send, BarChart2, EyeOff } from 'lucide-react'
 import { StatusBadge } from '../ui/StatusBadge'
 import { ConfirmModal } from '../ui/Modal'
+import { BlogCoverThumb } from './BlogCoverPanel'
 import api from '../../utils/api'
 import {
   ResponsiveContainer,
@@ -151,6 +152,7 @@ export const BlogTable = ({ toast }) => {
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
+                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide w-20">Cover</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Title</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Status</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide hidden sm:table-cell">Words</th>
@@ -163,7 +165,7 @@ export const BlogTable = ({ toast }) => {
               {loading ? (
                 Array(5).fill(0).map((_, i) => (
                   <tr key={i}>
-                    {Array(6).fill(0).map((_, j) => (
+                    {Array(7).fill(0).map((_, j) => (
                       <td key={j} className="px-4 py-3">
                         <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" style={{ width: `${60 + Math.random() * 30}%` }} />
                       </td>
@@ -172,7 +174,7 @@ export const BlogTable = ({ toast }) => {
                 ))
               ) : blogs.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-12 text-center text-gray-400">
+                  <td colSpan={7} className="px-4 py-12 text-center text-gray-400">
                     <p className="text-lg mb-1">No blogs found</p>
                     <p className="text-sm">Try adjusting your filters or generate a new blog</p>
                   </td>
@@ -180,7 +182,10 @@ export const BlogTable = ({ toast }) => {
               ) : (
                 blogs.map((blog) => (
                   <tr key={blog._id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors group">
-                    <td className="px-4 py-3 max-w-[280px]">
+                    <td className="px-4 py-3">
+                      <BlogCoverThumb coverImageUrl={blog.coverImageUrl} title={blog.title} />
+                    </td>
+                    <td className="px-4 py-3 max-w-[240px]">
                       <p className="font-medium text-gray-900 dark:text-gray-100 text-sm truncate">{blog.title}</p>
                       {blog.topic && <p className="text-xs text-gray-400 truncate mt-0.5">{blog.topic}</p>}
                     </td>

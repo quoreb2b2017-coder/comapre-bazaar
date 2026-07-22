@@ -4,15 +4,9 @@ import { Zap, Clock, CheckCircle, ArrowRight, LayoutDashboard, Sparkles, FileTex
 import { StatsCards } from '../components/dashboard/StatsCards'
 import { ActivityChart } from '../components/dashboard/ActivityChart'
 import { StatusBadge } from '../components/ui/StatusBadge'
+import { BlogCoverThumb } from '../components/blogs/BlogCoverPanel'
 import api from '../utils/api'
 import { afterNextPaint } from '../utils/deferPaint'
-
-const statusDot = (status) => ({
-  published: 'bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.5)]',
-  approved: 'bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.45)]',
-  rejected: 'bg-red-500 shadow-[0_0_12px_rgba(239,68,68,0.45)]',
-  pending: 'bg-amber-400 shadow-[0_0_12px_rgba(251,191,36,0.5)]',
-}[status] || 'bg-gray-400')
 
 export const Dashboard = () => {
   const { toast } = useOutletContext()
@@ -125,9 +119,11 @@ export const Dashboard = () => {
                         onClick={() => navigate(`/blogs/${blog._id}`)}
                         className="w-full flex items-start gap-3 p-3 rounded-xl text-left border border-transparent hover:border-brand/25 hover:bg-brand-light/50 dark:hover:bg-brand/10 transition-all group"
                       >
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 bg-gray-100 dark:bg-gray-800 group-hover:bg-white dark:group-hover:bg-gray-700 transition-colors shadow-inner`}>
-                          <span className={`w-2.5 h-2.5 rounded-full ${statusDot(blog.status)}`} />
-                        </div>
+                        <BlogCoverThumb
+                          coverImageUrl={blog.coverImageUrl}
+                          title={blog.title}
+                          className="h-10 w-14 rounded-xl"
+                        />
                         <div className="flex-1 min-w-0 py-0.5">
                           <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate group-hover:text-brand transition-colors">{blog.title}</p>
                           <div className="flex items-center gap-2 mt-1 flex-wrap">

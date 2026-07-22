@@ -3,6 +3,7 @@ const router = express.Router()
 const Blog = require("../models/automationBlog.model");
 const Settings = require("../models/blogAdminSettings.model");
 const { generateBlog, validateAnthropicKey, getModel } = require("../services/blogAdmin.claude.service");
+const { resolveBlogCoverImageUrl } = require("../services/blogAdmin.unsplash.service");
 const { notifyPendingBlogForApproval } = require("../services/blogAdmin.pendingNotify.service");
 const { protect } = require("../middlewares/blogAdminAuth.middleware");
 
@@ -87,6 +88,15 @@ router.post('/', protect, async (req, res) => {
 
     const { data } = result
 
+    const coverResult = await resolveBlogCoverImageUrl({
+      topic: data.topic || topic,
+      title: data.title,
+      tags: data.tags,
+      keywords: data.keywords,
+    })
+    const coverImageUrl = coverResult?.coverImageUrl || null
+    const coverSearchQuery = coverResult?.searchQuery || null
+
     let savedBlog = null
     if (saveAsDraft !== false) {
       const draftPayload = {
@@ -100,6 +110,8 @@ router.post('/', protect, async (req, res) => {
         topic: data.topic,
         tone: data.tone,
         status: 'pending',
+        ...(coverImageUrl ? { coverImageUrl } : {}),
+        ...(coverSearchQuery ? { coverSearchQuery } : {}),
       }
 
       if (existingBlogId) {
@@ -123,7 +135,7 @@ router.post('/', protect, async (req, res) => {
 
     res.json({
       success: true,
-      data: { ...data, savedBlog },
+      data: { ...data, coverImageUrl: coverImageUrl || null, coverSearchQuery: coverSearchQuery || null, savedBlog },
       message: saveAsDraft !== false ? 'Blog generated and saved as draft!' : 'Blog generated successfully!',
     })
   } catch (error) {

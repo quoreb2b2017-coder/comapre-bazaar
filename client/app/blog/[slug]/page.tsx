@@ -134,15 +134,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const headline = (cms.metaTitle && cms.metaTitle.trim()) || cms.title
     const rawDesc = cms.metaDescription || cms.excerpt || formatShareDescription(cms.content?.slice(0, 600))
     const kw = [...new Set([...(cms.keywords || []), ...(cms.tags || [])])].slice(0, 24)
-    const thumbnailOg = pickTopicCoverUrl({
-      slug: cms.slug,
-      title: cms.title,
-      topic: cms.topic,
-      tags: cms.tags,
-      keywords: cms.keywords,
-      metaTitle: cms.metaTitle,
-      metaDescription: cms.metaDescription,
-    })
+    const thumbnailOg =
+      cms.coverImageUrl?.trim() ||
+      pickTopicCoverUrl({
+        slug: cms.slug,
+        title: cms.title,
+        topic: cms.topic,
+        tags: cms.tags,
+        keywords: cms.keywords,
+        metaTitle: cms.metaTitle,
+        metaDescription: cms.metaDescription,
+      })
     const bannerOg = extractHeroBannerImageUrl(cms.content)
     return buildBlogShareMetadata({
       title: headline,

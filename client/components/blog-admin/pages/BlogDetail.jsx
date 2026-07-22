@@ -3,6 +3,8 @@ import { useParams, useOutletContext, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Save, Check, X, Globe, Send, Edit, Eye, Loader2, Copy, RefreshCw, EyeOff } from 'lucide-react'
 import { StatusBadge } from '../components/ui/StatusBadge'
 import { ConfirmModal, unlockPageScroll } from '../components/ui/Modal'
+import { BlogCoverPanel } from '../components/blogs/BlogCoverPanel'
+import { BlogFormatCheck, metaTitleCounter, metaDescCounter, excerptCounter } from '../components/blogs/BlogFormatCheck'
 import api, { API_TIMEOUT_LONG_MS } from '../utils/api'
 
 export const BlogDetail = () => {
@@ -17,18 +19,20 @@ export const BlogDetail = () => {
   const [actionLoading, setActionLoading] = useState(null)
   const [confirm, setConfirm] = useState({ open: false, type: '' })
   const [previewMode, setPreviewMode] = useState(true)
-  const [keywordInput, setKeywordInput] = useState('')
+  const [formatCheck, setFormatCheck] = useState(null)
 
   const fetch = async () => {
     setLoading(true)
     try {
       const res = await api.get(`/blogs/${id}`)
       setBlog(res.data)
+      setFormatCheck(res.formatCheck || null)
       setForm({
         title: res.data.title,
         content: res.data.content,
         metaTitle: res.data.metaTitle || '',
         metaDescription: res.data.metaDescription || '',
+        excerpt: res.data.excerpt || '',
         keywords: res.data.keywords || [],
         tags: res.data.tags || [],
       })
@@ -64,6 +68,7 @@ export const BlogDetail = () => {
     try {
       const res = await api.put(`/blogs/${id}`, form)
       setBlog(res.data)
+      setFormatCheck(res.formatCheck || null)
       setEditing(false)
       toast.success('Blog updated successfully!')
     } catch (err) {
@@ -281,6 +286,10 @@ export const BlogDetail = () => {
 
   if (!blog) return null
 
+  const titleCount = metaTitleCounter(editing ? form.metaTitle : blog.metaTitle)
+  const descCount = metaDescCounter(editing ? form.metaDescription : blog.metaDescription)
+  const exCount = excerptCounter(editing ? form.excerpt : blog.excerpt)
+
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header */}
@@ -325,7 +334,7 @@ export const BlogDetail = () => {
                 ) : (
                   <RefreshCw className="w-4 h-4" />
                 )}
-                Regenerate
+                Regenerate content
               </button>
               <button type="button" onClick={handleSave} disabled={saving || !!actionLoading} className="btn-primary">
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
@@ -385,8 +394,17 @@ export const BlogDetail = () => {
                   <Edit className="w-3.5 h-3.5" /> Raw HTML
                 </button>
               </div>
+              {blog.coverImageUrl?.trim() ? (
+                <div className="mt-4 overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800 aspect-[16/9] max-h-[280px]">
+                  <img
+                    src={blog.coverImageUrl.trim()}
+                    alt=""
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              ) : null}
               <div
-                className="blog-preview blog-cms-html prose prose-lg max-w-none text-gray-700 dark:prose-invert pt-2 pb-8 [&_.prose]:max-w-none"
+                className="blog-preview blog-cms-html prose prose-lg max-w-none text-gray-700 dark:prose-invert pt-4 pb-8 [&_.prose]:max-w-none"
                 dangerouslySetInnerHTML={{ __html: blog.content }}
               />
             </>
@@ -406,7 +424,7 @@ export const BlogDetail = () => {
                     ) : (
                       <RefreshCw className="w-3.5 h-3.5" />
                     )}
-                    Regenerate
+                    Regenerate content
                   </button>
                 ) : (
                   <button type="button" onClick={() => setPreviewMode(true)} className="btn-secondary text-xs">
@@ -439,6 +457,15 @@ export const BlogDetail = () => {
 
         {/* Sidebar */}
         <div className="space-y-5">
+          <BlogCoverPanel
+            blogId={blog._id}
+            coverImageUrl={blog.coverImageUrl}
+            toast={toast}
+            onUpdated={(newUrl) => setBlog((prev) => (prev ? { ...prev, coverImageUrl: newUrl } : prev))}
+          />
+
+          <BlogFormatCheck formatCheck={formatCheck} />
+
           {/* SEO */}
           <div className="card p-5">
             <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">SEO Settings</h3>
@@ -446,20 +473,29 @@ export const BlogDetail = () => {
               <div>
                 <label className="label">Meta Title</label>
                 {editing ? (
-                  <input value={form.metaTitle} onChange={(e) => setForm({ ...form, metaTitle: e.target.value })} className="input" maxLength={70} />
+                  <input value={form.metaTitle} onChange={(e) => setForm({ ...form, metaTitle: e.target.value })} className="input" maxLength={60} />
                 ) : (
                   <p className="text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 rounded-lg px-3 py-2">{blog.metaTitle || '—'}</p>
                 )}
-                {editing && <p className="text-xs text-gray-400 mt-1">{form.metaTitle?.length || 0}/70 chars</p>}
+                <p className={`text-xs mt-1 ${titleCount.cls}`}>{titleCount.text}</p>
               </div>
               <div>
                 <label className="label">Meta Description</label>
                 {editing ? (
-                  <textarea value={form.metaDescription} onChange={(e) => setForm({ ...form, metaDescription: e.target.value })} className="input resize-none" rows={3} maxLength={160} />
+                  <textarea value={form.metaDescription} onChange={(e) => setForm({ ...form, metaDescription: e.target.value })} className="input resize-none" rows={3} maxLength={130} />
                 ) : (
                   <p className="text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 rounded-lg px-3 py-2">{blog.metaDescription || '—'}</p>
                 )}
-                {editing && <p className="text-xs text-gray-400 mt-1">{form.metaDescription?.length || 0}/160 chars</p>}
+                <p className={`text-xs mt-1 ${descCount.cls}`}>{descCount.text}</p>
+              </div>
+              <div>
+                <label className="label">Excerpt (listing card)</label>
+                {editing ? (
+                  <textarea value={form.excerpt || ''} onChange={(e) => setForm({ ...form, excerpt: e.target.value })} className="input resize-none" rows={4} />
+                ) : (
+                  <p className="text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 rounded-lg px-3 py-2">{blog.excerpt || '—'}</p>
+                )}
+                <p className={`text-xs mt-1 ${exCount.cls}`}>{exCount.text}</p>
               </div>
               <div>
                 <label className="label">Keywords</label>
@@ -540,9 +576,9 @@ export const BlogDetail = () => {
         isOpen={confirm.open && confirm.type === 'regenerate'}
         onClose={() => setConfirm({ open: false, type: '' })}
         onConfirm={() => runRegenerateFromAi()}
-        title="Regenerate with AI"
-        message="Claude will replace title, HTML body, meta fields, and keywords in the editor with a new draft (compare-bazaar.com voice). Slug stays the same until you save. Continue?"
-        confirmText="Regenerate"
+        title="Regenerate content with AI"
+        message="Claude will replace title, HTML body, meta fields, and keywords in the editor with a new draft (compare-bazaar.com voice). Cover image is unchanged unless you use Regenerate cover. Slug stays the same until you save. Continue?"
+        confirmText="Regenerate content"
         loading={actionLoading === 'regenerate'}
       />
     </div>

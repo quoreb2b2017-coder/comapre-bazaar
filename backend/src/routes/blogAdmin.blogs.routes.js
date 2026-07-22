@@ -4,6 +4,8 @@ const router = express.Router()
 const Blog = require("../models/automationBlog.model");
 const Settings = require("../models/blogAdminSettings.model");
 const { protect } = require("../middlewares/blogAdminAuth.middleware");
+const { resolveBlogCoverImageUrl } = require("../services/blogAdmin.unsplash.service");
+const { normalizeBlogFields, validateBlogFormat } = require("../services/blogAdmin.contentFormat.service");
 const { sendBlogApprovalNotification, sendPublishedNotification, editMessage } = require("../services/blogAdmin.telegram.service");
 const { resolveTelegramCredentials } = require("../services/blogAdmin.pendingNotify.service");
 const BlogSubscriber = require("../models/blogSubscriber.model");
@@ -73,7 +75,7 @@ router.get('/stats', protect, async (req, res) => {
       Blog.countDocuments({ status: 'approved' }),
       Blog.countDocuments({ status: 'rejected' }),
       Blog.countDocuments({ status: 'published' }),
-      Blog.find().sort({ createdAt: -1 }).limit(5).select('title status createdAt'),
+      Blog.find().sort({ createdAt: -1 }).limit(5).select('title status createdAt coverImageUrl topic'),
     ])
 
     // Daily stats for last 14 days
@@ -107,7 +109,14 @@ router.get('/:id', protect, async (req, res) => {
   try {
     const blog = await Blog.findById(req.params.id)
     if (!blog) return res.status(404).json({ success: false, message: 'Blog not found' })
-    res.json({ success: true, data: blog })
+    const formatCheck = validateBlogFormat({
+      title: blog.title,
+      content: blog.content,
+      metaTitle: blog.metaTitle,
+      metaDescription: blog.metaDescription,
+      excerpt: blog.excerpt,
+    })
+    res.json({ success: true, data: blog, formatCheck })
   } catch (error) {
     res.status(500).json({ success: false, message: error.message })
   }
@@ -119,6 +128,26 @@ router.put('/:id', protect, async (req, res) => {
     const allowed = ['title', 'content', 'metaTitle', 'metaDescription', 'keywords', 'tags', 'excerpt', 'status']
     const updates = {}
     allowed.forEach((field) => { if (req.body[field] !== undefined) updates[field] = req.body[field] })
+
+    const touchesContent =
+      updates.content !== undefined ||
+      updates.metaTitle !== undefined ||
+      updates.metaDescription !== undefined ||
+      updates.excerpt !== undefined ||
+      updates.title !== undefined
+
+    if (touchesContent) {
+      const current = await Blog.findById(req.params.id).lean()
+      if (!current) return res.status(404).json({ success: false, message: 'Blog not found' })
+      const normalized = normalizeBlogFields({
+        title: updates.title ?? current.title,
+        content: updates.content ?? current.content,
+        metaTitle: updates.metaTitle ?? current.metaTitle,
+        metaDescription: updates.metaDescription ?? current.metaDescription,
+        excerpt: updates.excerpt ?? current.excerpt,
+      })
+      Object.assign(updates, normalized)
+    }
 
     if (updates.status === 'approved') {
       const current = await Blog.findById(req.params.id).select('status')
@@ -140,7 +169,14 @@ router.put('/:id', protect, async (req, res) => {
       ...(statusOnly ? { select: '-content' } : {}),
     })
     if (!blog) return res.status(404).json({ success: false, message: 'Blog not found' })
-    res.json({ success: true, data: blog })
+    const formatCheck = validateBlogFormat({
+      title: blog.title,
+      content: blog.content,
+      metaTitle: blog.metaTitle,
+      metaDescription: blog.metaDescription,
+      excerpt: blog.excerpt,
+    })
+    res.json({ success: true, data: blog, formatCheck })
   } catch (error) {
     res.status(500).json({ success: false, message: error.message })
   }
@@ -332,6 +368,52 @@ router.post('/:id/unpublish', protect, async (req, res) => {
       success: true,
       data: updated,
       message: 'Blog unpublished — removed from /blog. You can publish again when ready.',
+    })
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message })
+  }
+})
+
+// @route   POST /api/blogs/:id/regenerate-cover — Unsplash cover only (no content change)
+router.post('/:id/regenerate-cover', protect, async (req, res) => {
+  try {
+    const blogId = String(req.params.id || '').trim()
+    if (!mongoose.Types.ObjectId.isValid(blogId)) {
+      return res.status(400).json({ success: false, message: 'Invalid blog id' })
+    }
+
+    const blog = await Blog.findById(blogId)
+    if (!blog) return res.status(404).json({ success: false, message: 'Blog not found' })
+
+    const coverResult = await resolveBlogCoverImageUrl({
+      topic: blog.topic,
+      title: blog.title,
+      tags: blog.tags || [],
+      keywords: blog.keywords || [],
+      excludeCoverUrl: blog.coverImageUrl || null,
+      preferDifferent: true,
+      lockedSearchQuery: blog.coverSearchQuery || null,
+    })
+
+    const coverImageUrl = coverResult?.coverImageUrl || null
+    const coverSearchQuery = coverResult?.searchQuery || blog.coverSearchQuery || null
+
+    if (!coverImageUrl) {
+      return res.status(502).json({
+        success: false,
+        message: 'No other on-topic image found on Unsplash. Try again or adjust topic/tags.',
+      })
+    }
+
+    blog.coverImageUrl = coverImageUrl
+    if (coverSearchQuery) blog.coverSearchQuery = coverSearchQuery
+    await blog.save()
+
+    res.json({
+      success: true,
+      data: blog,
+      coverImageUrl,
+      message: 'Cover image updated from Unsplash',
     })
   } catch (error) {
     res.status(500).json({ success: false, message: error.message })

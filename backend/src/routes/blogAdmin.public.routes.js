@@ -48,7 +48,7 @@ router.get('/', async (req, res) => {
         slug: { $exists: true, $ne: '' },
       })
         .select(
-          'slug title excerpt status publishedAt approvedAt updatedAt metaTitle metaDescription tags topic readingTime keywords viewCount'
+          'slug title excerpt status publishedAt approvedAt updatedAt metaTitle metaDescription tags topic readingTime keywords viewCount coverImageUrl'
         )
         .lean()
     )
@@ -66,6 +66,7 @@ router.get('/', async (req, res) => {
       readingTime: b.readingTime,
       keywords: b.keywords || [],
       viewCount: typeof b.viewCount === 'number' ? b.viewCount : 0,
+      coverImageUrl: b.coverImageUrl || '',
     }))
 
     res.json({ success: true, data })

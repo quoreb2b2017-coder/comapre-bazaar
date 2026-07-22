@@ -21,6 +21,8 @@ export type CmsBlogSummary = {
   readingTime?: number
   /** Total public article visits (optional until backend migrated). */
   viewCount?: number
+  /** Unsplash cover saved at generation time (optional). */
+  coverImageUrl?: string
 }
 
 export type CmsBlogDetail = CmsBlogSummary & {
@@ -228,7 +230,7 @@ function cmsSummaryToUnified(b: CmsBlogSummary): UnifiedBlogCard {
   const rt =
     typeof b.readingTime === 'number' && b.readingTime > 0 ? `${b.readingTime} min read` : '8 min read'
   const category = (b.tags && b.tags[0]) || b.topic || 'Editorial'
-  const coverUrl = pickTopicCoverUrl(b)
+  const coverUrl = b.coverImageUrl?.trim() || pickTopicCoverUrl(b)
   const viewCount = typeof b.viewCount === 'number' && b.viewCount >= 0 ? b.viewCount : 0
   return {
     slug: b.slug,

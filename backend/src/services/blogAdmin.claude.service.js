@@ -51,6 +51,7 @@ const getMessageText = (message) => {
 
 /** Claude sometimes wraps HTML in markdown fences; strip so DB never stores a stray ```html / ``` line. */
 const { getCompareBazaarEditorialContext } = require("./blogAdmin.siteReader.service")
+const { normalizeBlogFields, validateBlogFormat } = require("./blogAdmin.contentFormat.service")
 
 const stripLeadingMarkdownFence = (raw) => {
   let s = String(raw || '').trim()
@@ -104,7 +105,7 @@ const generateBlog = async ({ topic, keywords = [], tone = 'professional', custo
 ${tonePrompt}
 
 Required structure:
-1) **Hero (first element):** One <section class="blog-hero-banner not-prose" data-blog-banner="true"> with inline styles: unique multi-stop linear-gradient for this topic; padding 2rem 1.75rem; border-radius 20px; margin-bottom 2rem; position:relative; overflow:hidden; box-shadow 0 25px 50px -12px rgba(0,0,0,0.35); border 1px solid rgba(255,255,255,0.12); color #f8fafc. Inside: optional <p class="blog-hero-eyebrow">; exactly one <h1 class="blog-hero-title">; <p class="blog-hero-subtitle">; a decorative absolute radial glow <div> (pointer-events:none); <div class="blog-hero-icon-row" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:1.25rem;align-items:stretch"> with **four** <div class="blog-hero-pill"> items — each pill inline-flex, gap 10px, padding 10px 14px, rounded-full, rgba(255,255,255,0.12) fill, border rgba(255,255,255,0.18), optional backdrop-filter blur(8px), containing a 22px stroke <svg viewBox="0 0 24 24"> plus <span class="blog-hero-pill-label"> (2–5 words). Pick icons that match labels. No second H1 anywhere else.
+1) **Hero (first element):** One <section class="blog-hero-banner not-prose" data-blog-banner="true"> with inline styles: unique multi-stop linear-gradient for this topic; padding 2rem 1.75rem; border-radius 20px; margin-bottom 2rem; position:relative; overflow:hidden; box-shadow 0 25px 50px -12px rgba(0,0,0,0.35); border 1px solid rgba(255,255,255,0.12); color #f8fafc. Inside: optional <p class="blog-hero-eyebrow"> (short category line, under 8 words); exactly one <h1 class="blog-hero-title"> (clear headline, **50–60 characters** including spaces); **required** <p class="blog-hero-subtitle"> (summary hook: **50 to 60 words exactly**, complete sentences, no bullet list); a decorative absolute radial glow <div> (pointer-events:none); <div class="blog-hero-icon-row" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:1.25rem;align-items:stretch"> with **four** <div class="blog-hero-pill"> items — each pill inline-flex, gap 10px, padding 10px 14px, rounded-full, rgba(255,255,255,0.12) fill, border rgba(255,255,255,0.18), optional backdrop-filter blur(8px), containing a 22px stroke <svg viewBox="0 0 24 24"> plus <span class="blog-hero-pill-label"> (2–5 words). Pick icons that match labels. No second H1 anywhere else.
 
 2) After the hero: intro, multiple **real** <h2> sections with <h3> where useful, <ul>/<li> or <ol>/<li> lists, conclusion + CTA. Never fake headings with bold paragraphs.
 
@@ -136,11 +137,11 @@ ${siteBlock}
 Please provide:
 1. The full blog post content in HTML format (starting with the data-blog-banner section, then the rest of the article)
 2. After the blog content, on a new line write "---META---"
-3. Then provide:
-   META_TITLE: [A compelling meta title under 60 chars]
-   META_DESCRIPTION: [An engaging meta description under 155 chars]
+3. Then provide (strict length limits):
+   META_TITLE: [Google SERP title, **50–60 characters** including spaces, primary keyword near start]
+   META_DESCRIPTION: [Meta description, **120–130 characters** including spaces, clear value prop + soft CTA]
    SUGGESTED_TAGS: [5 relevant tags, comma separated]
-   EXCERPT: [A 2-3 sentence excerpt for the blog listing]`
+   EXCERPT: [Listing card excerpt, **50–60 words**, 2–3 sentences, mirrors hero subtitle theme]`
 
   try {
     const model = getModel()
@@ -188,23 +189,40 @@ Please provide:
 
     const trimmed = blogContent.trim()
     const wordCount = countWordsFromHtml(trimmed)
+
+    const normalized = normalizeBlogFields({
+      title: extractedTitle,
+      content: trimmed,
+      metaTitle,
+      metaDescription,
+      excerpt,
+    })
+
     const readingTime = Math.max(1, Math.ceil(wordCount / 200))
+    const formatCheck = validateBlogFormat({
+      title: normalized.title,
+      content: normalized.content,
+      metaTitle: normalized.metaTitle,
+      metaDescription: normalized.metaDescription,
+      excerpt: normalized.excerpt,
+    })
 
     return {
       success: true,
       data: {
-        title: extractedTitle,
-        content: trimmed,
-        metaTitle: metaTitle.substring(0, 70),
-        metaDescription: metaDescription.substring(0, 160),
+        title: normalized.title,
+        content: normalized.content,
+        metaTitle: normalized.metaTitle,
+        metaDescription: normalized.metaDescription,
         keywords: [...new Set([...kw, ...suggestedTags])].slice(0, 10),
         tags: suggestedTags,
-        excerpt: excerpt || '',
+        excerpt: normalized.excerpt,
         topic,
         tone,
         model,
         wordCount,
         readingTime,
+        formatCheck,
         usage: message.usage,
       },
     }

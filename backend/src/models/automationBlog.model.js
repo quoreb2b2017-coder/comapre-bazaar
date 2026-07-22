@@ -28,11 +28,11 @@ const blogSchema = new mongoose.Schema(
     },
     metaTitle: {
       type: String,
-      maxlength: [70, "Meta title cannot exceed 70 characters"],
+      maxlength: [60, "Meta title cannot exceed 60 characters"],
     },
     metaDescription: {
       type: String,
-      maxlength: [160, "Meta description cannot exceed 160 characters"],
+      maxlength: [130, "Meta description cannot exceed 130 characters"],
     },
     keywords: [
       {
@@ -55,6 +55,10 @@ const blogSchema = new mongoose.Schema(
     wordCount: { type: Number, default: 0 },
     readingTime: { type: Number, default: 0 },
     tags: [{ type: String, trim: true }],
+    /** Unsplash cover fetched at generation time (topic-based). */
+    coverImageUrl: { type: String, trim: true },
+    /** Unsplash search query used for cover — keeps regenerate on same topic. */
+    coverSearchQuery: { type: String, trim: true },
     /** Public article page visits (incremented via POST …/public/blogs/:slug/view) */
     viewCount: { type: Number, default: 0, min: 0 },
   },
