@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useParams, useOutletContext, useNavigate } from 'react-router-dom'
+import { useParams, useOutletContext, useNavigate, useLocation } from 'react-router-dom'
 import { ArrowLeft, Save, Check, X, Globe, Send, Edit, Eye, Loader2, Copy, RefreshCw, EyeOff } from 'lucide-react'
 import { StatusBadge } from '../components/ui/StatusBadge'
 import { ConfirmModal, unlockPageScroll } from '../components/ui/Modal'
@@ -11,10 +11,12 @@ export const BlogDetail = () => {
   const { id } = useParams()
   const { toast } = useOutletContext()
   const navigate = useNavigate()
+  const location = useLocation()
   const [blog, setBlog] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [editing, setEditing] = useState(false)
+  const [editing, setEditing] = useState(() => location.pathname.endsWith('/edit'))
   const [form, setForm] = useState({})
+  const [keywordInput, setKeywordInput] = useState('')
   const [saving, setSaving] = useState(false)
   const [actionLoading, setActionLoading] = useState(null)
   const [confirm, setConfirm] = useState({ open: false, type: '' })
