@@ -74,6 +74,7 @@ export async function getSitemapEntries(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITEMAP_BASE_URL}/advertise`, changeFrequency: 'yearly', priority: 0.4 },
     { url: `${SITEMAP_BASE_URL}/contact`, changeFrequency: 'yearly', priority: 0.4 },
     { url: `${SITEMAP_BASE_URL}/human-resources/buddy-punch`, changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${SITEMAP_BASE_URL}/human-resources/remote-payroll`, changeFrequency: 'monthly', priority: 0.5 },
   ]
 
   const legalRoutes: MetadataRoute.Sitemap = [
