@@ -48,7 +48,11 @@ async function proxyRequest(req: NextRequest, pathSegments: string[] | undefined
     const responseBody = await upstream.arrayBuffer()
     const resHeaders = new Headers()
     const upstreamType = upstream.headers.get('content-type')
+    const upstreamDisposition = upstream.headers.get('content-disposition')
+    const upstreamCacheControl = upstream.headers.get('cache-control')
     if (upstreamType) resHeaders.set('content-type', upstreamType)
+    if (upstreamDisposition) resHeaders.set('content-disposition', upstreamDisposition)
+    if (upstreamCacheControl) resHeaders.set('cache-control', upstreamCacheControl)
 
     return new NextResponse(responseBody, {
       status: upstream.status,

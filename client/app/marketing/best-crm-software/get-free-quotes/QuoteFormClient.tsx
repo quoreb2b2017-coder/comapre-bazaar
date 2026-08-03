@@ -31,9 +31,12 @@ import { quoteLandingPageCss } from "@/lib/quoteLandingPageCss";
 import {
   BarChart3,
   Bot,
+  Building2,
+  Check,
   CheckCircle2,
   LineChart,
   Link2,
+  ListChecks,
   Mail,
   MessageCircle,
   Shield,
@@ -41,10 +44,17 @@ import {
   Smartphone,
   Sparkles,
   Target,
+  User,
   Users,
   Zap,
   type LucideIcon,
 } from "lucide-react";
+
+const STEP_META = [
+  { num: 1, label: "Contact", icon: User },
+  { num: 2, label: "Business", icon: Building2 },
+  { num: 3, label: "Priorities", icon: ListChecks },
+];
 
 const HOW_STEPS = [
   { tag: "2 minutes", num: "01", title: "Describe Your Requirements", body: "Our three-step form captures your team size, industry, must-have features, and buying timeline. No irrelevant questions, no long-winded surveys." },
@@ -297,15 +307,29 @@ export default function CRMQuotePage({ heading }: QuoteFormClientProps) {
                         <span className="fbadge">Free · No Obligation</span>
                       </div>
                       <p>3–5 matched quotes delivered within 24 hours</p>
-                      <div className="pbar">
-                        {[1,2,3].map(s=>(
-                          <div key={s} className={`pseg ${s<step?"done":s===step?"active":""}`}/>
-                        ))}
-                      </div>
-                      <div className="step-dots" aria-hidden>
-                        {[1,2,3].map((s) => (
-                          <span key={s} className={`sdot ${s === step ? "on" : ""} ${s < step ? "done" : ""}`} />
-                        ))}
+                      <div className="stepper" role="list" aria-label="Form progress">
+                        <div className="stepper-track" aria-hidden>
+                          <div
+                            className="stepper-track-fill"
+                            style={{ width: step === 1 ? "0%" : step === 2 ? "50%" : "100%" }}
+                          />
+                        </div>
+                        {STEP_META.map((s) => {
+                          const state = s.num < step ? "done" : s.num === step ? "active" : "upcoming";
+                          const Icon = s.icon;
+                          return (
+                            <div key={s.num} className={`stepper-item ${state}`} role="listitem">
+                              <span className="stepper-circle">
+                                {state === "done" ? (
+                                  <Check className="stepper-ico" aria-hidden />
+                                ) : (
+                                  <Icon className="stepper-ico" aria-hidden />
+                                )}
+                              </span>
+                              <span className="stepper-label">{s.label}</span>
+                            </div>
+                          );
+                        })}
                       </div>
                       <div className="plabel">
                         Step <b>{step} of 3</b>:{" "}

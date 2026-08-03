@@ -198,6 +198,54 @@ export const quoteLandingPageCss = `
           box-shadow:0 0 0 3px rgba(245,130,32,.35);
         }
         .sdot.done{background:rgba(255,255,255,.75)}
+
+        .stepper{
+          position:relative;display:flex;align-items:flex-start;justify-content:space-between;
+          margin-bottom:12px;z-index:1;padding:2px 0 0;
+        }
+        .stepper-track{
+          position:absolute;top:17px;left:34px;right:34px;height:2px;
+          background:rgba(255,255,255,.2);border-radius:100px;z-index:0;overflow:hidden;
+        }
+        .stepper-track-fill{
+          height:100%;border-radius:100px;
+          background:linear-gradient(90deg,var(--orange),#ffb366);
+          box-shadow:0 0 8px rgba(245,130,32,.55);
+          transition:width .45s var(--ease);
+        }
+        .stepper-item{
+          display:flex;flex-direction:column;align-items:center;gap:6px;
+          position:relative;z-index:1;flex:1;
+        }
+        .stepper-circle{
+          position:relative;width:34px;height:34px;border-radius:50%;
+          display:flex;align-items:center;justify-content:center;flex-shrink:0;
+          background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.32);
+          transition:background .3s var(--ease),border-color .3s var(--ease),box-shadow .3s var(--ease),transform .3s var(--ease);
+        }
+        .stepper-ico{width:16px;height:16px;color:rgba(255,255,255,.62);transition:color .3s var(--ease)}
+        .stepper-label{
+          font-size:10.5px;font-weight:600;color:rgba(255,255,255,.58);
+          letter-spacing:.02em;text-align:center;transition:color .3s var(--ease);
+        }
+        .stepper-item.active .stepper-circle{
+          background:linear-gradient(135deg,var(--orange) 0%,#ffb366 100%);
+          border-color:var(--orange);transform:scale(1.12);
+          box-shadow:0 0 0 4px rgba(245,130,32,.28),0 6px 14px -4px rgba(245,130,32,.55);
+        }
+        .stepper-item.active .stepper-circle::after{
+          content:'';position:absolute;inset:-5px;border-radius:50%;
+          border:2px solid rgba(245,130,32,.45);
+          animation:stepperRing 1.7s var(--ease) infinite;
+        }
+        @keyframes stepperRing{0%{transform:scale(.88);opacity:.9}100%{transform:scale(1.4);opacity:0}}
+        .stepper-item.active .stepper-ico{color:var(--white)}
+        .stepper-item.active .stepper-label{color:var(--white);font-weight:700}
+        .stepper-item.done .stepper-circle{background:var(--white);border-color:var(--white)}
+        .stepper-item.done .stepper-ico{color:var(--orange)}
+        .stepper-item.done .stepper-label{color:rgba(255,255,255,.88)}
+        @media(prefers-reduced-motion:reduce){.stepper-item.active .stepper-circle::after{animation:none!important}}
+
         .plabel{
           font-size:12px;color:rgba(255,255,255,.92);font-weight:500;
           position:relative;z-index:1;line-height:1.45;
