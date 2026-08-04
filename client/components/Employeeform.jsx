@@ -1,6 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { sendFormData } from './emailService';
+import {
+  isValidPhoneNumber,
+  PHONE_PLACEHOLDER,
+  PHONE_VALIDATION_MESSAGE,
+  sanitizePhoneInput,
+} from '@/lib/phoneValidation';
 
 const Employeeform = ({ onClose }) => {
     const [currentStep, setCurrentStep] = useState(1);
@@ -64,31 +70,16 @@ const Employeeform = ({ onClose }) => {
           return;
         }
         
-        // Handle phoneNumber validation - format as +XX followed by 10 digits
+        // Handle phoneNumber validation
         if (name === 'phoneNumber') {
-          let phoneValue = value.replace(/[^\d+]/g, '');
-          
-          // Ensure it starts with +
-          if (!phoneValue.startsWith('+') && phoneValue.length > 0) {
-            phoneValue = '+' + phoneValue;
-          }
-          
-          // Format as +XX followed by 10 digits
-          if (phoneValue.length > 1) {
-            const countryCode = phoneValue.slice(0, 3); // +XX
-            const number = phoneValue.slice(3).replace(/\s/g, ''); // Remove any spaces
-            
-            phoneValue = countryCode + number;
-          }
-          
+          const phoneValue = sanitizePhoneInput(value);
+
           setFormData({
             ...formData,
             [name]: phoneValue
           });
-          
-          // Validate phone number format
-          const phoneRegex = /^\+\d{2}\d{10}$/;
-          if (phoneValue.length > 0 && !phoneRegex.test(phoneValue)) {
+
+          if (phoneValue.length > 0 && !isValidPhoneNumber(phoneValue)) {
             setErrors({
               ...errors,
               phoneNumber: true
@@ -134,9 +125,7 @@ const Employeeform = ({ onClose }) => {
       }
       
       if (currentStep === 5) {
-        // Validate phone number
-        const phoneRegex = /^\+\d{2}\d{10}$/;
-        if (!phoneRegex.test(formData.phoneNumber)) {
+        if (!isValidPhoneNumber(formData.phoneNumber)) {
           setErrors({
             ...errors,
             phoneNumber: true
@@ -179,8 +168,7 @@ const Employeeform = ({ onClose }) => {
         e.preventDefault();
         // Final validation
         const zipCodeValid = formData.zipCode.length === 5;
-        const phoneRegex = /^\+\d{2}\d{10}$/;
-        const phoneNumberValid = phoneRegex.test(formData.phoneNumber);
+        const phoneNumberValid = isValidPhoneNumber(formData.phoneNumber);
         
         if (!zipCodeValid || !phoneNumberValid) {
           setErrors({
@@ -391,11 +379,11 @@ const Employeeform = ({ onClose }) => {
                   name="phoneNumber"
                   value={formData.phoneNumber}
                   onChange={handleInputChange}
-                  placeholder="+XX1234567890"
+                  placeholder={PHONE_PLACEHOLDER}
                   className={`w-full p-2 border ${errors.phoneNumber ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 ${errors.phoneNumber ? 'focus:ring-red-500' : 'focus:ring-[#ff8633]'}`}
                 />
                 {errors.phoneNumber && (
-                  <p className="text-red-500 text-xs mt-1">Please enter a valid phone number (+XX followed by 10 digits)</p>
+                  <p className="text-red-500 text-xs mt-1">{PHONE_VALIDATION_MESSAGE}</p>
                 )}
               </div>
                         </div>
@@ -456,11 +444,9 @@ const Employeeform = ({ onClose }) => {
             case 4:
                 return formData.email !== '' && formData.email.includes('@');
                 case 5:
-                  const phoneRegex = /^\+\d{2}\d{10}$/;
                   return formData.firstName !== '' && 
                          formData.lastName !== '' && 
-                         formData.phoneNumber !== '' &&
-                         phoneRegex.test(formData.phoneNumber) &&
+                         isValidPhoneNumber(formData.phoneNumber) &&
                          !errors.phoneNumber;
             case 6:
                 return captchaValue !== null; // CAPTCHA must be filled

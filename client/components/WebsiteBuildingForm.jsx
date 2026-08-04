@@ -3,6 +3,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { sendFormData } from './emailService';
+import {
+    isValidPhoneNumber,
+    phoneHasError,
+    PHONE_PLACEHOLDER,
+    PHONE_VALIDATION_MESSAGE,
+    sanitizePhoneInput,
+} from '@/lib/phoneValidation';
 
 const WebsiteBuildingForm = ({ onClose }) => {
     const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
@@ -74,7 +81,7 @@ const WebsiteBuildingForm = ({ onClose }) => {
         const { name, value } = e.target;
         setFormData({
             ...formData,
-            [name]: value
+            [name]: name === 'phoneNumber' ? sanitizePhoneInput(value) : value,
         });
     };
 
@@ -456,18 +463,18 @@ const WebsiteBuildingForm = ({ onClose }) => {
                                     name="phoneNumber"
                                     value={formData.phoneNumber}
                                     onChange={handleInputChange}
-                                    placeholder="+XX 1234567890"
-                                    className={`p-2 border ${formData.phoneNumber && !/^\+[0-9]{2} [0-9]{10}$/.test(formData.phoneNumber)
+                                    placeholder={PHONE_PLACEHOLDER}
+                                    className={`p-2 border ${phoneHasError(formData.phoneNumber)
                                         ? 'border-red-500'
                                         : 'border-gray-300'
-                                        } rounded-md focus:outline-none focus:ring-2 ${formData.phoneNumber && !/^\+[0-9]{2} [0-9]{10}$/.test(formData.phoneNumber)
+                                        } rounded-md focus:outline-none focus:ring-2 ${phoneHasError(formData.phoneNumber)
                                             ? 'focus:ring-red-500'
                                             : 'focus:ring-[#ff8633]'
                                         }`}
                                 />
-                                {formData.phoneNumber && !/^\+[0-9]{2} [0-9]{10}$/.test(formData.phoneNumber) && (
+                                {phoneHasError(formData.phoneNumber) && (
                                     <p className="text-red-500 text-xs mt-1">
-                                        Please enter a valid phone number in the format: +XX 1234567890
+                                        {PHONE_VALIDATION_MESSAGE}
                                     </p>
                                 )}
                             </div>
@@ -636,11 +643,9 @@ const WebsiteBuildingForm = ({ onClose }) => {
                 return formData.wdadditionalFeatures && formData.wdadditionalFeatures.trim().length > 0;
 
             case 10:
-                const phoneRegex = /^\+[0-9]{2} [0-9]{10}$/;
                 return formData.firstName !== '' &&
                     formData.lastName !== '' &&
-                    formData.phoneNumber !== '' &&
-                    phoneRegex.test(formData.phoneNumber);
+                    isValidPhoneNumber(formData.phoneNumber);
 
             case 11:
                 return formData.streetAddress && formData.streetAddress.trim() !== '' &&

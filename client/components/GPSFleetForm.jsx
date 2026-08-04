@@ -3,6 +3,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { sendFormData } from './emailService';
+import {
+  isValidPhoneNumber,
+  phoneHasError,
+  PHONE_PLACEHOLDER,
+  PHONE_VALIDATION_MESSAGE,
+  sanitizePhoneInput,
+} from '@/lib/phoneValidation';
 
 const GPSFleetForm = ({ onClose }) => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -35,7 +42,7 @@ const GPSFleetForm = ({ onClose }) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value
+      [name]: name === 'phoneNumber' ? sanitizePhoneInput(value) : value,
     });
   };
 
@@ -220,9 +227,12 @@ const GPSFleetForm = ({ onClose }) => {
               name="phoneNumber"
               value={formData.phoneNumber}
               onChange={handleInputChange}
-              placeholder="Phone Number"
-              className="w-full p-2 border border-gray-300 rounded-md mb-3 focus:outline-none focus:ring-2 focus:ring-[#ff8633] text-gray-700"
+              placeholder={PHONE_PLACEHOLDER}
+              className={`w-full p-2 border rounded-md mb-3 focus:outline-none focus:ring-2 text-gray-700 ${phoneHasError(formData.phoneNumber) ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-[#ff8633]'}`}
             />
+            {phoneHasError(formData.phoneNumber) ? (
+              <p className="text-red-500 text-xs mb-3">{PHONE_VALIDATION_MESSAGE}</p>
+            ) : null}
             <p className="text-xs text-gray-600 mt-2">
               By clicking "Compare Prices" below, I consent to receive automated marketing or other calls and texts which may use autodialer, prerecorded or artificial voice technology from or on behalf of 360Connect LLC and up to five marketing partners in the phone number provided above, even if my number is listed on any state or national Do Not Call Registry. I understand consent is not a condition of purchase. By clicking "Compare Prices" below, I also agree to 360Connect LLC's Terms of Use, including submitting any disputes to mandatory individual binding arbitration.
             </p>
@@ -277,7 +287,7 @@ const GPSFleetForm = ({ onClose }) => {
       case 4:
         return formData.email !== '' && formData.email.includes('@');
       case 5:
-        return formData.fullName !== '' && formData.companyName !== '' && formData.phoneNumber !== '';
+        return formData.fullName !== '' && formData.companyName !== '' && isValidPhoneNumber(formData.phoneNumber);
       case 6:
         return captchaValue !== null;
       default:

@@ -3,6 +3,13 @@
 import React, { useState, useEffect, useRef } from 'react'
 import ReCAPTCHA from 'react-google-recaptcha'
 import { sendFormData } from './emailService'
+import {
+  isValidPhoneNumber,
+  phoneHasError,
+  PHONE_PLACEHOLDER,
+  PHONE_VALIDATION_MESSAGE,
+  sanitizePhoneInput,
+} from '@/lib/phoneValidation'
 
 const ProjectManagementForm = ({ onClose }) => {
   const [currentStep, setCurrentStep] = useState(1)
@@ -36,7 +43,10 @@ const ProjectManagementForm = ({ onClose }) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
-    setFormData({ ...formData, [name]: value })
+    setFormData({
+      ...formData,
+      [name]: name === 'phoneNumber' ? sanitizePhoneInput(value) : value,
+    })
   }
 
   const handleRadioChange = (name, value) => {
@@ -200,8 +210,11 @@ const ProjectManagementForm = ({ onClose }) => {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <input type="text" name="companyName" value={formData.companyName} onChange={handleInputChange} placeholder="Company Name" className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#ff8633]" />
-              <input type="tel" name="phoneNumber" value={formData.phoneNumber} onChange={handleInputChange} placeholder="+XX 1234567890" className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#ff8633]" />
+              <input type="tel" name="phoneNumber" value={formData.phoneNumber} onChange={handleInputChange} placeholder={PHONE_PLACEHOLDER} className={`p-2 border rounded-md focus:outline-none focus:ring-2 ${phoneHasError(formData.phoneNumber) ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-[#ff8633]'}`} />
             </div>
+            {phoneHasError(formData.phoneNumber) ? (
+              <p className="text-red-500 text-xs mt-2">{PHONE_VALIDATION_MESSAGE}</p>
+            ) : null}
           </div>
         )
       case 7:
@@ -238,7 +251,7 @@ const ProjectManagementForm = ({ onClose }) => {
       case 5:
         return formData.zipCode.length === 5 && formData.email.includes('@')
       case 6:
-        return formData.firstName && formData.lastName && formData.phoneNumber
+        return formData.firstName && formData.lastName && isValidPhoneNumber(formData.phoneNumber)
       case 7:
         return captchaValue !== null
       default:

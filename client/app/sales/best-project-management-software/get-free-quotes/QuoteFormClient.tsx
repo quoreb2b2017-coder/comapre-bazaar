@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { QuoteFormScrollBody } from "@/components/quotes/QuoteFormScrollBody";
 import { quoteLandingPageCss } from "@/lib/quoteLandingPageCss";
+import { isValidPhoneNumber, PHONE_VALIDATION_MESSAGE } from "@/lib/phoneValidation";
 
 const HOW_STEPS = [
   { tag: "Fast", num: "01", title: "Quantify teamwork", body: "Sizing, workflows, timelines, budgets, distilled once for vendor alignment." },
@@ -182,6 +183,7 @@ export default function ProjectManagementGetQuotesPage({ heading }: QuoteFormCli
     if (!form.email.trim()) e.email = "Please complete this required field.";
     else if (!/\S+@\S+\.\S+/.test(form.email)) e.email = "Please enter a valid email address.";
     if (!form.phoneNumber.trim()) e.phoneNumber = "Please complete this required field.";
+    else if (!isValidPhoneNumber(form.phoneNumber)) e.phoneNumber = PHONE_VALIDATION_MESSAGE;
     setErrors((prev) => {
       const next = { ...prev };
       ["firstName", "lastName", "companyName", "email", "phoneNumber"].forEach((k) => delete next[k]);

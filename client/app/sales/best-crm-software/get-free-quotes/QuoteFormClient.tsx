@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { QuoteFormScrollBody } from "@/components/quotes/QuoteFormScrollBody";
 import { quoteLandingPageCss } from "@/lib/quoteLandingPageCss";
+import { isValidPhoneNumber, PHONE_VALIDATION_MESSAGE } from "@/lib/phoneValidation";
 
 const HOW_STEPS = [
   { tag: "2 min", num: "01", title: "Capture team + stack", body: "Headcount, CRM posture, and industry anchor fit-based routing." },
@@ -196,6 +197,7 @@ export default function SalesCRMGetQuotesPage({ heading }: QuoteFormClientProps)
     if (!form.email.trim()) e.email = "Please complete this required field.";
     else if (!/\S+@\S+\.\S+/.test(form.email)) e.email = "Please enter a valid email address.";
     if (!form.phoneNumber.trim()) e.phoneNumber = "Please complete this required field.";
+    else if (!isValidPhoneNumber(form.phoneNumber)) e.phoneNumber = PHONE_VALIDATION_MESSAGE;
     if (!form.zipCode.trim()) e.zipCode = "Please complete this required field.";
     else if (!/^\d{5}$/.test(form.zipCode)) e.zipCode = "Please enter a valid 5-digit zip code.";
     setErrors((prev) => {

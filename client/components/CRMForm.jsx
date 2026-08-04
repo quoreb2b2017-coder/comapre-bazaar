@@ -3,6 +3,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { sendFormData } from './emailService';
+import {
+  isValidPhoneNumber,
+  PHONE_PLACEHOLDER,
+  PHONE_VALIDATION_MESSAGE,
+  sanitizePhoneInput,
+} from '@/lib/phoneValidation';
 
 const CRMForm = ({ onClose }) => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -44,32 +50,16 @@ const CRMForm = ({ onClose }) => {
     const { name, value } = e.target;
 
     if (name === 'phoneNumber') {
-      // Format phone number as +XX followed by 10 digits
-      let phoneValue = value.replace(/[^\d+]/g, '');
-
-      // Ensure it starts with +
-      if (!phoneValue.startsWith('+') && phoneValue.length > 0) {
-        phoneValue = '+' + phoneValue;
-      }
-
-      // Format as +XX followed by 10 digits
-      if (phoneValue.length > 1) {
-        const countryCode = phoneValue.slice(0, 3); // +XX
-        const number = phoneValue.slice(3).replace(/\s/g, ''); // Remove any spaces
-
-        phoneValue = countryCode + number;
-      }
+      const phoneValue = sanitizePhoneInput(value);
 
       setFormData({
         ...formData,
         [name]: phoneValue,
       });
 
-      // Validate phone number format using regex
-      const phoneRegex = /^\+\d{2}\d{10}$/;
       setErrors((prev) => ({
         ...prev,
-        phoneNumber: phoneValue.length > 0 && !phoneRegex.test(phoneValue),
+        phoneNumber: phoneValue.length > 0 && !isValidPhoneNumber(phoneValue),
       }));
     } else if (name === 'zipCode') {
       // Only allow digits for ZIP code
@@ -148,9 +138,7 @@ const CRMForm = ({ onClose }) => {
     }
 
     if (currentStep === 7) {
-      // Validate phone number
-      const phoneRegex = /^\+\d{2}\d{10}$/;
-      if (!phoneRegex.test(formData.phoneNumber)) {
+      if (!isValidPhoneNumber(formData.phoneNumber)) {
         setErrors((prev) => ({
           ...prev,
           phoneNumber: true,
@@ -251,9 +239,7 @@ const CRMForm = ({ onClose }) => {
     return /^\d{5}$/.test(zipCode);
   };
 
-  const isPhoneNumberValid = (phoneNumber) => {
-    return /^\+\d{2}\d{10}$/.test(phoneNumber);
-  };
+  const isPhoneNumberValid = (phoneNumber) => isValidPhoneNumber(phoneNumber);
 
   // Form step validation
   const isStepValid = () => {
@@ -572,13 +558,13 @@ const CRMForm = ({ onClose }) => {
                   name="phoneNumber"
                   value={formData.phoneNumber}
                   onChange={handleInputChange}
-                  placeholder="+XX1234567890"
+                  placeholder={PHONE_PLACEHOLDER}
                   className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#ff8633] ${
                     errors.phoneNumber ? 'border-red-500' : 'border-gray-300'
                   }`}
                 />
                 {errors.phoneNumber && (
-                  <p className="text-red-500 text-sm mt-1">Please enter a valid phone number (+XX followed by 10 digits)</p>
+                  <p className="text-red-500 text-sm mt-1">{PHONE_VALIDATION_MESSAGE}</p>
                 )}
               </div>
             </div>
