@@ -12,6 +12,9 @@ import { buildWhitePaperShareMetadata } from '@/lib/seo'
 import { whitePaperOfferedBy, whitePaperOgImageUrl } from '@/lib/whitePaperMeta'
 import { fetchPublishedWhitePapers, fetchWhitePaperBySlug } from '@/lib/whitePaperCms'
 import { WhitePaperInsideFullView } from '@/components/whitepaper/WhitePaperInsideFullView'
+import { WhitePaperMetaBadges } from '@/components/whitepaper/WhitePaperMetaBadges'
+import { whitePaperBackToItemLabel } from '@/lib/whitePaperTaxonomy'
+import { whitePaperResourceType } from '@/lib/whitePaperResourceType'
 
 export const revalidate = 120
 export const dynamicParams = true
@@ -44,6 +47,7 @@ export default async function WhitepaperDescriptionPage({ params }: PageProps) {
 
   const headline = whitePaperDisplayTitle(paper.title, paper.seoTitle)
   const offeredBy = whitePaperOfferedBy(paper.metadata)
+  const resourceType = whitePaperResourceType(paper.metadata)
   const detailHref = `/resources/whitepapers/${paper.slug}`
   const downloadHref = `/resources/whitepapers/${paper.slug}/download`
 
@@ -71,11 +75,12 @@ export default async function WhitepaperDescriptionPage({ params }: PageProps) {
           className="inline-flex items-center gap-2 text-sm text-gray-600 transition-colors hover:text-cb-orange"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden />
-          Back to whitepaper
+          {whitePaperBackToItemLabel(resourceType)}
         </Link>
 
         <p className="mt-6 text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-400">Full description</p>
-        <h1 className="mt-1.5 font-serif text-[1.25rem] font-normal leading-snug tracking-tight text-[#1a1a1a] sm:text-[1.375rem] lg:text-[1.5rem]">
+        <WhitePaperMetaBadges paper={paper} linkVertical className="mt-3" />
+        <h1 className="mt-3 font-serif text-[1.25rem] font-normal leading-snug tracking-tight text-[#1a1a1a] sm:text-[1.375rem] lg:text-[1.5rem]">
           {headline}
         </h1>
         <p className="mt-2 text-sm text-gray-600">
@@ -84,6 +89,7 @@ export default async function WhitepaperDescriptionPage({ params }: PageProps) {
 
         <div className="mt-8 border-t border-gray-200 pt-8">
           <WhitePaperInsideFullView
+            resourceType={resourceType}
             overview={overview}
             sidebarHighlights={sidebarHighlights}
             testimonials={paper.testimonials}

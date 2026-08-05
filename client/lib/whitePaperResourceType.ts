@@ -1,9 +1,13 @@
-export type WhitePaperResourceType = 'whitepaper' | 'report'
+import {
+  normalizeWhitePaperResourceType,
+  whitePaperResourceLabel,
+  type WhitePaperResourceType,
+} from '@/lib/whitePaperTaxonomy'
+
+export type { WhitePaperResourceType }
 
 export function whitePaperResourceType(metadata?: { resourceType?: string } | null): WhitePaperResourceType {
-  return metadata?.resourceType === 'report' ? 'report' : 'whitepaper'
+  return normalizeWhitePaperResourceType(metadata?.resourceType)
 }
 
-export function whitePaperResourceLabel(type: WhitePaperResourceType): string {
-  return type === 'report' ? 'Report' : 'Whitepaper'
-}
+export { whitePaperResourceLabel }

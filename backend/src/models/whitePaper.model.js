@@ -9,11 +9,14 @@ const whitePaperSchema = new mongoose.Schema(
     metadata: {
       offeredBy: { type: String, trim: true, default: 'Compare Bazaar' },
       author: { type: String, trim: true },
+      /** Hub slug: crm, payroll, voip, etc. */
+      vertical: { type: String, trim: true },
+      /** Legacy display label; kept in sync with vertical for older clients */
       category: { type: String, trim: true },
       extra: { type: String, trim: true },
       resourceType: {
         type: String,
-        enum: ['whitepaper', 'report'],
+        enum: ['whitepaper', 'report', 'case_study', 'webinar'],
         default: 'whitepaper',
       },
     },

@@ -11,6 +11,14 @@ import { isWorkEmail, WORK_EMAIL_ERROR } from '@/lib/workEmail'
 import { WhitePaperHighlightFormFields } from '@/components/whitepaper/WhitePaperHighlightFormFields'
 import { parseHighlightQuestions, type HighlightQuestion } from '@/lib/highlightQuestions'
 import { WhitePaperInsideExplorer } from '@/components/whitepaper/WhitePaperInsideExplorer'
+import {
+  whitePaperBackToLibraryLabel,
+  whitePaperDownloadFormTitle,
+  whitePaperFreeBadgeLabel,
+  whitePaperReturnToItemLabel,
+  normalizeWhitePaperResourceType,
+  type WhitePaperResourceType,
+} from '@/lib/whitePaperTaxonomy'
 
 type PaperPreview = {
   slug: string
@@ -18,7 +26,7 @@ type PaperPreview = {
   seoTitle?: string
   description?: string
   thumbnailUrl: string
-  metadata?: { offeredBy?: string }
+  metadata?: { offeredBy?: string; resourceType?: string }
   highlightQuestions?: HighlightQuestion[]
   insideOverview?: string
   insideSections?: { title: string; summary: string; body?: string; pages?: string }[]
@@ -76,6 +84,7 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
 
   const headline = whitePaperDisplayTitle(paper.title, paper.seoTitle)
   const offeredBy = paper.metadata?.offeredBy || 'Compare Bazaar'
+  const resourceType: WhitePaperResourceType = normalizeWhitePaperResourceType(paper.metadata?.resourceType)
   const base = whitePaperBackendBase()
   const detailHref = `/resources/whitepapers/${paper.slug}`
   const formQuestions: HighlightQuestion[] = parseHighlightQuestions(paper.highlightQuestions)
@@ -167,7 +176,7 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
           className="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-cb-orange"
         >
           <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
-          Back to all whitepapers
+          {whitePaperBackToLibraryLabel()}
         </Link>
 
         <div className="mt-3 grid lg:grid-cols-[minmax(0,280px)_minmax(0,1fr)] lg:gap-x-10 xl:grid-cols-[minmax(0,300px)_minmax(0,1fr)]">
@@ -182,7 +191,9 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
                 priority
               />
             </div>
-            <p className="mt-3 text-xs font-medium uppercase tracking-wider text-gray-500">Free whitepaper</p>
+            <p className="mt-3 text-xs font-medium uppercase tracking-wider text-gray-500">
+              {whitePaperFreeBadgeLabel(resourceType)}
+            </p>
             <h1 className="mt-1 font-serif text-lg leading-snug text-navy lg:text-xl">{headline}</h1>
             <p className="mt-1 text-sm text-gray-600">
               Offered by <span className="text-navy">{offeredBy}</span>
@@ -200,7 +211,7 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
             {step === 'email' && (
               <section>
                 <FormHeader
-                  title="Download this whitepaper"
+                  title={whitePaperDownloadFormTitle(resourceType)}
                   description={`Enter your work email. We will use it only to deliver your PDF and related resources from ${offeredBy}.`}
                 />
 
@@ -240,7 +251,7 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
             {step === 'profile' && (
               <section>
                 <FormHeader
-                  title="Download this whitepaper"
+                  title={whitePaperDownloadFormTitle(resourceType)}
                   description={`A few more details to deliver your PDF from ${offeredBy}.`}
                 />
 
@@ -427,7 +438,7 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
                 </button>
                 <p className="mt-4 text-sm">
                   <Link href={detailHref} className="font-medium text-cb-orange hover:underline">
-                    Return to whitepaper
+                    {whitePaperReturnToItemLabel(resourceType)}
                   </Link>
                 </p>
               </section>
@@ -436,6 +447,7 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
 
             <WhitePaperInsideExplorer
               slug={paper.slug}
+              resourceType={resourceType}
               overview={paper.insideOverview || paper.description || ''}
               sections={paper.insideSections}
               points={paper.insidePoints}

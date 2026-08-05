@@ -1,4 +1,5 @@
 import type { WhitePaperInsideSectionItem } from '@/components/whitepaper/whitePaperInsideTypes'
+import { whitePaperKeyInsightsFallback, type WhitePaperResourceType } from '@/lib/whitePaperTaxonomy'
 
 export function sectionDisplayTitle(item: WhitePaperInsideSectionItem): string {
   return item.title || item.summary
@@ -175,10 +176,12 @@ export function WhitePaperInsideList({
 export function WhitePaperInsideHeading({
   sectionCount,
   previewCount,
+  resourceType = 'whitepaper',
   className = '',
 }: {
   sectionCount: number
   previewCount?: number
+  resourceType?: WhitePaperResourceType
   className?: string
 }) {
   const showing = previewCount ?? sectionCount
@@ -192,7 +195,7 @@ export function WhitePaperInsideHeading({
           ? hasMore
             ? `Preview: ${showing} of ${sectionCount} sections`
             : `${sectionCount} sections of data you can act on today`
-          : 'Key insights from this whitepaper'}
+          : whitePaperKeyInsightsFallback(resourceType)}
       </h3>
       <p className="mt-1.5 text-xs leading-relaxed text-gray-500">
         Trusted by operations teams for decision-making. Summarized from this PDF.

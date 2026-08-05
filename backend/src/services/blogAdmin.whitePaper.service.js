@@ -30,16 +30,77 @@ function parseMetadataInput(raw) {
   }
 }
 
+const VALID_VERTICALS = new Set([
+  'crm',
+  'email-marketing',
+  'website-builders',
+  'voip',
+  'gps-fleet',
+  'payroll',
+  'hr',
+  'call-center',
+  'project-management',
+])
+
+const VERTICAL_LABELS = {
+  crm: 'Best CRM Software',
+  'email-marketing': 'Best Email Marketing Services',
+  'website-builders': 'Best Website Building Platform',
+  voip: 'Best Business Phone Systems',
+  'gps-fleet': 'Best GPS Fleet Management Software',
+  payroll: 'Best Payroll Software',
+  hr: 'Best Employee Management Software',
+  'call-center': 'Best Call Center Management Software',
+  'project-management': 'Best Project Management Software',
+}
+
 function normalizeResourceType(value, fallback = 'whitepaper') {
-  const v = String(value || fallback).trim().toLowerCase()
-  return v === 'report' ? 'report' : 'whitepaper'
+  const v = String(value || fallback)
+    .trim()
+    .toLowerCase()
+    .replace(/[\s-]+/g, '_')
+  if (v === 'case_study' || v === 'casestudy') return 'case_study'
+  if (v === 'webinar') return 'webinar'
+  if (v === 'report') return 'report'
+  return 'whitepaper'
+}
+
+function normalizeVerticalSlug(value) {
+  const raw = String(value || '').trim()
+  if (!raw) return ''
+  const slug = raw.toLowerCase().replace(/\s+/g, '-')
+  if (VALID_VERTICALS.has(slug)) return slug
+  const cat = raw.toLowerCase()
+  if (/\bcrm\b/.test(cat)) return 'crm'
+  if (/email\s*marketing/.test(cat)) return 'email-marketing'
+  if (/website/.test(cat)) return 'website-builders'
+  if (/phone|voip|ucaas/.test(cat)) return 'voip'
+  if (/fleet|gps|telematics/.test(cat)) return 'gps-fleet'
+  if (/payroll/.test(cat)) return 'payroll'
+  if (/\bhr\b|human resources|employee management/.test(cat)) return 'hr'
+  if (/call center|contact center/.test(cat)) return 'call-center'
+  if (/project management/.test(cat)) return 'project-management'
+  return ''
+}
+
+function verticalDisplayLabel(slug) {
+  if (!slug) return ''
+  return VERTICAL_LABELS[slug] || slug
 }
 
 function buildWhitePaperMetadata(metaRaw = {}, defaults = {}) {
+  const vertical = normalizeVerticalSlug(
+    metaRaw.vertical || metaRaw.category || defaults.vertical || defaults.category
+  )
+  const category =
+    verticalDisplayLabel(vertical) ||
+    String(metaRaw.category || defaults.category || '').trim()
+
   return {
     offeredBy: String(metaRaw.offeredBy || defaults.offeredBy || 'Compare Bazaar').trim(),
     author: String(metaRaw.author || defaults.author || 'Compare Bazaar Editorial').trim(),
-    category: String(metaRaw.category || defaults.category || '').trim(),
+    vertical,
+    category,
     extra: String(metaRaw.extra || defaults.extra || '').trim(),
     resourceType: normalizeResourceType(
       metaRaw.resourceType || defaults.resourceType,

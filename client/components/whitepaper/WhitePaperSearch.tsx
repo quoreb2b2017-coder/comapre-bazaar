@@ -4,10 +4,13 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Search } from 'lucide-react'
 import { whitePaperDisplayTitle } from '@/lib/whitePaperDisplay'
 import {
+  WHITEPAPER_RESOURCE_TYPES,
+  WHITEPAPER_VERTICALS,
+  resolveWhitePaperVerticalSlug,
   whitePaperResourceLabel,
-  whitePaperResourceType,
   type WhitePaperResourceType,
-} from '@/lib/whitePaperResourceType'
+} from '@/lib/whitePaperTaxonomy'
+import { whitePaperResourceType } from '@/lib/whitePaperResourceType'
 import { WhitePaperCard } from './WhitePaperCard'
 import { WhitePaperPagination, WHITEPAPER_PAGE_SIZE } from './WhitePaperPagination'
 import type { WhitePaperPublic } from '@/lib/whitePaperCms'
@@ -28,7 +31,9 @@ function buildSearchRotatorTerms(papers: WhitePaperPublic[]): string[] {
   }
 
   for (const paper of papers) {
-    add(String(paper.metadata?.category || ''))
+    const slug = resolveWhitePaperVerticalSlug(paper.metadata)
+    const vertical = WHITEPAPER_VERTICALS.find((v) => v.slug === slug)
+    if (vertical) add(vertical.label.replace(/^Best\s+/i, ''))
 
     const title = whitePaperDisplayTitle(paper.title, paper.seoTitle)
     const topic = title
@@ -94,7 +99,7 @@ function useTypewriterPlaceholder(phrases: string[], active: boolean) {
 
 export function WhitePaperSearch({ papers }: { papers: WhitePaperPublic[] }) {
   const [query, setQuery] = useState('')
-  const [category, setCategory] = useState<string | null>(null)
+  const [vertical, setVertical] = useState<string | null>(null)
   const [resourceType, setResourceType] = useState<'all' | WhitePaperResourceType>('all')
   const [focused, setFocused] = useState(false)
   const [page, setPage] = useState(1)
@@ -104,43 +109,27 @@ export function WhitePaperSearch({ papers }: { papers: WhitePaperPublic[] }) {
   const showRotator = !query && !focused
   const rotatingTerm = useTypewriterPlaceholder(rotatorTerms, showRotator)
 
-  const categories = useMemo(() => {
-    const values = new Set<string>()
-    for (const paper of papers) {
-      const label = paper.metadata?.category?.trim()
-      if (label) values.add(label)
-    }
-    return Array.from(values).sort((a, b) => a.localeCompare(b))
-  }, [papers])
-
-  const showTypeFilter = useMemo(() => {
-    let hasReport = false
-    let hasWhitepaper = false
-    for (const paper of papers) {
-      if (whitePaperResourceType(paper.metadata) === 'report') hasReport = true
-      else hasWhitepaper = true
-    }
-    return hasReport && hasWhitepaper
-  }, [papers])
-
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
     return papers.filter((paper) => {
       if (resourceType !== 'all' && whitePaperResourceType(paper.metadata) !== resourceType) {
         return false
       }
-      if (category && paper.metadata?.category?.trim() !== category) return false
+      if (vertical && resolveWhitePaperVerticalSlug(paper.metadata) !== vertical) return false
       if (!q) return true
-      return [paper.title, paper.seoTitle, paper.description, paper.metadata?.category]
+      const verticalLabel =
+        WHITEPAPER_VERTICALS.find((v) => v.slug === resolveWhitePaperVerticalSlug(paper.metadata))
+          ?.label || ''
+      return [paper.title, paper.seoTitle, paper.description, paper.metadata?.category, verticalLabel]
         .join(' ')
         .toLowerCase()
         .includes(q)
     })
-  }, [papers, query, category, resourceType])
+  }, [papers, query, vertical, resourceType])
 
   useEffect(() => {
     setPage(1)
-  }, [query, category, resourceType])
+  }, [query, vertical, resourceType])
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / WHITEPAPER_PAGE_SIZE))
   const safePage = Math.min(page, totalPages)
@@ -166,7 +155,7 @@ export function WhitePaperSearch({ papers }: { papers: WhitePaperPublic[] }) {
             Browse the library
           </h2>
           <p className="mt-1.5 max-w-xl text-[13px] leading-relaxed text-gray-500">
-            Trusted by operations teams for decision-making. Each report is summarized from
+            Filter by software category or content type. Each download is summarized from
             independent PDF research.
           </p>
         </div>
@@ -184,8 +173,8 @@ export function WhitePaperSearch({ papers }: { papers: WhitePaperPublic[] }) {
             onChange={(e) => setQuery(e.target.value)}
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
-            placeholder="Search reports..."
-            aria-label="Search whitepaper reports"
+            placeholder="Search library..."
+            aria-label="Search whitepapers, reports, and resources"
             className="relative w-full rounded-lg border border-gray-200 bg-white py-2.5 pl-10 pr-3.5 text-[13px] text-gray-700 outline-none transition placeholder:text-transparent focus:border-[#1D4ED8]/30 focus:ring-2 focus:ring-[#1D4ED8]/8"
           />
           {showRotator ? (
@@ -200,73 +189,69 @@ export function WhitePaperSearch({ papers }: { papers: WhitePaperPublic[] }) {
         </div>
       </div>
 
-      {showTypeFilter ? (
-        <div className="mb-4 flex flex-wrap items-center gap-2">
-          <span className="mr-1 text-[11px] font-medium uppercase tracking-[0.12em] text-gray-400">
-            Type
-          </span>
-          {(['all', 'whitepaper', 'report'] as const).map((type) => (
-            <button
-              key={type}
-              type="button"
-              onClick={() => setResourceType(type)}
-              className={`rounded-full px-3 py-1.5 text-[12px] font-medium transition-colors ${
-                resourceType === type
-                  ? 'bg-navy text-white'
-                  : 'bg-transparent text-gray-600 ring-1 ring-gray-200 hover:text-navy'
-              }`}
-            >
-              {type === 'all' ? 'All' : whitePaperResourceLabel(type)}
-            </button>
-          ))}
-        </div>
-      ) : null}
-
-      {categories.length > 1 ? (
-        <div className="mb-8 flex flex-wrap items-center gap-2">
-          <span className="mr-1 text-[11px] font-medium uppercase tracking-[0.12em] text-gray-400">
-            Filter
-          </span>
+      <div className="mb-4 flex flex-wrap items-center gap-2">
+        <span className="mr-1 text-[11px] font-medium uppercase tracking-[0.12em] text-gray-400">
+          Category
+        </span>
+        {(['all', ...WHITEPAPER_RESOURCE_TYPES.map((t) => t.value)] as const).map((type) => (
           <button
+            key={type}
             type="button"
-            onClick={() => setCategory(null)}
+            onClick={() => setResourceType(type === 'all' ? 'all' : type)}
             className={`rounded-full px-3 py-1.5 text-[12px] font-medium transition-colors ${
-              category === null
+              resourceType === type
                 ? 'bg-navy text-white'
                 : 'bg-transparent text-gray-600 ring-1 ring-gray-200 hover:text-navy'
             }`}
           >
-            All
+            {type === 'all' ? 'All' : whitePaperResourceLabel(type)}
           </button>
-          {categories.map((label) => (
-            <button
-              key={label}
-              type="button"
-              onClick={() => setCategory(label)}
-              className={`rounded-full px-3 py-1.5 text-[12px] font-medium transition-colors ${
-                category === label
-                  ? 'bg-navy text-white'
-                  : 'bg-transparent text-gray-600 ring-1 ring-gray-200 hover:text-navy'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-      ) : null}
+        ))}
+      </div>
+
+      <div className="mb-8 flex flex-wrap items-center gap-2">
+        <span className="mr-1 text-[11px] font-medium uppercase tracking-[0.12em] text-gray-400">
+          Vertical
+        </span>
+        <button
+          type="button"
+          onClick={() => setVertical(null)}
+          className={`rounded-full px-3 py-1.5 text-[12px] font-medium transition-colors ${
+            vertical === null
+              ? 'bg-navy text-white'
+              : 'bg-transparent text-gray-600 ring-1 ring-gray-200 hover:text-navy'
+          }`}
+        >
+          All
+        </button>
+        {WHITEPAPER_VERTICALS.map(({ slug, label }) => (
+          <button
+            key={slug}
+            type="button"
+            onClick={() => setVertical(slug)}
+            className={`rounded-full px-3 py-1.5 text-[12px] font-medium transition-colors ${
+              vertical === slug
+                ? 'bg-navy text-white'
+                : 'bg-transparent text-gray-600 ring-1 ring-gray-200 hover:text-navy'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
 
       {filtered.length === 0 ? (
         <div className="px-2 py-14 text-center">
-          <p className="font-serif text-lg text-navy">No reports matched</p>
+          <p className="font-serif text-lg text-navy">No resources matched</p>
           <p className="mt-2 text-[13px] text-gray-500">
             Try a different keyword or clear your filters.
           </p>
-          {(query || category || resourceType !== 'all') && (
+          {(query || vertical || resourceType !== 'all') && (
             <button
               type="button"
               onClick={() => {
                 setQuery('')
-                setCategory(null)
+                setVertical(null)
                 setResourceType('all')
               }}
               className="mt-4 text-[13px] font-semibold text-[#1D4ED8] hover:text-[#1e40af]"

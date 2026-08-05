@@ -8,6 +8,7 @@ import {
   truncatePreviewText,
 } from '@/components/whitepaper/WhitePaperInsideList'
 import { whitePaperDescriptionPath } from '@/lib/resourceDescriptionPaths'
+import type { WhitePaperResourceType } from '@/lib/whitePaperTaxonomy'
 
 const PREVIEW_SECTION_COUNT = 3
 const PREVIEW_OVERVIEW_MAX = 180
@@ -15,6 +16,7 @@ const PREVIEW_TEASER_MAX = 120
 
 type Props = {
   slug: string
+  resourceType?: WhitePaperResourceType
   overview?: string
   sections?: Parameters<typeof resolveWhitePaperInsideSections>[0]
   points?: string[]
@@ -24,6 +26,7 @@ type Props = {
 
 export function WhitePaperInsideExplorer({
   slug,
+  resourceType = 'whitepaper',
   overview = '',
   sections,
   points = [],
@@ -44,6 +47,7 @@ export function WhitePaperInsideExplorer({
       <WhitePaperInsideHeading
         sectionCount={items.length}
         previewCount={previewSections.length}
+        resourceType={resourceType}
       />
 
       {previewOverview ? (

@@ -12,6 +12,9 @@ import {
 } from '@/lib/whitePaperMeta'
 import { fetchPublishedWhitePapers, fetchWhitePaperBySlug } from '@/lib/whitePaperCms'
 import { WhitePaperInsideExplorer } from '@/components/whitepaper/WhitePaperInsideExplorer'
+import { WhitePaperMetaBadges } from '@/components/whitepaper/WhitePaperMetaBadges'
+import { whitePaperBackToLibraryLabel, whitePaperRequestLabel } from '@/lib/whitePaperTaxonomy'
+import { whitePaperResourceType } from '@/lib/whitePaperResourceType'
 
 export const revalidate = 120
 
@@ -45,6 +48,7 @@ export default async function WhitepaperDetailPage({ params }: PageProps) {
 
   const headline = whitePaperDisplayTitle(paper.title, paper.seoTitle)
   const offeredBy = whitePaperOfferedBy(paper.metadata)
+  const resourceType = whitePaperResourceType(paper.metadata)
   const pageUrl = `${SITE_URL}/resources/whitepapers/${paper.slug}`
   const coverImage = whitePaperOgImageUrl(paper.thumbnailUrl)
 
@@ -133,12 +137,14 @@ export default async function WhitepaperDetailPage({ params }: PageProps) {
               href="/resources/whitepapers"
               className="mt-5 inline-block text-left text-xs font-medium text-gray-500 hover:text-navy hover:underline lg:mt-6"
             >
-              ← Back to all whitepapers
+              ← {whitePaperBackToLibraryLabel()}
             </Link>
           </div>
 
           <div className="min-w-0 max-w-[640px] text-left">
-            <p className="text-xs text-gray-500">Request your free whitepaper:</p>
+            <WhitePaperMetaBadges paper={paper} linkVertical className="mb-3" />
+
+            <p className="text-xs text-gray-500">{whitePaperRequestLabel(resourceType)}</p>
 
             <h1 className="mt-1.5 font-serif text-[1.25rem] font-normal leading-[1.25] tracking-tight text-[#1a1a1a] sm:text-[1.375rem] lg:text-[1.5rem]">
               {headline}
@@ -159,6 +165,7 @@ export default async function WhitepaperDetailPage({ params }: PageProps) {
 
         <WhitePaperInsideExplorer
           slug={paper.slug}
+          resourceType={resourceType}
           overview={paper.insideOverview || fullDescription}
           sections={paper.insideSections}
           points={paper.insidePoints}

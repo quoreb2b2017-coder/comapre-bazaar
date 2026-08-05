@@ -22,9 +22,10 @@ export type WhitePaperPublic = {
   metadata?: {
     offeredBy?: string
     author?: string
+    vertical?: string
     category?: string
     extra?: string
-    resourceType?: 'whitepaper' | 'report'
+    resourceType?: 'whitepaper' | 'report' | 'case_study' | 'webinar'
   }
   insideOverview?: string
   insideSections?: { title: string; summary: string; body?: string; pages?: string }[]

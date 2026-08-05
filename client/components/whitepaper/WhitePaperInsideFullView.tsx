@@ -11,8 +11,13 @@ import {
   WhitePaperTestimonials,
   type WhitePaperTestimonial,
 } from '@/components/whitepaper/WhitePaperTestimonials'
+import {
+  whitePaperLearnFromLabel,
+  type WhitePaperResourceType,
+} from '@/lib/whitePaperTaxonomy'
 
 type Props = {
+  resourceType?: WhitePaperResourceType
   overview?: string
   sidebarHighlights?: WhitePaperSidebarHighlight[]
   testimonials?: WhitePaperTestimonial[]
@@ -30,6 +35,7 @@ function highlightsToSections(highlights: WhitePaperSidebarHighlight[]): WhitePa
 }
 
 export function WhitePaperInsideFullView({
+  resourceType = 'whitepaper',
   overview = '',
   sidebarHighlights = [],
   testimonials = [],
@@ -64,7 +70,7 @@ export function WhitePaperInsideFullView({
 
           {sidebarItems.length > 0 ? (
             <div className={thumbnailUrl ? 'border-t border-gray-200 pt-5' : ''}>
-              <WhitePaperInsideHeading sectionCount={sidebarItems.length} />
+              <WhitePaperInsideHeading sectionCount={sidebarItems.length} resourceType={resourceType} />
               <WhitePaperInsideList
                 items={sidebarItems}
                 variant="static"
@@ -84,7 +90,7 @@ export function WhitePaperInsideFullView({
         <div className="min-w-0">
           <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-400">Overview</p>
           <h2 className="mt-1.5 font-serif text-xl font-normal leading-snug text-navy sm:text-2xl">
-            What you&apos;ll learn from this report
+            {whitePaperLearnFromLabel(resourceType)}
           </h2>
 
           {overviewText ? (

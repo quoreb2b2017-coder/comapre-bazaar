@@ -4,6 +4,8 @@ import { Plus, ExternalLink, Trash2, Pencil, Download, ChevronLeft, ChevronRight
 import api from '../utils/api'
 import { WhitePaperUploadDrawer } from '../components/whitepapers/WhitePaperUploadDrawer'
 import { WhitePaperLeadsTable } from '../components/whitepapers/WhitePaperLeadsTable'
+import { whitePaperResourceLabel, whitePaperVerticalLabel } from '@/lib/whitePaperTaxonomy'
+import { whitePaperResourceType } from '@/lib/whitePaperResourceType'
 
 const PAGE_SIZE = 10
 
@@ -134,11 +136,12 @@ export const WhitePapers = () => {
           <div className="py-16 text-center text-sm text-gray-500">No white papers yet.</div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[720px] border-collapse text-left text-sm">
+            <table className="w-full min-w-[920px] border-collapse text-left text-sm">
               <thead>
                 <tr className="border-b border-gray-200 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:border-gray-700">
                   <th className="py-3 pr-4">Title</th>
-                  <th className="py-3 pr-4">Type</th>
+                  <th className="py-3 pr-4">Category</th>
+                  <th className="py-3 pr-4">Vertical</th>
                   <th className="py-3 pr-4">Status</th>
                   <th className="py-3 pr-4 text-right">Views</th>
                   <th className="py-3 pr-4 text-right">Downloads</th>
@@ -154,7 +157,12 @@ export const WhitePapers = () => {
                       <p className="mt-0.5 font-mono text-[11px] text-gray-400">/resources/whitepapers/{p.slug}</p>
                     </td>
                     <td className="py-3 pr-4">
-                      <ResourceTypeBadge type={p.metadata?.resourceType} />
+                      <ResourceTypeBadge type={whitePaperResourceType(p.metadata)} />
+                    </td>
+                    <td className="py-3 pr-4">
+                      <span className="text-xs text-gray-600 dark:text-gray-300">
+                        {whitePaperVerticalLabel(p.metadata) || '—'}
+                      </span>
                     </td>
                     <td className="py-3 pr-4">
                       <StatusBadge status={p.status} />
@@ -301,16 +309,16 @@ function StatCard({ label, value, className = '' }) {
 }
 
 function ResourceTypeBadge({ type }) {
-  const isReport = type === 'report'
+  const styles = {
+    whitepaper: 'bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300',
+    report: 'bg-violet-50 text-violet-700 dark:bg-violet-950/40 dark:text-violet-300',
+    case_study: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300',
+    webinar: 'bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300',
+  }
+  const normalized = whitePaperResourceType({ resourceType: type })
   return (
-    <span
-      className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold ${
-        isReport
-          ? 'bg-violet-50 text-violet-700 dark:bg-violet-950/40 dark:text-violet-300'
-          : 'bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300'
-      }`}
-    >
-      {isReport ? 'Report' : 'Whitepaper'}
+    <span className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold ${styles[normalized] || styles.whitepaper}`}>
+      {whitePaperResourceLabel(normalized)}
     </span>
   )
 }

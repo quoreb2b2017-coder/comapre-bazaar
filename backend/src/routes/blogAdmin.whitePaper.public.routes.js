@@ -32,16 +32,30 @@ function normalizeCustomAnswers(body, paper) {
   })
 }
 
+function normalizePublicResourceType(value) {
+  const v = String(value || 'whitepaper')
+    .trim()
+    .toLowerCase()
+    .replace(/[\s-]+/g, '_')
+  if (v === 'case_study' || v === 'casestudy') return 'case_study'
+  if (v === 'webinar') return 'webinar'
+  if (v === 'report') return 'report'
+  return 'whitepaper'
+}
+
 function publicMetadata(metadata) {
   const offeredBy = String(metadata?.offeredBy || 'Compare Bazaar').trim() || 'Compare Bazaar'
   const author = String(metadata?.author || '').trim() || 'Compare Bazaar Editorial'
+  const vertical = String(metadata?.vertical || '').trim()
+  const category = String(metadata?.category || '').trim()
   return {
     ...(metadata && typeof metadata === 'object' ? metadata : {}),
     offeredBy,
     author,
-    category: String(metadata?.category || '').trim(),
+    vertical,
+    category,
     extra: String(metadata?.extra || '').trim(),
-    resourceType: metadata?.resourceType === 'report' ? 'report' : 'whitepaper',
+    resourceType: normalizePublicResourceType(metadata?.resourceType),
   }
 }
 

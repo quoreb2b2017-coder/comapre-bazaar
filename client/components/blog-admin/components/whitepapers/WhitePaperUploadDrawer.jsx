@@ -14,6 +14,30 @@ import {
   highlightQuestionsFromPaper,
   highlightQuestionsToPayload,
 } from './WhitePaperHighlightQuestions'
+import {
+  WHITEPAPER_RESOURCE_TYPES,
+  WHITEPAPER_VERTICALS,
+  normalizeWhitePaperResourceType,
+  resolveWhitePaperVerticalSlug,
+} from '@/lib/whitePaperTaxonomy'
+import { hubs, pillarBySlug } from '@/lib/content-map'
+import { BlogAdminSelect } from '../ui/BlogAdminSelect'
+
+const CATEGORY_OPTIONS = WHITEPAPER_RESOURCE_TYPES.map((item) => ({
+  value: item.value,
+  label: item.label,
+  hint: item.description,
+}))
+
+const VERTICAL_OPTIONS = WHITEPAPER_VERTICALS.map((item) => {
+  const hub = hubs.find((h) => h.slug === item.slug)
+  const pillar = hub?.pillar ? pillarBySlug[hub.pillar] : null
+  return {
+    value: item.slug,
+    label: item.label,
+    group: pillar?.name || 'Software',
+  }
+})
 
 function claudeContentFromResponse(data) {
   if (!data) return null
@@ -39,7 +63,7 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
   const [description, setDescription] = useState('')
   const [offeredBy, setOfferedBy] = useState('Compare Bazaar')
   const [author, setAuthor] = useState('')
-  const [category, setCategory] = useState('')
+  const [vertical, setVertical] = useState('')
   const [resourceType, setResourceType] = useState('whitepaper')
   const [pdf, setPdf] = useState(null)
   const [thumbnail, setThumbnail] = useState(null)
@@ -75,8 +99,8 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
     setDescription(editingPaper.description || '')
     setOfferedBy(editingPaper.metadata?.offeredBy || 'Compare Bazaar')
     setAuthor(editingPaper.metadata?.author || '')
-    setCategory(editingPaper.metadata?.category || '')
-    setResourceType(editingPaper.metadata?.resourceType === 'report' ? 'report' : 'whitepaper')
+    setVertical(resolveWhitePaperVerticalSlug(editingPaper.metadata))
+    setResourceType(normalizeWhitePaperResourceType(editingPaper.metadata?.resourceType))
     setPdf(null)
     setThumbnail(null)
     setThumbPreview(editingPaper.thumbnailUrl || null)
@@ -107,7 +131,7 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
     setDescription('')
     setOfferedBy('Compare Bazaar')
     setAuthor('')
-    setCategory('')
+    setVertical('')
     setResourceType('whitepaper')
     setPdf(null)
     setThumbnail(null)
@@ -181,12 +205,17 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
     }
   }
 
-  const metadataPayload = () => ({
-    offeredBy: offeredBy.trim(),
-    author: author.trim(),
-    category: category.trim(),
-    resourceType,
-  })
+  const metadataPayload = () => {
+    const verticalSlug = vertical.trim()
+    const verticalItem = WHITEPAPER_VERTICALS.find((v) => v.slug === verticalSlug)
+    return {
+      offeredBy: offeredBy.trim(),
+      author: author.trim(),
+      vertical: verticalSlug,
+      category: verticalItem?.label || '',
+      resourceType,
+    }
+  }
 
   const handleGenerateClaude = async () => {
     if (!pdf && !isEditMode) {
@@ -229,6 +258,10 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
     e.preventDefault()
     if (!isEditMode && (!pdf || !thumbnail)) {
       toast.error('PDF and thumbnail are required')
+      return
+    }
+    if (!vertical.trim()) {
+      toast.error('Choose a vertical (software category)')
       return
     }
     if (seoMode === 'manual') {
@@ -374,7 +407,38 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
             </div>
           ) : (
             <form id="wp-upload-form" onSubmit={onSubmit} className="space-y-5">
-              <ResourceTypeToggle value={resourceType} onChange={setResourceType} />
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="space-y-1.5">
+                  <label className="label">
+                    Category <span className="text-red-500">*</span>
+                  </label>
+                  <BlogAdminSelect
+                    value={resourceType}
+                    onChange={setResourceType}
+                    options={CATEGORY_OPTIONS}
+                    placeholder="Choose content type…"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="label">
+                    Vertical <span className="text-red-500">*</span>
+                  </label>
+                  <BlogAdminSelect
+                    value={vertical}
+                    onChange={setVertical}
+                    options={VERTICAL_OPTIONS}
+                    placeholder="Choose software category…"
+                    searchPlaceholder="Search CRM, payroll, phone…"
+                    searchable
+                    required
+                  />
+                </div>
+              </div>
+              <p className="text-xs text-gray-400">
+                Category is the resource type (white paper, report, etc.). Vertical matches your comparison pages.
+              </p>
 
               <div className="space-y-1.5">
                 <label className="label">
@@ -473,17 +537,6 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <label className="label">Category</label>
-                <input
-                  type="text"
-                  className="input"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  placeholder="e.g. CRM, Payroll"
-                />
-              </div>
-
               <WhitePaperHighlightQuestions
                 questions={highlightQuestions}
                 onChange={setHighlightQuestions}
@@ -552,46 +605,6 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
       </aside>
     </div>,
     document.body
-  )
-}
-
-function ResourceTypeToggle({ value, onChange }) {
-  return (
-    <div className="space-y-1.5">
-      <label className="label mb-0">
-        Resource type <span className="text-red-500">*</span>
-      </label>
-      <div className="grid grid-cols-2 gap-2 rounded-xl border border-gray-200 bg-gray-50 p-1 dark:border-gray-700 dark:bg-gray-800/50">
-        <button
-          type="button"
-          onClick={() => onChange('whitepaper')}
-          className={`rounded-lg px-3 py-2.5 text-left text-xs transition-colors ${
-            value === 'whitepaper'
-              ? 'bg-white font-semibold text-brand shadow-sm dark:bg-gray-900'
-              : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
-          }`}
-        >
-          <span className="block text-sm font-semibold">Whitepaper</span>
-          <span className="mt-0.5 block text-[11px] font-normal opacity-80">
-            Long-form research PDF for download
-          </span>
-        </button>
-        <button
-          type="button"
-          onClick={() => onChange('report')}
-          className={`rounded-lg px-3 py-2.5 text-left text-xs transition-colors ${
-            value === 'report'
-              ? 'bg-white font-semibold text-brand shadow-sm dark:bg-gray-900'
-              : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
-          }`}
-        >
-          <span className="block text-sm font-semibold">Report</span>
-          <span className="mt-0.5 block text-[11px] font-normal opacity-80">
-            Shorter benchmark or buying guide PDF
-          </span>
-        </button>
-      </div>
-    </div>
   )
 }
 
