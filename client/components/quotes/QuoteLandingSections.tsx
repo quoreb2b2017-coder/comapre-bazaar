@@ -41,9 +41,11 @@ export function QuoteHowItWorksSection({ tag, title, subtitle, steps }: QuoteHow
     <div className="sec-alt">
       <section className="sec sec-compact">
         <div className="ct">
-          <div className="stag">{tag}</div>
-          <h2 className="sh">{title}</h2>
-          <p className="ssub">{subtitle}</p>
+          <div className="sec-head">
+            <div className="stag">{tag}</div>
+            <h2 className="sh">{title}</h2>
+            <p className="ssub">{subtitle}</p>
+          </div>
           <div className="howg">
             {steps.map((step) => (
               <div key={step.num} className="hc">
@@ -68,9 +70,11 @@ export function QuoteTestimonialsSection({ tag, title, subtitle, testimonials }:
   return (
     <section className="sec">
       <div className="ct">
-        <div className="stag">{tag}</div>
-        <h2 className="sh">{title}</h2>
-        <p className="ssub">{subtitle}</p>
+        <div className="sec-head">
+          <div className="stag">{tag}</div>
+          <h2 className="sh">{title}</h2>
+          <p className="ssub">{subtitle}</p>
+        </div>
         <div className="tg">
           {testimonials.map((t) => (
             <div key={t.name} className="tc">
@@ -109,9 +113,11 @@ export function QuoteWhyCompareSection({ tag, title, subtitle, items }: QuoteWhy
     <div className="sec-alt">
       <section className="sec sec-compact">
         <div className="ct">
-          <div className="stag">{tag}</div>
-          <h2 className="sh">{title}</h2>
-          <p className="ssub">{subtitle}</p>
+          <div className="sec-head">
+            <div className="stag">{tag}</div>
+            <h2 className="sh">{title}</h2>
+            <p className="ssub">{subtitle}</p>
+          </div>
           <div className="whyg">
             {items.map((w) => {
               const Icon = w.icon;
@@ -145,6 +151,7 @@ export function QuoteBottomCta({ title, subtitle, buttonLabel = "Get Free Quotes
     <div className="ct">
       <div className="cta-band">
         <div className="cta-band-copy">
+          <p className="cta-kicker">Start in under 2 minutes</p>
           <h2>{title}</h2>
           <p>{subtitle}</p>
         </div>

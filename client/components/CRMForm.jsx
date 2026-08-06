@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import ReCAPTCHA from 'react-google-recaptcha';
 import { sendFormData } from './emailService';
 import {
   isValidPhoneNumber,
@@ -9,6 +8,32 @@ import {
   PHONE_VALIDATION_MESSAGE,
   sanitizePhoneInput,
 } from '@/lib/phoneValidation';
+import {
+  QuoteFormCaptchaStep,
+  QuoteFormCheckboxOption,
+  QuoteFormOptionGrid,
+  QuoteFormRadioOption,
+  QuoteFormShell,
+  QuoteFormStepTitle,
+  QuoteFormTextField,
+} from '@/components/quotes/QuotePopupUi';
+import {
+  CRM_EMPLOYEE_ICONS,
+  FEATURE_ICONS,
+  INDUSTRY_ICONS,
+  Building2,
+  CheckCircle2,
+  Headphones,
+  Lightbulb,
+  Mail,
+  MapPin,
+  Phone,
+  Target,
+  User,
+  Users,
+} from '@/lib/quoteFormIcons';
+
+const TOTAL_STEPS = 8;
 
 const CRMForm = ({ onClose }) => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -276,189 +301,87 @@ const CRMForm = ({ onClose }) => {
       case 1:
         return (
           <div>
-            <h2 className="text-base font-semibold mb-3 text-center">Are you currently using a CRM?</h2>
-            <div className="space-y-2">
-              <label
-                className={`block p-3 rounded-md bg-blue-50 cursor-pointer ${
-                  formData.usingCRM === 'Yes' ? 'border-2 border-[#ff8633]' : ''
-                }`}
-              >
-                <div className="flex items-center">
-                  <input
-                    type="radio"
-                    name="usingCRM"
-                    value="Yes"
-                    checked={formData.usingCRM === 'Yes'}
-                    onChange={() => handleRadioChange('usingCRM', 'Yes')}
-                    className="opacity-0 absolute"
-                  />
-                  <div
-                    className={`w-4 h-4 border rounded-full flex items-center justify-center ${
-                      formData.usingCRM === 'Yes' ? 'bg-[#ff8633] border-[#ff8633]' : 'border-gray-400 bg-white'
-                    }`}
-                  >
-                    {formData.usingCRM === 'Yes' && <div className="w-2 h-2 rounded-full bg-white"></div>}
-                  </div>
-                  <span className="ml-2 text-sm">Yes</span>
-                </div>
-              </label>
-
-              <label
-                className={`block p-3 rounded-md bg-blue-50 cursor-pointer ${
-                  formData.usingCRM === 'No' ? 'border-2 border-[#ff8633]' : ''
-                }`}
-              >
-                <div className="flex items-center">
-                  <input
-                    type="radio"
-                    name="usingCRM"
-                    value="No"
-                    checked={formData.usingCRM === 'No'}
-                    onChange={() => handleRadioChange('usingCRM', 'No')}
-                    className="opacity-0 absolute"
-                  />
-                  <div
-                    className={`w-4 h-4 border rounded-full flex items-center justify-center ${
-                      formData.usingCRM === 'No' ? 'bg-[#ff8633] border-[#ff8633]' : 'border-gray-400 bg-white'
-                    }`}
-                  >
-                    {formData.usingCRM === 'No' && <div className="w-2 h-2 rounded-full bg-white"></div>}
-                  </div>
-                  <span className="ml-2 text-sm">No</span>
-                </div>
-              </label>
-            </div>
+            <QuoteFormStepTitle title="Are you currently using a CRM?" />
+            <QuoteFormOptionGrid cols={2}>
+              <QuoteFormRadioOption
+                selected={formData.usingCRM === 'Yes'}
+                onSelect={() => handleRadioChange('usingCRM', 'Yes')}
+                label="Yes"
+                icon={CheckCircle2}
+              />
+              <QuoteFormRadioOption
+                selected={formData.usingCRM === 'No'}
+                onSelect={() => handleRadioChange('usingCRM', 'No')}
+                label="No"
+                icon={Lightbulb}
+              />
+            </QuoteFormOptionGrid>
           </div>
         );
 
       case 2:
         return (
           <div>
-            <h2 className="text-base font-semibold mb-3">Roughly how many employees will need access?</h2>
-            <div className="space-y-2">
+            <QuoteFormStepTitle title="Roughly how many employees will need access?" />
+            <QuoteFormOptionGrid cols={3}>
               {['100+', '50-99', '21-49', '11-20', 'Less than 10'].map((option) => (
-                <label
+                <QuoteFormRadioOption
                   key={option}
-                  className={`block p-3 rounded-md bg-blue-50 cursor-pointer ${
-                    formData.employeeCountcrm === option ? 'border-2 border-[#ff8633]' : ''
-                  }`}
-                >
-                  <div className="flex items-center">
-                    <input
-                      type="radio"
-                      name="employeeCountcrm"
-                      value={option}
-                      checked={formData.employeeCountcrm === option}
-                      onChange={() => handleRadioChange('employeeCountcrm', option)}
-                      className="opacity-0 absolute"
-                    />
-                    <div
-                      className={`w-4 h-4 border rounded-full flex items-center justify-center ${
-                        formData.employeeCountcrm === option ? 'bg-[#ff8633] border-[#ff8633]' : 'border-gray-400 bg-white'
-                      }`}
-                    >
-                      {formData.employeeCountcrm === option && <div className="w-2 h-2 rounded-full bg-white"></div>}
-                    </div>
-                    <span className="ml-2 text-sm">{option}</span>
-                  </div>
-                </label>
+                  selected={formData.employeeCountcrm === option}
+                  onSelect={() => handleRadioChange('employeeCountcrm', option)}
+                  label={option}
+                  icon={CRM_EMPLOYEE_ICONS[option] || Users}
+                />
               ))}
-            </div>
+            </QuoteFormOptionGrid>
           </div>
         );
 
       case 3:
         return (
           <div>
-            <h2 className="text-base font-semibold mb-3">What features are most important for your evaluation?</h2>
-            <p className="text-sm text-gray-600 mb-3">Select all that apply. Double-click to deselect.</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <QuoteFormStepTitle
+              title="What features are most important for your evaluation?"
+              subtitle="Select all that apply. Tap again to deselect."
+            />
+            <QuoteFormOptionGrid cols={3}>
               {features.map((feature) => (
-                <div
+                <QuoteFormCheckboxOption
                   key={feature}
-                  className={`block p-3 rounded-md bg-blue-50 cursor-pointer ${
-                    formData.importantFeaturescrm.includes(feature) ? 'border-2 border-[#ff8633]' : ''
-                  }`}
-                  onClick={() => handleMultiSelectToggle(feature)}
-                  onDoubleClick={() => {
-                    if (formData.importantFeaturescrm.includes(feature)) {
-                      handleMultiSelectToggle(feature);
-                    }
-                  }}
-                >
-                  <div className="flex items-center">
-                    <div
-                      className={`w-4 h-4 border ${
-                        formData.importantFeaturescrm.includes(feature)
-                          ? 'bg-[#ff8633] border-[#ff8633]'
-                          : 'border-gray-400 bg-white'
-                      } rounded flex items-center justify-center`}
-                    >
-                      {formData.importantFeaturescrm.includes(feature) && (
-                        <svg
-                          className="w-3 h-3 text-white"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                      )}
-                    </div>
-                    <span className="ml-2 text-sm">{feature}</span>
-                  </div>
-                </div>
+                  selected={formData.importantFeaturescrm.includes(feature)}
+                  onSelect={() => handleMultiSelectToggle(feature)}
+                  label={feature}
+                  icon={FEATURE_ICONS[feature] || Target}
+                />
               ))}
-            </div>
+            </QuoteFormOptionGrid>
           </div>
         );
 
       case 4:
         return (
           <div>
-            <h2 className="text-base font-semibold mb-3">What industry are you in?</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <QuoteFormStepTitle title="What industry are you in?" />
+            <QuoteFormOptionGrid cols={3}>
               {industries.map((industrycrm) => (
-                <label
+                <QuoteFormRadioOption
                   key={industrycrm}
-                  className={`block p-3 rounded-md bg-blue-50 cursor-pointer ${
-                    formData.industrycrm === industrycrm ? 'border-2 border-[#ff8633]' : ''
-                  }`}
-                >
-                  <div className="flex items-center">
-                    <input
-                      type="radio"
-                      name="industrycrm"
-                      value={industrycrm}
-                      checked={formData.industrycrm === industrycrm}
-                      onChange={() => handleRadioChange('industrycrm', industrycrm)}
-                      className="opacity-0 absolute"
-                    />
-                    <div
-                      className={`w-4 h-4 border rounded-full flex items-center justify-center ${
-                        formData.industrycrm === industrycrm ? 'bg-[#ff8633] border-[#ff8633]' : 'border-gray-400 bg-white'
-                      }`}
-                    >
-                      {formData.industrycrm === industrycrm && <div className="w-2 h-2 rounded-full bg-white"></div>}
-                    </div>
-                    <span className="ml-2 text-sm">{industrycrm}</span>
-                  </div>
-                </label>
+                  selected={formData.industrycrm === industrycrm}
+                  onSelect={() => handleRadioChange('industrycrm', industrycrm)}
+                  label={industrycrm}
+                  icon={INDUSTRY_ICONS[industrycrm] || Building2}
+                />
               ))}
-            </div>
+            </QuoteFormOptionGrid>
 
-            {/* Show "Other" input field if "Other" is selected */}
             {formData.industrycrm === 'Other' && (
-              <div className="mt-4">
-                <label className="block text-sm font-medium mb-1">Please specify your industry</label>
-                <input
-                  type="text"
+              <div className="mt-2">
+                <QuoteFormTextField
+                  label="Please specify your industry"
                   name="otherIndustry"
                   value={formData.otherIndustry}
                   onChange={handleInputChange}
                   placeholder="Enter your industry"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#ff8633]"
                 />
               </div>
             )}
@@ -468,130 +391,91 @@ const CRMForm = ({ onClose }) => {
       case 5:
         return (
           <div>
-            <h2 className="text-base font-semibold mb-3">What's your zip code?</h2>
-            <div className="mb-4">
-              <input
-                type="text"
-                name="zipCode"
-                value={formData.zipCode}
-                onChange={handleInputChange}
-                placeholder="Enter your zip code"
-                maxLength="5"
-                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#ff8633] ${
-                  errors.zipCode ? 'border-red-500' : 'border-gray-300'
-                }`}
-              />
-              {errors.zipCode && (
-                <p className="text-red-500 text-sm mt-1">Please enter a valid 5-digit zip code</p>
-              )}
-            </div>
+            <QuoteFormStepTitle title="What's your zip code?" />
+            <QuoteFormTextField
+              name="zipCode"
+              value={formData.zipCode}
+              onChange={handleInputChange}
+              placeholder="Enter 5-digit zip code"
+              maxLength={5}
+              icon={MapPin}
+              error={errors.zipCode ? 'Please enter a valid 5-digit zip code' : undefined}
+            />
           </div>
         );
 
       case 6:
         return (
           <div>
-            <h2 className="text-base font-semibold mb-3">What's your email address?</h2>
-            <div className="mb-4">
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                placeholder="Enter your email address"
-                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#ff8633] ${
-                  formData.email && !formData.email.includes('@') ? 'border-red-500' : 'border-gray-300'
-                }`}
-              />
-              {formData.email && !formData.email.includes('@') && (
-                <p className="text-red-500 text-sm mt-1">Please enter a valid email address</p>
-              )}
-            </div>
+            <QuoteFormStepTitle title="What's your email address?" />
+            <QuoteFormTextField
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              placeholder="you@company.com"
+              icon={Mail}
+              error={
+                formData.email && !formData.email.includes('@')
+                  ? 'Please enter a valid email address'
+                  : undefined
+              }
+            />
           </div>
         );
 
       case 7:
         return (
           <div>
-            <h2 className="text-base font-semibold mb-3">Tell us about yourself</h2>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">First Name</label>
-                <input
-                  type="text"
-                  name="firstName"
-                  value={formData.firstName}
-                  onChange={handleInputChange}
-                  placeholder="Enter your first name"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#ff8633]"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-1">Last Name</label>
-                <input
-                  type="text"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleInputChange}
-                  placeholder="Enter your last name"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#ff8633]"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-1">Company</label>
-                <input
-                  type="text"
-                  name="company"
-                  value={formData.company}
-                  onChange={handleInputChange}
-                  placeholder="Enter your company name"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#ff8633]"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-1">Phone Number</label>
-                <input
-                  type="tel"
-                  name="phoneNumber"
-                  value={formData.phoneNumber}
-                  onChange={handleInputChange}
-                  placeholder={PHONE_PLACEHOLDER}
-                  className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#ff8633] ${
-                    errors.phoneNumber ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                />
-                {errors.phoneNumber && (
-                  <p className="text-red-500 text-sm mt-1">{PHONE_VALIDATION_MESSAGE}</p>
-                )}
-              </div>
+            <QuoteFormStepTitle title="Tell us about yourself" />
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <QuoteFormTextField
+                label="First name"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleInputChange}
+                placeholder="First name"
+                icon={User}
+              />
+              <QuoteFormTextField
+                label="Last name"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleInputChange}
+                placeholder="Last name"
+                icon={User}
+              />
+              <QuoteFormTextField
+                label="Company"
+                name="company"
+                value={formData.company}
+                onChange={handleInputChange}
+                placeholder="Company name"
+                icon={Building2}
+                className="sm:col-span-2"
+              />
+              <QuoteFormTextField
+                label="Phone number"
+                type="tel"
+                name="phoneNumber"
+                value={formData.phoneNumber}
+                onChange={handleInputChange}
+                placeholder={PHONE_PLACEHOLDER}
+                icon={Phone}
+                className="sm:col-span-2"
+                error={errors.phoneNumber ? PHONE_VALIDATION_MESSAGE : undefined}
+              />
             </div>
           </div>
         );
 
       case 8:
         return (
-          <div>
-            <h2 className="text-base font-semibold mb-3">Verify you're not a robot</h2>
-            <div className="flex justify-center mb-4">
-              {captchaValue ? (
-                <div className="flex items-center justify-center gap-2 p-4 bg-green-50 border border-green-200 rounded-md">
-                  <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span className="text-green-600 font-semibold">Verified</span>
-                </div>
-              ) : (
-                <ReCAPTCHA
-                  ref={captchaRef}
-                  sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
-                  onChange={(value) => setCaptchaValue(value)}
-                />
-              )}
-            </div>
-          </div>
+          <QuoteFormCaptchaStep
+            captchaRef={captchaRef}
+            captchaValue={captchaValue}
+            onChange={(value) => setCaptchaValue(value)}
+          />
         );
 
       default:
@@ -600,105 +484,20 @@ const CRMForm = ({ onClose }) => {
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white rounded-lg overflow-hidden">
-      {showSuccess && (
-        <div className="fixed top-4 right-4 bg-white rounded-lg shadow-lg p-4 max-w-sm w-full border-l-4 border-[#ff8633] z-1000 slide-in-right">
-          <div className="flex items-start">
-            <div className="flex-shrink-0">
-              <svg className="h-5 w-5 text-[#ff8633]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <div className="ml-3 w-0 flex-1">
-              <h3 className="text-base font-medium text-gray-900">Thank you!</h3>
-              <p className="mt-1 text-xs text-gray-500">
-                Your submission has been received. We will get back to you soon.
-              </p>
-            </div>
-            <div className="ml-4 flex-shrink-0 flex">
-              <button
-                onClick={() => setShowSuccess(false)}
-                className="bg-white rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none"
-              >
-                <span className="sr-only">Close</span>
-                <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Form */}
-      <form onSubmit={handleSubmit}>
-        <div className="p-6">
-          {/* Progress bar */}
-          <div className="w-full bg-gray-200 rounded-full h-2 mb-6">
-            <div
-              className="bg-[#ff8633] h-2 rounded-full transition-all duration-300"
-              style={{ width:` ${(currentStep / 8) * 100}%`}}
-            ></div>
-          </div>
-
-          {/* Step content */}
-          {renderStep()}
-
-          {/* Navigation buttons */}
-          <div className="flex justify-between mt-6">
-            {currentStep > 1 && (
-              <button
-                type="button"
-                onClick={prevStep}
-                className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 transition-colors"
-              >
-                Back
-              </button>
-            )}
-
-            {currentStep < 8 ? (
-              <button
-                type="button"
-                onClick={nextStep}
-                disabled={!isStepValid()}
-                className={`px-4 py-2 rounded-md ml-auto transition-colors ${
-                  isStepValid() ? 'bg-[#ff8633] text-white hover:bg-[#e67a2e]' : 'bg-gray-300 cursor-not-allowed'
-                }`}
-              >
-                Next
-              </button>
-            ) : (
-              <button
-                type="submit"
-                disabled={!captchaValue || isSubmitting} // Disable if CAPTCHA is not completed
-                className={`px-4 py-2 rounded-md ml-auto transition-colors ${
-                  !captchaValue || isSubmitting ? 'bg-gray-300 cursor-not-allowed' : 'bg-[#ff8633] text-white hover:bg-[#e67a2e]'
-                }`}
-              >
-                {isSubmitting ? 'Submitting...' : 'Submit'}
-              </button>
-            )}
-          </div>
-        </div>
-      </form>
-
-      {/* Add CSS for slide-in animation */}
-      <style jsx>{`
-        @keyframes slideInRight {
-          from {
-            transform: translateX(100%);
-            opacity: 0;
-          }
-          to {
-            transform: translateX(0);
-            opacity: 1;
-          }
-        }
-        .slide-in-right {
-          animation: slideInRight 0.5s ease-out forwards;
-        }
-      `}</style>
-    </div>
+    <QuoteFormShell
+      totalSteps={TOTAL_STEPS}
+      currentStep={currentStep}
+      showSuccess={showSuccess}
+      onCloseSuccess={() => setShowSuccess(false)}
+      onSubmit={handleSubmit}
+      isStepValid={isStepValid}
+      isSubmitting={isSubmitting}
+      onBack={prevStep}
+      onNext={nextStep}
+      backDisabled={isSubmitting}
+    >
+      {renderStep()}
+    </QuoteFormShell>
   );
 };
 

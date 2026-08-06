@@ -1009,9 +1009,23 @@ a.cb-link-pending {
   display: none;
 }
 
+/* Quote popup: no visible scroll rail (avoids vertical bar looking like pagination) */
+.quote-popup-panel {
+  overflow: hidden;
+}
+.quote-popup-body {
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
 @keyframes fadeSlideDown {
   from { opacity: 0; transform: translateY(-6px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(100%); }
+  to   { opacity: 1; transform: translateX(0); }
 }
 
 /* Auto-injected contextual internal links inside blog content */
