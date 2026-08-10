@@ -1,16 +1,12 @@
-import type { Metadata } from 'next'
-import { buildQuotePageHeading, buildQuotePageMetadata, type QuoteSearchParams } from '@/lib/pageMetaDescriptions'
+import { QUOTE_PAGE_REVALIDATE, createQuotePageHandlers } from '@/lib/createQuotePage'
 import QuoteFormClient from './QuoteFormClient'
 
-type PageProps = {
-  searchParams: QuoteSearchParams
-}
+export const revalidate = QUOTE_PAGE_REVALIDATE
 
-export function generateMetadata({ searchParams }: PageProps): Metadata {
-  return buildQuotePageMetadata('sales/best-project-management-software/get-free-quotes', searchParams)
-}
+const { generateMetadata, Page } = createQuotePageHandlers(
+  'sales/best-project-management-software/get-free-quotes',
+  QuoteFormClient
+)
 
-export default function Page({ searchParams }: PageProps) {
-  const heading = buildQuotePageHeading('sales/best-project-management-software/get-free-quotes', searchParams)
-  return <QuoteFormClient heading={heading} />
-}
+export { generateMetadata }
+export default Page

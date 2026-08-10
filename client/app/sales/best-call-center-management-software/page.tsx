@@ -1,16 +1,12 @@
-export const revalidate = 3600
-import type { Metadata } from 'next'
-import { getComparisonPageBySlug } from '@/data/comparisons'
-import { buildComparisonMetadata, ComparisonRoute } from '@/components/comparison/ComparisonRoute'
 import { CallCenterPopup } from '@/components/EmailMarketingPopup'
+import { COMPARISON_PAGE_REVALIDATE, createComparisonPageHandlers } from '@/lib/createComparisonPage'
 
-const data = getComparisonPageBySlug('call-center')
-export const metadata: Metadata = buildComparisonMetadata(data!)
-export default function Page() {
-  return (
-    <>
-      <ComparisonRoute data={data} />
-      <CallCenterPopup />
-    </>
-  )
-}
+export const revalidate = COMPARISON_PAGE_REVALIDATE
+
+const { generateMetadata, Page } = createComparisonPageHandlers({
+  slug: 'call-center',
+  Popup: CallCenterPopup,
+})
+
+export { generateMetadata }
+export default Page

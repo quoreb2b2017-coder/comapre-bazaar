@@ -66,6 +66,43 @@ export function buildComparePageMetadata(searchParams: {
   })
 }
 
+export async function buildComparePageMetadataAsync(searchParams: {
+  category?: string
+  brand?: string | string[]
+}): Promise<Metadata> {
+  const { loadComparisonPage } = await import('@/lib/comparisonPageCms')
+  const category = searchParams.category ?? ''
+  const brandId = Array.isArray(searchParams.brand)
+    ? searchParams.brand[0] ?? ''
+    : searchParams.brand ?? ''
+  const page = await loadComparisonPage(category)
+
+  if (!page) {
+    return buildMetadata({
+      title: 'Compare Business Software',
+      description:
+        'Side-by-side software comparisons with expert reviews, pricing breakdowns, and ranked recommendations.',
+      canonical: '/compare',
+    })
+  }
+
+  const product = page.products.find((p) => p.id === brandId) ?? page.products[0]
+  const path = brandId
+    ? `/compare?category=${category}&brand=${brandId}`
+    : `/compare?category=${category}`
+  const { metaName, titleName } = resolveCompareSeoNames(category, product.id, product.name)
+  const title = `${titleName} Review and Pricing 2026`
+  const description = buildCompareBrandMetaDescription(metaName, category)
+
+  return buildMetadata({
+    title,
+    description,
+    canonical: path,
+    ogTitle: `${title} | Compare Bazaar`,
+    ogUrl: `${SITE_URL}${path}`,
+  })
+}
+
 export type QuotePageConfig = {
   baseTitle: string
   canonical: string
@@ -230,9 +267,10 @@ export function buildQuotePagePath(
 
 export function buildQuotePageHeading(
   key: QuotePageKey,
-  searchParams?: QuoteSearchParams
+  searchParams?: QuoteSearchParams,
+  configOverride?: QuotePageConfig
 ): string {
-  const config = QUOTE_PAGE_CONFIGS[key]
+  const config = configOverride ?? QUOTE_PAGE_CONFIGS[key]
   const vendor = parseParam(searchParams?.vendor)
   if (vendor) {
     return `Get a Free ${config.vendorH1Category} Quote from ${vendor}`
@@ -240,11 +278,21 @@ export function buildQuotePageHeading(
   return config.baseH1
 }
 
-export function buildQuotePageMetadata(
+export async function buildQuotePageHeadingAsync(
   key: QuotePageKey,
   searchParams?: QuoteSearchParams
+): Promise<string> {
+  const { loadQuotePageConfig } = await import('@/lib/quotePageCms')
+  const config = await loadQuotePageConfig(key)
+  return buildQuotePageHeading(key, searchParams, config)
+}
+
+export function buildQuotePageMetadata(
+  key: QuotePageKey,
+  searchParams?: QuoteSearchParams,
+  configOverride?: QuotePageConfig
 ): Metadata {
-  const config = QUOTE_PAGE_CONFIGS[key]
+  const config = configOverride ?? QUOTE_PAGE_CONFIGS[key]
   const vendor = parseParam(searchParams?.vendor)
   const product = parseParam(searchParams?.product)
   const path = buildQuotePagePath(config.canonical, searchParams)
@@ -262,4 +310,13 @@ export function buildQuotePageMetadata(
     ogTitle: `${title} | Compare Bazaar`,
     ogUrl: `${SITE_URL}${path}`,
   })
+}
+
+export async function buildQuotePageMetadataAsync(
+  key: QuotePageKey,
+  searchParams?: QuoteSearchParams
+): Promise<Metadata> {
+  const { loadQuotePageConfig } = await import('@/lib/quotePageCms')
+  const config = await loadQuotePageConfig(key)
+  return buildQuotePageMetadata(key, searchParams, config)
 }

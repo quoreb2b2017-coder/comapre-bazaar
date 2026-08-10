@@ -1,20 +1,18 @@
-export const revalidate = 3600
+export const revalidate = 120
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
 import { CheckCircle2, XCircle, Globe, Shield, Zap, Users, DollarSign, Star } from 'lucide-react'
-import { buildMetadata } from '@/lib/seo'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
 import { FullReviewLink } from '@/components/reviews/FullReviewLink'
-import { getComparisonPageBySlug } from '@/data/comparisons'
+import { loadComparisonPage } from '@/lib/comparisonPageCms'
+import { buildComparisonMetadata } from '@/components/comparison/ComparisonRoute'
 
-export const metadata: Metadata = buildMetadata({
-  title: 'Deel HR & Payroll Software Review (2026)',
-  description:
-    'Deel is the leading global HR and payroll platform for 2026. Hire employees and contractors in 150+ countries with built-in EOR, compliance, and payroll automation.',
-  canonical: '/human-resources/deel-hr-payroll',
-})
-
-const data = getComparisonPageBySlug('deel-hr-payroll')!
+export async function generateMetadata(): Promise<Metadata> {
+  const data = await loadComparisonPage('deel-hr-payroll')
+  if (!data) notFound()
+  return buildComparisonMetadata(data)
+}
 
 const MODULES = [
   {
@@ -77,7 +75,9 @@ const INTEGRATIONS = [
   'Rippling', 'HiBob', 'Personio', 'Ashby',
 ]
 
-export default function DeelHrPayrollPage() {
+export default async function DeelHrPayrollPage() {
+  const data = await loadComparisonPage('deel-hr-payroll')
+  if (!data) notFound()
   const products = data.products
 
   return (
@@ -96,10 +96,10 @@ export default function DeelHrPayrollPage() {
               <span className="rounded-full bg-emerald-400/20 border border-emerald-400/40 px-3 py-1 text-xs font-semibold text-emerald-300">🏆 #1 Global HR Platform 2026</span>
             </div>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight mb-3">
-              Deel HR & Payroll
+              {data.h1}
             </h1>
             <p className="text-white/80 text-lg max-w-2xl mb-6">
-              The all-in-one global HR platform. Hire, pay, and manage employees and contractors in 150+ countries — no local entity needed.
+              {data.intro}
             </p>
             <div className="flex flex-wrap gap-3 mb-8">
               {STATS.map((s) => (

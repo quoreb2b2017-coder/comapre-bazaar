@@ -51,6 +51,11 @@ export const WhitePaperCreate = lazy(() =>
     default: m.WhitePaperCreate,
   })),
 )
+export const ServicePages = lazy(() =>
+  import(/* webpackChunkName: "blog-admin-service-pages" */ './pages/ServicePages').then((m) => ({
+    default: m.ServicePages,
+  })),
+)
 export const LoginPage = lazy(() =>
   import(/* webpackChunkName: "blog-admin-login" */ './components/auth/LoginPage').then((m) => ({ default: m.LoginPage })),
 )

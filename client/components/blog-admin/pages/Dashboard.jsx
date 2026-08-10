@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useOutletContext, useNavigate } from 'react-router-dom'
-import { Zap, Clock, CheckCircle, ArrowRight, LayoutDashboard, Sparkles, FileText } from 'lucide-react'
+import { Zap, Clock, CheckCircle, ArrowRight, LayoutDashboard, Sparkles, FileText, LayoutTemplate } from 'lucide-react'
 import { StatsCards } from '../components/dashboard/StatsCards'
 import { ActivityChart } from '../components/dashboard/ActivityChart'
 import { StatusBadge } from '../components/ui/StatusBadge'
@@ -151,7 +151,7 @@ export const Dashboard = () => {
           <Zap className="w-4 h-4" />
           <span className="text-xs font-semibold uppercase tracking-wider">Quick actions</span>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
             {
               icon: Zap,
@@ -160,6 +160,14 @@ export const Dashboard = () => {
               gradient: 'from-violet-500/15 to-brand/15',
               iconBg: 'bg-brand-light text-brand ring-2 ring-brand/20',
               href: '/generate',
+            },
+            {
+              icon: LayoutTemplate,
+              label: 'Edit service pages',
+              desc: 'CRM, payroll, quote pages & SEO',
+              gradient: 'from-cb-orange/15 to-amber-500/10',
+              iconBg: 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300 ring-2 ring-orange-500/20',
+              href: '/service-pages',
             },
             {
               icon: Clock,

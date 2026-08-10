@@ -1,16 +1,12 @@
-import type { Metadata } from 'next'
+import { QUOTE_PAGE_REVALIDATE, createQuotePageHandlers } from '@/lib/createQuotePage'
 import EmployeeManagementGetQuotesForm from '@/app/technology/best-employee-management-software/get-free-quotes/QuoteFormClient'
-import { buildQuotePageHeading, buildQuotePageMetadata, type QuoteSearchParams } from '@/lib/pageMetaDescriptions'
 
-type PageProps = {
-  searchParams: QuoteSearchParams
-}
+export const revalidate = QUOTE_PAGE_REVALIDATE
 
-export function generateMetadata({ searchParams }: PageProps): Metadata {
-  return buildQuotePageMetadata('human-resources/best-employee-management-software/get-free-quotes', searchParams)
-}
+const { generateMetadata, Page } = createQuotePageHandlers(
+  'human-resources/best-employee-management-software/get-free-quotes',
+  EmployeeManagementGetQuotesForm
+)
 
-export default function Page({ searchParams }: PageProps) {
-  const heading = buildQuotePageHeading('human-resources/best-employee-management-software/get-free-quotes', searchParams)
-  return <EmployeeManagementGetQuotesForm heading={heading} />
-}
+export { generateMetadata }
+export default Page

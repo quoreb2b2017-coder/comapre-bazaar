@@ -1,16 +1,12 @@
-export const revalidate = 3600
-import type { Metadata } from 'next'
-import { getComparisonPageBySlug } from '@/data/comparisons'
-import { buildComparisonMetadata, ComparisonRoute } from '@/components/comparison/ComparisonRoute'
 import { GPSFleetPopup } from '@/components/EmailMarketingPopup'
+import { COMPARISON_PAGE_REVALIDATE, createComparisonPageHandlers } from '@/lib/createComparisonPage'
 
-const data = getComparisonPageBySlug('gps-fleet-management')
-export const metadata: Metadata = buildComparisonMetadata(data!)
-export default function Page() {
-  return (
-    <>
-      <ComparisonRoute data={data} />
-      <GPSFleetPopup />
-    </>
-  )
-}
+export const revalidate = COMPARISON_PAGE_REVALIDATE
+
+const { generateMetadata, Page } = createComparisonPageHandlers({
+  slug: 'gps-fleet-management',
+  Popup: GPSFleetPopup,
+})
+
+export { generateMetadata }
+export default Page

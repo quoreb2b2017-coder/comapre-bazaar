@@ -19,73 +19,84 @@ export function ComparisonSidebar({
   lastReviewed,
 }: SidebarProps) {
   return (
-    <aside className="overflow-hidden border border-gray-200 bg-white" aria-label="Page navigation">
+    <aside
+      className="overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-lg shadow-navy/5"
+      aria-label="Page navigation"
+    >
       {(vendorCount != null || lastReviewed) && (
-        <div className="grid grid-cols-2 gap-px border-b border-gray-200 bg-gray-200">
+        <div className="grid grid-cols-2 gap-px bg-gray-100">
           {vendorCount != null ? (
-            <div className="bg-[#FAFBFD] px-4 py-2.5">
-              <p className="text-[9px] font-semibold uppercase tracking-[0.12em] text-gray-400">Compared</p>
-              <p className="mt-0.5 text-sm font-semibold tabular-nums text-navy">{vendorCount}</p>
+            <div className="bg-gradient-to-br from-[#FAFBFD] to-white px-4 py-3">
+              <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-gray-400">Compared</p>
+              <p className="mt-0.5 font-serif text-lg tabular-nums text-navy">{vendorCount}</p>
             </div>
           ) : null}
           {lastReviewed ? (
-            <div className="bg-white px-4 py-2.5">
-              <p className="text-[9px] font-semibold uppercase tracking-[0.12em] text-gray-400">Verified</p>
+            <div className="bg-white px-4 py-3">
+              <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-gray-400">Verified</p>
               <p className="mt-0.5 text-sm font-semibold text-navy">{lastReviewed}</p>
             </div>
           ) : null}
         </div>
       )}
 
-      <nav className="border-b border-gray-200 px-5 py-3.5">
-        <h3 className="text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-400">On this page</h3>
-        <ol className="mt-2.5 space-y-2">
+      <nav className="border-b border-gray-100 px-5 py-4">
+        <h3 className="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-400">On this page</h3>
+        <ol className="mt-3 space-y-2.5">
           {tocItems.map((item, i) => (
-            <li key={item.anchor} className="flex items-baseline gap-2.5">
-              <span className="w-4 shrink-0 font-serif text-xs tabular-nums text-gray-300">{i + 1}</span>
+            <li key={item.anchor}>
               <a
                 href={`#${item.anchor}`}
-                className="text-[13px] leading-snug text-gray-600 transition-colors hover:text-cb-orange"
+                className="group flex items-baseline gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-cb-orange/5"
               >
-                {item.label}
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-gray-100 font-serif text-[10px] tabular-nums text-gray-400 group-hover:bg-cb-orange/10 group-hover:text-cb-orange">
+                  {i + 1}
+                </span>
+                <span className="text-[13px] leading-snug text-gray-600 transition-colors group-hover:text-navy">
+                  {item.label}
+                </span>
               </a>
             </li>
           ))}
         </ol>
       </nav>
 
-      <div className="border-b border-gray-200 bg-[#FFFBF7] px-5 py-4">
-        <h4 className="font-serif text-[15px] leading-snug text-navy">{ctaTitle}</h4>
-        <p className="mt-1.5 text-[13px] leading-relaxed text-gray-600">{ctaBody}</p>
+      <div className="border-b border-gray-100 bg-gradient-to-br from-[#FFFBF7] via-white to-cb-orange/[0.06] px-5 py-5">
+        <h4 className="font-serif text-[16px] leading-snug text-navy">{ctaTitle}</h4>
+        <p className="mt-2 text-[13px] leading-relaxed text-gray-600">{ctaBody}</p>
         <Link
           href={ctaSlug}
-          className="mt-3 flex w-full items-center justify-center rounded-md bg-cb-orange px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-cb-orange-hover"
+          className="mt-4 flex w-full items-center justify-center rounded-xl bg-cb-orange px-4 py-2.5 text-[13px] font-semibold text-white shadow-md shadow-cb-orange/25 transition-all hover:bg-cb-orange-hover hover:shadow-lg"
         >
           Get free quotes →
         </Link>
       </div>
 
-      <div className="px-5 py-3.5">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-gray-400">
-          Editorial standard
-        </p>
-        <ul className="mt-2.5 space-y-1.5 text-[12px] leading-snug text-gray-600">
-          <li className="flex gap-2">
-            <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-cb-orange" aria-hidden />
+      <div className="px-5 py-4">
+        <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-gray-400">Editorial standard</p>
+        <ul className="mt-3 space-y-2 text-[12px] leading-snug text-gray-600">
+          <li className="flex gap-2.5">
+            <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-[9px] text-emerald-600 ring-1 ring-emerald-200/80">
+              ✓
+            </span>
             Independent — no pay-to-rank
           </li>
-          <li className="flex gap-2">
-            <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-cb-orange" aria-hidden />
+          <li className="flex gap-2.5">
+            <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-[9px] text-emerald-600 ring-1 ring-emerald-200/80">
+              ✓
+            </span>
             Hands-on testing by named experts
           </li>
-          <li className="flex gap-2">
-            <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-cb-orange" aria-hidden />
+          <li className="flex gap-2.5">
+            <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-[9px] text-emerald-600 ring-1 ring-emerald-200/80">
+              ✓
+            </span>
             Pricing re-verified every 90 days
           </li>
         </ul>
         <Link
           href="/editorial-process"
-          className="mt-3 inline-block text-[12px] font-semibold text-cb-orange hover:text-cb-orange-hover"
+          className="mt-4 inline-flex items-center gap-1 text-[12px] font-semibold text-cb-orange hover:text-cb-orange-hover"
         >
           Methodology →
         </Link>

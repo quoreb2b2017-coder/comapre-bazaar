@@ -27,17 +27,17 @@ export function ComparisonPageTemplate({ data, hubSlug, lastVerified }: Comparis
     <>
       <ComparisonPageHero data={data} vendorCount={vendorCount} />
 
-      <div className="bg-[#F3F5F9]">
-        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
+      <div className="bg-gradient-to-b from-[#EEF3FB] via-[#F3F5F9] to-[#F9FAFB]">
+        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10">
           {lastVerified ? (
-            <div className="mb-6 rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm text-gray-600">
+            <div className="mb-6 rounded-xl border border-gray-200/80 bg-white/90 px-5 py-3.5 text-sm text-gray-600 shadow-sm backdrop-blur-sm">
               <VerificationStamp lastVerified={lastVerified} />
             </div>
           ) : null}
 
-          <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_240px] lg:gap-8">
-            <div className="min-w-0 space-y-6">
-              <ComparisonReveal className="overflow-hidden border border-gray-200 bg-white">
+          <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1fr)_260px] lg:gap-10">
+            <div className="min-w-0 space-y-8">
+              <ComparisonReveal className="overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm shadow-navy/5">
                 <ComparisonSectionHeader
                   id="verdict-heading"
                   title="Quick verdict"
@@ -49,14 +49,14 @@ export function ComparisonPageTemplate({ data, hubSlug, lastVerified }: Comparis
               </ComparisonReveal>
 
               <ComparisonReveal as="section" id="picks" aria-labelledby="picks-heading" className="scroll-mt-24">
-                <div className="overflow-hidden border border-gray-200 bg-white">
+                <div className="overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm shadow-navy/5">
                   <ComparisonSectionHeader
                     id="picks-heading"
                     step={1}
                     title="Our top picks for 2026"
                     description={`${vendorCount} platforms ranked by expert score · pricing verified ${data.lastReviewed}`}
                   />
-                  <ComparisonStagger className="divide-y divide-gray-200">
+                  <ComparisonStagger className="divide-y divide-gray-100">
                     {data.products.map((product, index) => (
                       <ComparisonStaggerItem key={product.id}>
                         <ProductCard
@@ -78,14 +78,14 @@ export function ComparisonPageTemplate({ data, hubSlug, lastVerified }: Comparis
                 aria-labelledby="compare-heading"
                 delay={0.04}
               >
-                <div className="overflow-hidden border border-gray-200 bg-white">
+                <div className="overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm shadow-navy/5">
                   <ComparisonSectionHeader
                     id="compare-heading"
                     step={2}
                     title="Full comparison table"
                     description={`Side-by-side specs and pricing · ${data.lastReviewed}`}
                   />
-                  <div className="p-4 sm:p-5">
+                  <div className="p-4 sm:p-6">
                     <ComparisonTable
                       data={data.table}
                       caption={`${data.h1}, pricing and feature comparison, ${data.lastReviewed}`}
@@ -101,12 +101,12 @@ export function ComparisonPageTemplate({ data, hubSlug, lastVerified }: Comparis
                 aria-labelledby="faqs-heading"
                 delay={0.06}
               >
-                <div className="overflow-hidden border border-gray-200 bg-white">
+                <div className="overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm shadow-navy/5">
                   <ComparisonSectionHeader
                     id="faqs-heading"
                     step={3}
                     title="Frequently asked questions"
-                    description="Expert answer from our software buying guides."
+                    description="Expert answers from our software buying guides."
                   />
                   <FaqAccordion items={data.faqs} />
                 </div>
@@ -114,7 +114,7 @@ export function ComparisonPageTemplate({ data, hubSlug, lastVerified }: Comparis
 
               {hubSlug ? (
                 <ComparisonReveal delay={0.08}>
-                  <div className="overflow-hidden border border-gray-200 bg-white px-5 py-6 sm:px-6">
+                  <div className="overflow-hidden rounded-2xl border border-gray-200/80 bg-white px-5 py-6 shadow-sm shadow-navy/5 sm:px-6">
                     <HubRelatedContent hubSlug={hubSlug} />
                   </div>
                 </ComparisonReveal>

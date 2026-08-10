@@ -18,6 +18,7 @@ import {
   WhitePapers,
   WhitePaperDownloads,
   WhitePaperCreate,
+  ServicePages,
   SuperAdminGoogleAnalytics,
 } from './lazyRoutes'
 import { useToast } from './hooks/useToast'
@@ -85,6 +86,7 @@ function AppRoutes() {
           <Route path="whitepapers" element={<RouteSuspense><WhitePapers /></RouteSuspense>} />
           <Route path="whitepapers/downloads" element={<RouteSuspense><WhitePaperDownloads /></RouteSuspense>} />
           <Route path="whitepapers/new" element={<RouteSuspense><WhitePaperCreate /></RouteSuspense>} />
+          <Route path="service-pages" element={<RouteSuspense><ServicePages /></RouteSuspense>} />
           <Route
             path="super-admin/google-analytics"
             element={

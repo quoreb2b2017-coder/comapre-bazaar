@@ -1,5 +1,5 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
-import { Check, ChevronDown, Search } from 'lucide-react'
+import { Check, ChevronDown, Loader2, Search } from 'lucide-react'
 
 export function BlogAdminSelect({
   id,
@@ -11,6 +11,9 @@ export function BlogAdminSelect({
   searchable = false,
   searchPlaceholder = 'Search…',
   emptyLabel = 'No matches',
+  disabled = false,
+  loading = false,
+  listMaxHeight = 'max-h-72',
 }) {
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
@@ -126,15 +129,22 @@ export function BlogAdminSelect({
       <button
         type="button"
         id={id}
+        disabled={disabled || loading}
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={listboxId}
-        onClick={() => setOpen((prev) => !prev)}
+        aria-busy={loading}
+        onClick={() => {
+          if (disabled || loading) return
+          setOpen((prev) => !prev)
+        }}
         onKeyDown={onTriggerKeyDown}
-        className={`flex min-h-[42px] w-full items-center justify-between gap-3 rounded-xl border px-4 py-2.5 text-left text-sm transition-all ${
-          open
-            ? 'border-brand bg-white shadow-[0_0_0_3px_rgba(255,134,51,0.12)] dark:bg-gray-800'
-            : 'border-gray-200 bg-white hover:border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:hover:border-gray-600'
+        className={`flex min-h-[44px] w-full items-center justify-between gap-3 rounded-xl border px-4 py-2.5 text-left text-sm transition-all duration-200 ease-out ${
+          disabled || loading
+            ? 'cursor-not-allowed border-gray-200 bg-gray-50 opacity-70 dark:border-gray-700 dark:bg-gray-800/60'
+            : open
+              ? 'border-brand bg-white shadow-[0_0_0_3px_rgba(255,134,51,0.12)] dark:bg-gray-800'
+              : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm dark:border-gray-700 dark:bg-gray-800 dark:hover:border-gray-600'
         }`}
       >
         <span className="min-w-0 flex-1">
@@ -152,17 +162,21 @@ export function BlogAdminSelect({
           )}
         </span>
         <span
-          className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition-colors ${
+          className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition-all duration-200 ${
             open ? 'bg-brand/10 text-brand' : 'bg-gray-50 text-gray-400 dark:bg-gray-700/60 dark:text-gray-400'
           }`}
         >
-          <ChevronDown className={`h-4 w-4 transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden />
+          {loading ? (
+            <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+          ) : (
+            <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} aria-hidden />
+          )}
         </span>
       </button>
 
-      {open ? (
-        <div className="absolute z-50 mt-2 w-full">
-          <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-900">
+      {open && !disabled && !loading ? (
+        <div className="absolute z-50 mt-2 w-full origin-top opacity-100 transition-all duration-200 ease-out">
+          <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-2xl ring-1 ring-black/5 dark:border-gray-700 dark:bg-gray-900 dark:ring-white/10">
             {searchable ? (
               <div className="border-b border-gray-100 p-2 dark:border-gray-800">
                 <div className="relative">
@@ -189,7 +203,7 @@ export function BlogAdminSelect({
               aria-labelledby={id}
               onKeyDown={onListKeyDown}
               tabIndex={-1}
-              className="max-h-64 overflow-auto py-1.5"
+              className={`${listMaxHeight} overflow-auto py-1.5 scroll-smooth`}
             >
               {flatFiltered.length === 0 ? (
                 <li className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">{emptyLabel}</li>
@@ -216,7 +230,7 @@ export function BlogAdminSelect({
                               aria-selected={isSelected}
                               onMouseEnter={() => setActiveIndex(index)}
                               onClick={() => selectOption(opt)}
-                              className={`mx-1.5 flex w-[calc(100%-0.75rem)] items-start justify-between gap-3 rounded-lg px-3 py-2.5 text-left transition-colors ${
+                              className={`mx-1.5 flex w-[calc(100%-0.75rem)] items-start justify-between gap-3 rounded-lg px-3 py-2.5 text-left transition-all duration-150 ${
                                 isSelected
                                   ? 'bg-brand/10 text-brand'
                                   : isActive

@@ -1,20 +1,18 @@
-export const revalidate = 3600
+export const revalidate = 120
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
 import { CheckCircle2, XCircle, Globe, Shield, Zap, BarChart3, Star } from 'lucide-react'
-import { buildMetadata } from '@/lib/seo'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
 import { FullReviewLink } from '@/components/reviews/FullReviewLink'
-import { getComparisonPageBySlug } from '@/data/comparisons'
+import { loadComparisonPage } from '@/lib/comparisonPageCms'
+import { buildComparisonMetadata } from '@/components/comparison/ComparisonRoute'
 
-export const metadata: Metadata = buildMetadata({
-  title: 'Papaya Global HR & Payroll Software Review (2026)',
-  description:
-    'Papaya Global is a leading enterprise global payroll and workforce management platform. Hire and pay in 160+ countries with automated compliance, EOR, and real-time workforce analytics.',
-  canonical: '/human-resources/papaya-global-payroll',
-})
-
-const data = getComparisonPageBySlug('papaya-global-payroll')!
+export async function generateMetadata(): Promise<Metadata> {
+  const data = await loadComparisonPage('papaya-global-payroll')
+  if (!data) notFound()
+  return buildComparisonMetadata(data)
+}
 
 const MODULES = [
   { id: 'papaya-global-payroll', color: 'from-[#1e1b4b] to-[#4f46e5]', icon: Globe, highlight: 'Global Payroll' },
@@ -42,7 +40,9 @@ const WHY = [
   { icon: Shield, title: 'Enterprise compliance', desc: 'Automated compliance engine updates with local law changes. Dedicated compliance specialists per country for regulated industries.', color: 'text-emerald-600 bg-emerald-50 border-emerald-200' },
 ]
 
-export default function PapayaGlobalPayrollPage() {
+export default async function PapayaGlobalPayrollPage() {
+  const data = await loadComparisonPage('papaya-global-payroll')
+  if (!data) notFound()
   const products = data.products
 
   return (
@@ -61,10 +61,10 @@ export default function PapayaGlobalPayrollPage() {
               <span className="rounded-full bg-indigo-400/20 border border-indigo-400/40 px-3 py-1 text-xs font-semibold text-indigo-200">🏆 #1 Enterprise Global Payroll 2026</span>
             </div>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight mb-3">
-              Papaya Global
+              {data.h1}
             </h1>
             <p className="text-white/80 text-lg max-w-2xl mb-6">
-              The enterprise global payroll and workforce management platform. Automate payroll, EOR, and compliance in 160+ countries with real-time workforce analytics.
+              {data.intro}
             </p>
             <div className="flex flex-wrap gap-3 mb-8">
               {STATS.map((s) => (

@@ -1,13 +1,13 @@
 import type { Metadata } from 'next'
-import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
 import { ComparePageClient } from '@/components/comparison/compare/ComparePageClient'
-import { ComparePageSkeleton } from '@/components/comparison/compare/ComparePageSkeleton'
 import type { ComparePagePayload } from '@/components/comparison/compare/types'
 import { parseVsParam } from '@/lib/compareUrl'
-import { getComparisonPageBySlug } from '@/data/comparisons'
-import { buildComparePageMetadata } from '@/lib/pageMetaDescriptions'
-import type { Product } from '@/types'
+import { loadComparisonPage } from '@/lib/comparisonPageCms'
+import { buildComparePageMetadataAsync } from '@/lib/pageMetaDescriptions'
+import type { ComparisonPageData, Product } from '@/types'
+
+export const revalidate = 120
 
 type ComparePageProps = {
   searchParams: {
@@ -17,11 +17,11 @@ type ComparePageProps = {
   }
 }
 
-export function generateMetadata({ searchParams }: ComparePageProps): Metadata {
-  return buildComparePageMetadata(searchParams)
+export async function generateMetadata({ searchParams }: ComparePageProps): Promise<Metadata> {
+  return buildComparePageMetadataAsync(searchParams)
 }
 
-function toComparePayload(page: NonNullable<ReturnType<typeof getComparisonPageBySlug>>): ComparePagePayload {
+function toComparePayload(page: ComparisonPageData): ComparePagePayload {
   return {
     slug: page.slug,
     canonical: page.canonical,
@@ -32,13 +32,13 @@ function toComparePayload(page: NonNullable<ReturnType<typeof getComparisonPageB
   }
 }
 
-function ComparePageContent({ searchParams }: ComparePageProps) {
+export default async function ComparePage({ searchParams }: ComparePageProps) {
   const category = searchParams.category ?? ''
   const baseBrandId = Array.isArray(searchParams.brand)
     ? searchParams.brand[0] ?? ''
     : searchParams.brand ?? ''
   const vsIds = parseVsParam(searchParams.vs)
-  const page = getComparisonPageBySlug(category)
+  const page = await loadComparisonPage(category)
 
   if (!page) notFound()
 
@@ -56,21 +56,11 @@ function ComparePageContent({ searchParams }: ComparePageProps) {
 
   if (vsIds.length !== selectedProducts.length) notFound()
 
-  const brandId = baseProduct.id
-
   return (
     <ComparePageClient
       page={toComparePayload(page)}
-      initialBrandId={brandId}
+      initialBrandId={baseProduct.id}
       initialVsIds={vsIds}
     />
-  )
-}
-
-export default function ComparePage(props: ComparePageProps) {
-  return (
-    <Suspense fallback={<ComparePageSkeleton />}>
-      <ComparePageContent {...props} />
-    </Suspense>
   )
 }
