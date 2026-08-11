@@ -88,9 +88,9 @@ const TOPIC_COVER_BUCKETS: TopicBucket[] = [
     ],
   },
   {
-    keywords: ['voip', 'business phone', 'ucaas', 'cloud phone', 'contact center', 'call center'],
+    keywords: ['voip', 'business phone', 'ucaas', 'cloud phone', 'contact center', 'call center', 'phone system'],
     urls: [
-      UNSPLASH('photo-1551434678-e076c223a692'),
+      UNSPLASH('photo-1556761175-b413da4baf72'),
       UNSPLASH('photo-1516321318423-f06f85e504b3'),
       UNSPLASH('photo-1587825140708-dfaf72ae4b04'),
     ],

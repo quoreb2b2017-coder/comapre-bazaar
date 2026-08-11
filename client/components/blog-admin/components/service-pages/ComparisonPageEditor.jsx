@@ -98,6 +98,59 @@ function StringListEditor({ label, items = [], onChange, placeholder = 'Add item
   )
 }
 
+const BADGE_VARIANTS = [
+  { value: 'top', label: 'Top / highlight' },
+  { value: 'free', label: 'Free plan' },
+  { value: 'trial', label: 'Free trial' },
+  { value: 'new', label: 'New' },
+]
+
+function BadgeEditor({ badges = [], onChange }) {
+  const updateBadge = (index, field, value) => {
+    const next = [...badges]
+    next[index] = { ...next[index], [field]: value }
+    onChange(next)
+  }
+  const addBadge = () => onChange([...badges, { variant: 'free', label: '' }])
+  const removeBadge = (index) => onChange(badges.filter((_, i) => i !== index))
+
+  return (
+    <div className="space-y-2 sm:col-span-2">
+      <div className="flex items-center justify-between">
+        <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">Product badges</p>
+        <button type="button" onClick={addBadge} className="inline-flex items-center gap-1 text-xs font-medium text-brand hover:underline">
+          <Plus className="h-3 w-3" /> Add badge
+        </button>
+      </div>
+      {badges.map((badge, index) => (
+        <div key={index} className="grid gap-2 sm:grid-cols-[160px_1fr_auto]">
+          <select
+            className={inputClass()}
+            value={badge.variant || 'free'}
+            onChange={(e) => updateBadge(index, 'variant', e.target.value)}
+          >
+            {BADGE_VARIANTS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+          <input
+            className={inputClass()}
+            placeholder="Badge label"
+            value={badge.label || ''}
+            onChange={(e) => updateBadge(index, 'label', e.target.value)}
+          />
+          <button type="button" onClick={() => removeBadge(index)} className="rounded-xl border border-gray-200 p-2 text-gray-400 hover:text-red-500 dark:border-gray-700">
+            <Trash2 className="h-4 w-4" />
+          </button>
+        </div>
+      ))}
+      {badges.length === 0 ? <p className="text-xs text-gray-400">No badges — optional labels like Free plan, Best value</p> : null}
+    </div>
+  )
+}
+
 function ProductEditor({ product, index, onChange, onRemove }) {
   const update = (field, value) => onChange({ ...product, [field]: value })
 
@@ -117,6 +170,9 @@ function ProductEditor({ product, index, onChange, onRemove }) {
         </Field>
         <Field label="Logo initials" hint="2–3 letters shown in the vendor card box." example="HS for HubSpot">
           <input className={inputClass()} value={product.logo || ''} onChange={(e) => update('logo', e.target.value)} />
+        </Field>
+        <Field label="Logo image URL (optional)" hint="Full logo URL — overrides initials when set.">
+          <input className={inputClass()} value={product.logoUrl || ''} onChange={(e) => update('logoUrl', e.target.value)} placeholder="https://…" />
         </Field>
         <Field label="Product name" hint="Full vendor name on the card heading.">
           <input className={inputClass()} value={product.name || ''} onChange={(e) => update('name', e.target.value)} />
@@ -155,8 +211,20 @@ function ProductEditor({ product, index, onChange, onRemove }) {
             <span className="block text-xs text-gray-500">Highlights this product as #1 with orange badge</span>
           </span>
         </label>
+        <label className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
+          <input
+            type="checkbox"
+            checked={product.affiliateActive !== false}
+            onChange={(e) => update('affiliateActive', e.target.checked)}
+          />
+          <span>
+            <span className="font-medium">Active affiliate link</span>
+            <span className="block text-xs text-gray-500">Enables the Visit website button when a vendor URL is set</span>
+          </span>
+        </label>
       </div>
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
+        <BadgeEditor badges={product.badges || []} onChange={(badges) => update('badges', badges)} />
         <StringListEditor label="Pros" items={product.pros || []} onChange={(pros) => update('pros', pros)} placeholder="Add a pro…" />
         <StringListEditor label="Cons" items={product.cons || []} onChange={(cons) => update('cons', cons)} placeholder="Add a con…" />
       </div>
@@ -344,6 +412,7 @@ function TocEditor({ tocItems = [], onChange }) {
 const EMPTY_PRODUCT = {
   id: '',
   logo: '',
+  logoUrl: '',
   name: '',
   tagline: '',
   score: '4.0',
@@ -356,6 +425,7 @@ const EMPTY_PRODUCT = {
   pricingPeriod: '',
   vendorUrl: '',
   reviewSlug: '',
+  affiliateActive: true,
 }
 
 export function ComparisonPageEditor({ content, onChange }) {
@@ -425,6 +495,16 @@ export function ComparisonPageEditor({ content, onChange }) {
           <Field label="Last reviewed" hint="Date shown as trust signal." example="March 2026">
             <input className={inputClass()} value={content.lastReviewed || ''} onChange={(e) => update('lastReviewed', e.target.value)} />
           </Field>
+          <div className="md:col-span-2">
+            <Field label="Hero background image URL (optional)" hint="Custom hero photo URL. Leave empty to auto-pick from Unsplash based on page topic.">
+              <input
+                className={inputClass()}
+                value={content.heroCoverUrl || ''}
+                onChange={(e) => update('heroCoverUrl', e.target.value)}
+                placeholder="https://images.unsplash.com/…"
+              />
+            </Field>
+          </div>
         </div>
       </Section>
 
@@ -516,12 +596,137 @@ export function ComparisonPageEditor({ content, onChange }) {
         id="section-toc"
         step={8}
         title="Table of contents"
-        description="Sidebar jump links — usually leave as default"
-        liveHint="On this page links in sidebar"
+        description="Optional override — live site auto-builds TOC with anchor links like /best-payroll-software#best_payroll_software_compared"
+        liveHint="Sidebar Table of contents with orange active & hover state"
         defaultOpen={false}
       >
+        <p className="rounded-lg bg-blue-50 px-3 py-2 text-xs text-blue-700 dark:bg-blue-900/20 dark:text-blue-300">
+          Leave empty or use generic items — the public page auto-generates a full TOC (help link, best compared, what&apos;s new, each product, table, FAQ). Add custom rows here only to override.
+        </p>
         <TocEditor tocItems={content.tocItems || []} onChange={(tocItems) => update('tocItems', tocItems)} />
       </Section>
+    </div>
+  )
+}
+
+function QuoteStepsEditor({ steps = [], onChange }) {
+  const update = (index, field, value) => {
+    const next = [...steps]
+    next[index] = { ...next[index], [field]: value }
+    onChange(next)
+  }
+  const add = () => onChange([...steps, { tag: '', num: String(steps.length + 1).padStart(2, '0'), title: '', body: '' }])
+  const remove = (index) => onChange(steps.filter((_, i) => i !== index))
+
+  return (
+    <div className="space-y-3">
+      {steps.map((step, index) => (
+        <div key={index} className="rounded-xl border border-gray-200 p-4 dark:border-gray-700">
+          <div className="mb-2 flex items-center justify-between">
+            <p className="text-xs font-semibold text-gray-500">Step {index + 1}</p>
+            <button type="button" onClick={() => remove(index)} className="text-xs text-red-500 hover:underline">
+              Remove
+            </button>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Field label="Time tag">
+              <input className={inputClass()} value={step.tag || ''} onChange={(e) => update(index, 'tag', e.target.value)} />
+            </Field>
+            <Field label="Step number">
+              <input className={inputClass()} value={step.num || ''} onChange={(e) => update(index, 'num', e.target.value)} />
+            </Field>
+            <Field label="Title">
+              <input className={inputClass()} value={step.title || ''} onChange={(e) => update(index, 'title', e.target.value)} />
+            </Field>
+            <div className="sm:col-span-2">
+              <Field label="Body">
+                <textarea className={inputClass('min-h-[72px]')} value={step.body || ''} onChange={(e) => update(index, 'body', e.target.value)} />
+              </Field>
+            </div>
+          </div>
+        </div>
+      ))}
+      <button type="button" onClick={add} className="text-xs font-medium text-brand hover:underline">
+        + Add step
+      </button>
+    </div>
+  )
+}
+
+function QuoteTestimonialsEditor({ items = [], onChange }) {
+  const update = (index, field, value) => {
+    const next = [...items]
+    next[index] = { ...next[index], [field]: value }
+    onChange(next)
+  }
+  const add = () =>
+    onChange([
+      ...items,
+      { name: '', role: '', company: '', result: '', body: '', initials: '', avatarBg: '#DBEAFE', avatarText: '#1D4ED8' },
+    ])
+  const remove = (index) => onChange(items.filter((_, i) => i !== index))
+
+  return (
+    <div className="space-y-3">
+      {items.map((item, index) => (
+        <div key={index} className="rounded-xl border border-gray-200 p-4 dark:border-gray-700">
+          <div className="mb-2 flex items-center justify-between">
+            <p className="text-xs font-semibold text-gray-500">Testimonial {index + 1}</p>
+            <button type="button" onClick={() => remove(index)} className="text-xs text-red-500 hover:underline">
+              Remove
+            </button>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Field label="Name"><input className={inputClass()} value={item.name || ''} onChange={(e) => update(index, 'name', e.target.value)} /></Field>
+            <Field label="Initials"><input className={inputClass()} value={item.initials || ''} onChange={(e) => update(index, 'initials', e.target.value)} /></Field>
+            <Field label="Role"><input className={inputClass()} value={item.role || ''} onChange={(e) => update(index, 'role', e.target.value)} /></Field>
+            <Field label="Company"><input className={inputClass()} value={item.company || ''} onChange={(e) => update(index, 'company', e.target.value)} /></Field>
+            <Field label="Result headline"><input className={inputClass()} value={item.result || ''} onChange={(e) => update(index, 'result', e.target.value)} /></Field>
+            <div className="sm:col-span-2">
+              <Field label="Quote body">
+                <textarea className={inputClass('min-h-[72px]')} value={item.body || ''} onChange={(e) => update(index, 'body', e.target.value)} />
+              </Field>
+            </div>
+          </div>
+        </div>
+      ))}
+      <button type="button" onClick={add} className="text-xs font-medium text-brand hover:underline">
+        + Add testimonial
+      </button>
+    </div>
+  )
+}
+
+function QuoteWhyItemsEditor({ items = [], onChange }) {
+  const update = (index, field, value) => {
+    const next = [...items]
+    next[index] = { ...next[index], [field]: value }
+    onChange(next)
+  }
+  const add = () => onChange([...items, { title: '', body: '' }])
+  const remove = (index) => onChange(items.filter((_, i) => i !== index))
+
+  return (
+    <div className="space-y-3">
+      {items.map((item, index) => (
+        <div key={index} className="rounded-xl border border-gray-200 p-4 dark:border-gray-700">
+          <div className="mb-2 flex items-center justify-between">
+            <p className="text-xs font-semibold text-gray-500">Card {index + 1}</p>
+            <button type="button" onClick={() => remove(index)} className="text-xs text-red-500 hover:underline">
+              Remove
+            </button>
+          </div>
+          <Field label="Title">
+            <input className={inputClass()} value={item.title || ''} onChange={(e) => update(index, 'title', e.target.value)} />
+          </Field>
+          <Field label="Body">
+            <textarea className={inputClass('mt-2 min-h-[72px]')} value={item.body || ''} onChange={(e) => update(index, 'body', e.target.value)} />
+          </Field>
+        </div>
+      ))}
+      <button type="button" onClick={add} className="text-xs font-medium text-brand hover:underline">
+        + Add card
+      </button>
     </div>
   )
 }
@@ -530,6 +735,9 @@ export function QuotePageEditor({ config, onChange }) {
   if (!config) return null
 
   const update = (field, value) => onChange({ ...config, [field]: value })
+  const landing = config.landingContent || {}
+  const updateLanding = (section, value) =>
+    onChange({ ...config, landingContent: { ...landing, [section]: value } })
 
   return (
     <div className="max-h-[calc(100vh-10rem)] space-y-4 overflow-y-auto pr-1">
@@ -579,6 +787,192 @@ export function QuotePageEditor({ config, onChange }) {
             <input className={inputClass()} value={config.vendorTitleSuffix || ''} onChange={(e) => update('vendorTitleSuffix', e.target.value)} />
           </Field>
         </div>
+      </Section>
+
+      <Section
+        id="section-quote-hero"
+        step={3}
+        title="Hero & trust copy"
+        description="Intro text under the H1 and trust bullets beside the form"
+        liveHint="Quote landing hero section"
+        defaultOpen={false}
+      >
+        <div className="grid gap-4 md:grid-cols-2">
+          <Field label="Eyebrow label">
+            <input
+              className={inputClass()}
+              value={landing.hero?.eyebrow || ''}
+              onChange={(e) => updateLanding('hero', { ...landing.hero, eyebrow: e.target.value })}
+            />
+          </Field>
+          <Field label="Vendor strip label">
+            <input
+              className={inputClass()}
+              value={landing.hero?.vendorLabel || ''}
+              onChange={(e) => updateLanding('hero', { ...landing.hero, vendorLabel: e.target.value })}
+            />
+          </Field>
+          <div className="md:col-span-2">
+            <Field label="Hero description">
+              <textarea
+                className={inputClass('min-h-[88px]')}
+                value={landing.hero?.description || ''}
+                onChange={(e) => updateLanding('hero', { ...landing.hero, description: e.target.value })}
+              />
+            </Field>
+          </div>
+        </div>
+        <StringListEditor
+          label="Trust bullets"
+          items={landing.hero?.trustItems || []}
+          onChange={(trustItems) => updateLanding('hero', { ...landing.hero, trustItems })}
+          placeholder="Free quotes, no credit card"
+        />
+        <BreadcrumbEditor
+          breadcrumbs={landing.breadcrumbs || []}
+          onChange={(breadcrumbs) => updateLanding('breadcrumbs', breadcrumbs)}
+        />
+      </Section>
+
+      <Section
+        id="section-quote-how"
+        step={4}
+        title="How it works"
+        description="Three-step explainer section"
+        liveHint="How it works section on quote page"
+        defaultOpen={false}
+      >
+        <div className="grid gap-4 md:grid-cols-2">
+          <Field label="Section tag">
+            <input
+              className={inputClass()}
+              value={landing.howItWorks?.tag || ''}
+              onChange={(e) => updateLanding('howItWorks', { ...landing.howItWorks, tag: e.target.value })}
+            />
+          </Field>
+          <Field label="Section title">
+            <input
+              className={inputClass()}
+              value={landing.howItWorks?.title || ''}
+              onChange={(e) => updateLanding('howItWorks', { ...landing.howItWorks, title: e.target.value })}
+            />
+          </Field>
+          <div className="md:col-span-2">
+            <Field label="Section subtitle">
+              <textarea
+                className={inputClass('min-h-[72px]')}
+                value={landing.howItWorks?.subtitle || ''}
+                onChange={(e) => updateLanding('howItWorks', { ...landing.howItWorks, subtitle: e.target.value })}
+              />
+            </Field>
+          </div>
+        </div>
+        <QuoteStepsEditor
+          steps={landing.howItWorks?.steps || []}
+          onChange={(steps) => updateLanding('howItWorks', { ...landing.howItWorks, steps })}
+        />
+      </Section>
+
+      <Section
+        id="section-quote-testimonials"
+        step={5}
+        title="Testimonials"
+        description="Buyer stories carousel / grid"
+        liveHint="Testimonials section"
+        defaultOpen={false}
+      >
+        <div className="grid gap-4 md:grid-cols-2">
+          <Field label="Section tag">
+            <input
+              className={inputClass()}
+              value={landing.testimonials?.tag || ''}
+              onChange={(e) => updateLanding('testimonials', { ...landing.testimonials, tag: e.target.value })}
+            />
+          </Field>
+          <Field label="Section title">
+            <input
+              className={inputClass()}
+              value={landing.testimonials?.title || ''}
+              onChange={(e) => updateLanding('testimonials', { ...landing.testimonials, title: e.target.value })}
+            />
+          </Field>
+          <div className="md:col-span-2">
+            <Field label="Section subtitle">
+              <textarea
+                className={inputClass('min-h-[72px]')}
+                value={landing.testimonials?.subtitle || ''}
+                onChange={(e) => updateLanding('testimonials', { ...landing.testimonials, subtitle: e.target.value })}
+              />
+            </Field>
+          </div>
+        </div>
+        <QuoteTestimonialsEditor
+          items={landing.testimonials?.items || []}
+          onChange={(items) => updateLanding('testimonials', { ...landing.testimonials, items })}
+        />
+      </Section>
+
+      <Section
+        id="section-quote-why"
+        step={6}
+        title="Why Compare Bazaar"
+        description="Value proposition cards (icons stay from page defaults unless all cards replaced)"
+        liveHint="Why compare section"
+        defaultOpen={false}
+      >
+        <div className="grid gap-4 md:grid-cols-2">
+          <Field label="Section tag">
+            <input
+              className={inputClass()}
+              value={landing.whyCompare?.tag || ''}
+              onChange={(e) => updateLanding('whyCompare', { ...landing.whyCompare, tag: e.target.value })}
+            />
+          </Field>
+          <Field label="Section title">
+            <input
+              className={inputClass()}
+              value={landing.whyCompare?.title || ''}
+              onChange={(e) => updateLanding('whyCompare', { ...landing.whyCompare, title: e.target.value })}
+            />
+          </Field>
+          <div className="md:col-span-2">
+            <Field label="Section subtitle">
+              <textarea
+                className={inputClass('min-h-[72px]')}
+                value={landing.whyCompare?.subtitle || ''}
+                onChange={(e) => updateLanding('whyCompare', { ...landing.whyCompare, subtitle: e.target.value })}
+              />
+            </Field>
+          </div>
+        </div>
+        <QuoteWhyItemsEditor
+          items={landing.whyCompare?.items || []}
+          onChange={(items) => updateLanding('whyCompare', { ...landing.whyCompare, items })}
+        />
+      </Section>
+
+      <Section
+        id="section-quote-bottom-cta"
+        step={7}
+        title="Bottom CTA"
+        description="Final call-to-action strip at page footer"
+        liveHint="Bottom CTA banner"
+        defaultOpen={false}
+      >
+        <Field label="CTA title">
+          <input
+            className={inputClass()}
+            value={landing.bottomCta?.title || ''}
+            onChange={(e) => updateLanding('bottomCta', { ...landing.bottomCta, title: e.target.value })}
+          />
+        </Field>
+        <Field label="CTA subtitle">
+          <textarea
+            className={inputClass('min-h-[72px]')}
+            value={landing.bottomCta?.subtitle || ''}
+            onChange={(e) => updateLanding('bottomCta', { ...landing.bottomCta, subtitle: e.target.value })}
+          />
+        </Field>
       </Section>
     </div>
   )

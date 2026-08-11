@@ -8,7 +8,7 @@ const VERTICAL_LABELS: Record<string, string> = {
   'email-marketing': 'Best Email Marketing Services',
   'website-builders': 'Best Website Building Platform',
   voip: 'Best Business Phone Systems',
-  'gps-fleet': 'Best GPS Fleet Management Software',
+  'gps-fleet': 'Best Fleet Management Software',
   payroll: 'Best Payroll Software',
   hr: 'Best Employee Management Software',
   'call-center': 'Best Call Center Management Software',

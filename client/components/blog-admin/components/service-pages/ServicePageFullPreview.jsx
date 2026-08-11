@@ -1,3 +1,5 @@
+import { resolveComparisonTocItems } from '@/lib/comparisonToc'
+
 function PreviewSection({ title, children, className = '' }) {
   return (
     <section className={`border-b border-gray-100 pb-6 last:border-0 last:pb-0 dark:border-gray-800 ${className}`}>
@@ -195,11 +197,16 @@ export function ComparisonFullPreview({ content, expanded = false }) {
           </div>
         </PreviewSection>
 
-        {content.tocItems?.length ? (
-          <PreviewSection title="Table of contents">
+        {content ? (
+          <PreviewSection title="Table of contents (live sidebar)">
             <ul className="list-disc space-y-1 pl-4 text-sm text-gray-600 dark:text-gray-300">
-              {content.tocItems.map((item, i) => (
-                <li key={i}>{item.label} → #{item.anchor}</li>
+              {resolveComparisonTocItems(content).map((item) => (
+                <li key={item.anchor}>
+                  {item.label}{' '}
+                  <span className="text-xs text-brand">
+                    → {content.canonical || ''}#{item.anchor}
+                  </span>
+                </li>
               ))}
             </ul>
           </PreviewSection>

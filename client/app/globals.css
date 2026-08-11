@@ -695,7 +695,7 @@
     @apply min-w-[200px] max-w-[280px] px-4 py-4 normal-case tracking-normal;
   }
   .compare-col-logo {
-    @apply inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/25 bg-white/10 text-sm font-bold text-cb-orange;
+    @apply mx-auto inline-flex items-center justify-center;
   }
   .compare-col-name {
     @apply mt-2 block font-sans text-sm font-semibold leading-snug text-white;
@@ -777,6 +777,49 @@
   }
   .compare-results-action-card {
     @apply flex flex-wrap items-center justify-center gap-2 rounded-xl border border-white bg-white px-4 py-2 shadow-sm;
+  }
+  .compare-embedded .compare-table-shell-expanded {
+    @apply rounded-xl border-gray-200 shadow-none;
+  }
+  .compare-embedded .compare-table-scroll {
+    @apply max-h-none;
+  }
+  .compare-embedded .compare-data-table-expanded {
+    @apply min-w-[640px] text-[13px];
+  }
+
+  /* Embedded quote form in comparison hero (right column) — compact, no stretch gap */
+  .comparison-hero-quote .quote-hero-form-col {
+    position: relative;
+    top: auto;
+    width: 100%;
+  }
+  .comparison-hero-quote .quote-landing-form-card,
+  .comparison-hero-quote .fc {
+    height: auto;
+  }
+  .comparison-hero-quote .quote-landing-form-card {
+    border-radius: 1rem;
+    box-shadow:
+      0 24px 48px -20px rgba(0, 0, 0, 0.45),
+      0 8px 20px -10px rgba(11, 42, 111, 0.25);
+  }
+  .comparison-hero-quote .quote-landing-form-body {
+    flex: none;
+    height: auto;
+    overflow: visible;
+  }
+  .comparison-hero-quote .quote-form-embedded form {
+    height: auto;
+  }
+  .comparison-hero-quote .quote-form-embedded form > .min-h-0.flex-1 {
+    flex: none;
+    min-height: 0;
+  }
+  .comparison-hero-quote .ql-form-title {
+    font-size: 1.05rem;
+    line-height: 1.3;
+    color: #f58220;
   }
 }
 

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { ComparePicker } from '@/components/comparison/compare/ComparePicker'
 import { CompareProductPanel } from '@/components/comparison/compare/CompareProductPanel'
 import { CompareScoreLine } from '@/components/comparison/compare/CompareStars'
+import { ProductLogo } from '@/components/comparison/ProductLogo'
 import type { Product } from '@/types'
 
 function resolveActiveId(
@@ -78,9 +79,7 @@ export function CompareSelectionStep({
     <div className="compare-select-step">
       <div className="compare-base-banner">
         <div className="flex flex-wrap items-center gap-4">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-gray-200 bg-[#FAFBFD] text-sm font-bold text-navy">
-            {baseProduct.logo}
-          </div>
+          <ProductLogo product={baseProduct} size="md" highlighted />
           <div className="min-w-0 flex-1">
             <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-cb-orange">
               Your base pick

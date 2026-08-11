@@ -172,6 +172,7 @@ router.put('/:pageKey', protect, async (req, res) => {
         vendorTitleSuffix: body.vendorTitleSuffix,
         baseH1: body.baseH1,
         vendorH1Category: body.vendorH1Category,
+        landingContent: body.landingContent ?? null,
         status: body.status === 'draft' ? 'draft' : 'published',
         updatedBy: req.admin?.email || req.admin?.name || 'admin',
       },

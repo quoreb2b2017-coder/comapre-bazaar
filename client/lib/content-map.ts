@@ -38,7 +38,7 @@ export const hubs: Hub[] = [
   { slug: 'email-marketing', name: 'Email Marketing', path: '/marketing/best-email-marketing-services', pillar: 'marketing', primaryKeyword: 'best email marketing services' },
   { slug: 'website-builders', name: 'Website Builders', path: '/marketing/best-website-building-platform', pillar: 'marketing', primaryKeyword: 'best website building platform' },
   { slug: 'voip', name: 'Business Phone Systems', path: '/technology/business-phone-systems', pillar: 'technology', primaryKeyword: 'best business phone systems' },
-  { slug: 'gps-fleet', name: 'GPS Fleet Management', path: '/technology/gps-fleet-management-software', pillar: 'technology', primaryKeyword: 'best gps fleet management software', whitepapers: ['fleet-telematics-pricing-benchmark'] },
+  { slug: 'gps-fleet', name: 'Fleet Management Software', path: '/technology/gps-fleet-management-software', pillar: 'technology', primaryKeyword: 'best fleet management software', whitepapers: ['fleet-telematics-pricing-benchmark'] },
   { slug: 'payroll', name: 'Payroll Software', path: '/human-resources/best-payroll-software', pillar: 'human-resources', primaryKeyword: 'best payroll software', whitepapers: ['payroll-trends-report'] },
   { slug: 'hr', name: 'HR Software', path: '/human-resources/best-employee-management-software', pillar: 'human-resources', primaryKeyword: 'best hr software', whitepapers: ['pay-transparency-report'] },
   { slug: 'call-center', name: 'Call Center Software', path: '/sales/best-call-center-management-software', pillar: 'sales', primaryKeyword: 'best call center software' },

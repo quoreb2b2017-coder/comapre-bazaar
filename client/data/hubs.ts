@@ -63,7 +63,7 @@ export const hubPages: HubPageData[] = [
       {
         href: '/technology/gps-fleet-management-software',
         icon: 'truck',
-        title: 'Best GPS Fleet Management Software',
+        title: 'Best Fleet Management Software',
         description: 'Samsara, Verizon Connect, Fleetio ranked on GPS accuracy, AI safety, and cost.',
         meta: '7 platforms reviewed',
       },

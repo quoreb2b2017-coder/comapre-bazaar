@@ -12,10 +12,15 @@ function FaqItemComponent({ question, answer, index }: FaqItem & { index: number
   const [open, setOpen] = useState(index === 0)
 
   return (
-    <div className={cn('border-b border-gray-100 last:border-b-0', open && 'bg-[#FAFBFD]/60')}>
+    <div
+      className={cn(
+        'overflow-hidden rounded-xl border border-gray-100 bg-white transition-colors',
+        open && 'border-cb-orange/20 bg-[#FFFBF7]/40'
+      )}
+    >
       <button
         type="button"
-        className="flex w-full items-start gap-3 px-5 py-4 text-left transition-colors duration-200 hover:bg-[#FAFBFD] sm:px-6"
+        className="flex w-full items-start gap-3 px-5 py-5 text-left transition-colors duration-200 hover:bg-[#FAFBFD] sm:px-6"
         onClick={() => setOpen(!open)}
         aria-expanded={open}
       >
@@ -27,7 +32,14 @@ function FaqItemComponent({ question, answer, index }: FaqItem & { index: number
         >
           {String(index + 1).padStart(2, '0')}
         </span>
-        <span className="min-w-0 flex-1 font-medium leading-snug text-navy">{question}</span>
+        <span
+          className={cn(
+            'min-w-0 flex-1 font-medium leading-snug',
+            open ? 'text-cb-orange' : 'text-gray-800 hover:text-cb-orange'
+          )}
+        >
+          {question}
+        </span>
         <span
           className={cn(
             'mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition-all duration-200',
@@ -41,7 +53,7 @@ function FaqItemComponent({ question, answer, index }: FaqItem & { index: number
       </button>
 
       {open ? (
-        <p className="px-5 pb-5 pl-[3.75rem] text-sm leading-relaxed text-gray-600 sm:px-6 sm:pl-[4.75rem]">
+        <p className="px-5 pb-6 pl-[3.75rem] text-sm leading-relaxed text-gray-600 sm:px-6 sm:pl-[4.75rem]">
           {answer}
         </p>
       ) : null}
@@ -51,7 +63,7 @@ function FaqItemComponent({ question, answer, index }: FaqItem & { index: number
 
 export function FaqAccordion({ items }: FaqAccordionProps) {
   return (
-    <div className="pb-1">
+    <div className="space-y-3 px-5 pb-6 pt-2 sm:px-6 sm:pb-7">
       {items.map((item, idx) => (
         <FaqItemComponent key={idx} {...item} index={idx} />
       ))}

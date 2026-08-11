@@ -41,7 +41,7 @@ const LINK_RULES: LinkRule[] = [
   {
     phrases: ['gps fleet', 'fleet management software', 'fleet tracking software', 'fleet management system', 'fleet management tool'],
     href: '/technology/gps-fleet-management-software',
-    title: 'Best GPS Fleet Management Software',
+    title: 'Best Fleet Management Software',
   },
   {
     phrases: ['employee management software', 'employee management system', 'workforce management software', 'hr software', 'hris'],

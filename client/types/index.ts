@@ -7,7 +7,9 @@ export interface ProductBadge {
 
 export interface Product {
   id: string
-  logo: string           // 2-letter initials
+  logo: string           // 2-letter initials fallback
+  /** Optional explicit logo URL (Cloudinary, CDN, or vendor asset). */
+  logoUrl?: string
   name: string
   tagline: string
   score: string          // e.g. "4.5"
@@ -72,6 +74,8 @@ export interface ComparisonPageData {
   ctaTitle: string
   ctaBody: string
   ctaSlug: string
+  /** Optional custom hero background image URL (overrides auto Unsplash). */
+  heroCoverUrl?: string
   faqSchemaItems?: FaqItem[]
   /** JSON-LD schema scripts to inject into <head> */
   schemas?: object[]

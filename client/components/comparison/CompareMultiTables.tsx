@@ -3,6 +3,7 @@ import { AlertTriangle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { CheckIcon } from '@/components/ui/icons'
 import { FullReviewLink } from '@/components/reviews/FullReviewLink'
+import { ProductLogo } from '@/components/comparison/ProductLogo'
 import {
   buildComparisonRows,
   type CompareCellValue,
@@ -92,7 +93,7 @@ export function CompareMultiTables({ products, lastReviewed, officialTable }: Co
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-cb-orange">
                 Side-by-side comparison
               </p>
-              <h2 className="font-serif text-xl font-normal tracking-tight text-navy sm:text-[1.35rem]">
+              <h2 className="font-serif text-xl font-normal tracking-tight text-cb-orange sm:text-[1.35rem]">
                 Main points & official pricing
               </h2>
               <p className="mt-1.5 max-w-2xl text-[13px] leading-relaxed text-gray-600">
@@ -116,7 +117,9 @@ export function CompareMultiTables({ products, lastReviewed, officialTable }: Co
                 </th>
                 {products.map((product) => (
                   <th key={product.id} className="compare-col-head compare-col-head-expanded" scope="col">
-                    <span className="compare-col-logo">{product.logo}</span>
+                    <div className="compare-col-logo mx-auto">
+                      <ProductLogo product={product} size="table" onDark />
+                    </div>
                     <span className="compare-col-name">{product.name}</span>
                     <span className="compare-col-score">{product.score} / 5</span>
                     {product.isTopPick ? <span className="compare-col-badge">Top pick</span> : null}

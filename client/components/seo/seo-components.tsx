@@ -39,13 +39,20 @@ export function Breadcrumbs({ items }: { items: { name: string; url: string }[] 
   )
 }
 
+export function hasHubRelatedContent(hubSlug: string): boolean {
+  return postsForHub(hubSlug).length > 0 && !!hubBySlug[hubSlug]
+}
+
 export function HubRelatedContent({ hubSlug }: { hubSlug: string }) {
   const related = postsForHub(hubSlug)
   const hub = hubBySlug[hubSlug]
   if (!related.length || !hub) return null
   return (
-    <aside aria-labelledby="further-reading">
-      <h2 id="further-reading" className="mb-4 font-serif text-xl text-navy tracking-tight">
+    <aside
+      aria-labelledby="further-reading"
+      className="overflow-hidden rounded-2xl border border-gray-200/80 bg-white px-5 py-6 shadow-sm shadow-navy/5 sm:px-6"
+    >
+      <h2 id="further-reading" className="mb-4 font-serif text-xl text-cb-orange tracking-tight">
         Further reading on {hub.name}
       </h2>
       <ul className="space-y-3">

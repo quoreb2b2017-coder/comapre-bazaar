@@ -12,7 +12,7 @@ const COMPARE_CATEGORY_LABELS: Record<string, string> = {
   'payroll-software': 'payroll software',
   'technology-payroll': 'payroll software',
   'business-phone-systems': 'business phone system',
-  'gps-fleet-management': 'GPS fleet tracking software',
+  'gps-fleet-management': 'fleet management software',
   'employee-management': 'employee management software',
   'sales-crm': 'CRM software',
   'call-center': 'call center software',
@@ -111,6 +111,7 @@ export type QuotePageConfig = {
   vendorTitleSuffix: string
   baseH1: string
   vendorH1Category: string
+  landingContent?: import('@/lib/quoteLandingContent').QuoteLandingContent
 }
 
 export const QUOTE_PAGE_CONFIGS = {
@@ -125,14 +126,14 @@ export const QUOTE_PAGE_CONFIGS = {
     vendorH1Category: 'Payroll Software',
   },
   'technology/gps-fleet-management-software/get-free-quotes': {
-    baseTitle: 'Best GPS Fleet Tracking Software 2026',
+    baseTitle: 'Best Fleet Management Software 2026',
     canonical: '/technology/gps-fleet-management-software/get-free-quotes',
     baseDescription:
-      'Get free quotes from top Gps Fleet Tracking Software providers. Compare pricing and features to find the right fit for your team.',
-    vendorCategoryLabel: 'GPS fleet management software',
-    vendorTitleSuffix: 'Fleet Tracking Quote',
-    baseH1: 'Get Free Quotes from Leading GPS Fleet Tracking Providers',
-    vendorH1Category: 'GPS Fleet Tracking Software',
+      'Get free quotes from top fleet management software providers. Compare pricing and features to find the right fit for your team.',
+    vendorCategoryLabel: 'fleet management software',
+    vendorTitleSuffix: 'Fleet Management Quote',
+    baseH1: 'Get Free Quotes from Leading Fleet Management Software Providers',
+    vendorH1Category: 'Fleet Management Software',
   },
   'technology/business-phone-systems/get-free-quotes': {
     baseTitle: 'Best Business Phone Systems 2026',

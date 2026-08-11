@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import type { ComparisonPageData } from '@/types'
 import { SITE_URL, buildMetadata } from '@/lib/seo'
-import { hubSlugForCanonical, parseReviewDateToIso } from '@/lib/hubSeo'
+import { hubSlugForCanonical } from '@/lib/hubSeo'
 import { ComparisonPageTemplate } from '@/components/comparison/ComparisonPageTemplate'
 import { JsonLd } from '@/components/seo/JsonLd'
 import {
@@ -13,7 +13,8 @@ import {
 } from '@/lib/schema'
 
 interface ComparisonRouteProps {
-  data: ComparisonPageData | undefined
+  data: ComparisonPageData
+  heroCoverUrl?: string
 }
 
 export function buildComparisonMetadata(data: ComparisonPageData): Metadata {
@@ -28,12 +29,11 @@ export function buildComparisonMetadata(data: ComparisonPageData): Metadata {
   })
 }
 
-export function ComparisonRoute({ data }: ComparisonRouteProps) {
+export function ComparisonRoute({ data, heroCoverUrl }: ComparisonRouteProps) {
   if (!data) notFound()
 
   const pageUrl = `${SITE_URL}${data.canonical}`
   const hubSlug = hubSlugForCanonical(data.canonical)
-  const lastVerified = parseReviewDateToIso(data.lastReviewed)
 
   const breadcrumbItems = data.breadcrumbs
     .filter((item) => item.href)
@@ -70,7 +70,7 @@ export function ComparisonRoute({ data }: ComparisonRouteProps) {
   return (
     <>
       <JsonLd schema={buildGraph(...graphNodes)} />
-      <ComparisonPageTemplate data={data} hubSlug={hubSlug} lastVerified={lastVerified} />
+      <ComparisonPageTemplate data={data} hubSlug={hubSlug} heroCoverUrl={heroCoverUrl} />
     </>
   )
 }

@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils'
 import type { Product } from '@/types'
 import { MAX_COMPARE } from './constants'
 import { CompareStars } from './CompareStars'
+import { ProductLogo } from '@/components/comparison/ProductLogo'
 
 function ComparePickerItem({
   product,
@@ -40,9 +41,7 @@ function ComparePickerItem({
         aria-current={active ? 'true' : undefined}
       >
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-gray-200 bg-white text-[11px] font-bold text-navy">
-            {product.logo}
-          </div>
+          <ProductLogo product={product} size="sm" />
           <div className="min-w-0 flex-1">
             <p className="truncate text-[13px] font-semibold text-navy">{product.name}</p>
             <p className="truncate text-[11px] text-gray-500">{product.tagline}</p>

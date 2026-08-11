@@ -28,6 +28,27 @@ function buildDisplayName(content) {
   return content?.h1 || content?.title || content?.slug || 'Untitled page'
 }
 
+function normalizeComparisonContent(content) {
+  const next = { ...content }
+  if (Array.isArray(next.products)) {
+    next.products = next.products.map((product) => {
+      const vendorUrl = String(product.vendorUrl || '').trim()
+      return {
+        ...product,
+        badges: Array.isArray(product.badges) ? product.badges : [],
+        affiliateActive:
+          product.affiliateActive === false
+            ? false
+            : product.affiliateActive === true || Boolean(vendorUrl),
+      }
+    })
+  }
+  if (next.heroCoverUrl != null) {
+    next.heroCoverUrl = String(next.heroCoverUrl).trim()
+  }
+  return next
+}
+
 /** GET /comparison-pages — list all pages for admin dropdown */
 router.get('/', protect, async (_req, res) => {
   try {
@@ -155,24 +176,25 @@ router.put('/:slug', protect, async (req, res) => {
     }
 
     if (!content.slug) content.slug = req.params.slug
-    if (!content.h1?.trim()) {
+    const normalized = normalizeComparisonContent(content)
+    if (!normalized.h1?.trim()) {
       return res.status(400).json({ success: false, message: 'H1 heading is required for SEO' })
     }
-    if (!content.title?.trim()) {
+    if (!normalized.title?.trim()) {
       return res.status(400).json({ success: false, message: 'Page title is required for SEO' })
     }
-    if (!content.metaDescription?.trim()) {
+    if (!normalized.metaDescription?.trim()) {
       return res.status(400).json({ success: false, message: 'Meta description is required for SEO' })
     }
 
-    const vertical = slugToVertical(content.slug, content.canonical)
+    const vertical = slugToVertical(normalized.slug, normalized.canonical)
     const page = await ComparisonPage.findOneAndUpdate(
       { slug: req.params.slug },
       {
         slug: req.params.slug,
-        content,
+        content: normalized,
         vertical,
-        displayName: displayName || buildDisplayName(content),
+        displayName: displayName || buildDisplayName(normalized),
         status: status === 'draft' ? 'draft' : 'published',
         updatedBy: req.admin?.email || req.admin?.name || 'admin',
       },

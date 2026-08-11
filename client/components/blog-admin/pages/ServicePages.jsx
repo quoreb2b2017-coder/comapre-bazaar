@@ -264,8 +264,18 @@ export const ServicePages = () => {
           try {
             const res = await api.get(`/quote-pages/${encodeURIComponent(selectedKey)}`)
             if (cancelled) return
-            const payload = res?.data ?? res
-            setQuoteConfig(payload || null)
+            const page = res?.data ?? res
+            setQuoteConfig({
+              pageKey: page?.pageKey || selectedKey,
+              baseTitle: page?.baseTitle || '',
+              canonical: page?.canonical || '',
+              baseDescription: page?.baseDescription || '',
+              vendorCategoryLabel: page?.vendorCategoryLabel || '',
+              vendorTitleSuffix: page?.vendorTitleSuffix || '',
+              baseH1: page?.baseH1 || '',
+              vendorH1Category: page?.vendorH1Category || '',
+              landingContent: page?.landingContent || null,
+            })
             setComparisonContent(null)
             setUsingStaticFallback(false)
           } catch {
@@ -323,6 +333,7 @@ export const ServicePages = () => {
         setUsingStaticFallback(false)
       } else {
         await api.put(`/quote-pages/${encodeURIComponent(selectedKey)}`, {
+          pageKey: selectedKey,
           ...quoteConfig,
           status: 'published',
         })

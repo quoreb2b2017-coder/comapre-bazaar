@@ -17,7 +17,7 @@ const EXCLUDED_SHORT_TITLES = new Set(['Call Center', 'Project Management', 'Web
 const COMPACT_LABELS: Record<string, string> = {
   'VoIP & UCaaS': 'VoIP',
   'HR Software': 'HR',
-  'GPS Fleet': 'GPS',
+  'Fleet Software': 'Fleet',
   'Email Marketing': 'Email',
 }
 

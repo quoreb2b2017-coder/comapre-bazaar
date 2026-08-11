@@ -9,8 +9,8 @@ type ComparisonSectionHeaderProps = {
 
 export function ComparisonSectionHeader({ id, title, description, step }: ComparisonSectionHeaderProps) {
   return (
-    <div className="border-b border-gray-100 bg-gradient-to-r from-[#FAFBFD] to-white px-5 py-4 sm:px-6 sm:py-5">
-      <div className="flex items-start gap-3.5">
+    <div className="border-b border-gray-100 bg-gradient-to-r from-[#FAFBFD] to-white px-5 py-5 sm:px-6 sm:py-6">
+      <div className="flex items-start gap-4">
         {step != null ? (
           <span
             className={cn(
@@ -25,11 +25,11 @@ export function ComparisonSectionHeader({ id, title, description, step }: Compar
           </span>
         ) : null}
         <div className="min-w-0">
-          <h2 id={id} className="font-serif text-[1.3rem] font-normal tracking-tight text-navy sm:text-[1.4rem]">
+          <h2 id={id} className="font-serif text-[1.3rem] font-normal tracking-tight text-cb-orange sm:text-[1.4rem]">
             {title}
           </h2>
           {description ? (
-            <p className="mt-1.5 text-[13px] leading-relaxed text-gray-500">{description}</p>
+            <p className="mt-2.5 text-[13px] leading-relaxed text-gray-500">{description}</p>
           ) : null}
         </div>
       </div>

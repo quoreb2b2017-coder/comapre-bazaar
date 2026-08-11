@@ -6,6 +6,7 @@ import { getMainPoints, getShortWatchOuts } from '@/components/comparison/compar
 import { WORKS_BEST_FOR_BY_PRODUCT } from './constants'
 import { CompareScoreLine } from './CompareStars'
 import { FullReviewLink } from '@/components/reviews/FullReviewLink'
+import { ProductLogo } from '@/components/comparison/ProductLogo'
 
 export function CompareProductPanel({
   product,
@@ -26,12 +27,7 @@ export function CompareProductPanel({
         )}
       >
         <div className="flex flex-wrap items-start gap-4">
-          <div
-            className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-xl border border-cb-orange-border bg-white text-base font-bold text-cb-orange shadow-sm"
-            aria-hidden="true"
-          >
-            {product.logo}
-          </div>
+          <ProductLogo product={product} size="lg" highlighted={variant === 'primary'} />
           <div className="min-w-0 flex-1">
             <h2 className="font-serif text-xl font-semibold tracking-tight text-navy sm:text-2xl">
               {product.name}

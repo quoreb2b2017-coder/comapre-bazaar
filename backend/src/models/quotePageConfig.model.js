@@ -17,6 +17,7 @@ const quotePageConfigSchema = new mongoose.Schema(
     vendorTitleSuffix: { type: String, trim: true, maxlength: 120 },
     baseH1: { type: String, trim: true, maxlength: 200 },
     vendorH1Category: { type: String, trim: true, maxlength: 120 },
+    landingContent: { type: mongoose.Schema.Types.Mixed, default: null },
     updatedBy: { type: String, trim: true },
   },
   { timestamps: true }

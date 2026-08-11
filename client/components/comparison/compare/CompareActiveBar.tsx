@@ -2,6 +2,7 @@
 
 import type { Product } from '@/types'
 import { MAX_COMPARE } from './constants'
+import { ProductLogo } from '@/components/comparison/ProductLogo'
 
 export function CompareActiveBar({
   comparedProducts,
@@ -20,7 +21,7 @@ export function CompareActiveBar({
           <span key={p.id} className="inline-flex items-center gap-1.5 text-[13px] text-navy">
             {i > 0 ? <span className="text-gray-300">vs</span> : null}
             <span className="inline-flex items-center gap-1.5 rounded-md border border-gray-200 bg-[#FAFBFD] px-2.5 py-1">
-              <span className="text-[10px] font-bold text-cb-orange">{p.logo}</span>
+              <ProductLogo product={p} size="xs" />
               <span className="font-medium">{p.name.split(' ')[0]}</span>
             </span>
           </span>

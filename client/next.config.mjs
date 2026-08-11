@@ -21,6 +21,10 @@ const nextConfig = {
       { protocol: 'https', hostname: 'www.compare-bazaar.com' },
       { protocol: 'https', hostname: 'images.unsplash.com' },
       { protocol: 'https', hostname: 'res.cloudinary.com' },
+      { protocol: 'https', hostname: 'unavatar.io' },
+      { protocol: 'https', hostname: 'www.google.com' },
+      { protocol: 'https', hostname: 'img.logo.dev' },
+      { protocol: 'https', hostname: 'www.hubspot.com' },
     ],
   },
   async redirects() {

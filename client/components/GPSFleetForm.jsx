@@ -111,7 +111,7 @@ const GPSFleetForm = ({ onClose }) => {
     setIsSubmitting(true);
     
     try {
-      const response = await sendFormData(formData, 'GPS Fleet Management Form', captchaValue);
+      const response = await sendFormData(formData, 'Fleet Management Software Form', captchaValue);
       console.log('Form submitted successfully:', response);
       setShowSuccess(true);
       resetForm();

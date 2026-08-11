@@ -3,7 +3,7 @@ const TOPIC_COPY: Record<string, string> = {
     'Selection criteria, vendor shortlists, and implementation notes for CRM platforms — written for sales and ops leaders.',
   'Payroll Software':
     'Payroll vendor comparisons, compliance considerations, and rollout guidance for HR and finance teams.',
-  'GPS Fleet Management':
+  'Fleet Management Software':
     'Fleet tracking evaluations, feature checklists, and TCO frameworks for operations and logistics teams.',
   'Cloud Call Center':
     'Contact center platform guides covering routing, integrations, and agent experience for support leaders.',

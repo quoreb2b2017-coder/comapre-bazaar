@@ -25,7 +25,7 @@ const quoteGroups = [
     services: [
       { label: "Payroll Software Quotes", href: "/human-resources/best-payroll-software/get-free-quotes", desc: "Pay runs, tax & compliance" },
       { label: "Business Phone System Quotes", href: "/technology/business-phone-systems/get-free-quotes", desc: "VoIP, UCaaS & desk phones" },
-      { label: "GPS Fleet Management Quotes", href: "/technology/gps-fleet-management-software/get-free-quotes", desc: "Tracking, routing & ELD" },
+      { label: "Fleet Management Software Quotes", href: "/technology/gps-fleet-management-software/get-free-quotes", desc: "Tracking, routing & ELD" },
       { label: "Employee Management Quotes", href: "/human-resources/best-employee-management-software/get-free-quotes", desc: "HRIS, scheduling & onboarding" },
     ],
   },

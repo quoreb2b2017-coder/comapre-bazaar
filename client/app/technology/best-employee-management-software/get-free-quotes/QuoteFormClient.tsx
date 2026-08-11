@@ -9,138 +9,184 @@ import {
 } from "@/components/quotes/QuoteLandingSections";
 import { QuoteLandingHero } from "@/components/quotes/QuoteLandingHero";
 import { QuoteLandingPageShell } from "@/components/quotes/QuoteLandingPageShell";
+import { mergeQuoteLandingContent, type QuoteLandingContent } from "@/lib/quoteLandingContent";
 import { MessageCircle, ShieldCheck, Target, Zap, type LucideIcon } from "lucide-react";
 
-const HOW_STEPS = [
-  { tag: "2 minutes", num: "01", title: "Outline workforce priorities", body: "Headcount plus attendance, performance, onboarding, or all-in-one needs anchor aligned demos." },
-  { tag: "Within 24 hours", num: "02", title: "We route HR-fit vendors", body: "Shortlists reflect Compare Bazaar editorial picks, Teramind, ActivTrak, Hubstaff, BambooHR, and peers." },
-  { tag: "Your pace", num: "03", title: "Compare & proceed", body: "Review proposals side-by-side; engage vendors only when it makes sense." },
-];
+const PAGE_DEFAULTS: QuoteLandingContent = {
+  breadcrumbs: [
+    { label: "Home", href: "/" },
+    { label: "Human Resources", href: "/human-resources" },
+    { label: "Best Employee Management Software", href: "/human-resources/best-employee-management-software" },
+    { label: "Get Free Quotes" },
+  ],
+  hero: {
+    eyebrow: "HR & workforce quotes",
+    description:
+      "Outline headcount and priorities, time tracking, performance cycles, onboarding, or all-in-one HR. Get matched quotes referencing the same platforms we review: Teramind, ActivTrak, Hubstaff, BambooHR, Intelogos, Rippling, and more.",
+    trustItems: [
+      "Free quotes, no obligation",
+      "SMB through scaling teams",
+      "Independent Compare Bazaar methodology",
+      "Fast vendor alignment",
+    ],
+    stats: [
+      { n: "8+", l: "Platforms Evaluated" },
+      { n: "24h", l: "Typical response" },
+      { n: "HRIS + analytics", l: "Coverage mix" },
+      { n: "4.5★", l: "BambooHR SMB pick" },
+    ],
+    vendors: [
+      { name: "Teramind", dot: "#0052CC" },
+      { name: "ActivTrak", dot: "#6366F1" },
+      { name: "Hubstaff", dot: "#276EE7" },
+      { name: "BambooHR", dot: "#00A86B" },
+      { name: "Intelogos", dot: "#7C3AED" },
+      { name: "Rippling", dot: "#4F46E5" },
+    ],
+    vendorLabel: "Platforms from our employee-management comparison",
+  },
+  howItWorks: {
+    tag: "How It Works",
+    title: "Three steps to a clearer HR shortlist",
+    subtitle: "Structured intake → matched vendors → you compare onboarding depth and analytics fit on your timeline.",
+    steps: [
+      {
+        tag: "2 minutes",
+        num: "01",
+        title: "Outline workforce priorities",
+        body: "Headcount plus attendance, performance, onboarding, or all-in-one needs anchor aligned demos.",
+      },
+      {
+        tag: "Within 24 hours",
+        num: "02",
+        title: "We route HR-fit vendors",
+        body: "Shortlists reflect Compare Bazaar editorial picks, Teramind, ActivTrak, Hubstaff, BambooHR, and peers.",
+      },
+      {
+        tag: "Your pace",
+        num: "03",
+        title: "Compare & proceed",
+        body: "Review proposals side-by-side; engage vendors only when it makes sense.",
+      },
+    ],
+  },
+  testimonials: {
+    tag: "Buyer Stories",
+    title: "Teams that accelerated HR evaluations",
+    subtitle: "People leaders comparing workforce analytics vs HRIS-first stacks.",
+    items: [
+      {
+        name: "Sonia Patel",
+        role: "People Ops",
+        company: "Relay Analytics",
+        result: "Shortlisted BambooHR vs Rippling in days",
+        body: "We stated headcount and workflow gaps once. Matched vendors actually reflected onboarding and performance priorities.",
+        initials: "SP",
+        avatarBg: "#DBEAFE",
+        avatarText: "#1D4ED8",
+      },
+      {
+        name: "Ethan Cole",
+        role: "COO",
+        company: "Northwind Field Svcs.",
+        result: "Remote visibility without surveillance creep",
+        body: "Hybrid scheduling plus attendance clarity mattered. Quotes differentiated analytics-heavy tools from full HRIS paths.",
+        initials: "EC",
+        avatarBg: "#DCFCE7",
+        avatarText: "#16A34A",
+      },
+      {
+        name: "Maria Santos",
+        role: "HR Director",
+        company: "Evergreen Clinics",
+        result: "Compliance-forward workflows surfaced faster",
+        body: "Policy-heavy onboarding needed structured demos, not generic HR suites. The routing reflected that.",
+        initials: "MS",
+        avatarBg: "#FEF3C7",
+        avatarText: "#D97706",
+      },
+    ],
+  },
+  whyCompare: {
+    tag: "Why Compare Bazaar",
+    title: "Buyer-centric workforce matching",
+    subtitle: "Editorial testing plus transparent routing, not pay-for-placement quote spam.",
+    items: [
+      {
+        title: "Matched to HR maturity",
+        body: "Headcount + stated management needs route you toward HRIS, analytics, or monitoring-fit stacks, not one generic list.",
+      },
+      {
+        title: "Independent rankings",
+        body: "Our employee-management methodology is editorial, placements in quotes are fit-based, not sponsored slots.",
+      },
+      {
+        title: "Fast comparisons",
+        body: "Submit once and receive tailored vendor responses you can compare side-by-side.",
+      },
+      {
+        title: "Guidance when unclear",
+        body: "Not sure between workforce analytics vs core HRIS? Specialists help interpret options at no cost.",
+      },
+    ],
+  },
+  bottomCta: {
+    title: "Ready to compare employee management platforms?",
+    subtitle: "Tell us headcount and priorities once, get structured vendor quotes back quickly.",
+  },
+};
 
-const VENDORS = [
-  { name: "Teramind", dot: "#0052CC" },
-  { name: "ActivTrak", dot: "#6366F1" },
-  { name: "Hubstaff", dot: "#276EE7" },
-  { name: "BambooHR", dot: "#00A86B" },
-  { name: "Intelogos", dot: "#7C3AED" },
-  { name: "Rippling", dot: "#4F46E5" },
-];
+const WHY_ICONS: LucideIcon[] = [Target, ShieldCheck, Zap, MessageCircle];
 
-const TESTIMONIALS = [
-  {
-    name: "Sonia Patel",
-    role: "People Ops",
-    company: "Relay Analytics",
-    result: "Shortlisted BambooHR vs Rippling in days",
-    body: "We stated headcount and workflow gaps once. Matched vendors actually reflected onboarding and performance priorities.",
-    initials: "SP",
-    avatarBg: "#DBEAFE",
-    avatarText: "#1D4ED8",
-  },
-  {
-    name: "Ethan Cole",
-    role: "COO",
-    company: "Northwind Field Svcs.",
-    result: "Remote visibility without surveillance creep",
-    body: "Hybrid scheduling plus attendance clarity mattered. Quotes differentiated analytics-heavy tools from full HRIS paths.",
-    initials: "EC",
-    avatarBg: "#DCFCE7",
-    avatarText: "#16A34A",
-  },
-  {
-    name: "Maria Santos",
-    role: "HR Director",
-    company: "Evergreen Clinics",
-    result: "Compliance-forward workflows surfaced faster",
-    body: "Policy-heavy onboarding needed structured demos, not generic HR suites. The routing reflected that.",
-    initials: "MS",
-    avatarBg: "#FEF3C7",
-    avatarText: "#D97706",
-  },
-];
+type QuoteFormClientProps = { heading: string; landingContent?: QuoteLandingContent | null };
 
-const WHY_ITEMS: { icon: LucideIcon; title: string; body: string }[] = [
-  {
-    icon: Target,
-    title: "Matched to HR maturity",
-    body: "Headcount + stated management needs route you toward HRIS, analytics, or monitoring-fit stacks, not one generic list.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Independent rankings",
-    body: "Our employee-management methodology is editorial, placements in quotes are fit-based, not sponsored slots.",
-  },
-  {
-    icon: Zap,
-    title: "Fast comparisons",
-    body: "Submit once and receive tailored vendor responses you can compare side-by-side.",
-  },
-  {
-    icon: MessageCircle,
-    title: "Guidance when unclear",
-    body: "Not sure between workforce analytics vs core HRIS? Specialists help interpret options at no cost.",
-  },
-];
+export default function EmployeeManagementGetQuotesForm({ heading, landingContent }: QuoteFormClientProps) {
+  const content = mergeQuoteLandingContent(PAGE_DEFAULTS, landingContent);
+  const whyItems = (content.whyCompare?.items || []).map((item, index) => ({
+    icon: WHY_ICONS[index] || Target,
+    title: item.title,
+    body: item.body,
+  }));
 
-type QuoteFormClientProps = { heading: string };
-
-export default function EmployeeManagementGetQuotesForm({ heading }: QuoteFormClientProps) {
   return (
     <QuoteLandingPageShell>
-      <QuoteBreadcrumb
-        items={[
-          { label: "Home", href: "/" },
-          { label: "Human Resources", href: "/human-resources" },
-          { label: "Best Employee Management Software", href: "/human-resources/best-employee-management-software" },
-          { label: "Get Free Quotes" },
-        ]}
-      />
+      <QuoteBreadcrumb items={content.breadcrumbs || PAGE_DEFAULTS.breadcrumbs!} />
 
       <QuoteLandingHero
-        eyebrow="HR & workforce quotes"
+        eyebrow={content.hero?.eyebrow || ""}
         heading={heading}
-        description="Outline headcount and priorities, time tracking, performance cycles, onboarding, or all-in-one HR. Get matched quotes referencing the same platforms we review: Teramind, ActivTrak, Hubstaff, BambooHR, Intelogos, Rippling, and more."
-        trustItems={[
-          "Free quotes, no obligation",
-          "SMB through scaling teams",
-          "Independent Compare Bazaar methodology",
-          "Fast vendor alignment",
-        ]}
-        stats={[
-          { n: "8+", l: "Platforms Evaluated" },
-          { n: "24h", l: "Typical response" },
-          { n: "HRIS + analytics", l: "Coverage mix" },
-          { n: "4.5★", l: "BambooHR SMB pick" },
-        ]}
-        vendors={VENDORS}
-        vendorLabel="Platforms from our employee-management comparison"
+        description={content.hero?.description || ""}
+        trustItems={content.hero?.trustItems || []}
+        stats={content.hero?.stats || []}
+        vendors={content.hero?.vendors || []}
+        vendorLabel={content.hero?.vendorLabel || ""}
         formKey="employee-management"
       />
 
       <QuoteHowItWorksSection
-        tag="How It Works"
-        title="Three steps to a clearer HR shortlist"
-        subtitle="Structured intake → matched vendors → you compare onboarding depth and analytics fit on your timeline."
-        steps={HOW_STEPS}
+        tag={content.howItWorks?.tag || ""}
+        title={content.howItWorks?.title || ""}
+        subtitle={content.howItWorks?.subtitle || ""}
+        steps={content.howItWorks?.steps || []}
       />
 
       <QuoteTestimonialsSection
-        tag="Buyer Stories"
-        title="Teams that accelerated HR evaluations"
-        subtitle="People leaders comparing workforce analytics vs HRIS-first stacks."
-        testimonials={TESTIMONIALS}
+        tag={content.testimonials?.tag || ""}
+        title={content.testimonials?.title || ""}
+        subtitle={content.testimonials?.subtitle || ""}
+        testimonials={content.testimonials?.items || []}
       />
 
       <QuoteWhyCompareSection
-        tag="Why Compare Bazaar"
-        title="Buyer-centric workforce matching"
-        subtitle="Editorial testing plus transparent routing, not pay-for-placement quote spam."
-        items={WHY_ITEMS}
+        tag={content.whyCompare?.tag || ""}
+        title={content.whyCompare?.title || ""}
+        subtitle={content.whyCompare?.subtitle || ""}
+        items={whyItems}
       />
 
       <QuoteBottomCta
-        title="Ready to compare employee management platforms?"
-        subtitle="Tell us headcount and priorities once, get structured vendor quotes back quickly."
+        title={content.bottomCta?.title || ""}
+        subtitle={content.bottomCta?.subtitle || ""}
       />
     </QuoteLandingPageShell>
   );

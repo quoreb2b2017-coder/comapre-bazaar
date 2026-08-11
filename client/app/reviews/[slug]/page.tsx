@@ -2880,7 +2880,7 @@ export default function DynamicReviewPage({ params }: { params: { slug: string }
           : isCallCenterStyle
             ? 'Call Center Software Review'
             : isGpsStyle
-              ? 'GPS Fleet Management Review'
+              ? 'Fleet Management Software Review'
               : isEmployeeStyle
                 ? 'Employee Management Software Review'
                 : isProjectStyle

@@ -27,6 +27,7 @@ router.get('/:pageKey', async (req, res) => {
         vendorTitleSuffix: page.vendorTitleSuffix,
         baseH1: page.baseH1,
         vendorH1Category: page.vendorH1Category,
+        landingContent: page.landingContent || null,
       },
     })
   } catch (error) {

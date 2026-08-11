@@ -19,11 +19,11 @@ interface HomeSearchBarProps {
 const COMPACT_TAG_LABELS: Record<string, string> = {
   'VoIP & UCaaS': 'VoIP',
   'HR Software': 'HR',
-  'GPS Fleet': 'GPS',
+  'Fleet Software': 'Fleet',
   'Email Marketing': 'Email',
 }
 
-const TYPING_EXAMPLES = ['CRM', 'payroll', 'VoIP', 'HR', 'GPS fleet', 'email marketing']
+const TYPING_EXAMPLES = ['CRM', 'payroll', 'VoIP', 'HR', 'fleet software', 'email marketing']
 
 function useTypewriterPlaceholder(active: boolean) {
   const [text, setText] = useState('')
@@ -184,7 +184,7 @@ export function HomeSearchBar({ items, variant = 'default' }: HomeSearchBarProps
         type="search"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="e.g. CRM, payroll, VoIP, HR, GPS fleet, email..."
+        placeholder="e.g. CRM, payroll, VoIP, HR, fleet software, email..."
         className="flex-1 px-5 py-4 text-sm text-gray-800 outline-none"
         aria-label="Search software categories"
       />

@@ -36,7 +36,7 @@ export function categoryBadgeFromPath(categoryPath: string): string {
   if (path.includes('payroll') || path.includes('deel') || path.includes('papaya')) return 'Payroll Software Review'
   if (path.includes('business-phone')) return 'Business VoIP Review'
   if (path.includes('call-center')) return 'Call Center Software Review'
-  if (path.includes('gps-fleet')) return 'GPS Fleet Management Review'
+  if (path.includes('gps-fleet')) return 'Fleet Management Software Review'
   if (path.includes('employee-management')) return 'Employee Management Software Review'
   if (path.includes('project-management')) return 'Project Management Software Review'
   if (path.includes('crm')) return 'CRM Software Review'

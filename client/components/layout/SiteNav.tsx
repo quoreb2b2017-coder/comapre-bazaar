@@ -33,7 +33,7 @@ const NAV_ITEMS: NavItem[] = [
     children: [
       { label: 'Best Payroll Software', href: '/human-resources/best-payroll-software', description: 'Tax and compliance tools' },
       { label: 'Best VoIP Systems', href: '/technology/business-phone-systems', description: 'Cloud calling platforms' },
-      { label: 'GPS Fleet Management', href: '/technology/gps-fleet-management-software', description: 'Tracking and telematics' },
+      { label: 'Fleet Management Software', href: '/technology/gps-fleet-management-software', description: 'Tracking and telematics' },
       { label: 'Employee Management', href: '/human-resources/best-employee-management-software', description: 'Workforce operations' },
     ],
   },
@@ -75,7 +75,7 @@ const QUOTE_SERVICES = [
   { label: 'CRM Software Quotes', href: '/marketing/best-crm-software/get-free-quote', description: 'HubSpot, Zoho, Salesforce, more' },
   { label: 'Payroll Software Quotes', href: '/human-resources/best-payroll-software/get-free-quotes', description: 'ADP, Gusto, OnPay, Rippling' },
   { label: 'Business Phone System Quotes', href: '/technology/business-phone-systems/get-free-quotes', description: 'VoIP and cloud phone platforms' },
-  { label: 'GPS Fleet Quotes', href: '/technology/gps-fleet-management-software/get-free-quotes', description: 'Fleet tracking and telematics tools' },
+  { label: 'Fleet Management Quotes', href: '/technology/gps-fleet-management-software/get-free-quotes', description: 'Fleet management and telematics tools' },
   { label: 'Employee Management Quotes', href: '/human-resources/best-employee-management-software/get-free-quotes', description: 'HR and workforce management solutions' },
   { label: 'Email Marketing Quotes', href: '/marketing/best-email-marketing-services/get-free-quotes', description: 'Campaign and automation platforms' },
   { label: 'Website Builder Quotes', href: '/marketing/best-website-building-platform/get-free-quotes', description: 'Wix, Squarespace, Shopify and more' },

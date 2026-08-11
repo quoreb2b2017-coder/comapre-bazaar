@@ -127,7 +127,7 @@ export function PayrollPopup() {
 
 export function GPSFleetPopup() {
   return (
-    <PopupShell title="Get GPS Fleet Management Quotes" icon={MapPin}>
+    <PopupShell title="Get Fleet Management Software Quotes" icon={MapPin}>
       {(close) => <GPSFleetForm onClose={close} />}
     </PopupShell>
   )

@@ -70,7 +70,7 @@ export const QUOTE_LANDING_FORMS: Record<QuoteLandingFormKey, QuoteLandingFormCo
     Form: WebsiteBuildingForm as PopupFormComponent,
   },
   'gps-fleet': {
-    title: 'Get GPS Fleet Management Quotes',
+    title: 'Get Fleet Management Software Quotes',
     icon: MapPin,
     Form: GPSFleetForm as PopupFormComponent,
   },

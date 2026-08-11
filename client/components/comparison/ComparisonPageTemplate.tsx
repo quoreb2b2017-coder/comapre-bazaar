@@ -1,12 +1,13 @@
 import type { ComparisonPageData } from '@/types'
 import { ProductCard } from '@/components/comparison/ProductCard'
-import { ComparisonTable } from '@/components/comparison/ComparisonTable'
+import { ComparisonTableSection } from '@/components/comparison/ComparisonTableSection'
 import { FaqAccordion } from '@/components/comparison/FaqAccordion'
 import { ComparisonSidebar } from '@/components/comparison/ComparisonSidebar'
 import { WinnerBanner } from '@/components/comparison/WinnerBanner'
 import { ComparisonSectionHeader } from '@/components/comparison/ComparisonSectionHeader'
 import { ComparisonPageHero } from '@/components/comparison/ComparisonPageHero'
-import { HubRelatedContent, VerificationStamp } from '@/components/seo/seo-components'
+import { hasHubRelatedContent, HubRelatedContent } from '@/components/seo/seo-components'
+import { comparisonSectionIds, productTocAnchor, resolveComparisonTocItems } from '@/lib/comparisonToc'
 import {
   ComparisonReveal,
   ComparisonSidebarReveal,
@@ -17,39 +18,48 @@ import {
 interface ComparisonPageProps {
   data: ComparisonPageData
   hubSlug?: string | null
-  lastVerified?: string
+  heroCoverUrl?: string
 }
 
-export function ComparisonPageTemplate({ data, hubSlug, lastVerified }: ComparisonPageProps) {
+export function ComparisonPageTemplate({ data, hubSlug, heroCoverUrl }: ComparisonPageProps) {
   const vendorCount = data.products.length
+  const sectionIds = comparisonSectionIds(data)
+  const tocItems = resolveComparisonTocItems(data)
+  const showHubRelated = hubSlug ? hasHubRelatedContent(hubSlug) : false
 
   return (
     <>
-      <ComparisonPageHero data={data} vendorCount={vendorCount} />
+      <ComparisonPageHero data={data} vendorCount={vendorCount} heroCoverUrl={heroCoverUrl} />
 
       <div className="bg-gradient-to-b from-[#EEF3FB] via-[#F3F5F9] to-[#F9FAFB]">
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10">
-          {lastVerified ? (
-            <div className="mb-6 rounded-xl border border-gray-200/80 bg-white/90 px-5 py-3.5 text-sm text-gray-600 shadow-sm backdrop-blur-sm">
-              <VerificationStamp lastVerified={lastVerified} />
-            </div>
-          ) : null}
+          <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-[minmax(240px,280px)_minmax(0,1fr)] lg:gap-14">
+            <ComparisonSidebarReveal className="order-2 lg:order-1 lg:sticky lg:top-24">
+              <ComparisonSidebar
+                tocItems={tocItems}
+                pagePath={data.canonical}
+                ctaTitle={data.ctaTitle}
+                ctaBody={data.ctaBody}
+                ctaSlug={data.ctaSlug}
+                vendorCount={vendorCount}
+                lastReviewed={data.lastReviewed}
+              />
+            </ComparisonSidebarReveal>
 
-          <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1fr)_260px] lg:gap-10">
-            <div className="min-w-0 space-y-8">
-              <ComparisonReveal className="overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm shadow-navy/5">
+            <div className="order-1 min-w-0 space-y-12 lg:order-2 lg:space-y-16">
+              <ComparisonReveal className="overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-sm shadow-navy/[0.03]">
                 <ComparisonSectionHeader
                   id="verdict-heading"
                   title="Quick verdict"
                   description="Our editorial summary before the full breakdown."
                 />
-                <div className="px-5 py-4 sm:px-6">
+                <div id={sectionIds.verdict} className="scroll-mt-24 px-5 py-6 sm:px-6 sm:py-7">
                   <WinnerBanner summary={data.winnerSummary} embedded />
                 </div>
               </ComparisonReveal>
 
-              <ComparisonReveal as="section" id="picks" aria-labelledby="picks-heading" className="scroll-mt-24">
-                <div className="overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm shadow-navy/5">
+              <ComparisonReveal as="section" id={sectionIds.picks} aria-labelledby="picks-heading" className="scroll-mt-24">
+                <div className="overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-sm shadow-navy/[0.03]">
                   <ComparisonSectionHeader
                     id="picks-heading"
                     step={1}
@@ -62,6 +72,7 @@ export function ComparisonPageTemplate({ data, hubSlug, lastVerified }: Comparis
                         <ProductCard
                           product={product}
                           rank={index + 1}
+                          anchorId={productTocAnchor(product)}
                           compareHref={`/compare?category=${encodeURIComponent(data.slug)}&brand=${encodeURIComponent(product.id)}`}
                           quoteHref={data.ctaSlug}
                         />
@@ -73,64 +84,40 @@ export function ComparisonPageTemplate({ data, hubSlug, lastVerified }: Comparis
 
               <ComparisonReveal
                 as="section"
-                id="compare"
+                id={sectionIds.compare}
                 className="scroll-mt-24"
                 aria-labelledby="compare-heading"
                 delay={0.04}
               >
-                <div className="overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm shadow-navy/5">
-                  <ComparisonSectionHeader
-                    id="compare-heading"
-                    step={2}
-                    title="Full comparison table"
-                    description={`Side-by-side specs and pricing · ${data.lastReviewed}`}
-                  />
-                  <div className="p-4 sm:p-6">
-                    <ComparisonTable
-                      data={data.table}
-                      caption={`${data.h1}, pricing and feature comparison, ${data.lastReviewed}`}
+                <ComparisonTableSection data={data} sectionId={sectionIds.compare} />
+              </ComparisonReveal>
+
+              {data.faqs.length > 0 ? (
+                <ComparisonReveal
+                  as="section"
+                  id={sectionIds.faqs}
+                  className="scroll-mt-24"
+                  aria-labelledby="faqs-heading"
+                  delay={0.06}
+                >
+                  <div className="overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-sm shadow-navy/[0.03]">
+                    <ComparisonSectionHeader
+                      id="faqs-heading"
+                      step={3}
+                      title="Frequently asked questions"
+                      description="Expert answers from our software buying guides."
                     />
-                  </div>
-                </div>
-              </ComparisonReveal>
-
-              <ComparisonReveal
-                as="section"
-                id="faqs"
-                className="scroll-mt-24"
-                aria-labelledby="faqs-heading"
-                delay={0.06}
-              >
-                <div className="overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm shadow-navy/5">
-                  <ComparisonSectionHeader
-                    id="faqs-heading"
-                    step={3}
-                    title="Frequently asked questions"
-                    description="Expert answers from our software buying guides."
-                  />
-                  <FaqAccordion items={data.faqs} />
-                </div>
-              </ComparisonReveal>
-
-              {hubSlug ? (
-                <ComparisonReveal delay={0.08}>
-                  <div className="overflow-hidden rounded-2xl border border-gray-200/80 bg-white px-5 py-6 shadow-sm shadow-navy/5 sm:px-6">
-                    <HubRelatedContent hubSlug={hubSlug} />
+                    <FaqAccordion items={data.faqs} />
                   </div>
                 </ComparisonReveal>
               ) : null}
-            </div>
 
-            <ComparisonSidebarReveal className="lg:sticky lg:top-24">
-              <ComparisonSidebar
-                tocItems={data.tocItems}
-                ctaTitle={data.ctaTitle}
-                ctaBody={data.ctaBody}
-                ctaSlug={data.ctaSlug}
-                vendorCount={vendorCount}
-                lastReviewed={data.lastReviewed}
-              />
-            </ComparisonSidebarReveal>
+              {showHubRelated && hubSlug ? (
+                <ComparisonReveal delay={0.08}>
+                  <HubRelatedContent hubSlug={hubSlug} />
+                </ComparisonReveal>
+              ) : null}
+            </div>
           </div>
         </div>
       </div>

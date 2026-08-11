@@ -20,7 +20,7 @@ interface Chip {
 }
 
 const QUICK_TOPICS = [
-  { label: 'GPS Fleet', q: 'What is GPS fleet management software?' },
+  { label: 'Fleet Software', q: 'What is fleet management software?' },
   { label: 'Payroll', q: "What's the best payroll software for small business?" },
   { label: 'CRM', q: 'Which CRM is best for a small sales team?' },
   { label: 'Email Marketing', q: 'What email marketing tool should I use?' },
