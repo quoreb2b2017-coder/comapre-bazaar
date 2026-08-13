@@ -78,11 +78,11 @@ export function NewsletterSubscribeForm({
 
   if (variant === 'hero') {
     return (
-      <section className="mt-6 border-t border-gray-100 pt-5" aria-label="Newsletter signup">
+      <section className="mt-6 rounded-2xl border border-slate-200 bg-[#F7F8FB] p-4 sm:p-5" aria-label="Newsletter signup">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#F58220]">Subscribe</p>
         <h2 className="mt-1.5 text-lg tracking-tight text-navy sm:text-xl">Get software buying guides in your inbox</h2>
         <p className="mt-1 max-w-xl text-sm text-gray-600">
-          New comparisons and pricing updates - no spam, unsubscribe anytime.
+          New comparisons and pricing updates — no spam, unsubscribe anytime.
         </p>
         <form onSubmit={submit} className="mt-3 flex flex-col gap-2.5 sm:max-w-lg sm:flex-row">
           <input
@@ -91,13 +91,13 @@ export function NewsletterSubscribeForm({
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Your email"
-            className="h-11 min-w-0 flex-1 rounded-xl border border-gray-300 bg-white px-4 text-sm outline-none ring-brand/30 transition focus:border-brand focus:ring"
+            className="h-11 min-w-0 flex-1 rounded-xl border border-gray-300 bg-white px-4 text-sm outline-none transition focus:border-[#F58220] focus:ring-2 focus:ring-[#F58220]/20"
             required
           />
           <button
             type="submit"
             disabled={loading || isSubscribed}
-            className="h-11 shrink-0 rounded-xl bg-brand px-6 text-sm font-semibold text-white transition hover:bg-brand-hover disabled:opacity-60 sm:min-w-[132px]"
+            className="h-11 shrink-0 rounded-xl bg-[#F58220] px-6 text-sm font-semibold text-white transition hover:bg-[#e07418] disabled:opacity-60 sm:min-w-[132px]"
           >
             {loading ? 'Saving...' : isSubscribed ? 'Subscribed' : 'Subscribe'}
           </button>

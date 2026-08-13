@@ -164,10 +164,11 @@ export function HomeHeroMagnifierVisual({ categories }: { categories: HomeCatego
   const lensOriginY = `${LENS_CENTER_Y_RATIO * 100}%`
 
   return (
-    <div className="overflow-visible border-l-4 border-[#F58220] bg-white pb-16 pl-6 pr-3 pt-0">
-      <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#F58220]">
+    <div className="bg-white px-5 pb-6 pt-5 sm:px-6">
+      <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#F58220]">
         Search software
       </p>
+      <p className="mb-3 text-[13px] text-slate-500">Tap a category — the lens follows the shortlist.</p>
 
       <div ref={stageRef} className="relative overflow-visible pb-1">
         <motion.div

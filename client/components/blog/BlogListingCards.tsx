@@ -78,35 +78,34 @@ export function BlogGridCard({ post, index }: { post: UnifiedBlogCard; index?: n
   )
 }
 
-/** Home preview — flat editorial row. */
+/** Home preview — compact comparison-site card. */
 export function BlogHomePreviewCard({ post, priority }: { post: UnifiedBlogCard; priority?: boolean }) {
   return (
-    <article className="group">
+    <article className="group overflow-hidden rounded-xl border border-slate-200/90 bg-white">
       <Link href={`/blog/${post.slug}`} className="block">
-        <div className="relative aspect-[16/10] overflow-hidden bg-gray-100">
+        <div className="relative aspect-[16/9] overflow-hidden bg-slate-100">
           <Image
             src={post.coverUrl}
             alt={post.title}
             fill
             priority={priority}
-            className="object-cover transition-opacity duration-300 group-hover:opacity-95"
+            className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
             sizes="(max-width: 768px) 100vw, 33vw"
           />
+          <span className="absolute left-2.5 top-2.5 rounded bg-[#0B2A6F]/90 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
+            {post.category}
+          </span>
         </div>
       </Link>
-      <div className="mt-4 border-l border-gray-200 pl-4">
-        <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-400">
-          {post.category}
-          <span className="mx-2 font-normal text-gray-300">/</span>
-          {post.readTime}
-        </p>
+      <div className="p-3.5">
+        <p className="mb-1.5 text-[11px] text-slate-400">{post.readTime}</p>
         <Link href={`/blog/${post.slug}`}>
-          <h3 className="font-serif text-lg font-normal leading-snug tracking-tight text-navy transition-colors group-hover:text-cb-orange">
+          <h3 className="line-clamp-2 text-[15px] font-semibold leading-snug text-navy transition-colors group-hover:text-[#F58220]">
             {post.title}
           </h3>
         </Link>
         {post.excerpt ? (
-          <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-gray-600">{post.excerpt}</p>
+          <p className="mt-1.5 line-clamp-2 text-[13px] leading-relaxed text-slate-500">{post.excerpt}</p>
         ) : null}
       </div>
     </article>

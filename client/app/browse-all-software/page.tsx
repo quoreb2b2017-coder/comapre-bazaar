@@ -19,7 +19,7 @@ const categories = [
     links: [
       { label: "Best Payroll System", href: "/human-resources/best-payroll-software" },
       { label: "Business Phone Systems", href: "/technology/business-phone-systems" },
-      { label: "Fleet Management Software", href: "/technology/gps-fleet-management-software" },
+      { label: "Best Fleet Management Software", href: "/technology/gps-fleet-management-software" },
       { label: "Best Employee Management Software", href: "/human-resources/best-employee-management-software" },
     ],
   },

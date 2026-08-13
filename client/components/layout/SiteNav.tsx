@@ -33,8 +33,8 @@ const NAV_ITEMS: NavItem[] = [
     children: [
       { label: 'Best Payroll Software', href: '/human-resources/best-payroll-software', description: 'Tax and compliance tools' },
       { label: 'Best VoIP Systems', href: '/technology/business-phone-systems', description: 'Cloud calling platforms' },
-      { label: 'Fleet Management Software', href: '/technology/gps-fleet-management-software', description: 'Tracking and telematics' },
-      { label: 'Employee Management', href: '/human-resources/best-employee-management-software', description: 'Workforce operations' },
+      { label: 'Best Fleet Management Software', href: '/technology/gps-fleet-management-software', description: 'Tracking and telematics' },
+      { label: 'Best Employee Management Software', href: '/human-resources/best-employee-management-software', description: 'Workforce operations' },
     ],
   },
   {
@@ -52,7 +52,7 @@ const NAV_ITEMS: NavItem[] = [
     href: '/human-resources',
     dropdownTitle: 'HR software hub',
     children: [
-      { label: 'Best Employee Management', href: '/human-resources/best-employee-management-software', description: 'People and HR workflows' },
+      { label: 'Best Employee Management Software', href: '/human-resources/best-employee-management-software', description: 'People and HR workflows' },
       { label: 'Best Payroll Software', href: '/human-resources/best-payroll-software', description: 'Payroll and benefits' },
     ],
   },

@@ -1,3 +1,4 @@
+import { blogPosts } from '@/data/blogPosts'
 import { pickTopicCoverUrl } from '@/lib/blogTopicCovers'
 import { cmsBackendBase } from '@/lib/cmsBackendBase'
 
@@ -257,6 +258,34 @@ const byPublishedDesc = (a: UnifiedBlogCard, b: UnifiedBlogCard) =>
 export async function loadUnifiedBlogIndex(): Promise<UnifiedBlogCard[]> {
   const cms = await fetchPublishedBlogSummaries()
   return cms.map(cmsSummaryToUnified).sort(byPublishedDesc)
+}
+
+function staticPostsToUnified(): UnifiedBlogCard[] {
+  return blogPosts.map((p) => ({
+    slug: p.slug,
+    title: p.title,
+    excerpt: p.excerpt,
+    publishedAt: p.publishedAt,
+    category: p.category,
+    readTime: p.readTime,
+    authorName: p.authorName,
+    authorRole: p.authorRole,
+    stripFrom: p.stripFrom,
+    stripTo: p.stripTo,
+    coverUrl: pickTopicCoverUrl({ slug: p.slug, topic: p.category, title: p.title }),
+    viewCount: 0,
+  }))
+}
+
+/** Homepage always gets posts: CMS first, static guides if the API is empty. */
+export async function loadHomeBlogPreview(limit = 4): Promise<UnifiedBlogCard[]> {
+  try {
+    const cms = await loadUnifiedBlogIndex()
+    if (cms.length > 0) return cms.slice(0, limit)
+  } catch {
+    // Backend down — use static guides so the homepage still shows articles.
+  }
+  return staticPostsToUnified().slice(0, limit)
 }
 
 export async function loadUnifiedRelated(currentSlug: string, limit = 3): Promise<UnifiedBlogCard[]> {

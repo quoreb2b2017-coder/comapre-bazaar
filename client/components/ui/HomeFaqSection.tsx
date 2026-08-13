@@ -15,54 +15,62 @@ export function HomeFaqSection({ faqs }: HomeFaqSectionProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(0)
 
   return (
-    <section aria-labelledby="faq-heading" className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 lg:gap-8 items-stretch">
-      <div className="lg:col-span-4 bg-gradient-to-br from-[#F78A2D] via-[#F27F25] to-[#E9720A] rounded-2xl sm:rounded-3xl p-5 sm:p-7 text-white shadow-[0_10px_28px_rgba(242,127,37,0.22)] flex flex-col">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/85 mb-3">Need clarity?</p>
-        <h2 id="faq-heading" className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight leading-[1.02] mb-3">
+    <section aria-labelledby="faq-heading">
+      <div className="mb-7 text-center">
+        <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#F58220]">Need clarity?</p>
+        <h2 id="faq-heading" className="font-serif text-2xl tracking-tight text-navy sm:text-3xl">
           Frequently asked questions
         </h2>
-        <p className="text-white/90 text-sm sm:text-[15px] leading-relaxed">
-          Quick answers about pricing transparency, editorial policy, and how Compare Bazaar reviews software.
+      </div>
+      <div className="grid grid-cols-1 items-stretch gap-5 lg:grid-cols-12">
+      <div className="relative overflow-hidden rounded-2xl bg-[#0B2A6F] p-6 text-white sm:p-7 lg:col-span-4">
+        <div
+          className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-[#F58220]/20"
+          aria-hidden
+        />
+        <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#F58220]">Editorial policy</p>
+        <p className="mb-3 font-serif text-2xl leading-tight tracking-tight">
+          Independent rankings. Clear disclosures.
         </p>
-        <div className="mt-5 sm:mt-auto pt-5 sm:pt-7 border-t border-white/30">
-          <p className="text-[10px] uppercase tracking-[0.12em] text-white/80">Support</p>
-          <p className="text-xs sm:text-sm mt-1.5 text-white">Need help? Contact our editorial team.</p>
+        <p className="text-sm leading-relaxed text-white/70">
+          How we make money, how often reviews update, and why vendors cannot buy a ranking.
+        </p>
+        <div className="mt-6 border-t border-white/15 pt-5">
+          <p className="text-[10px] uppercase tracking-[0.14em] text-white/45">Editorial</p>
+          <p className="mt-1 text-sm text-white/80">Questions about a review? Contact our editorial team.</p>
         </div>
       </div>
 
-      <div className="lg:col-span-8 space-y-2.5 sm:space-y-3.5">
+      <div className="space-y-2.5 lg:col-span-8">
         {faqs.map((faq, idx) => {
           const isOpen = openIndex === idx
           return (
             <article
               key={faq.q}
-              className={`border bg-white rounded-xl sm:rounded-2xl overflow-hidden transition-all ${
-                isOpen ? 'border-[#F3C4A3] shadow-[0_10px_30px_rgba(0,0,0,0.06)]' : 'border-gray-200'
+              className={`overflow-hidden rounded-2xl border bg-white transition-all ${
+                isOpen ? 'border-[#F3C4A3] shadow-[0_8px_24px_-12px_rgba(11,42,111,0.12)]' : 'border-[#E8E4DF]'
               }`}
             >
               <button
                 type="button"
-                className="w-full px-4 sm:px-6 py-3.5 sm:py-4.5 text-left flex items-center justify-between gap-3 sm:gap-4 hover:bg-[#fffaf6] transition-colors"
+                className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left hover:bg-[#F7F4EF]"
                 onClick={() => setOpenIndex(isOpen ? null : idx)}
                 aria-expanded={isOpen}
               >
-                <span className="font-medium text-navy text-[15px] sm:text-[17px] leading-snug">
-                  {faq.q}
-                </span>
+                <span className="text-[15px] font-medium leading-snug text-navy">{faq.q}</span>
                 <span
-                  className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full border flex items-center justify-center text-sm sm:text-base font-semibold transition-colors ${
-                    isOpen ? 'border-[#F27F25] bg-[#FFF1E6] text-[#F27F25]' : 'border-gray-300 text-gray-500'
+                  className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm font-semibold ${
+                    isOpen ? 'bg-[#F58220] text-white' : 'bg-[#F7F4EF] text-slate-500'
                   }`}
                   aria-hidden="true"
                 >
-                  {isOpen ? '-' : '+'}
+                  {isOpen ? '–' : '+'}
                 </span>
               </button>
 
-              {/* Always in DOM for Googlebot — hidden via CSS only */}
               <div
-                className={`px-4 sm:px-6 text-sm sm:text-[15px] text-gray-600 leading-relaxed border-t border-gray-100 transition-all duration-200 ${
-                  isOpen ? 'pb-4 sm:pb-5 max-h-[600px] opacity-100' : 'max-h-0 overflow-hidden opacity-0 border-t-0 pb-0'
+                className={`border-t border-[#E8E4DF] px-5 text-sm leading-relaxed text-slate-600 transition-all duration-200 ${
+                  isOpen ? 'max-h-[600px] pb-4 pt-3 opacity-100' : 'max-h-0 overflow-hidden border-t-0 pb-0 pt-0 opacity-0'
                 }`}
               >
                 <p>{faq.a}</p>
@@ -70,6 +78,7 @@ export function HomeFaqSection({ faqs }: HomeFaqSectionProps) {
             </article>
           )
         })}
+      </div>
       </div>
     </section>
   )

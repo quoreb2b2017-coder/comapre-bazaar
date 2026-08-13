@@ -5,10 +5,20 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    font-size: 17px;
+  }
+
+  /* Keep blog admin at the original 16px scale */
+  html:has(.blog-admin-root) {
+    font-size: 16px;
   }
 
   body {
-    @apply font-sans text-gray-800 bg-white;
+    @apply font-sans text-gray-800 bg-white text-[1.05rem] leading-relaxed;
+  }
+
+  p {
+    @apply text-[1.05rem] leading-relaxed;
   }
 
   /* Blog admin: avoid bright body behind dark UI when html.dark is set */
@@ -32,7 +42,7 @@
 @layer components {
   /* Prose content */
   .prose-editorial p {
-    @apply text-gray-600 leading-relaxed mb-4;
+    @apply mb-4 text-[1.0625rem] leading-7 text-gray-600;
   }
   .prose-editorial h2 {
     @apply text-2xl text-navy mt-8 mb-3 tracking-tight;
