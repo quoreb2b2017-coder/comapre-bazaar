@@ -78,31 +78,33 @@ export function NewsletterSubscribeForm({
 
   if (variant === 'hero') {
     return (
-      <section className="mt-6 rounded-2xl border border-slate-200 bg-[#F7F8FB] p-4 sm:p-5" aria-label="Newsletter signup">
+      <section aria-label="Newsletter signup">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#F58220]">Subscribe</p>
-        <h2 className="mt-1.5 text-lg tracking-tight text-navy sm:text-xl">Get software buying guides in your inbox</h2>
-        <p className="mt-1 max-w-xl text-sm text-gray-600">
+        <h2 className="mt-1.5 text-[15px] font-semibold leading-snug tracking-tight text-navy sm:text-base">
+          Get software buying guides in your inbox
+        </h2>
+        <p className="mt-1 text-[12px] leading-relaxed text-gray-600">
           New comparisons and pricing updates — no spam, unsubscribe anytime.
         </p>
-        <form onSubmit={submit} className="mt-3 flex flex-col gap-2.5 sm:max-w-lg sm:flex-row">
+        <form onSubmit={submit} className="mt-3 flex flex-col gap-2">
           <input
             type="email"
             name="subscribeEmail"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Your email"
-            className="h-11 min-w-0 flex-1 rounded-xl border border-gray-300 bg-white px-4 text-sm outline-none transition focus:border-[#F58220] focus:ring-2 focus:ring-[#F58220]/20"
+            className="h-10 w-full min-w-0 rounded-lg border border-gray-300 bg-white px-3 text-sm outline-none transition focus:border-[#F58220] focus:ring-2 focus:ring-[#F58220]/20"
             required
           />
           <button
             type="submit"
             disabled={loading || isSubscribed}
-            className="h-11 shrink-0 rounded-xl bg-[#F58220] px-6 text-sm font-semibold text-white transition hover:bg-[#e07418] disabled:opacity-60 sm:min-w-[132px]"
+            className="h-10 w-full rounded-lg bg-[#F58220] px-4 text-sm font-semibold text-white transition hover:bg-[#e07418] disabled:opacity-60"
           >
             {loading ? 'Saving...' : isSubscribed ? 'Subscribed' : 'Subscribe'}
           </button>
         </form>
-        {msg ? <p className={`mt-3 text-sm ${ok ? 'text-emerald-700' : 'text-red-600'}`}>{msg}</p> : null}
+        {msg ? <p className={`mt-2 text-sm ${ok ? 'text-emerald-700' : 'text-red-600'}`}>{msg}</p> : null}
       </section>
     )
   }

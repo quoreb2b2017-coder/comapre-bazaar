@@ -15,17 +15,17 @@ export function HomeBlogSection({ posts }: { posts: UnifiedBlogCard[] }) {
 
   return (
     <div aria-labelledby="blog-preview-heading">
-      <div className="mb-8 text-center">
-        <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#F58220]">
+      <div className="mb-4 text-center">
+        <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#F58220]">
           Editorial desk
         </p>
         <h2 id="blog-preview-heading" className="font-serif text-2xl tracking-tight text-navy sm:text-3xl">
           Latest from the blog
         </h2>
-        <p className="mt-1.5 text-sm text-slate-500">Three current buying guides from our editors.</p>
+        <p className="mt-1 text-sm text-slate-500">Three current buying guides from our editors.</p>
         <Link
           href="/blog"
-          className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-navy hover:text-[#F58220]"
+          className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-navy hover:text-[#F58220]"
         >
           All articles <ArrowRight className="h-4 w-4" />
         </Link>

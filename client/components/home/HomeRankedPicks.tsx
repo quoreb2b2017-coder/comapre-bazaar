@@ -58,9 +58,9 @@ export function HomeRankedPicks() {
   }).filter(Boolean) as { page: ComparisonPageData; pick: Product; quotesHref: string }[]
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-7">
       <HomeRotatingRankings />
-      <p className="mt-3 text-center text-[12px] text-slate-400">
+      <p className="mt-2 text-center text-[12px] text-slate-400">
         Rankings are editorial. Affiliate links may earn us a commission.{' '}
         <Link href="/advertising-disclosure" className="font-semibold text-navy hover:text-[#F58220]">
           Advertising disclosure
@@ -69,8 +69,8 @@ export function HomeRankedPicks() {
 
       {winnerPages.length > 0 ? (
         <div>
-          <div className="mb-6 text-center">
-            <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#F58220]">
+          <div className="mb-4 text-center">
+            <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#F58220]">
               Category winners
             </p>
             <h2 className="font-serif text-2xl tracking-tight text-navy sm:text-3xl">
@@ -78,7 +78,7 @@ export function HomeRankedPicks() {
             </h2>
             <Link
               href="/browse-all-software"
-              className="mt-3 inline-block text-sm font-semibold text-navy hover:text-[#F58220]"
+              className="mt-2 inline-block text-sm font-semibold text-navy hover:text-[#F58220]"
             >
               Browse all software →
             </Link>

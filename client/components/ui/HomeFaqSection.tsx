@@ -16,8 +16,8 @@ export function HomeFaqSection({ faqs }: HomeFaqSectionProps) {
 
   return (
     <section aria-labelledby="faq-heading">
-      <div className="mb-7 text-center">
-        <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#F58220]">Need clarity?</p>
+      <div className="mb-4 text-center">
+        <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#F58220]">Need clarity?</p>
         <h2 id="faq-heading" className="font-serif text-2xl tracking-tight text-navy sm:text-3xl">
           Frequently asked questions
         </h2>

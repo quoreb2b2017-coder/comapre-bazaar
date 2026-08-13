@@ -74,17 +74,17 @@ export function HomeRotatingRankings() {
 
   return (
     <div onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
-      <div className="mb-6 text-center">
-        <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#F58220]">
+      <div className="mb-4 text-center">
+        <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#F58220]">
           2026 rankings
         </p>
         <h2 className="font-serif text-2xl tracking-tight text-navy sm:text-3xl">{slide.heading}</h2>
-        <p className="mt-1.5 text-sm text-slate-500">
+        <p className="mt-1 text-sm text-slate-500">
           Expert scores on features, pricing, and ease of use · Updated {slide.lastReviewed}
         </p>
         <Link
           href={slide.canonical}
-          className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-sm font-semibold text-navy hover:border-[#F58220] hover:text-[#F58220]"
+          className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-sm font-semibold text-navy hover:border-[#F58220] hover:text-[#F58220]"
         >
           Full {slide.label} comparison <ArrowRight className="h-4 w-4" />
         </Link>
