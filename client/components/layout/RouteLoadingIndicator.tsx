@@ -3,8 +3,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 
-const FADE_MS = 160
-const MAX_VISIBLE_MS = 9000
+const FADE_MS = 80
+const SHOW_DELAY_MS = 180
+const MAX_VISIBLE_MS = 800
 
 function buildRouteSignature(pathname: string, search: string) {
   return search ? `${pathname}?${search}` : pathname
@@ -29,26 +30,39 @@ export function RouteLoadingIndicator() {
 
   const [visible, setVisible] = useState(false)
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const showTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const forceHideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isNavigatingRef = useRef(false)
-  const targetRouteRef = useRef<string | null>(null)
+  const targetPathRef = useRef<string | null>(null)
   const activeAnchorRef = useRef<HTMLAnchorElement | null>(null)
+
+  const finish = () => {
+    setVisible(false)
+    isNavigatingRef.current = false
+    targetPathRef.current = null
+    if (showTimerRef.current) {
+      clearTimeout(showTimerRef.current)
+      showTimerRef.current = null
+    }
+    if (hideTimerRef.current) {
+      clearTimeout(hideTimerRef.current)
+      hideTimerRef.current = null
+    }
+    if (forceHideTimerRef.current) {
+      clearTimeout(forceHideTimerRef.current)
+      forceHideTimerRef.current = null
+    }
+    if (activeAnchorRef.current) {
+      activeAnchorRef.current.classList.remove('cb-link-pending')
+      activeAnchorRef.current = null
+    }
+  }
 
   useEffect(() => {
     if (!isNavigatingRef.current) return
 
-    const finish = () => {
-      setVisible(false)
-      isNavigatingRef.current = false
-      targetRouteRef.current = null
-      if (activeAnchorRef.current) {
-        activeAnchorRef.current.classList.remove('cb-link-pending')
-        activeAnchorRef.current = null
-      }
-    }
-
-    const target = targetRouteRef.current
-    const reachedTarget = !target || routeSignature === target
+    const target = targetPathRef.current
+    const reachedTarget = !target || (pathname ?? '/') === target
 
     if (!reachedTarget) return
 
@@ -59,13 +73,17 @@ export function RouteLoadingIndicator() {
     }
 
     hideTimerRef.current = setTimeout(finish, FADE_MS)
-  }, [routeSignature])
+  }, [pathname, routeSignature])
 
   useEffect(() => {
     const clearTimers = () => {
       if (hideTimerRef.current) {
         clearTimeout(hideTimerRef.current)
         hideTimerRef.current = null
+      }
+      if (showTimerRef.current) {
+        clearTimeout(showTimerRef.current)
+        showTimerRef.current = null
       }
       if (forceHideTimerRef.current) {
         clearTimeout(forceHideTimerRef.current)
@@ -104,8 +122,7 @@ export function RouteLoadingIndicator() {
 
         clearTimers()
         isNavigatingRef.current = true
-        targetRouteRef.current = buildRouteSignature(nextUrl.pathname, nextUrl.search.slice(1))
-        setVisible(true)
+        targetPathRef.current = nextUrl.pathname
 
         if (activeAnchorRef.current && activeAnchorRef.current !== anchor) {
           activeAnchorRef.current.classList.remove('cb-link-pending')
@@ -113,23 +130,25 @@ export function RouteLoadingIndicator() {
         activeAnchorRef.current = anchor
         anchor.classList.add('cb-link-pending')
 
-        forceHideTimerRef.current = setTimeout(() => {
-          setVisible(false)
-          isNavigatingRef.current = false
-          targetRouteRef.current = null
-          if (activeAnchorRef.current) {
-            activeAnchorRef.current.classList.remove('cb-link-pending')
-            activeAnchorRef.current = null
-          }
-        }, MAX_VISIBLE_MS)
+        showTimerRef.current = setTimeout(() => {
+          if (isNavigatingRef.current) setVisible(true)
+        }, SHOW_DELAY_MS)
+
+        forceHideTimerRef.current = setTimeout(finish, MAX_VISIBLE_MS)
       } catch {
         // Ignore malformed URLs.
       }
     }
 
+    const hideImmediately = () => finish()
+
     document.addEventListener('click', handleDocumentClick, true)
+    window.addEventListener('popstate', hideImmediately)
+    window.addEventListener('pageshow', hideImmediately)
     return () => {
       document.removeEventListener('click', handleDocumentClick, true)
+      window.removeEventListener('popstate', hideImmediately)
+      window.removeEventListener('pageshow', hideImmediately)
       clearTimers()
       if (activeAnchorRef.current) {
         activeAnchorRef.current.classList.remove('cb-link-pending')

@@ -115,6 +115,8 @@ export async function getSitemapEntries(): Promise<MetadataRoute.Sitemap> {
   const quoteHubRoutes: MetadataRoute.Sitemap = [
     { url: `${SITEMAP_BASE_URL}/technology/get-free-quotes`, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${SITEMAP_BASE_URL}/marketing/get-free-quotes`, changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${SITEMAP_BASE_URL}/bz-get-free-quotes-fleet-management`, changeFrequency: 'yearly', priority: 0.4 },
+    { url: `${SITEMAP_BASE_URL}/bz-get-free-quotes-payroll-software`, changeFrequency: 'yearly', priority: 0.4 },
   ]
 
   const compareRoutes: MetadataRoute.Sitemap = comparisonPages.flatMap((page) =>

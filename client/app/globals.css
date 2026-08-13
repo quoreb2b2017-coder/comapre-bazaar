@@ -823,6 +823,37 @@
   }
 }
 
+/* BuyerZone default box is 625px + overflow:hidden — that clips Next */
+.bz-quote-widget,
+.bz-quote-widget .bz-widget-mount {
+  background: transparent;
+  box-shadow: none;
+  border: 0;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.bz-quote-widget .bzWidget {
+  height: 625px !important;
+  min-height: 625px !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  scrollbar-width: none;
+}
+.bz-quote-widget .bzWidget::-webkit-scrollbar {
+  display: none;
+}
+.bz-quote-widget .bzWidget iframe,
+.bz-quote-widget iframe {
+  display: block;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 625px !important;
+  min-height: 625px !important;
+}
+
 @keyframes blog-admin-route-page {
   from {
     opacity: 0;

@@ -21,6 +21,11 @@ function isBlogAdminPath(pathname: string | null) {
   return pathname === '/blog-admin' || pathname.startsWith('/blog-admin/')
 }
 
+function isBuyerZoneQuotePath(pathname: string | null) {
+  if (!pathname) return false
+  return pathname.startsWith('/bz-get-free-quotes-')
+}
+
 export function SiteChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   if (isBlogAdminPath(pathname)) {
@@ -33,7 +38,7 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
       </Suspense>
       <SiteNav />
       <main className="flex-1">{children}</main>
-      <ArrowNavigation />
+      {isBuyerZoneQuotePath(pathname) ? null : <ArrowNavigation />}
       <CompareBazaarChat />
       <Suspense fallback={null}>
         <GoogleAnalyticsConsent />

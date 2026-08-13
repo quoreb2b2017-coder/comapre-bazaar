@@ -43,8 +43,8 @@ const NAV_ITEMS: NavItem[] = [
     dropdownTitle: 'Sales hub',
     children: [
       { label: 'Best Sales CRM', href: '/sales/best-crm-software', description: 'Lead and deal workflows' },
-      { label: 'Call Centre Software', href: '/sales/best-call-center-management-software', description: 'Customer support systems' },
-      { label: 'Project Management', href: '/sales/best-project-management-software', description: 'Planning and collaboration' },
+      { label: 'Best Call Center Software', href: '/sales/best-call-center-management-software', description: 'Customer support systems' },
+      { label: 'Best Project Management Software', href: '/sales/best-project-management-software', description: 'Planning and collaboration' },
     ],
   },
   {
