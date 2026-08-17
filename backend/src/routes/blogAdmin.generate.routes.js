@@ -88,6 +88,15 @@ router.post('/', protect, async (req, res) => {
 
     const { data } = result
 
+    if (!data?.verified) {
+      return res.status(422).json({
+        success: false,
+        message: 'Generated content did not pass verification and was not saved.',
+        qualityCheck: data?.qualityCheck || null,
+        formatCheck: data?.formatCheck || null,
+      })
+    }
+
     const coverResult = await resolveBlogCoverImageUrl({
       topic: data.topic || topic,
       title: data.title,
@@ -136,12 +145,16 @@ router.post('/', protect, async (req, res) => {
     res.json({
       success: true,
       data: { ...data, coverImageUrl: coverImageUrl || null, coverSearchQuery: coverSearchQuery || null, savedBlog },
-      message: saveAsDraft !== false ? 'Blog generated and saved as draft!' : 'Blog generated successfully!',
+      message:
+        saveAsDraft !== false
+          ? 'Verified blog generated and saved as draft.'
+          : 'Verified blog generated successfully.',
     })
   } catch (error) {
     const msg = error?.message || String(error)
     console.error('Generate blog error:', msg, error?.body || error?.stack)
-    res.status(500).json({
+    const unverified = error?.code === 'UNVERIFIED_CONTENT'
+    res.status(unverified ? 422 : 500).json({
       success: false,
       message: msg || 'Blog generation failed',
     })

@@ -32,8 +32,8 @@ export function ComparisonPageTemplate({ data, hubSlug, heroCoverUrl }: Comparis
       <ComparisonPageHero data={data} vendorCount={vendorCount} heroCoverUrl={heroCoverUrl} />
 
       <div className="bg-gradient-to-b from-[#EEF3FB] via-[#F3F5F9] to-[#F9FAFB]">
-        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10">
-          <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-[minmax(240px,280px)_minmax(0,1fr)] lg:gap-14">
+        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
+          <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(240px,280px)_minmax(0,1fr)] lg:gap-10">
             <ComparisonSidebarReveal className="order-2 lg:order-1 lg:sticky lg:top-24">
               <ComparisonSidebar
                 tocItems={tocItems}
@@ -46,40 +46,38 @@ export function ComparisonPageTemplate({ data, hubSlug, heroCoverUrl }: Comparis
               />
             </ComparisonSidebarReveal>
 
-            <div className="order-1 min-w-0 space-y-12 lg:order-2 lg:space-y-16">
-              <ComparisonReveal className="overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-sm shadow-navy/[0.03]">
+            <div className="order-1 min-w-0 space-y-8 lg:order-2 lg:space-y-10">
+              <ComparisonReveal>
                 <ComparisonSectionHeader
                   id="verdict-heading"
                   title="Quick verdict"
                   description="Our editorial summary before the full breakdown."
                 />
-                <div id={sectionIds.verdict} className="scroll-mt-24 px-5 py-6 sm:px-6 sm:py-7">
+                <div id={sectionIds.verdict} className="scroll-mt-24 mt-3">
                   <WinnerBanner summary={data.winnerSummary} embedded />
                 </div>
               </ComparisonReveal>
 
               <ComparisonReveal as="section" id={sectionIds.picks} aria-labelledby="picks-heading" className="scroll-mt-24">
-                <div className="overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-sm shadow-navy/[0.03]">
-                  <ComparisonSectionHeader
-                    id="picks-heading"
-                    step={1}
-                    title="Our top picks for 2026"
-                    description={`${vendorCount} platforms ranked by expert score · pricing verified ${data.lastReviewed}`}
-                  />
-                  <ComparisonStagger className="divide-y divide-gray-100">
-                    {data.products.map((product, index) => (
-                      <ComparisonStaggerItem key={product.id}>
-                        <ProductCard
-                          product={product}
-                          rank={index + 1}
-                          anchorId={productTocAnchor(product)}
-                          compareHref={`/compare?category=${encodeURIComponent(data.slug)}&brand=${encodeURIComponent(product.id)}`}
-                          quoteHref={data.ctaSlug}
-                        />
-                      </ComparisonStaggerItem>
-                    ))}
-                  </ComparisonStagger>
-                </div>
+                <ComparisonSectionHeader
+                  id="picks-heading"
+                  step={1}
+                  title="Our top picks for 2026"
+                  description={`${vendorCount} platforms ranked by expert score · pricing verified ${data.lastReviewed}`}
+                />
+                <ComparisonStagger className="mt-3 space-y-3">
+                  {data.products.map((product, index) => (
+                    <ComparisonStaggerItem key={product.id}>
+                      <ProductCard
+                        product={product}
+                        rank={index + 1}
+                        anchorId={productTocAnchor(product)}
+                        compareHref={`/compare?category=${encodeURIComponent(data.slug)}&brand=${encodeURIComponent(product.id)}`}
+                        quoteHref={data.ctaSlug}
+                      />
+                    </ComparisonStaggerItem>
+                  ))}
+                </ComparisonStagger>
               </ComparisonReveal>
 
               <ComparisonReveal
@@ -100,15 +98,15 @@ export function ComparisonPageTemplate({ data, hubSlug, heroCoverUrl }: Comparis
                   aria-labelledby="faqs-heading"
                   delay={0.06}
                 >
-                  <div className="overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-sm shadow-navy/[0.03]">
-                    <ComparisonSectionHeader
-                      id="faqs-heading"
-                      step={3}
-                      title="Frequently asked questions"
-                      description="Expert answers from our software buying guides."
-                    />
-                    <FaqAccordion items={data.faqs} />
-                  </div>
+                <ComparisonSectionHeader
+                  id="faqs-heading"
+                  step={3}
+                  title="Frequently asked questions"
+                  description="Expert answers from our software buying guides."
+                />
+                <div className="mt-3">
+                  <FaqAccordion items={data.faqs} />
+                </div>
                 </ComparisonReveal>
               ) : null}
 

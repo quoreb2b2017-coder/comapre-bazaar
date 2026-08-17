@@ -1,10 +1,25 @@
 import type { Metadata } from 'next'
+import { Plus_Jakarta_Sans, Source_Serif_4 } from 'next/font/google'
 import './globals.css'
 import { SiteChrome } from '@/components/layout/SiteChrome'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { GA_MEASUREMENT_ID } from '@/lib/googleAnalytics'
 import { buildGraph, organizationGraph } from '@/lib/schema'
 import { SITE_URL } from '@/lib/seo'
+
+const sans = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-sans',
+  weight: ['400', '500', '600', '700'],
+})
+
+const serif = Source_Serif_4({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-serif',
+  weight: ['400', '600', '700'],
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -38,7 +53,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={`${sans.variable} ${serif.variable}`}>
       <head>
         {GA_MEASUREMENT_ID ? (
           <>
@@ -64,7 +79,7 @@ export default function RootLayout({
         ) : null}
         <JsonLd schema={buildGraph(...organizationGraph())} />
       </head>
-      <body className="flex flex-col min-h-screen overflow-x-hidden">
+      <body className={`${sans.className} flex min-h-screen flex-col overflow-x-hidden antialiased`}>
         <SiteChrome>{children}</SiteChrome>
       </body>
     </html>

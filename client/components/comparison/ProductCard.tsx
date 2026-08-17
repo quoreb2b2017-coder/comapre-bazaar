@@ -81,7 +81,7 @@ export function ProductCard({
 
       className={cn(
 
-        'scroll-mt-24 px-5 py-7 sm:px-6 sm:py-8',
+        'scroll-mt-24 rounded-xl border border-gray-200/90 bg-white px-4 py-5 sm:px-5 sm:py-5',
 
         product.isTopPick && 'bg-gradient-to-r from-[#FFFBF7] via-white to-white',
 

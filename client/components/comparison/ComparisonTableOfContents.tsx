@@ -60,9 +60,9 @@ export function ComparisonTableOfContents({ items, pagePath }: ComparisonTableOf
   const basePath = pagePath.replace(/\/$/, '')
 
   return (
-    <nav className="border-b border-gray-100 px-4 py-4 sm:px-5" aria-label="Table of contents">
+    <nav className="px-0 py-0" aria-label="Table of contents">
       <h3 className="font-serif text-[1.05rem] font-semibold text-cb-orange">Table of contents</h3>
-      <ol className="mt-4 max-h-[min(420px,55vh)] space-y-2.5 overflow-y-auto pr-1 scroll-smooth">
+      <ol className="mt-3 max-h-[min(420px,55vh)] space-y-1 overflow-y-auto pr-1 scroll-smooth">
         {items.map((item) => {
           const isActive = activeAnchor === item.anchor
           const href = `${basePath}#${item.anchor}`
@@ -73,7 +73,7 @@ export function ComparisonTableOfContents({ items, pagePath }: ComparisonTableOf
                 href={href}
                 onClick={() => setActiveAnchor(item.anchor)}
                 className={cn(
-                  'relative block rounded-lg py-3.5 pl-3.5 pr-2 text-[13px] leading-snug transition-colors sm:text-[14px]',
+                  'relative block rounded-lg py-2 pl-3 pr-2 text-[13px] leading-snug transition-colors sm:text-[14px]',
                   isActive
                     ? 'bg-cb-orange/[0.06] font-medium text-cb-orange before:absolute before:left-0 before:top-2.5 before:h-[calc(100%-1.25rem)] before:w-[3px] before:rounded-full before:bg-cb-orange'
                     : 'text-gray-700 hover:bg-gray-50 hover:text-cb-orange'

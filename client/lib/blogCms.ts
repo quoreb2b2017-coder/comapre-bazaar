@@ -1,5 +1,6 @@
 import { blogPosts } from '@/data/blogPosts'
-import { pickTopicCoverUrl } from '@/lib/blogTopicCovers'
+import { postsForHub } from '@/lib/content-map'
+import { assignUniqueBlogCovers, pickTopicCoverUrl, resolveCoverUrlFromCms } from '@/lib/blogTopicCovers'
 import { cmsBackendBase } from '@/lib/cmsBackendBase'
 
 /** Server-side base URL for Express. Browser callers should use cmsBackendBase() (same-origin proxy). */
@@ -88,7 +89,19 @@ export function normalizeBlogCmsHtml(html: string): string {
   // Bare "html" immediately before first tag (paste / fence artifact)
   s = s.replace(/^html\s+(?=<)/i, '')
   s = s.replace(/^html(?=<)/i, '')
+  // Shorter dash in article copy (em dash → hyphen)
+  s = s.replace(/\s*\u2014\s*/g, ' - ')
+  s = s.replace(/\s*&mdash;\s*/gi, ' - ')
+  s = stripInlineFontSizeOutsideHero(s)
   return s.trim()
+}
+
+function stripInlineFontSizeOutsideHero(html: string): string {
+  const { heroHtml, bodyHtml } = splitCmsHeroFromBody(html)
+  const cleaned = bodyHtml
+    .replace(/font-size\s*:\s*[^;}"']+;?/gi, '')
+    .replace(/\sstyle=(["'])\s*\1/gi, '')
+  return heroHtml ? `${heroHtml}${cleaned}` : cleaned
 }
 
 /** First hero section vs rest — lets public layout show hero at full content width and body at readable measure. */
@@ -100,10 +113,49 @@ export function splitCmsHeroFromBody(html: string): { heroHtml: string | null; b
   return { heroHtml: m[1].trim(), bodyHtml: m[2].trim() }
 }
 
+function stripTags(s: string) {
+  return String(s || '')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+export function parseCmsHeroBanner(heroHtml: string): {
+  eyebrow: string
+  title: string
+  subtitle: string
+  pills: string[]
+} {
+  const html = String(heroHtml || '')
+  const eyebrow = html.match(/class=["'][^"']*blog-hero-eyebrow[^"']*["'][^>]*>([\s\S]*?)<\/p>/i)
+  const title = html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i)
+  const subtitle = html.match(/class=["'][^"']*blog-hero-subtitle[^"']*["'][^>]*>([\s\S]*?)<\/p>/i)
+  const pills: string[] = []
+  const pillRe = /class=["'][^"']*blog-hero-pill-label[^"']*["'][^>]*>([\s\S]*?)<\/span>/gi
+  let match: RegExpExecArray | null
+  while ((match = pillRe.exec(html))) {
+    const label = stripTags(match[1])
+    if (label) pills.push(label)
+  }
+  return {
+    eyebrow: eyebrow ? stripTags(eyebrow[1]) : '',
+    title: title ? stripTags(title[1]) : '',
+    subtitle: subtitle ? stripTags(subtitle[1]) : '',
+    pills: pills.slice(0, 4),
+  }
+}
+
 /** Plain excerpt for listing cards (strip HTML from CMS snippets). */
 export function plainBlogExcerpt(raw: string | undefined | null, maxLen = 220): string {
   const t = String(raw || '')
     .replace(/<[^>]*>/g, ' ')
+    .replace(/\s*\u2014\s*/g, ' - ')
     .replace(/\s+/g, ' ')
     .trim()
   if (!t) return ''
@@ -182,6 +234,9 @@ export type UnifiedBlogCard = {
   stripTo: string
   coverUrl: string
   viewCount: number
+  /** Primary CMS topic (for related-post matching). */
+  topic?: string
+  tags?: string[]
 }
 
 export async function fetchPublishedBlogSummaries(): Promise<CmsBlogSummary[]> {
@@ -231,7 +286,16 @@ function cmsSummaryToUnified(b: CmsBlogSummary): UnifiedBlogCard {
   const rt =
     typeof b.readingTime === 'number' && b.readingTime > 0 ? `${b.readingTime} min read` : '8 min read'
   const category = (b.tags && b.tags[0]) || b.topic || 'Editorial'
-  const coverUrl = b.coverImageUrl?.trim() || pickTopicCoverUrl(b)
+  const coverUrl = resolveCoverUrlFromCms({
+    slug: b.slug,
+    title: b.title,
+    topic: b.topic,
+    tags: b.tags,
+    keywords: b.keywords,
+    metaTitle: b.metaTitle,
+    metaDescription: b.metaDescription,
+    coverImageUrl: b.coverImageUrl,
+  })
   const viewCount = typeof b.viewCount === 'number' && b.viewCount >= 0 ? b.viewCount : 0
   return {
     slug: b.slug,
@@ -246,6 +310,8 @@ function cmsSummaryToUnified(b: CmsBlogSummary): UnifiedBlogCard {
     stripTo,
     coverUrl,
     viewCount,
+    topic: b.topic,
+    tags: b.tags,
   }
 }
 
@@ -257,7 +323,20 @@ const byPublishedDesc = (a: UnifiedBlogCard, b: UnifiedBlogCard) =>
  */
 export async function loadUnifiedBlogIndex(): Promise<UnifiedBlogCard[]> {
   const cms = await fetchPublishedBlogSummaries()
-  return cms.map(cmsSummaryToUnified).sort(byPublishedDesc)
+  const sorted = cms.map(cmsSummaryToUnified).sort(byPublishedDesc)
+  return assignUniqueBlogCovers(sorted, (post) => {
+    const source = cms.find((item) => item.slug === post.slug)
+    return {
+      slug: post.slug,
+      title: post.title,
+      topic: source?.topic,
+      tags: source?.tags,
+      keywords: source?.keywords,
+      metaTitle: source?.metaTitle,
+      metaDescription: source?.metaDescription,
+      coverImageUrl: source?.coverImageUrl,
+    }
+  })
 }
 
 function staticPostsToUnified(): UnifiedBlogCard[] {
@@ -274,7 +353,72 @@ function staticPostsToUnified(): UnifiedBlogCard[] {
     stripTo: p.stripTo,
     coverUrl: pickTopicCoverUrl({ slug: p.slug, topic: p.category, title: p.title }),
     viewCount: 0,
+    topic: p.category,
+    tags: [p.category],
   }))
+}
+
+/** Labels used to match related posts (category, topic, tags). */
+export function collectBlogTopicLabels(input: {
+  category?: string
+  topic?: string
+  tags?: string[]
+}): string[] {
+  return [
+    ...new Set(
+      [input.category, input.topic, ...(input.tags || [])]
+        .map((label) => String(label || '').trim())
+        .filter(Boolean),
+    ),
+  ]
+}
+
+function topicSlugsMatch(a: string, b: string): boolean {
+  const sa = topicToSlug(a)
+  const sb = topicToSlug(b)
+  if (!sa || !sb) return false
+  if (sa === sb) return true
+  if (sa.startsWith(`${sb}-`) || sb.startsWith(`${sa}-`)) return true
+  const shorter = sa.length <= sb.length ? sa : sb
+  const longer = sa.length > sb.length ? sa : sb
+  return shorter.length >= 3 && longer.includes(shorter)
+}
+
+/** True when a post shares topic/category with any of the given labels. */
+export function blogPostMatchesTopicLabels(
+  post: Pick<UnifiedBlogCard, 'category' | 'topic' | 'tags'>,
+  labels: string[],
+): boolean {
+  if (labels.length === 0) return false
+  const postLabels = collectBlogTopicLabels({
+    category: post.category,
+    topic: post.topic,
+    tags: post.tags,
+  })
+  return labels.some((label) => postLabels.some((postLabel) => topicSlugsMatch(label, postLabel)))
+}
+
+/** Latest posts in the same topic/category (newest first, auto-updates from CMS). */
+export function pickRelatedBlogPosts(
+  allPosts: UnifiedBlogCard[],
+  options: {
+    currentSlug: string
+    category?: string
+    topic?: string
+    tags?: string[]
+    limit?: number
+  },
+): UnifiedBlogCard[] {
+  const { currentSlug, limit = 3, ...topicInput } = options
+  const topicLabels = collectBlogTopicLabels(topicInput)
+
+  return allPosts
+    .filter((post) => {
+      if (post.slug === currentSlug) return false
+      if (topicLabels.length === 0) return false
+      return blogPostMatchesTopicLabels(post, topicLabels)
+    })
+    .slice(0, limit)
 }
 
 /** Homepage always gets posts: CMS first, static guides if the API is empty. */
@@ -288,9 +432,48 @@ export async function loadHomeBlogPreview(limit = 4): Promise<UnifiedBlogCard[]>
   return staticPostsToUnified().slice(0, limit)
 }
 
-export async function loadUnifiedRelated(currentSlug: string, limit = 3): Promise<UnifiedBlogCard[]> {
+export async function loadUnifiedRelated(
+  currentSlug: string,
+  topicInput: { category?: string; topic?: string; tags?: string[] } = {},
+  limit = 3,
+): Promise<UnifiedBlogCard[]> {
   const all = await loadUnifiedBlogIndex()
-  return all.filter((p) => p.slug !== currentSlug).slice(0, limit)
+  return pickRelatedBlogPosts(all, { currentSlug, ...topicInput, limit })
+}
+
+/** Latest same-topic posts for a comparison hub (CRM, payroll, etc.). New CMS posts appear automatically. */
+export async function loadRelatedBlogPostsForHub(
+  hub: { slug: string; name: string; primaryKeyword?: string },
+  limit = 3,
+): Promise<UnifiedBlogCard[]> {
+  let all: UnifiedBlogCard[] = []
+  try {
+    all = await loadUnifiedBlogIndex()
+  } catch {
+    all = []
+  }
+  if (all.length === 0) all = staticPostsToUnified()
+
+  const related = pickRelatedBlogPosts(all, {
+    currentSlug: '',
+    category: hub.name,
+    topic: hub.slug,
+    tags: [hub.name, hub.slug, hub.primaryKeyword || ''],
+    limit,
+  })
+
+  if (related.length >= limit) return related
+
+  const mappedSlugs = postsForHub(hub.slug, 12).map((post) => post.slug)
+  for (const slug of mappedSlugs) {
+    if (related.length >= limit) break
+    const found = all.find((post) => post.slug === slug)
+    if (found && !related.some((post) => post.slug === found.slug)) {
+      related.push(found)
+    }
+  }
+
+  return related
 }
 
 /** Public /blog index: first page shows 5 posts; each further page shows 3 */

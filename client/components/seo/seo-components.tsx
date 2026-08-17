@@ -1,11 +1,11 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import {
-  postsForHub,
-  siblingPosts,
   primaryHubForPost,
   hubBySlug,
 } from '@/lib/content-map'
+import { loadRelatedBlogPostsForHub } from '@/lib/blogCms'
+import { BlogRelatedCards } from '@/components/blog/BlogRelatedCards'
 
 const SITE = 'https://www.compare-bazaar.com'
 
@@ -40,74 +40,37 @@ export function Breadcrumbs({ items }: { items: { name: string; url: string }[] 
 }
 
 export function hasHubRelatedContent(hubSlug: string): boolean {
-  return postsForHub(hubSlug).length > 0 && !!hubBySlug[hubSlug]
+  return Boolean(hubBySlug[hubSlug])
 }
 
-export function HubRelatedContent({ hubSlug }: { hubSlug: string }) {
-  const related = postsForHub(hubSlug)
+export async function HubRelatedContent({ hubSlug }: { hubSlug: string }) {
   const hub = hubBySlug[hubSlug]
-  if (!related.length || !hub) return null
+  if (!hub) return null
+
+  const related = await loadRelatedBlogPostsForHub(hub, 3)
+  if (related.length === 0) return null
+
   return (
-    <aside
-      aria-labelledby="further-reading"
-      className="overflow-hidden rounded-2xl border border-gray-200/80 bg-white px-5 py-6 shadow-sm shadow-navy/5 sm:px-6"
-    >
-      <h2 id="further-reading" className="mb-4 font-serif text-xl text-cb-orange tracking-tight">
-        Further reading on {hub.name}
-      </h2>
-      <ul className="space-y-3">
-        {related.map((p) => (
-          <li key={p.slug}>
-            <Link
-              href={`/blog/${p.slug}`}
-              className="text-sm font-medium text-brand hover:text-brand-hover hover:underline"
-            >
-              {p.title}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </aside>
+    <BlogRelatedCards
+      posts={related}
+      eyebrow="Further reading"
+      heading={`More ${hub.name} guides`}
+    />
   )
 }
 
 export function PostRelatedContent({ postSlug }: { postSlug: string }) {
   const hub = primaryHubForPost(postSlug)
-  const siblings = siblingPosts(postSlug)
-  if (!hub && siblings.length === 0) return null
+  if (!hub) return null
   return (
-    <aside
-      aria-labelledby="related-guides"
-      className="my-8 rounded-xl border border-brand/20 bg-[#FFFAF5] px-5 py-5 sm:px-6"
-    >
-      {hub ? (
-        <p className="mb-4 text-[15px] leading-relaxed text-gray-700">
-          Ready to shortlist?{' '}
-          <Link href={hub.path} className="font-semibold text-brand hover:text-brand-hover hover:underline">
-            Compare the {hub.name.toLowerCase()} we&apos;ve tested and priced
-          </Link>
-          .
-        </p>
-      ) : null}
-      {siblings.length > 0 ? (
-        <>
-          <h2 id="related-guides" className="mb-3 font-serif text-lg text-navy tracking-tight">
-            Related guides
-          </h2>
-          <ul className="space-y-2">
-            {siblings.map((p) => (
-              <li key={p.slug}>
-                <Link
-                  href={`/blog/${p.slug}`}
-                  className="text-sm font-medium text-navy hover:text-brand hover:underline"
-                >
-                  {p.title}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </>
-      ) : null}
+    <aside aria-labelledby="related-guides" className="my-8">
+      <p id="related-guides" className="text-[15px] leading-relaxed text-slate-600">
+        Ready to shortlist?{' '}
+        <Link href={hub.path} className="font-semibold text-[#F58220] hover:text-[#D97706] hover:underline">
+          Compare the {hub.name.toLowerCase()} we&apos;ve tested and priced
+        </Link>
+        .
+      </p>
     </aside>
   )
 }

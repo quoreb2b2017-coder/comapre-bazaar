@@ -59,9 +59,9 @@ export function HomePageBody({
               Shortlist in three steps
             </h2>
           </div>
-          <div className="grid grid-cols-1 divide-y divide-slate-200 overflow-hidden rounded-2xl border border-slate-200 bg-[#F7F8FB] md:grid-cols-3 md:divide-x md:divide-y-0">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             {FLOW.map(({ n, icon: Icon, title, body }) => (
-              <div key={n} className="flex gap-3 px-4 py-4">
+              <div key={n} className="flex gap-3 rounded-xl border border-slate-200 bg-white p-4">
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#0B2A6F] font-serif text-lg text-white">
                   {n}
                 </span>
@@ -96,12 +96,9 @@ export function HomePageBody({
               Full editorial process →
             </Link>
           </div>
-          <div className="grid grid-cols-1 overflow-hidden rounded-2xl border border-slate-200 bg-[#F7F8FB] md:grid-cols-3">
-            {METHOD.map(({ num, title, body, icon: Icon }, i) => (
-              <article
-                key={num}
-                className={`p-4 sm:p-5 ${i > 0 ? 'border-t border-slate-200 md:border-l md:border-t-0' : ''}`}
-              >
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            {METHOD.map(({ num, title, body, icon: Icon }) => (
+              <article key={num} className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
                 <div className="mb-3 flex items-center justify-between">
                   <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white ring-1 ring-slate-200">
                     <Icon className="h-5 w-5 text-[#F58220]" aria-hidden />

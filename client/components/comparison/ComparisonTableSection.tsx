@@ -51,7 +51,7 @@ export function ComparisonTableSection({ data, sectionId }: ComparisonTableSecti
   }
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-sm shadow-navy/[0.03]">
+    <div>
       <ComparisonSectionHeader
         id="compare-heading"
         step={2}
@@ -59,7 +59,7 @@ export function ComparisonTableSection({ data, sectionId }: ComparisonTableSecti
         description={`Side-by-side specs and pricing · ${data.lastReviewed}`}
       />
 
-      <div className="border-b border-gray-100 px-4 pb-5 pt-5 sm:px-6">
+      <div className="mt-3 border-b border-gray-100 pb-4">
         <div
           className="inline-flex w-full max-w-md rounded-xl border border-gray-200 bg-gray-50 p-1 sm:w-auto"
           role="tablist"
@@ -98,7 +98,7 @@ export function ComparisonTableSection({ data, sectionId }: ComparisonTableSecti
         </div>
       </div>
 
-      <div id={sectionId} className="scroll-mt-24 p-5 sm:p-7">
+      <div id={sectionId} className="scroll-mt-24 mt-4">
         <div id={COMPARE_SIDE_BY_SIDE_ANCHOR} className="scroll-mt-24" aria-hidden="true" />
         {activeTab === 'table' ? (
           <ComparisonTable
@@ -110,7 +110,7 @@ export function ComparisonTableSection({ data, sectionId }: ComparisonTableSecti
             <p className="text-sm text-gray-600">
               Side-by-side view of our top {compareProducts.length} picks — pricing, strengths, and trade-offs.
             </p>
-            <div className="compare-embedded -mx-1 overflow-hidden rounded-xl border border-gray-200 bg-[#FAFBFD] p-1 sm:mx-0">
+            <div className="compare-embedded overflow-hidden rounded-xl border border-gray-200 bg-white">
               <CompareMultiTables
                 products={compareProducts}
                 lastReviewed={data.lastReviewed}

@@ -122,6 +122,56 @@ function normalizeBlogFields({ title, content, metaTitle, metaDescription, excer
   }
 }
 
+/**
+ * Hard quality gate for generated HTML. Length fields are clamped separately;
+ * this blocks missing structure, too-short body, or leaked markdown.
+ */
+function verifyGeneratedArticle(html, { minWords = 420, minH2 = 3 } = {}) {
+  const content = String(html || '')
+  const issues = []
+
+  if (!/blog-hero-banner/i.test(content) && !/data-blog-banner/i.test(content)) {
+    issues.push('Missing hero banner section')
+  }
+  if (!/<h1\b/i.test(content)) {
+    issues.push('Missing H1 title')
+  }
+  if (!/blog-hero-subtitle/i.test(content)) {
+    issues.push('Missing hero subtitle')
+  }
+
+  const pills = (content.match(/blog-hero-pill/gi) || []).length
+  if (pills < 4) {
+    issues.push(`Hero needs 4 pills (found ${pills})`)
+  }
+
+  const h2Count = (content.match(/<h2\b/gi) || []).length
+  if (h2Count < minH2) {
+    issues.push(`Need at least ${minH2} H2 sections (found ${h2Count})`)
+  }
+
+  const wordCount = countWords(content)
+  if (wordCount < minWords) {
+    issues.push(`Article is too short (${wordCount} words, need ${minWords}+)`)
+  }
+
+  if (/```/.test(content)) {
+    issues.push('Markdown code fences leaked into HTML')
+  }
+
+  const withoutHero = content.replace(/<section\b[^>]*blog-hero-banner[\s\S]*?<\/section>/i, ' ')
+  if (!/<(p|ul|ol|h2)\b/i.test(withoutHero)) {
+    issues.push('Missing article body after the hero')
+  }
+
+  return {
+    ok: issues.length === 0,
+    issues,
+    wordCount,
+    h2Count,
+  }
+}
+
 /** Validation report for admin UI (does not mutate). */
 function validateBlogFormat({ title, content, metaTitle, metaDescription, excerpt }) {
   const heroSubtitle = extractHeroSubtitle(content)
@@ -149,6 +199,7 @@ module.exports = {
   LIMITS,
   normalizeBlogFields,
   validateBlogFormat,
+  verifyGeneratedArticle,
   clampMetaTitle,
   clampMetaDescription,
   clampExcerpt,

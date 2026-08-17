@@ -51,7 +51,9 @@ const getMessageText = (message) => {
 
 /** Claude sometimes wraps HTML in markdown fences; strip so DB never stores a stray ```html / ``` line. */
 const { getCompareBazaarEditorialContext } = require("./blogAdmin.siteReader.service")
-const { normalizeBlogFields, validateBlogFormat } = require("./blogAdmin.contentFormat.service")
+const { normalizeBlogFields, validateBlogFormat, verifyGeneratedArticle } = require("./blogAdmin.contentFormat.service")
+const { injectBlogBrandLogos } = require("./blogAdmin.brandLogos.service")
+const { injectBlogEmphasis } = require("./blogAdmin.emphasis.service")
 
 const stripLeadingMarkdownFence = (raw) => {
   let s = String(raw || '').trim()
@@ -76,7 +78,7 @@ function getGenerationLimits() {
   const wordBand = fast
     ? 'Target **480–720 words** of substantive prose (hero labels count lightly). No filler; tight paragraphs.'
     : 'Target **650–950 words** — solid SEO depth without very long pieces (hero labels count lightly). Avoid filler.'
-  return { maxTokens, wordBand }
+  return { maxTokens, wordBand, minWords: fast ? 400 : 500 }
 }
 
 function countWordsFromHtml(html) {
@@ -90,10 +92,81 @@ function countWordsFromHtml(html) {
   return text.split(/\s+/).filter(Boolean).length
 }
 
+function parseClaudeBlogPayload(fullResponse, topic, kw) {
+  const splitParts = String(fullResponse || '').split('---META---')
+  const blogContentRaw = (splitParts[0] || '').trim()
+  const metaSection = splitParts[1]
+  const blogContent = stripLeadingMarkdownFence(blogContentRaw)
+
+  let metaTitle = topic
+  let metaDescription = `Read our comprehensive guide about ${topic}`
+  let suggestedTags = kw.slice(0, 5)
+  let excerpt = ''
+
+  if (metaSection) {
+    const metaLines = metaSection.trim().split('\n')
+    metaLines.forEach((line) => {
+      if (line.startsWith('META_TITLE:')) metaTitle = line.replace('META_TITLE:', '').trim()
+      if (line.startsWith('META_DESCRIPTION:')) metaDescription = line.replace('META_DESCRIPTION:', '').trim()
+      if (line.startsWith('SUGGESTED_TAGS:')) {
+        suggestedTags = line.replace('SUGGESTED_TAGS:', '').trim().split(',').map((t) => t.trim())
+      }
+      if (line.startsWith('EXCERPT:')) excerpt = line.replace('EXCERPT:', '').trim()
+    })
+  }
+
+  const titleMatch = blogContent.match(/<h1[^>]*>(.*?)<\/h1>/i)
+  const extractedTitle = titleMatch ? titleMatch[1].replace(/<[^>]*>/g, '').trim() : topic
+
+  return {
+    blogContent,
+    extractedTitle,
+    metaTitle,
+    metaDescription,
+    suggestedTags,
+    excerpt,
+  }
+}
+
+function finishVerifiedDraft(parsed, { topic, tone, model, kw, minWords }) {
+  const trimmed = String(parsed.blogContent || '').trim()
+  const wordCount = countWordsFromHtml(trimmed)
+  const normalized = normalizeBlogFields({
+    title: parsed.extractedTitle,
+    content: injectBlogBrandLogos(injectBlogEmphasis(trimmed)),
+    metaTitle: parsed.metaTitle,
+    metaDescription: parsed.metaDescription,
+    excerpt: parsed.excerpt,
+  })
+  const formatCheck = validateBlogFormat({
+    title: normalized.title,
+    content: normalized.content,
+    metaTitle: normalized.metaTitle,
+    metaDescription: normalized.metaDescription,
+    excerpt: normalized.excerpt,
+  })
+  const qualityCheck = verifyGeneratedArticle(normalized.content, { minWords, minH2: 3 })
+  const verified = Boolean(qualityCheck.ok && formatCheck.ok)
+
+  return {
+    normalized,
+    wordCount: qualityCheck.wordCount || wordCount,
+    formatCheck,
+    qualityCheck,
+    verified,
+    readingTime: Math.max(1, Math.ceil((qualityCheck.wordCount || wordCount) / 200)),
+    keywords: [...new Set([...kw, ...parsed.suggestedTags])].slice(0, 10),
+    tags: parsed.suggestedTags,
+    topic,
+    tone,
+    model,
+  }
+}
+
 const generateBlog = async ({ topic, keywords = [], tone = 'professional', customInstructions = '' }, apiKey) => {
   const anthropic = getClient(apiKey)
   const kw = normalizeKeywords(keywords)
-  const { maxTokens, wordBand } = getGenerationLimits()
+  const { maxTokens, wordBand, minWords } = getGenerationLimits()
 
   const keywordStr = kw.length > 0 ? `Target keywords: ${kw.join(', ')}` : ''
   const tonePrompt = TONE_PROMPTS[tone] || TONE_PROMPTS.professional
@@ -122,6 +195,8 @@ Writing rules:
 10) If live context is provided, use it only for facts and framing, then rewrite ideas in a distinct voice with unique sentence structure.
 11) Avoid plagiarism by never reproducing trademark taglines, product page copy, or competitor phrasing verbatim, except short quoted text when absolutely necessary.
 12) Produce publish ready content that is meaningfully unique in wording and flow from common web articles on the same topic.
+13) When you mention software vendors (HubSpot, Salesforce, Zoho, Gusto, ADP, Nextiva, RingCentral, Mailchimp, Klaviyo, and similar), use the exact brand name. Do not insert images or logo URLs yourself. The CMS attaches brand logos automatically after generation.
+14) Bold key facts with <strong>: prices, scores, who a tool is best for, and short verdict phrases (under 8 words). Use about 2 to 4 bold phrases per section. Never bold a full paragraph or a full long sentence.
 
 ${wordBand}`
 
@@ -153,80 +228,97 @@ Please provide:
     })
 
     const fullResponse = getMessageText(message) || ''
-    const splitParts = fullResponse.split('---META---')
-    const blogContentRaw = (splitParts[0] || '').trim()
-    const metaSection = splitParts[1]
+    const parsed = parseClaudeBlogPayload(fullResponse, topic, kw)
 
-    if (!blogContentRaw) {
+    if (!parsed.blogContent) {
       throw new Error(
         'Claude returned empty content. Check ANTHROPIC_API_KEY, ANTHROPIC_MODEL (must match your Anthropic account), and try a shorter topic.'
       )
     }
 
-    const blogContent = stripLeadingMarkdownFence(blogContentRaw)
+    const draftOpts = { topic, tone, model, kw, minWords }
+    let finished = finishVerifiedDraft(parsed, draftOpts)
+    let usage = message.usage || null
+    let verificationAttempts = 1
 
-    // Parse meta section
-    let metaTitle = topic
-    let metaDescription = `Read our comprehensive guide about ${topic}`
-    let suggestedTags = kw.slice(0, 5)
-    let excerpt = ''
+    if (!finished.verified) {
+      const issues = [
+        ...(finished.qualityCheck?.issues || []),
+        ...(finished.formatCheck?.checks || [])
+          .filter((check) => check.status === 'error')
+          .map((check) => `${check.label}: ${check.detail}`),
+      ]
+      const repairPrompt = `The previous draft failed verification. Rewrite the FULL article as HTML plus a ---META--- block.
 
-    if (metaSection) {
-      const metaLines = metaSection.trim().split('\n')
-      metaLines.forEach((line) => {
-        if (line.startsWith('META_TITLE:')) metaTitle = line.replace('META_TITLE:', '').trim()
-        if (line.startsWith('META_DESCRIPTION:')) metaDescription = line.replace('META_DESCRIPTION:', '').trim()
-        if (line.startsWith('SUGGESTED_TAGS:')) {
-          suggestedTags = line.replace('SUGGESTED_TAGS:', '').trim().split(',').map((t) => t.trim())
-        }
-        if (line.startsWith('EXCERPT:')) excerpt = line.replace('EXCERPT:', '').trim()
+Fix every issue:
+${issues.map((issue) => `- ${issue}`).join('\n')}
+
+Keep exact vendor brand names (HubSpot, Salesforce, Zoho, Gusto, ADP, Nextiva, OnPay, Rippling, BambooHR, Deel, Remote, Papaya Global, Buddy Punch, and similar). Do not insert logo images yourself.
+
+Previous draft HTML:
+${parsed.blogContent}
+
+${userPrompt}`
+
+      const repairMessage = await anthropic.messages.create({
+        model,
+        max_tokens: maxTokens,
+        messages: [{ role: 'user', content: repairPrompt }],
+        system: systemPrompt,
       })
+      verificationAttempts = 2
+      usage = {
+        input_tokens: (usage?.input_tokens || 0) + (repairMessage.usage?.input_tokens || 0),
+        output_tokens: (usage?.output_tokens || 0) + (repairMessage.usage?.output_tokens || 0),
+      }
+
+      const repaired = parseClaudeBlogPayload(getMessageText(repairMessage) || '', topic, kw)
+      if (!repaired.blogContent) {
+        const err = new Error('Generated content failed verification and the rewrite returned empty HTML.')
+        err.code = 'UNVERIFIED_CONTENT'
+        throw err
+      }
+      finished = finishVerifiedDraft(repaired, draftOpts)
     }
 
-    // Extract title from H1 tag
-    const titleMatch = blogContent.match(/<h1[^>]*>(.*?)<\/h1>/i)
-    const extractedTitle = titleMatch ? titleMatch[1].replace(/<[^>]*>/g, '').trim() : topic
-
-    const trimmed = blogContent.trim()
-    const wordCount = countWordsFromHtml(trimmed)
-
-    const normalized = normalizeBlogFields({
-      title: extractedTitle,
-      content: trimmed,
-      metaTitle,
-      metaDescription,
-      excerpt,
-    })
-
-    const readingTime = Math.max(1, Math.ceil(wordCount / 200))
-    const formatCheck = validateBlogFormat({
-      title: normalized.title,
-      content: normalized.content,
-      metaTitle: normalized.metaTitle,
-      metaDescription: normalized.metaDescription,
-      excerpt: normalized.excerpt,
-    })
+    if (!finished.verified) {
+      const issues = [
+        ...(finished.qualityCheck?.issues || []),
+        ...(finished.formatCheck?.checks || [])
+          .filter((check) => check.status === 'error')
+          .map((check) => `${check.label}: ${check.detail}`),
+      ]
+      const err = new Error(
+        `Generated content failed verification after ${verificationAttempts} attempt(s): ${issues.join('; ') || 'unknown issues'}`
+      )
+      err.code = 'UNVERIFIED_CONTENT'
+      throw err
+    }
 
     return {
       success: true,
       data: {
-        title: normalized.title,
-        content: normalized.content,
-        metaTitle: normalized.metaTitle,
-        metaDescription: normalized.metaDescription,
-        keywords: [...new Set([...kw, ...suggestedTags])].slice(0, 10),
-        tags: suggestedTags,
-        excerpt: normalized.excerpt,
-        topic,
-        tone,
-        model,
-        wordCount,
-        readingTime,
-        formatCheck,
-        usage: message.usage,
+        title: finished.normalized.title,
+        content: finished.normalized.content,
+        metaTitle: finished.normalized.metaTitle,
+        metaDescription: finished.normalized.metaDescription,
+        keywords: finished.keywords,
+        tags: finished.tags,
+        excerpt: finished.normalized.excerpt,
+        topic: finished.topic,
+        tone: finished.tone,
+        model: finished.model,
+        wordCount: finished.wordCount,
+        readingTime: finished.readingTime,
+        formatCheck: finished.formatCheck,
+        qualityCheck: finished.qualityCheck,
+        verified: true,
+        verificationAttempts,
+        usage,
       },
     }
   } catch (error) {
+    if (error.code === 'UNVERIFIED_CONTENT') throw error
     const status = error.status ?? error.statusCode ?? error?.error?.status
     const detail = formatAnthropicError(error)
     console.error('Claude API error:', { status, detail, raw: error?.body || error?.message })

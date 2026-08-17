@@ -41,8 +41,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        serif: ['DM Serif Display', 'Georgia', 'serif'],
-        sans: ['DM Sans', 'system-ui', 'sans-serif'],
+        serif: ['var(--font-serif)', 'Source Serif 4', 'Georgia', 'serif'],
+        sans: ['var(--font-sans)', 'Plus Jakarta Sans', 'system-ui', 'sans-serif'],
       },
       typography: {
         DEFAULT: {
@@ -53,7 +53,7 @@ const config: Config = {
             color: '#374151',
             '> :first-child': { marginTop: '0' },
             h1: {
-              fontFamily: 'DM Serif Display, Georgia, serif',
+              fontFamily: 'var(--font-serif), Georgia, serif',
               color: '#0f1f3d',
               fontWeight: '800',
               fontSize: '2rem',
@@ -62,7 +62,7 @@ const config: Config = {
               lineHeight: '1.2',
             },
             h2: {
-              fontFamily: 'DM Serif Display, Georgia, serif',
+              fontFamily: 'var(--font-serif), Georgia, serif',
               color: '#0f1f3d',
               fontWeight: '700',
               fontSize: '1.5rem',
@@ -74,7 +74,7 @@ const config: Config = {
               borderLeftColor: '#f58220',
             },
             h3: {
-              fontFamily: 'DM Serif Display, Georgia, serif',
+              fontFamily: 'var(--font-serif), Georgia, serif',
               color: '#0f1f3d',
               fontWeight: '600',
               fontSize: '1.25rem',

@@ -63,7 +63,7 @@ function FaqItemComponent({ question, answer, index }: FaqItem & { index: number
 
 export function FaqAccordion({ items }: FaqAccordionProps) {
   return (
-    <div className="space-y-3 px-5 pb-6 pt-2 sm:px-6 sm:pb-7">
+    <div className="space-y-3">
       {items.map((item, idx) => (
         <FaqItemComponent key={idx} {...item} index={idx} />
       ))}

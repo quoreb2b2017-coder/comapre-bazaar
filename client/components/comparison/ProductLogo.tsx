@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { useMemo, useState } from 'react'
 import type { Product } from '@/types'
 import { cn } from '@/lib/utils'
-import { getVendorLogoSources } from '@/lib/vendorLogo'
+import { getVendorLogoSources, isRemoteIconUrl } from '@/lib/vendorLogo'
 
 type ProductLogoSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'table'
 
@@ -84,6 +84,7 @@ export function ProductLogo({
         alt=""
         width={spec.px}
         height={spec.px}
+        unoptimized={isRemoteIconUrl(src)}
         className={cn('h-full w-full object-contain', spec.padding)}
         onError={() => setSourceIndex((index) => index + 1)}
       />

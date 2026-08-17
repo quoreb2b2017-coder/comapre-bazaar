@@ -145,7 +145,7 @@ const api = axios.create({
 })
 
 /** Use for `/generate-blog` — shorter drafts usually finish well under this (raise if you tune prompts for very long posts). */
-export const API_TIMEOUT_LONG_MS = 180000
+export const API_TIMEOUT_LONG_MS = 300000
 
 api.interceptors.request.use(prepareRequest, (error) => Promise.reject(error))
 

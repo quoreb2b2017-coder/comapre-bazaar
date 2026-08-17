@@ -157,33 +157,36 @@ export function NewsletterSubscribeForm({
 
   return (
     <section className={shell}>
-      <p className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${kickerCls}`}>Subscribe</p>
-      <h3 className={`${compact ? 'text-xl' : 'text-2xl'} mt-2 font-serif tracking-tight text-navy`}>
+      <p className={`text-[10px] font-semibold uppercase tracking-[0.18em] ${kickerCls}`}>Subscribe</p>
+      <h3 className={`${compact ? 'text-lg' : 'text-xl sm:text-2xl'} mt-1.5 font-serif tracking-tight text-navy`}>
         New guides in your inbox
       </h3>
-      <p className={`${compact ? 'text-[13px]' : 'text-[15px]'} mt-2 max-w-[52ch] leading-relaxed text-gray-600`}>
+      <p className={`${compact ? 'text-[13px]' : 'text-[14px]'} mt-1.5 leading-relaxed text-slate-600`}>
         One signup: each new article lands in your email when we publish.
       </p>
-      <form onSubmit={submit} className={`mt-4 flex flex-col gap-3 ${editorial && !compact ? 'sm:max-w-md' : ''}`}>
+      <form
+        onSubmit={submit}
+        className={`mt-4 flex flex-col gap-2 sm:flex-row sm:items-stretch ${editorial && !compact ? 'sm:max-w-xl' : ''}`}
+      >
         <input
           type="email"
           name="subscribeEmail"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Your email"
-          className={`h-11 w-full min-w-0 border border-gray-300 bg-white px-4 text-sm outline-none ring-brand/30 transition focus:border-brand focus:ring ${
-            editorial ? 'rounded-sm' : 'rounded-xl'
+          className={`h-11 min-w-0 flex-1 border border-slate-300 bg-white px-3.5 text-sm outline-none transition focus:border-[#0B2A6F] focus:ring-2 focus:ring-[#0B2A6F]/15 ${
+            editorial ? 'rounded-md' : 'rounded-xl'
           }`}
           required
         />
         <button
           type="submit"
           disabled={loading || isSubscribed}
-          className={`h-11 w-full px-5 text-sm font-semibold text-white transition hover:bg-brand-hover disabled:opacity-60 ${
-            editorial ? 'rounded-sm bg-brand' : 'rounded-xl bg-brand'
+          className={`h-11 shrink-0 px-6 text-sm font-semibold text-white transition hover:bg-[#0a245f] disabled:opacity-60 ${
+            editorial ? 'rounded-md bg-[#0B2A6F] sm:min-w-[128px]' : 'rounded-xl bg-brand'
           }`}
         >
-          {loading ? 'Saving...' : isSubscribed ? 'Already Subscribed' : 'Subscribe'}
+          {loading ? 'Saving...' : isSubscribed ? 'Subscribed' : 'Subscribe'}
         </button>
       </form>
       {msg ? (
