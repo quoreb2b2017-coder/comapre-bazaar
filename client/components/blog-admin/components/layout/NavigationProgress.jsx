@@ -16,7 +16,7 @@ export function NavigationProgress() {
       return
     }
     setActive(true)
-    const id = window.setTimeout(() => setActive(false), 420)
+    const id = window.setTimeout(() => setActive(false), 220)
     return () => window.clearTimeout(id)
   }, [key])
 

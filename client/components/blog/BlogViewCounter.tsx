@@ -12,8 +12,11 @@ export function BlogViewCounter({ slug, initialCount }: { slug: string; initialC
 
   useEffect(() => {
     let cancelled = false
-    const path = `/api/v1/blog-admin/public/blogs/${encodeURIComponent(slug)}/view`
-    fetch(path, { method: 'POST', credentials: 'same-origin', cache: 'no-store' })
+    const path =
+      process.env.NODE_ENV === 'development'
+        ? `${String(process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:5000').replace(/\/$/, '')}/api/v1/blog-admin/public/blogs/${encodeURIComponent(slug)}/view`
+        : `/api/v1/blog-admin/public/blogs/${encodeURIComponent(slug)}/view`
+    fetch(path, { method: 'POST', credentials: 'omit', cache: 'no-store' })
       .then((r) => r.json())
       .then((j) => {
         if (!cancelled && j?.success && typeof j.viewCount === 'number') {

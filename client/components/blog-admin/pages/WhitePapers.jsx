@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useOutletContext } from 'react-router-dom'
-import { Plus, ExternalLink, Trash2, Pencil, Download, ChevronLeft, ChevronRight, Users } from 'lucide-react'
+import { Plus, ExternalLink, Trash2, Pencil, Download, ChevronLeft, ChevronRight, Users, Link2 } from 'lucide-react'
 import api from '../utils/api'
 import { WhitePaperUploadDrawer } from '../components/whitepapers/WhitePaperUploadDrawer'
 import { WhitePaperLeadsTable } from '../components/whitepapers/WhitePaperLeadsTable'
@@ -21,6 +21,7 @@ export const WhitePapers = () => {
   const [editingPaper, setEditingPaper] = useState(null)
   const [leadsPaper, setLeadsPaper] = useState(null)
   const [leads, setLeads] = useState([])
+  const [copiedSlug, setCopiedSlug] = useState('')
 
   const loadStats = async () => {
     try {
@@ -92,6 +93,18 @@ export const WhitePapers = () => {
     } catch (e) {
       toast.error(e.message || 'Failed to load leads')
       setLeads([])
+    }
+  }
+
+  const copyShareLink = async (paper) => {
+    const url = `https://www.compare-bazaar.com/resources/whitepapers/${paper.slug}`
+    try {
+      await navigator.clipboard.writeText(url)
+      setCopiedSlug(paper.slug)
+      toast.success('Share link copied')
+      window.setTimeout(() => setCopiedSlug(''), 1800)
+    } catch {
+      toast.error('Could not copy link')
     }
   }
 
@@ -178,14 +191,25 @@ export const WhitePapers = () => {
                           <Download className="h-3.5 w-3.5" />
                         </button>
                         {p.status === 'published' && p.slug ? (
-                          <a
-                            href={`/resources/whitepapers/${p.slug}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="btn-secondary text-xs px-2 py-1"
-                          >
-                            <ExternalLink className="h-3.5 w-3.5" />
-                          </a>
+                          <>
+                            <button
+                              type="button"
+                              className="btn-secondary text-xs px-2 py-1"
+                              title="Copy LinkedIn / Facebook / Instagram share link"
+                              onClick={() => copyShareLink(p)}
+                            >
+                              <Link2 className="h-3.5 w-3.5" />
+                              {copiedSlug === p.slug ? 'Copied' : null}
+                            </button>
+                            <a
+                              href={`https://www.compare-bazaar.com/resources/whitepapers/${p.slug}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="btn-secondary text-xs px-2 py-1"
+                            >
+                              <ExternalLink className="h-3.5 w-3.5" />
+                            </a>
+                          </>
                         ) : null}
                         <button
                           type="button"

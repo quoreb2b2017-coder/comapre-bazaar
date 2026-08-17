@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useOutletContext, useNavigate } from 'react-router-dom'
 import { Zap, Save, Eye, Edit, X, Loader2, Briefcase, MessageCircle, Target, RefreshCw } from 'lucide-react'
 import api, { API_TIMEOUT_LONG_MS } from '../utils/api'
+import { BlogCoverPicker } from '../components/blogs/BlogCoverPicker'
 
 const TONES = [
   { value: 'professional', label: 'Professional', icon: Briefcase, hint: 'Formal' },
@@ -21,6 +22,7 @@ export const GenerateBlog = () => {
   const [savedBlogId, setSavedBlogId] = useState(null)
   const [saving, setSaving] = useState(false)
   const [previewMode, setPreviewMode] = useState(false)
+  const [cover, setCover] = useState({ coverImageUrl: '', coverSource: 'unsplash', coverSearchQuery: '' })
 
   const addKeyword = (e) => {
     if (e.key === 'Enter' || e.key === ',') {
@@ -46,10 +48,17 @@ export const GenerateBlog = () => {
     try {
       const res = await api.post(
         '/generate-blog',
-        { ...form, keywords, saveAsDraft: true, existingBlogId: savedBlogId || undefined },
+        { ...form, keywords, saveAsDraft: true, existingBlogId: savedBlogId || undefined, ...cover },
         { timeout: API_TIMEOUT_LONG_MS }
       )
       setGenerated(res.data)
+      if (res.data?.coverImageUrl) {
+        setCover((prev) => ({
+          ...prev,
+          coverImageUrl: res.data.coverImageUrl,
+          coverSearchQuery: res.data.coverSearchQuery || prev.coverSearchQuery,
+        }))
+      }
       const draftId = res.data?.savedBlog?._id
       if (draftId) {
         setSavedBlogId(draftId)
@@ -84,6 +93,8 @@ export const GenerateBlog = () => {
         excerpt: generated.excerpt,
         topic: generated.topic,
         tone: generated.tone,
+        coverImageUrl: cover.coverImageUrl || generated.coverImageUrl,
+        coverSearchQuery: cover.coverSearchQuery,
       })
       toast.success(res.message)
       navigate(`/blogs/${res.data._id}`)
@@ -195,6 +206,19 @@ export const GenerateBlog = () => {
                 placeholder="e.g. Include a comparison table, focus on SMBs…"
                 rows={3}
                 className="input resize-none text-sm"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Cover image</label>
+              <p className="text-xs text-gray-400">Upload your own photo or fetch a matching Unsplash image.</p>
+              <BlogCoverPicker
+                topic={form.topic}
+                title={form.topic}
+                keywords={keywords}
+                toast={toast}
+                coverImageUrl={cover.coverImageUrl}
+                onChange={setCover}
               />
             </div>
 

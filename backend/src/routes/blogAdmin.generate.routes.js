@@ -64,6 +64,9 @@ router.post('/', protect, async (req, res) => {
       customInstructions = '',
       saveAsDraft = true,
       existingBlogId,
+      coverImageUrl: providedCoverUrl,
+      coverSource,
+      coverSearchQuery: providedCoverQuery,
     } = req.body
 
     if (!topic?.trim()) {
@@ -97,14 +100,26 @@ router.post('/', protect, async (req, res) => {
       })
     }
 
-    const coverResult = await resolveBlogCoverImageUrl({
-      topic: data.topic || topic,
-      title: data.title,
-      tags: data.tags,
-      keywords: data.keywords,
-    })
-    const coverImageUrl = coverResult?.coverImageUrl || null
-    const coverSearchQuery = coverResult?.searchQuery || null
+    const providedCover = String(providedCoverUrl || '').trim()
+    const source = String(coverSource || '').trim() === 'upload' ? 'upload' : 'unsplash'
+    let coverImageUrl = providedCover || null
+    let coverSearchQuery = String(providedCoverQuery || '').trim() || null
+
+    if (source === 'upload') {
+      if (!coverImageUrl && existingBlogId) {
+        const existing = await Blog.findById(existingBlogId).select('coverImageUrl')
+        coverImageUrl = existing?.coverImageUrl || null
+      }
+    } else if (!coverImageUrl) {
+      const coverResult = await resolveBlogCoverImageUrl({
+        topic: data.topic || topic,
+        title: data.title,
+        tags: data.tags,
+        keywords: data.keywords,
+      })
+      coverImageUrl = coverResult?.coverImageUrl || null
+      coverSearchQuery = coverResult?.searchQuery || null
+    }
 
     let savedBlog = null
     if (saveAsDraft !== false) {
@@ -164,7 +179,7 @@ router.post('/', protect, async (req, res) => {
 // @route   POST /api/generate-blog/save
 router.post('/save', protect, async (req, res) => {
   try {
-    const { title, content, metaTitle, metaDescription, keywords, tags, excerpt, topic, tone } = req.body
+    const { title, content, metaTitle, metaDescription, keywords, tags, excerpt, topic, tone, coverImageUrl, coverSearchQuery } = req.body
 
     if (!title || !content) {
       return res.status(400).json({ success: false, message: 'Title and content are required' })
@@ -175,6 +190,8 @@ router.post('/save', protect, async (req, res) => {
       keywords: keywords || [], tags: tags || [],
       excerpt, topic, tone: tone || 'professional',
       status: 'pending',
+      ...(coverImageUrl ? { coverImageUrl } : {}),
+      ...(coverSearchQuery ? { coverSearchQuery } : {}),
     })
 
     try {

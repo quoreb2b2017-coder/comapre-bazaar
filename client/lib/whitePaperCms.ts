@@ -44,6 +44,13 @@ export type WhitePaperPublic = {
 
 const REVALIDATE = 120
 
+/** Build-time only — skip in `next dev` so clicking a slug does not wait on the full library first. */
+export async function generateWhitePaperStaticParams(): Promise<{ slug: string }[]> {
+  if (process.env.NODE_ENV !== 'production') return []
+  const papers = await fetchPublishedWhitePapers()
+  return papers.map((p) => ({ slug: p.slug }))
+}
+
 export async function fetchPublishedWhitePapers(): Promise<WhitePaperPublic[]> {
   const url = `${whitePaperBackendBase()}/api/v1/blog-admin/public/whitepapers`
   try {

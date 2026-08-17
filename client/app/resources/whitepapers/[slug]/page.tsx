@@ -10,19 +10,21 @@ import {
   whitePaperOfferedBy,
   whitePaperOgImageUrl,
 } from '@/lib/whitePaperMeta'
-import { fetchPublishedWhitePapers, fetchWhitePaperBySlug } from '@/lib/whitePaperCms'
+import { fetchWhitePaperBySlug } from '@/lib/whitePaperCms.server'
+import { generateWhitePaperStaticParams } from '@/lib/whitePaperCms'
 import { WhitePaperInsideExplorer } from '@/components/whitepaper/WhitePaperInsideExplorer'
 import { WhitePaperMetaBadges } from '@/components/whitepaper/WhitePaperMetaBadges'
-import { whitePaperBackToLibraryLabel, whitePaperRequestLabel } from '@/lib/whitePaperTaxonomy'
+import { WhitePaperShareBar } from '@/components/whitepaper/WhitePaperShareBar'
+import { whitePaperBackToLibraryLabel, whitePaperRequestLabel, whitePaperResourceLabel } from '@/lib/whitePaperTaxonomy'
 import { whitePaperResourceType } from '@/lib/whitePaperResourceType'
 
 export const revalidate = 120
+export const dynamicParams = true
 
 type PageProps = { params: { slug: string } }
 
-export async function generateStaticParams() {
-  const papers = await fetchPublishedWhitePapers()
-  return papers.map((p) => ({ slug: p.slug }))
+export function generateStaticParams() {
+  return generateWhitePaperStaticParams()
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -31,6 +33,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const title = whitePaperDisplayTitle(paper.title, paper.metaTitle || paper.seoTitle || paper.title)
   const description = paper.metaDescription || paper.description
+  const resourceLabel = whitePaperResourceLabel(whitePaperResourceType(paper.metadata))
 
   return buildWhitePaperShareMetadata({
     title: paper.ogTitle || title,
@@ -38,7 +41,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     canonicalPath: `/resources/whitepapers/${paper.slug}`,
     publishedAt: paper.publishedAt,
     keywords: paper.metaKeywords,
-    ogImageUrl: whitePaperOgImageUrl(paper.thumbnailUrl),
+    ogImageUrl: whitePaperOgImageUrl(paper.thumbnailUrl, paper.slug),
+    resourceLabel,
   })
 }
 
@@ -50,7 +54,7 @@ export default async function WhitepaperDetailPage({ params }: PageProps) {
   const offeredBy = whitePaperOfferedBy(paper.metadata)
   const resourceType = whitePaperResourceType(paper.metadata)
   const pageUrl = `${SITE_URL}/resources/whitepapers/${paper.slug}`
-  const coverImage = whitePaperOgImageUrl(paper.thumbnailUrl)
+  const coverImage = whitePaperOgImageUrl(paper.thumbnailUrl, paper.slug)
 
   const fullDescription = whitePaperFullDescription({
     insideOverview: paper.insideOverview,
@@ -160,6 +164,8 @@ export default async function WhitepaperDetailPage({ params }: PageProps) {
             >
               Download now
             </Link>
+
+            <WhitePaperShareBar slug={paper.slug} title={headline} resourceType={resourceType} />
           </div>
         </div>
 

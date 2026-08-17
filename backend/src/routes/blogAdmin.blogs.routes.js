@@ -10,7 +10,34 @@ const { sendBlogApprovalNotification, sendPublishedNotification, editMessage } =
 const { resolveTelegramCredentials } = require("../services/blogAdmin.pendingNotify.service");
 const BlogSubscriber = require("../models/blogSubscriber.model");
 const { sendNewBlogPublishedEmail } = require("../services/blogAdmin.email.service");
+const imageUpload = require("../middlewares/upload.middleware");
+const { uploadBufferToCloudinary } = require("../utils/cloudinary-upload");
 const axios = require('axios')
+
+function runImageUpload(req, res, next) {
+  imageUpload.single('image')(req, res, (err) => {
+    if (err) {
+      return res.status(400).json({ success: false, message: err.message || 'Image upload failed' })
+    }
+    next()
+  })
+}
+
+async function uploadBlogCoverFile(file) {
+  if (!file?.buffer) {
+    const err = new Error('Image file is required')
+    err.status = 400
+    throw err
+  }
+  const result = await uploadBufferToCloudinary(file.buffer, { folder: 'cc-final/blog-covers' })
+  const coverImageUrl = result?.secure_url || ''
+  if (!coverImageUrl) {
+    const err = new Error('Image upload did not return a URL')
+    err.status = 502
+    throw err
+  }
+  return { coverImageUrl, publicId: result.public_id || '' }
+}
 
 // Helper to get settings
 const getSetting = async (key) => {
@@ -104,6 +131,56 @@ router.get('/stats', protect, async (req, res) => {
   }
 })
 
+// @route   POST /api/blogs/cover-upload — manual cover upload (no blog id yet)
+router.post('/cover-upload', protect, runImageUpload, async (req, res) => {
+  try {
+    const uploaded = await uploadBlogCoverFile(req.file)
+    res.status(201).json({
+      success: true,
+      coverImageUrl: uploaded.coverImageUrl,
+      data: uploaded,
+      message: 'Cover image uploaded',
+    })
+  } catch (error) {
+    res.status(error.status || 500).json({ success: false, message: error.message })
+  }
+})
+
+// @route   POST /api/blogs/cover-unsplash — preview/fetch Unsplash cover without saving
+router.post('/cover-unsplash', protect, async (req, res) => {
+  try {
+    const { topic, title, tags = [], keywords = [], excludeCoverUrl } = req.body || {}
+    if (!String(topic || title || '').trim()) {
+      return res.status(400).json({ success: false, message: 'Topic is required to search Unsplash' })
+    }
+
+    const coverResult = await resolveBlogCoverImageUrl({
+      topic,
+      title: title || topic,
+      tags,
+      keywords,
+      excludeCoverUrl: excludeCoverUrl || null,
+      preferDifferent: Boolean(excludeCoverUrl),
+    })
+    const coverImageUrl = coverResult?.coverImageUrl || null
+    if (!coverImageUrl) {
+      return res.status(502).json({
+        success: false,
+        message: 'No on-topic image found on Unsplash. Try a clearer topic or upload your own photo.',
+      })
+    }
+
+    res.json({
+      success: true,
+      coverImageUrl,
+      coverSearchQuery: coverResult.searchQuery || null,
+      message: 'Cover image fetched from Unsplash',
+    })
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message })
+  }
+})
+
 // @route   GET /api/blogs/:id
 router.get('/:id', protect, async (req, res) => {
   try {
@@ -125,7 +202,7 @@ router.get('/:id', protect, async (req, res) => {
 // @route   PUT /api/blogs/:id
 router.put('/:id', protect, async (req, res) => {
   try {
-    const allowed = ['title', 'content', 'metaTitle', 'metaDescription', 'keywords', 'tags', 'excerpt', 'status']
+    const allowed = ['title', 'content', 'metaTitle', 'metaDescription', 'keywords', 'tags', 'excerpt', 'status', 'coverImageUrl']
     const updates = {}
     allowed.forEach((field) => { if (req.body[field] !== undefined) updates[field] = req.body[field] })
 
@@ -371,6 +448,33 @@ router.post('/:id/unpublish', protect, async (req, res) => {
     })
   } catch (error) {
     res.status(500).json({ success: false, message: error.message })
+  }
+})
+
+// @route   POST /api/blogs/:id/cover-upload — save uploaded cover on a blog
+router.post('/:id/cover-upload', protect, runImageUpload, async (req, res) => {
+  try {
+    const blogId = String(req.params.id || '').trim()
+    if (!mongoose.Types.ObjectId.isValid(blogId)) {
+      return res.status(400).json({ success: false, message: 'Invalid blog id' })
+    }
+
+    const blog = await Blog.findById(blogId)
+    if (!blog) return res.status(404).json({ success: false, message: 'Blog not found' })
+
+    const uploaded = await uploadBlogCoverFile(req.file)
+    blog.coverImageUrl = uploaded.coverImageUrl
+    blog.coverSearchQuery = ''
+    await blog.save()
+
+    res.json({
+      success: true,
+      coverImageUrl: uploaded.coverImageUrl,
+      data: blog,
+      message: 'Cover image uploaded',
+    })
+  } catch (error) {
+    res.status(error.status || 500).json({ success: false, message: error.message })
   }
 })
 

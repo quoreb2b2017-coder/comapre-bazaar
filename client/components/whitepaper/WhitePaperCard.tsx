@@ -2,9 +2,10 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { whitePaperDisplayTitle, whitePaperDisplayDescription } from '@/lib/whitePaperDisplay'
+import { whitePaperDisplayTitle } from '@/lib/whitePaperDisplay'
 import { WhitePaperMetaBadges } from '@/components/whitepaper/WhitePaperMetaBadges'
 import { whitePaperFreePdfCTA, whitePaperViewLabel } from '@/lib/whitePaperTaxonomy'
+import { WhitePaperShareBar } from '@/components/whitepaper/WhitePaperShareBar'
 import { whitePaperResourceType } from '@/lib/whitePaperResourceType'
 
 import type { WhitePaperPublic } from '@/lib/whitePaperCms'
@@ -17,7 +18,6 @@ type WhitePaperCardProps = {
 export function WhitePaperCard({ paper }: WhitePaperCardProps) {
   const detailHref = `/resources/whitepapers/${paper.slug}`
   const title = whitePaperDisplayTitle(paper.title, paper.seoTitle)
-  const description = whitePaperDisplayDescription(paper)
   const resourceType = whitePaperResourceType(paper.metadata)
 
   return (
@@ -58,10 +58,6 @@ export function WhitePaperCard({ paper }: WhitePaperCardProps) {
           </Link>
         </h2>
 
-        {description ? (
-          <p className="mt-1.5 line-clamp-2 text-[12px] leading-relaxed text-gray-500">{description}</p>
-        ) : null}
-
         <div className="mt-3 flex items-center justify-between gap-2">
           <Link
             href={detailHref}
@@ -76,6 +72,8 @@ export function WhitePaperCard({ paper }: WhitePaperCardProps) {
             {whitePaperFreePdfCTA(resourceType)}
           </Link>
         </div>
+
+        <WhitePaperShareBar slug={paper.slug} title={title} resourceType={resourceType} compact />
       </div>
     </article>
   )

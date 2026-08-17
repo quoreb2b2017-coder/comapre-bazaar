@@ -108,9 +108,22 @@ export function whitePaperReturnToItemLabel(type: WhitePaperResourceType): strin
   return `Return to ${whitePaperResourceLabelLower(type)}`
 }
 
+export function whitePaperShareHeading(type: WhitePaperResourceType): string {
+  return `Share this ${whitePaperResourceLabelLower(type)}`
+}
+
+export function whitePaperOgCtaLabel(type: WhitePaperResourceType): string {
+  if (type === 'webinar') return 'Watch free webinar'
+  return 'Download free PDF'
+}
+
 export function whitePaperFreePdfCTA(type: WhitePaperResourceType): string {
   if (type === 'webinar') return 'Free access →'
   return 'Free PDF →'
+}
+
+export function whitePaperOverviewCtaLabel(type: WhitePaperResourceType): string {
+  return `${whitePaperResourceLabel(type)} overview`
 }
 
 export function normalizeWhitePaperVerticalSlug(value?: string | null): string {

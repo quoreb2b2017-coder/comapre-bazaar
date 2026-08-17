@@ -151,6 +151,7 @@ export function buildWhitePaperShareMetadata(opts: {
   keywords?: string[]
   authorName?: string
   ogImageUrl?: string
+  resourceLabel?: string
 }): Metadata {
   const path = opts.canonicalPath.startsWith('/') ? opts.canonicalPath : `/${opts.canonicalPath}`
   const url = `${SITE_URL}${path}`
@@ -164,6 +165,14 @@ export function buildWhitePaperShareMetadata(opts: {
   const absoluteTitle = opts.title.includes('| Compare Bazaar')
     ? opts.title
     : `${opts.title} | Compare Bazaar`
+
+  const shareImage = {
+    url: imageUrl,
+    width: 1200,
+    height: 630,
+    alt: `${opts.title} — Compare Bazaar ${opts.resourceLabel || 'resource'}`,
+    type: imageUrl.includes('opengraph-image') ? 'image/png' : 'image/jpeg',
+  }
 
   return {
     title: { absolute: absoluteTitle },
@@ -181,7 +190,7 @@ export function buildWhitePaperShareMetadata(opts: {
       publishedTime: pub,
       authors: [author],
       tags: opts.keywords,
-      images: [{ url: imageUrl, alt: `${opts.title} — Compare Bazaar research report` }],
+      images: [shareImage],
     },
     twitter: {
       card: 'summary_large_image',

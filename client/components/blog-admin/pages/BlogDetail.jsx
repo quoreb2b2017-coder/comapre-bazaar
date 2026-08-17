@@ -462,6 +462,10 @@ export const BlogDetail = () => {
           <BlogCoverPanel
             blogId={blog._id}
             coverImageUrl={blog.coverImageUrl}
+            topic={blog.topic}
+            title={blog.title}
+            tags={blog.tags}
+            keywords={blog.keywords}
             toast={toast}
             onUpdated={(newUrl) => setBlog((prev) => (prev ? { ...prev, coverImageUrl: newUrl } : prev))}
           />

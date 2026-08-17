@@ -76,6 +76,10 @@ export function siteAnalyticsEndpoint(): string {
       ? String(process.env.NEXT_PUBLIC_SITE_ANALYTICS_URL).replace(/\/$/, '')
       : ''
   if (base) return `${base}/public/site-analytics/event`
+  if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+    const backend = String(process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:5000').replace(/\/$/, '')
+    return `${backend}/api/v1/blog-admin/public/site-analytics/event`
+  }
   if (typeof window !== 'undefined') {
     return `${window.location.origin}/api/v1/blog-admin/public/site-analytics/event`
   }

@@ -10,10 +10,12 @@ import {
 } from '@/lib/whitePaperDisplay'
 import { buildWhitePaperShareMetadata } from '@/lib/seo'
 import { whitePaperOfferedBy, whitePaperOgImageUrl } from '@/lib/whitePaperMeta'
-import { fetchPublishedWhitePapers, fetchWhitePaperBySlug } from '@/lib/whitePaperCms'
+import { fetchWhitePaperBySlug } from '@/lib/whitePaperCms.server'
+import { generateWhitePaperStaticParams } from '@/lib/whitePaperCms'
 import { WhitePaperInsideFullView } from '@/components/whitepaper/WhitePaperInsideFullView'
 import { WhitePaperMetaBadges } from '@/components/whitepaper/WhitePaperMetaBadges'
-import { whitePaperBackToItemLabel } from '@/lib/whitePaperTaxonomy'
+import { whitePaperBackToItemLabel, whitePaperOverviewCtaLabel, whitePaperResourceLabel } from '@/lib/whitePaperTaxonomy'
+import { WhitePaperShareBar } from '@/components/whitepaper/WhitePaperShareBar'
 import { whitePaperResourceType } from '@/lib/whitePaperResourceType'
 
 export const revalidate = 120
@@ -21,9 +23,8 @@ export const dynamicParams = true
 
 type PageProps = { params: { slug: string } }
 
-export async function generateStaticParams() {
-  const papers = await fetchPublishedWhitePapers()
-  return papers.map((p) => ({ slug: p.slug }))
+export function generateStaticParams() {
+  return generateWhitePaperStaticParams()
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -37,7 +38,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     canonicalPath: `/resources/whitepapers/${paper.slug}/description`,
     publishedAt: paper.publishedAt,
     keywords: paper.metaKeywords,
-    ogImageUrl: whitePaperOgImageUrl(paper.thumbnailUrl),
+    ogImageUrl: whitePaperOgImageUrl(paper.thumbnailUrl, paper.slug),
+    resourceLabel: whitePaperResourceLabel(whitePaperResourceType(paper.metadata)),
   })
 }
 
@@ -111,9 +113,11 @@ export default async function WhitepaperDescriptionPage({ params }: PageProps) {
             href={detailHref}
             className="inline-block border border-gray-300 px-6 py-2.5 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-navy transition-colors hover:border-gray-400"
           >
-            Whitepaper overview
+            {whitePaperOverviewCtaLabel(resourceType)}
           </Link>
         </div>
+
+        <WhitePaperShareBar slug={paper.slug} title={headline} resourceType={resourceType} />
       </div>
     </main>
   )

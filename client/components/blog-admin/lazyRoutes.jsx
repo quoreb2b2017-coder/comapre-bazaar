@@ -59,3 +59,22 @@ export const ServicePages = lazy(() =>
 export const LoginPage = lazy(() =>
   import(/* webpackChunkName: "blog-admin-login" */ './components/auth/LoginPage').then((m) => ({ default: m.LoginPage })),
 )
+
+/** Warm admin chunks after first paint so sidebar clicks do not wait on webpack. */
+export function prefetchBlogAdminRoutes() {
+  void import('./pages/Dashboard')
+  void import('./pages/Blogs')
+  void import('./pages/BlogDetail')
+  void import('./pages/GenerateBlog')
+  void import('./pages/Approvals')
+  void import('./pages/Settings')
+  void import('./pages/TrendsAssistant')
+  void import('./pages/Analytics')
+  void import('./pages/SuperAdminGoogleAnalytics')
+  void import('./pages/CookiesReport')
+  void import('./pages/Subscribers')
+  void import('./pages/WhitePapers')
+  void import('./pages/WhitePaperDownloads')
+  void import('./pages/WhitePaperCreate')
+  void import('./pages/ServicePages')
+}

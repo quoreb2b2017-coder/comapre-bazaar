@@ -11,6 +11,7 @@ import { isWorkEmail, WORK_EMAIL_ERROR } from '@/lib/workEmail'
 import { WhitePaperHighlightFormFields } from '@/components/whitepaper/WhitePaperHighlightFormFields'
 import { parseHighlightQuestions, type HighlightQuestion } from '@/lib/highlightQuestions'
 import { WhitePaperInsideExplorer } from '@/components/whitepaper/WhitePaperInsideExplorer'
+import { WhitePaperShareBar } from '@/components/whitepaper/WhitePaperShareBar'
 import {
   whitePaperBackToLibraryLabel,
   whitePaperDownloadFormTitle,
@@ -203,6 +204,7 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
                 {cleanDisplayText(paper.description)}
               </p>
             ) : null}
+            <WhitePaperShareBar slug={paper.slug} title={headline} resourceType={resourceType} compact />
           </div>
 
           {/* Form column */}

@@ -1,15 +1,20 @@
-import { useState } from 'react'
-import { Outlet, useLocation } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Outlet } from 'react-router-dom'
 import { Sidebar } from './Sidebar'
 import { Navbar } from './Navbar'
 import { NavigationProgress } from './NavigationProgress'
 import { useBlogAdminTheme } from '../../hooks/useBlogAdminTheme'
+import { prefetchBlogAdminRoutes } from '../../lazyRoutes'
 
 export const Layout = ({ toast }) => {
-  const location = useLocation()
   const [collapsed, setCollapsed] = useState(false)
   const [darkMode, setDarkMode] = useBlogAdminTheme()
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
+
+  useEffect(() => {
+    const t = window.setTimeout(() => prefetchBlogAdminRoutes(), 200)
+    return () => window.clearTimeout(t)
+  }, [])
 
   return (
     <div className="flex min-h-screen bg-gray-50 dark:bg-gray-950">
@@ -41,10 +46,7 @@ export const Layout = ({ toast }) => {
         />
         <main className="relative flex-1 min-w-0 overflow-x-hidden overflow-y-auto p-4 sm:p-6">
           <NavigationProgress />
-          {/* location.key remounts content per navigation so enter animation + fresh route state */}
-          <div key={location.key} className="route-page-enter">
-            <Outlet context={{ toast }} />
-          </div>
+          <Outlet context={{ toast }} />
         </main>
       </div>
     </div>
