@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { pickTopicCoverUrl, type BlogCoverInput } from '@/lib/blogTopicCovers'
 
 type Props = {
@@ -17,6 +17,11 @@ type Props = {
 export function BlogCoverImage({ src, alt, coverInput, className, fill = true, priority, sizes }: Props) {
   const [currentSrc, setCurrentSrc] = useState(src)
   const [attempt, setAttempt] = useState(0)
+
+  useEffect(() => {
+    setCurrentSrc(src)
+    setAttempt(0)
+  }, [src])
 
   const handleError = useCallback(() => {
     if (attempt >= 2) return

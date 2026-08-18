@@ -44,13 +44,13 @@ const LEGAL = [
 export function SiteFooter({ className = '' }: { className?: string }) {
   return (
     <footer
-      className={`bg-[#0B2A6F] text-white mt-16 border-t-2 border-[#081F52] w-full self-stretch ${className}`}
+      className={`bg-[#0B2A6F] text-white mt-8 border-t-2 border-[#081F52] w-full self-stretch ${className}`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-8 sm:gap-10 mb-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 pb-10">
+        <div className="mb-10 grid grid-cols-2 items-start gap-8 sm:gap-10 lg:grid-cols-5">
           {/* Brand */}
           <div className="col-span-2 lg:col-span-1">
-            <p className="font-serif text-[22px] text-white mb-3 tracking-tight">
+            <p className="-mt-1 mb-4 font-serif text-[22px] leading-none tracking-tight text-white">
               Compare<span className="text-[#F58220]">Bazaar</span>
             </p>
             <p className="text-sm text-white/90 leading-relaxed max-w-xs">
@@ -72,7 +72,7 @@ export function SiteFooter({ className = '' }: { className?: string }) {
 
           {/* Categories */}
           <div>
-            <h5 className="text-xs font-semibold uppercase tracking-widest text-[#F58220] mb-4">
+            <h5 className="mb-4 text-xs font-semibold uppercase leading-none tracking-widest text-[#F58220]">
               Software Categories
             </h5>
             <ul className="space-y-2">
@@ -88,7 +88,7 @@ export function SiteFooter({ className = '' }: { className?: string }) {
 
           {/* Company */}
           <div>
-            <h5 className="text-xs font-semibold uppercase tracking-widest text-[#F58220] mb-4">
+            <h5 className="mb-4 text-xs font-semibold uppercase leading-none tracking-widest text-[#F58220]">
               Company
             </h5>
             <ul className="space-y-2">
@@ -104,7 +104,7 @@ export function SiteFooter({ className = '' }: { className?: string }) {
 
           {/* Resources */}
           <div>
-            <h5 className="text-xs font-semibold uppercase tracking-widest text-[#F58220] mb-4">
+            <h5 className="mb-4 text-xs font-semibold uppercase leading-none tracking-widest text-[#F58220]">
               Resources
             </h5>
             <ul className="space-y-2">
@@ -120,7 +120,7 @@ export function SiteFooter({ className = '' }: { className?: string }) {
 
           {/* Legal */}
           <div>
-            <h5 className="text-xs font-semibold uppercase tracking-widest text-[#F58220] mb-4">
+            <h5 className="mb-4 text-xs font-semibold uppercase leading-none tracking-widest text-[#F58220]">
               Legal
             </h5>
             <ul className="space-y-2">

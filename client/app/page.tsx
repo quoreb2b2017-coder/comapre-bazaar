@@ -3,6 +3,8 @@ import { buildMetadata, buildItemListSchema, buildFaqSchema, SITE_URL } from '@/
 import { HOME_CATEGORIES } from '@/data/homeCategories'
 import { HomeHeroSection } from '@/components/home/HomeHeroSection'
 import { HomePageBody } from '@/components/home/HomePageBody'
+import { HomeBlogSection } from '@/components/home/HomeBlogSection'
+import { HomeSubscribePopup } from '@/components/home/HomeSubscribePopup'
 import { loadHomeBlogPreview } from '@/lib/blogCms'
 
 export const metadata: Metadata = buildMetadata({
@@ -48,7 +50,7 @@ const homeFaqSchema = buildFaqSchema(
 )
 
 export default async function HomePage() {
-  const recentBlogPosts = await loadHomeBlogPreview(3)
+  const recentBlogPosts = await loadHomeBlogPreview(5)
 
   return (
     <>
@@ -64,7 +66,9 @@ export default async function HomePage() {
       ) : null}
 
       <HomeHeroSection />
-      <HomePageBody faqs={FAQS} recentBlogPosts={recentBlogPosts} />
+      <HomeBlogSection posts={recentBlogPosts} />
+      <HomePageBody faqs={FAQS} />
+      <HomeSubscribePopup />
     </>
   )
 }

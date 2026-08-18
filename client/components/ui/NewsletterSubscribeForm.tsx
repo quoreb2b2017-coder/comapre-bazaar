@@ -78,34 +78,35 @@ export function NewsletterSubscribeForm({
 
   if (variant === 'hero') {
     return (
-      <section aria-label="Newsletter signup">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#F58220]">Subscribe</p>
-        <h2 className="mt-1.5 text-[15px] font-semibold leading-snug tracking-tight text-navy sm:text-base">
-          Get software buying guides in your inbox
-        </h2>
-        <p className="mt-1 text-[12px] leading-relaxed text-gray-600">
-          New comparisons and pricing updates — no spam, unsubscribe anytime.
-        </p>
-        <form onSubmit={submit} className="mt-3 flex flex-col gap-2">
+      <div className="mt-4 max-w-lg">
+        <form
+          onSubmit={submit}
+          className="flex items-center gap-1 rounded-full border border-white/20 bg-white/10 p-1 backdrop-blur-sm"
+        >
           <input
             type="email"
             name="subscribeEmail"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="Your email"
-            className="h-10 w-full min-w-0 rounded-lg border border-gray-300 bg-white px-3 text-sm outline-none transition focus:border-[#F58220] focus:ring-2 focus:ring-[#F58220]/20"
+            placeholder="Your work email"
+            className="h-10 min-w-0 flex-1 bg-transparent px-4 text-sm text-white outline-none placeholder:text-white/45"
             required
+            aria-label="Email for newsletter"
           />
           <button
             type="submit"
             disabled={loading || isSubscribed}
-            className="h-10 w-full rounded-lg bg-[#F58220] px-4 text-sm font-semibold text-white transition hover:bg-[#e07418] disabled:opacity-60"
+            className="h-10 shrink-0 rounded-full bg-[#F58220] px-5 text-[13px] font-semibold text-white transition hover:bg-[#e07418] disabled:opacity-60"
           >
-            {loading ? 'Saving...' : isSubscribed ? 'Subscribed' : 'Subscribe'}
+            {loading ? 'Saving...' : isSubscribed ? 'Subscribed' : 'Subscribe now'}
           </button>
         </form>
-        {msg ? <p className={`mt-2 text-sm ${ok ? 'text-emerald-700' : 'text-red-600'}`}>{msg}</p> : null}
-      </section>
+        {msg ? (
+          <p className={`mt-2 text-[12px] ${ok ? 'text-emerald-300' : 'text-red-300'}`}>{msg}</p>
+        ) : (
+          <p className="mt-2 text-[11px] text-white/45">New guides in your inbox. Unsubscribe anytime.</p>
+        )}
+      </div>
     )
   }
 

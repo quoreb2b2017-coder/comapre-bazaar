@@ -28,13 +28,13 @@ function ScoreMeter({ score }: { score: string }) {
   const value = Math.min(5, Math.max(0, parseFloat(score) || 0))
   const pct = (value / 5) * 100
   return (
-    <div className="min-w-[120px]">
-      <div className="mb-1 flex items-baseline gap-1.5">
-        <span className="text-base font-bold text-navy">{score}</span>
-        <span className="text-[11px] text-slate-400">/ 5</span>
+    <div className="min-w-[108px]">
+      <div className="mb-1 flex items-baseline gap-1">
+        <span className="font-serif text-lg leading-none text-navy">{score}</span>
+        <span className="text-[10px] text-slate-400">/ 5</span>
       </div>
-      <div className="h-1.5 overflow-hidden rounded-full bg-slate-100">
-        <div className="h-full rounded-full bg-[#F58220]" style={{ width: `${pct}%` }} />
+      <div className="h-px overflow-hidden bg-slate-200">
+        <div className="h-full bg-[#F58220]" style={{ width: `${pct}%` }} />
       </div>
     </div>
   )
@@ -74,34 +74,34 @@ export function HomeRotatingRankings() {
 
   return (
     <div onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
-      <div className="mb-4 text-center">
-        <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#F58220]">
+      <div className="mb-6 text-center">
+        <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#F58220]">
           2026 rankings
         </p>
-        <h2 className="font-serif text-2xl tracking-tight text-navy sm:text-3xl">{slide.heading}</h2>
-        <p className="mt-1 text-sm text-slate-500">
+        <h2 className="font-serif text-2xl tracking-tight text-navy sm:text-[2rem]">{slide.heading}</h2>
+        <p className="mt-1.5 text-[13px] text-slate-500">
           Expert scores on features, pricing, and ease of use · Updated {slide.lastReviewed}
         </p>
         <Link
           href={slide.canonical}
-          className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-sm font-semibold text-navy hover:border-[#F58220] hover:text-[#F58220]"
+          className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-[13px] font-semibold text-navy shadow-sm hover:border-[#F58220] hover:text-[#F58220]"
         >
-          Full {slide.label} comparison <ArrowRight className="h-4 w-4" />
+          Full {slide.label} comparison <ArrowRight className="h-3.5 w-3.5" />
         </Link>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_20px_50px_-28px_rgba(15,31,61,0.35)]">
-        <div className="flex items-center justify-between bg-[#0B2A6F] px-5 py-3.5">
-          <p className="text-sm font-semibold text-white">Compare Bazaar {slide.label} shortlist</p>
+      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_18px_48px_-28px_rgba(11,42,111,0.35)]">
+        <div className="flex items-center justify-between bg-[#0B2A6F] px-5 py-3">
+          <p className="text-[13px] font-semibold text-white">{slide.label} shortlist</p>
           <p className="text-[11px] text-white/55">{slide.rows.length} platforms ranked</p>
         </div>
 
-        <div className="hidden grid-cols-[52px_minmax(0,1fr)_150px_160px_110px] gap-3 border-b border-slate-100 bg-slate-50 px-5 py-2.5 text-[11px] font-semibold uppercase tracking-wide text-slate-400 md:grid">
-          <span>Rank</span>
+        <div className="hidden grid-cols-[40px_minmax(0,1fr)_120px_140px_auto] gap-4 border-b border-slate-100 bg-slate-50/80 px-5 py-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400 md:grid">
+          <span>#</span>
           <span>Platform</span>
-          <span>Expert score</span>
-          <span>Starting price</span>
-          <span className="text-right">Action</span>
+          <span>Score</span>
+          <span>From</span>
+          <span className="text-right"> </span>
         </div>
 
         {slide.rows.map((product, i) => {
@@ -110,21 +110,21 @@ export function HomeRotatingRankings() {
           return (
             <div
               key={`${slide.canonical}-${product.id}`}
-              className={`grid grid-cols-1 items-center gap-3 border-t border-slate-100 px-5 py-4 first:border-t-0 md:grid-cols-[52px_minmax(0,1fr)_150px_160px_110px] ${
-                isTop ? 'bg-[#FFF8F1]' : 'bg-white hover:bg-slate-50'
+              className={`grid grid-cols-1 items-center gap-3 border-t border-slate-100 px-5 py-3.5 md:grid-cols-[40px_minmax(0,1fr)_120px_140px_auto] md:gap-4 ${
+                isTop ? 'bg-[#FFF8F1]' : 'bg-white hover:bg-slate-50/80'
               }`}
             >
               <div className="flex items-center gap-2">
                 <span
-                  className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold ${
-                    isTop ? 'bg-[#F58220] text-white shadow-[0_6px_14px_-4px_rgba(245,130,32,0.7)]' : 'bg-slate-100 text-navy'
+                  className={`w-8 font-serif text-lg tabular-nums ${
+                    isTop ? 'text-[#F58220]' : 'text-slate-300'
                   }`}
                 >
-                  {rank}
+                  {String(rank).padStart(2, '0')}
                 </span>
                 {isTop ? (
-                  <span className="rounded bg-[#F58220] px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white md:hidden">
-                    Top pick
+                  <span className="rounded-sm bg-[#F58220] px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white md:hidden">
+                    Top
                   </span>
                 ) : null}
               </div>
@@ -135,8 +135,8 @@ export function HomeRotatingRankings() {
                   <p className="flex items-center gap-2 truncate font-semibold text-navy">
                     {product.name}
                     {isTop ? (
-                      <span className="hidden rounded bg-[#F58220] px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white md:inline">
-                        Top pick
+                      <span className="hidden text-[10px] font-semibold uppercase tracking-[0.14em] text-[#F58220] md:inline">
+                        Editor's pick
                       </span>
                     ) : null}
                   </p>
@@ -154,13 +154,14 @@ export function HomeRotatingRankings() {
               <div className="md:text-right">
                 <Link
                   href={slide.canonical}
-                  className={`inline-flex w-full justify-center rounded-lg px-3 py-2 text-[12px] font-semibold md:w-auto ${
+                  className={`inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-[12px] font-semibold ${
                     isTop
                       ? 'bg-[#F58220] text-white hover:bg-[#e07418]'
                       : 'border border-slate-200 text-navy hover:border-[#F58220] hover:text-[#F58220]'
                   }`}
                 >
                   Compare
+                  <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
               </div>
             </div>
@@ -168,15 +169,15 @@ export function HomeRotatingRankings() {
         })}
       </div>
 
-      <div className="mt-4 flex justify-center gap-1.5">
+      <div className="mt-5 flex justify-center gap-1.5">
         {slides.map((item, i) => (
           <button
             key={item.canonical}
             type="button"
             aria-label={`Show ${item.label} rankings`}
             onClick={() => setIndex(i)}
-            className={`h-1.5 rounded-full transition-all ${
-              i === index ? 'w-6 bg-[#0B2A6F]' : 'w-1.5 bg-slate-300 hover:bg-slate-400'
+            className={`h-1 rounded-full transition-all ${
+              i === index ? 'w-7 bg-[#F58220]' : 'w-3 bg-slate-300 hover:bg-slate-400'
             }`}
           />
         ))}

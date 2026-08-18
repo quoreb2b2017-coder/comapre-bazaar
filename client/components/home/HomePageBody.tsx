@@ -2,9 +2,7 @@ import Link from 'next/link'
 import { BadgeCheck, ClipboardCheck, FileText, Quote, Scale, Search } from 'lucide-react'
 import { HOME_CATEGORIES } from '@/data/homeCategories'
 import { HomeFaqSection } from '@/components/ui/HomeFaqSection'
-import { HomeBlogSection } from '@/components/home/HomeBlogSection'
 import { HomeRankedPicks } from '@/components/home/HomeRankedPicks'
-import type { UnifiedBlogCard } from '@/lib/blogCms'
 
 type Faq = { q: string; a: string }
 
@@ -44,10 +42,8 @@ const STATS = [
 
 export function HomePageBody({
   faqs,
-  recentBlogPosts,
 }: {
   faqs: Faq[]
-  recentBlogPosts: UnifiedBlogCard[]
 }) {
   return (
     <div className="bg-[#F7F8FB]">
@@ -110,12 +106,6 @@ export function HomePageBody({
               </article>
             ))}
           </div>
-        </div>
-      </section>
-
-      <section className="bg-white">
-        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-10">
-          <HomeBlogSection posts={recentBlogPosts} />
         </div>
       </section>
 
