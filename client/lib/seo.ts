@@ -6,6 +6,8 @@ const SITE_NAME = 'Compare Bazaar'
 export const LINKEDIN_COMPANY_URL =
   'https://www.linkedin.com/company/comparebazaar/posts/?feedView=all'
 
+export const FACEBOOK_PAGE_URL = 'https://www.facebook.com/people/Compare-Bazaar/61590103708463/'
+
 /** Default Open Graph / WhatsApp preview image (absolute URL). Override via NEXT_PUBLIC_OG_IMAGE_PATH or replace asset at /images/logo.png */
 export function defaultOgImageUrl(): string {
   const path = process.env.NEXT_PUBLIC_OG_IMAGE_PATH || '/api/og'
@@ -365,7 +367,7 @@ export function buildOrganizationSchema(): object {
       url: `${SITE_URL}/contact`,
       contactType: 'customer support',
     },
-    sameAs: [LINKEDIN_COMPANY_URL],
+    sameAs: [LINKEDIN_COMPANY_URL, FACEBOOK_PAGE_URL],
   }
 }
 
