@@ -1,7 +1,7 @@
 import { blogPosts } from '@/data/blogPosts'
 import { postsForHub } from '@/lib/content-map'
 import { assignUniqueBlogCovers, pickTopicCoverUrl, resolveCoverUrlFromCms } from '@/lib/blogTopicCovers'
-import { cmsBackendBase } from '@/lib/cmsBackendBase'
+import { cmsBackendBase, cmsBackendBaseCandidates } from '@/lib/cmsBackendBase'
 
 /** Server-side base URL for Express. Browser callers should use cmsBackendBase() (same-origin proxy). */
 export function blogCmsBackendBase(): string {
@@ -239,46 +239,46 @@ export type UnifiedBlogCard = {
   tags?: string[]
 }
 
-export async function fetchPublishedBlogSummaries(): Promise<CmsBlogSummary[]> {
-  const base = blogCmsBackendBase()
-  const url = `${base}/api/v1/blog-admin/public/blogs`
-  try {
-    const res =
-      process.env.NODE_ENV === 'development'
-        ? await fetch(url, { cache: 'no-store', headers: { Accept: 'application/json' } })
-        : await fetch(url, {
-            next: { revalidate: REVALIDATE_SECONDS },
-            headers: { Accept: 'application/json' },
-          })
-    if (!res.ok) return []
-    const json = await res.json()
-    if (!json?.success || !Array.isArray(json.data)) return []
-    return json.data as CmsBlogSummary[]
-  } catch {
-    return []
+function cmsFetchInit(): RequestInit & { next?: { revalidate: number } } {
+  const headers = { Accept: 'application/json' }
+  if (process.env.NODE_ENV === 'development') {
+    return { cache: 'no-store', headers }
   }
+  return { next: { revalidate: REVALIDATE_SECONDS }, headers }
+}
+
+export async function fetchPublishedBlogSummaries(): Promise<CmsBlogSummary[]> {
+  const path = '/api/v1/blog-admin/public/blogs'
+  for (const base of cmsBackendBaseCandidates()) {
+    try {
+      const res = await fetch(`${base}${path}`, cmsFetchInit())
+      if (!res.ok) continue
+      const json = await res.json()
+      if (!json?.success || !Array.isArray(json.data)) continue
+      return json.data as CmsBlogSummary[]
+    } catch {
+      // try next host (localhost vs 127.0.0.1)
+    }
+  }
+  return []
 }
 
 export async function fetchPublishedBlogBySlug(slug: string): Promise<CmsBlogDetail | null> {
-  const base = blogCmsBackendBase()
   const safe = encodeURIComponent(slug)
-  const url = `${base}/api/v1/blog-admin/public/blogs/${safe}`
-  try {
-    const res =
-      process.env.NODE_ENV === 'development'
-        ? await fetch(url, { cache: 'no-store', headers: { Accept: 'application/json' } })
-        : await fetch(url, {
-            next: { revalidate: REVALIDATE_SECONDS },
-            headers: { Accept: 'application/json' },
-          })
-    if (!res.ok) return null
-    const json = await res.json()
-    if (!json?.success || !json.data?.content) return null
-    const data = json.data as CmsBlogDetail
-    return { ...data, content: normalizeBlogCmsHtml(data.content) }
-  } catch {
-    return null
+  const path = `/api/v1/blog-admin/public/blogs/${safe}`
+  for (const base of cmsBackendBaseCandidates()) {
+    try {
+      const res = await fetch(`${base}${path}`, cmsFetchInit())
+      if (!res.ok) continue
+      const json = await res.json()
+      if (!json?.success || !json.data?.content) continue
+      const data = json.data as CmsBlogDetail
+      return { ...data, content: normalizeBlogCmsHtml(data.content) }
+    } catch {
+      // try next host
+    }
   }
+  return null
 }
 
 function cmsSummaryToUnified(b: CmsBlogSummary): UnifiedBlogCard {
@@ -421,15 +421,10 @@ export function pickRelatedBlogPosts(
     .slice(0, limit)
 }
 
-/** Homepage always gets posts: CMS first, static guides if the API is empty. */
+/** Homepage preview: newest published CMS posts only (no static guide fallback). */
 export async function loadHomeBlogPreview(limit = 4): Promise<UnifiedBlogCard[]> {
-  try {
-    const cms = await loadUnifiedBlogIndex()
-    if (cms.length > 0) return cms.slice(0, limit)
-  } catch {
-    // Backend down — use static guides so the homepage still shows articles.
-  }
-  return staticPostsToUnified().slice(0, limit)
+  const cms = await loadUnifiedBlogIndex()
+  return cms.slice(0, limit)
 }
 
 export async function loadUnifiedRelated(

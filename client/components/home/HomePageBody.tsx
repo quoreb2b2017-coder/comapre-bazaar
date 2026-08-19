@@ -47,7 +47,11 @@ export function HomePageBody({
 }) {
   return (
     <div className="bg-[#F7F8FB]">
-      <section className="border-b border-slate-200 bg-white" aria-label="How Compare Bazaar works">
+      <section
+        id="home-how-it-works"
+        className="scroll-mt-24 border-b border-slate-200 bg-white"
+        aria-label="How Compare Bazaar works"
+      >
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-7 lg:px-10">
           <div className="mb-4 text-center">
             <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#F58220]">How it works</p>

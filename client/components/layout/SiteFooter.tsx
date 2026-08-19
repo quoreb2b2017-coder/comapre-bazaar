@@ -50,7 +50,7 @@ export function SiteFooter({ className = '' }: { className?: string }) {
         <div className="mb-10 grid grid-cols-2 items-start gap-8 sm:gap-10 lg:grid-cols-5">
           {/* Brand */}
           <div className="col-span-2 lg:col-span-1">
-            <p className="-mt-1 mb-4 font-serif text-[22px] leading-none tracking-tight text-white">
+            <p className="mb-4 text-xs font-semibold uppercase leading-none tracking-widest text-white">
               Compare<span className="text-[#F58220]">Bazaar</span>
             </p>
             <p className="text-sm text-white/90 leading-relaxed max-w-xs">
