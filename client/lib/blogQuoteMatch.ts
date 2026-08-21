@@ -58,7 +58,7 @@ const QUOTE_ENTRIES: Array<{
     categoryLabel: 'fleet management software',
   },
   {
-    keywords: ['employee management', 'hr software', 'hris', 'bamboohr', 'workday', 'workforce', 'human resource'],
+    keywords: ['employee management', 'hr software', 'hris', 'bamboohr', 'workday', 'workforce', 'human resource', 'human resources', ' hr ', 'hr'],
     kind: 'employee-management',
     label: 'Get Free HR Software Quotes',
     href: '/human-resources/best-employee-management-software/get-free-quotes',
@@ -109,10 +109,18 @@ export function resolveBlogQuoteMatch(opts: {
   slug?: string
   title?: string
 }): BlogQuoteMatch {
-  const corpus = buildBlogQuoteCorpus(opts)
+  const corpus = ` ${buildBlogQuoteCorpus(opts)} `
 
   for (const entry of QUOTE_ENTRIES) {
-    if (entry.keywords.some((kw) => corpus.includes(kw))) {
+    const hit = entry.keywords.some((kw) => {
+      const needle = kw.trim().toLowerCase()
+      if (!needle) return false
+      if (needle === 'hr') {
+        return /(?<![\w-])hr(?![\w-])/i.test(corpus)
+      }
+      return corpus.includes(needle)
+    })
+    if (hit) {
       return {
         kind: entry.kind,
         label: entry.label,

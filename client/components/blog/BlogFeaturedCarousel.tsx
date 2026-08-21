@@ -22,7 +22,7 @@ function FeaturedSlide({ post }: { post: UnifiedBlogCard }) {
 
           <p className="mb-2 inline-flex w-fit items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-[#F58220]">
             <Star className="h-3 w-3 fill-[#F58220]/20" aria-hidden />
-            Featured guide
+            Latest blog
           </p>
 
           <div className="mb-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-slate-500">

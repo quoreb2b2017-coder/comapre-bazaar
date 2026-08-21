@@ -5,6 +5,12 @@ const Blog = require('../models/automationBlog.model')
 const Settings = require('../models/blogAdminSettings.model')
 const { generateBlog } = require('./blogAdmin.claude.service')
 const { resolveBlogCoverImageUrl } = require('./blogAdmin.unsplash.service')
+const {
+  resolveVerticalCta,
+  injectVerticalCta,
+  mergeVerticalTags,
+  verticalPromptInstructions,
+} = require('./blogAdmin.verticalCta.service')
 
 /**
  * Optional safety cap (0 = unlimited).
@@ -445,12 +451,19 @@ async function processQueueItem(item, apiKey) {
 
   try {
     const categoryLabel = locked.categoryLabel || locked.category
+    const vertical = resolveVerticalCta({
+      category: locked.category,
+      categoryLabel,
+      topic: locked.title,
+      title: locked.title,
+      keywords: [categoryLabel, locked.category],
+    })
     const result = await generateBlog(
       {
         topic: locked.title,
-        keywords: [categoryLabel, locked.category],
+        keywords: [categoryLabel, locked.category, ...(vertical.matchTags || [])],
         tone: 'professional',
-        customInstructions: `Write this Compare Bazaar buying guide for the ${categoryLabel} software category. Keep the existing editorial HTML format. Primary focus keyword context: ${locked.title}.`,
+        customInstructions: `Write this Compare Bazaar buying guide for the ${categoryLabel} software category. Keep the existing editorial HTML format. Primary focus keyword context: ${locked.title}. ${verticalPromptInstructions(vertical)}`,
       },
       apiKey
     )
@@ -464,20 +477,33 @@ async function processQueueItem(item, apiKey) {
     }
 
     const data = result.data
+    const content = injectVerticalCta(data.content, {
+      vertical,
+      topic: categoryLabel,
+      category: locked.category,
+      categoryLabel,
+      title: data.title || locked.title,
+      tags: data.tags,
+      keywords: data.keywords,
+    })
+    const tags = mergeVerticalTags(
+      Array.from(new Set([...(data.tags || []), categoryLabel])),
+      vertical
+    )
     const coverResult = await resolveBlogCoverImageUrl({
       topic: data.topic || categoryLabel,
       title: data.title || locked.title,
-      tags: [...(data.tags || []), categoryLabel],
+      tags: [...tags, categoryLabel],
       keywords: [...(data.keywords || []), categoryLabel],
     })
 
     const blog = await Blog.create({
       title: data.title || locked.title,
-      content: data.content,
+      content,
       metaTitle: data.metaTitle,
       metaDescription: data.metaDescription,
-      keywords: data.keywords || [],
-      tags: Array.from(new Set([...(data.tags || []), categoryLabel])),
+      keywords: [...new Set([...(data.keywords || []), ...tags])].slice(0, 12),
+      tags,
       excerpt: data.excerpt,
       topic: data.topic || categoryLabel,
       tone: data.tone || 'professional',

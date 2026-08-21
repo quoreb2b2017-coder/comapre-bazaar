@@ -54,6 +54,12 @@ const { getCompareBazaarEditorialContext } = require("./blogAdmin.siteReader.ser
 const { normalizeBlogFields, validateBlogFormat, verifyGeneratedArticle } = require("./blogAdmin.contentFormat.service")
 const { injectBlogBrandLogos } = require("./blogAdmin.brandLogos.service")
 const { injectBlogEmphasis } = require("./blogAdmin.emphasis.service")
+const {
+  injectVerticalCta,
+  mergeVerticalTags,
+  resolveVerticalCta,
+  verticalPromptInstructions,
+} = require("./blogAdmin.verticalCta.service")
 
 const stripLeadingMarkdownFence = (raw) => {
   let s = String(raw || '').trim()
@@ -131,9 +137,22 @@ function parseClaudeBlogPayload(fullResponse, topic, kw) {
 function finishVerifiedDraft(parsed, { topic, tone, model, kw, minWords }) {
   const trimmed = String(parsed.blogContent || '').trim()
   const wordCount = countWordsFromHtml(trimmed)
+  const vertical = resolveVerticalCta({
+    topic,
+    title: parsed.extractedTitle,
+    keywords: kw,
+    tags: parsed.suggestedTags,
+  })
+  const withCta = injectVerticalCta(injectBlogBrandLogos(injectBlogEmphasis(trimmed)), {
+    vertical,
+    topic,
+    title: parsed.extractedTitle,
+    keywords: kw,
+    tags: parsed.suggestedTags,
+  })
   const normalized = normalizeBlogFields({
     title: parsed.extractedTitle,
-    content: injectBlogBrandLogos(injectBlogEmphasis(trimmed)),
+    content: withCta,
     metaTitle: parsed.metaTitle,
     metaDescription: parsed.metaDescription,
     excerpt: parsed.excerpt,
@@ -147,6 +166,7 @@ function finishVerifiedDraft(parsed, { topic, tone, model, kw, minWords }) {
   })
   const qualityCheck = verifyGeneratedArticle(normalized.content, { minWords, minH2: 3 })
   const verified = Boolean(qualityCheck.ok && formatCheck.ok)
+  const tags = mergeVerticalTags(parsed.suggestedTags, vertical)
 
   return {
     normalized,
@@ -155,11 +175,12 @@ function finishVerifiedDraft(parsed, { topic, tone, model, kw, minWords }) {
     qualityCheck,
     verified,
     readingTime: Math.max(1, Math.ceil((qualityCheck.wordCount || wordCount) / 200)),
-    keywords: [...new Set([...kw, ...parsed.suggestedTags])].slice(0, 10),
-    tags: parsed.suggestedTags,
+    keywords: [...new Set([...kw, ...tags])].slice(0, 12),
+    tags,
     topic,
     tone,
     model,
+    vertical,
   }
 }
 
@@ -170,6 +191,8 @@ const generateBlog = async ({ topic, keywords = [], tone = 'professional', custo
 
   const keywordStr = kw.length > 0 ? `Target keywords: ${kw.join(', ')}` : ''
   const tonePrompt = TONE_PROMPTS[tone] || TONE_PROMPTS.professional
+  const vertical = resolveVerticalCta({ topic, keywords: kw })
+  const verticalCtaRule = verticalPromptInstructions(vertical)
 
   const siteContext = await getCompareBazaarEditorialContext()
 
@@ -180,7 +203,7 @@ ${tonePrompt}
 Required structure:
 1) **Hero (first element):** One <section class="blog-hero-banner not-prose" data-blog-banner="true"> with inline styles: unique multi-stop linear-gradient for this topic; padding 2rem 1.75rem; border-radius 20px; margin-bottom 2rem; position:relative; overflow:hidden; box-shadow 0 25px 50px -12px rgba(0,0,0,0.35); border 1px solid rgba(255,255,255,0.12); color #f8fafc. Inside: optional <p class="blog-hero-eyebrow"> (short category line, under 8 words); exactly one <h1 class="blog-hero-title"> (clear headline, **50–60 characters** including spaces); **required** <p class="blog-hero-subtitle"> (summary hook: **50 to 60 words exactly**, complete sentences, no bullet list); a decorative absolute radial glow <div> (pointer-events:none); <div class="blog-hero-icon-row" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:1.25rem;align-items:stretch"> with **four** <div class="blog-hero-pill"> items — each pill inline-flex, gap 10px, padding 10px 14px, rounded-full, rgba(255,255,255,0.12) fill, border rgba(255,255,255,0.18), optional backdrop-filter blur(8px), containing a 22px stroke <svg viewBox="0 0 24 24"> plus <span class="blog-hero-pill-label"> (2–5 words). Pick icons that match labels. No second H1 anywhere else.
 
-2) After the hero: intro, multiple **real** <h2> sections with <h3> where useful, <ul>/<li> or <ol>/<li> lists, conclusion + CTA. Never fake headings with bold paragraphs.
+2) After the hero: intro, multiple **real** <h2> sections with <h3> where useful, <ul>/<li> or <ol>/<li> lists, conclusion + a CTA that links to the matching Compare Bazaar vertical comparison page and its get-free-quotes page (real <a href> paths only). Never fake headings with bold paragraphs.
 
 Writing rules:
 1) Generate humanized, SEO friendly content that sounds natural and engaging.
@@ -208,6 +231,7 @@ ${wordBand}`
 
 ${keywordStr}
 ${customInstructions ? `Additional instructions: ${customInstructions}` : ''}
+${verticalCtaRule}
 ${siteBlock}
 Please provide:
 1. The full blog post content in HTML format (starting with the data-blog-banner section, then the rest of the article)

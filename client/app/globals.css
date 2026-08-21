@@ -1380,3 +1380,20 @@ a.cb-link-pending {
   color: #9c4302;
   text-decoration-color: #d86e1e;
 }
+
+.blog-cms-html .blog-vertical-cta,
+.prose .blog-vertical-cta,
+.blog-article-prose .blog-vertical-cta {
+  margin: 2.5rem 0 1.5rem;
+}
+
+.blog-cms-html .blog-vertical-cta a.blog-vertical-cta-btn:hover,
+.prose .blog-vertical-cta a.blog-vertical-cta-btn:hover {
+  filter: brightness(1.08);
+}
+
+.blog-cms-html .blog-vertical-cta a.blog-vertical-cta-secondary:hover,
+.prose .blog-vertical-cta a.blog-vertical-cta-secondary:hover {
+  border-color: #0b2a6f;
+  background: #f8fbff;
+}

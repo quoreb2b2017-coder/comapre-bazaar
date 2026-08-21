@@ -115,7 +115,7 @@ export default async function BlogIndexPage({ searchParams }: BlogPageProps) {
         ) : (
           <>
             {hubFeaturedPosts.length > 0 ? (
-              <BlogFeaturedCarousel posts={hubFeaturedPosts} sectionLabel="Featured guide" />
+              <BlogFeaturedCarousel posts={hubFeaturedPosts} sectionLabel="Latest blog" />
             ) : null}
 
             {hubLatestPosts.length > 0 ? (
