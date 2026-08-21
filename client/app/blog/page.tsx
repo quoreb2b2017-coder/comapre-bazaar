@@ -84,12 +84,12 @@ export default async function BlogIndexPage({ searchParams }: BlogPageProps) {
               {activeTopicLabel ? 'No articles in this topic' : 'Coming soon'}
             </p>
             <p className="font-serif text-xl text-navy sm:text-2xl">
-              {activeTopicLabel ? 'Try another topic' : 'New guides in production'}
+              {activeTopicLabel ? 'Try another topic' : 'New blogs in production'}
             </p>
             <p className="mt-2 max-w-md text-[14px] leading-relaxed text-slate-500">
               {activeTopicLabel
-                ? 'We have not published guides under this topic yet. Browse all articles or pick a different category above.'
-                : 'Our editorial team publishes new buying guides regularly.'}
+                ? 'We have not published blogs under this topic yet. Browse all articles or pick a different category above.'
+                : 'Our editorial team publishes new blogs regularly.'}
             </p>
             <div className="mt-4 flex flex-wrap gap-4">
               <Link
@@ -130,7 +130,7 @@ export default async function BlogIndexPage({ searchParams }: BlogPageProps) {
                     </h2>
                   </div>
                   <span className="hidden rounded-full bg-white px-3 py-1 text-[11px] font-semibold text-slate-500 shadow-sm sm:inline">
-                    {hubLatestPosts.length} guides
+                    {hubLatestPosts.length} blogs
                   </span>
                 </div>
                 <ul className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3">

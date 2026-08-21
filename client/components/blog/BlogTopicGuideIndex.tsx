@@ -57,7 +57,7 @@ export function BlogTopicLeadArticle({ post }: { post: UnifiedBlogCard }) {
             href={`/blog/${post.slug}`}
             className="mt-5 inline-flex items-center gap-2 rounded-lg bg-navy px-4 py-2.5 text-[13px] font-semibold text-white shadow-sm transition hover:bg-[#0a245f]"
           >
-            Read the full guide
+            Read the full blog
             <ArrowRight className="h-3.5 w-3.5" aria-hidden />
           </Link>
         </div>

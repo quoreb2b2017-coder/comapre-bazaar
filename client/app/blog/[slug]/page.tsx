@@ -195,7 +195,7 @@ function RelatedBlock({ related, category }: { related: UnifiedBlogCard[]; categ
   if (related.length === 0) return null
   return (
     <div className="mt-10 border-t border-slate-200 pt-8">
-      <BlogRelatedCards posts={related} heading={`More ${category} guides`} />
+      <BlogRelatedCards posts={related} heading={`More ${category} blogs`} />
     </div>
   )
 }
@@ -329,10 +329,10 @@ async function CmsBlogArticle({
               <section className="mt-8 border-t border-slate-100 pt-6">
                 <div className="max-w-[52ch] border-l-2 border-[#F58220]/40 pl-5">
                   <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
-                    About this guide
+                    About this blog
                   </p>
                   <p className="text-[15px] leading-relaxed text-slate-600">
-                    Independent software comparisons and buying guides for growing businesses.
+                    Independent software comparisons and blogs for growing businesses.
                   </p>
                 </div>
               </section>

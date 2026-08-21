@@ -129,7 +129,7 @@ export function BlogHomePreviewCard({ post, priority }: { post: UnifiedBlogCard;
           href={`/blog/${post.slug}`}
           className="mt-3 inline-flex items-center gap-1.5 text-[12px] font-semibold text-navy transition-colors group-hover:text-[#F58220]"
         >
-          Read guide
+          Read blog
           <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden />
         </Link>
       </div>

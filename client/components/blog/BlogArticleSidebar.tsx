@@ -72,7 +72,7 @@ export function BlogArticleSidebar({ currentSlug, currentTitle, toc, latest, cat
             href={topicHref}
             className="mt-2.5 inline-block text-[11px] font-semibold uppercase tracking-[0.12em] text-[#F58220] hover:text-[#D97706]"
           >
-            All {topicLabel} guides →
+            All {topicLabel} blogs →
           </Link>
         </div>
       ) : null}

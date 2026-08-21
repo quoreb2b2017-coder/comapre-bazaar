@@ -11,7 +11,7 @@ export function BlogTopicHeroExtras({ label, count }: BlogTopicHeroExtrasProps) 
   return (
     <>
       <p className="mt-2 inline-flex items-center rounded-lg border border-slate-200 bg-slate-50/80 px-3 py-1 text-[12px] font-semibold text-navy">
-        {count} published guide{count === 1 ? '' : 's'}
+        {count} published blog{count === 1 ? '' : 's'}
       </p>
       <p className="mt-3 max-w-[48ch] text-[15px] leading-relaxed text-slate-600">{topicIntro(label)}</p>
       <Link

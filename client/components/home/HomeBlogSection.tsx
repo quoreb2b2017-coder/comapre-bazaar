@@ -60,7 +60,7 @@ function FeaturedArticle({
             href={`/blog/${post.slug}`}
             className="inline-flex items-center gap-1 text-[13px] font-semibold text-white transition-colors hover:text-[#F58220]"
           >
-            Read guide <ArrowRight className="h-3.5 w-3.5" />
+            Read blog <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>
         {dots ? <div className="mt-3">{dots}</div> : null}

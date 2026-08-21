@@ -40,7 +40,7 @@ export function HomeHeroSection() {
                   href="#latest-blogs"
                   className="inline-flex items-center gap-1.5 rounded-lg bg-[#F58220] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#e07418]"
                 >
-                  Latest guides <ArrowRight className="h-4 w-4" />
+                  Latest blogs <ArrowRight className="h-4 w-4" />
                 </a>
                 <Link
                   href={HOME_CATEGORIES[0]?.quotesHref || '/technology/get-free-quotes'}

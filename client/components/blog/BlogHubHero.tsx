@@ -63,7 +63,7 @@ export function BlogHubHero({ activeTopicLabel, posts, allPosts, topics, isTopic
               {activeTopicLabel ?? (
                 <>
                   Business software
-                  <span className="block text-[#F58220]">buying guides</span>
+                  <span className="block text-[#F58220]">blogs</span>
                 </>
               )}
             </h1>
@@ -80,7 +80,7 @@ export function BlogHubHero({ activeTopicLabel, posts, allPosts, topics, isTopic
                 <div className="mt-5 flex flex-wrap items-center gap-2.5">
                   <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50/80 px-3 py-1.5 text-[12px] font-semibold text-navy">
                     <Layers className="h-3.5 w-3.5 text-[#F58220]" aria-hidden />
-                    {guideCount} guides
+                    {guideCount} blogs
                   </span>
                   <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50/80 px-3 py-1.5 text-[12px] font-semibold text-navy">
                     <Sparkles className="h-3.5 w-3.5 text-[#F58220]" aria-hidden />
@@ -107,7 +107,7 @@ export function BlogHubHero({ activeTopicLabel, posts, allPosts, topics, isTopic
                     href="#blog-articles"
                     className="inline-flex items-center justify-center rounded-lg bg-navy px-4 py-2.5 text-[13px] font-semibold text-white shadow-sm transition hover:bg-[#0a2560]"
                   >
-                    Browse all guides
+                    Browse all blogs
                   </a>
                   <Link
                     href="/technology/get-free-quotes"

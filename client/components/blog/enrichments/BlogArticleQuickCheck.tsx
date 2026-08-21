@@ -246,7 +246,7 @@ export function BlogArticleQuickCheck({ enrichment, slug }: Props) {
               <div>
                 <p className="text-sm font-semibold text-navy">Checklist complete - ready for quotes?</p>
                 <p className="text-xs text-slate-500">
-                  Compare {quoteCtx?.match.categoryLabel ?? 'vendors'} matched to this guide
+                  Compare {quoteCtx?.match.categoryLabel ?? 'vendors'} matched to this blog
                 </p>
               </div>
             </div>

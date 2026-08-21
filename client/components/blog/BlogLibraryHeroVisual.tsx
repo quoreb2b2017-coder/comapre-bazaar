@@ -77,7 +77,7 @@ export function BlogLibraryHeroVisual({ posts }: Props) {
         </div>
         <div className="absolute -bottom-2 left-3 z-10 flex items-center gap-1.5 rounded-xl border border-slate-200/90 bg-white px-3 py-2 text-[11px] font-semibold text-navy shadow-md">
           <FileText className="h-3.5 w-3.5 text-[#F58220]" strokeWidth={1.75} aria-hidden />
-          Latest guide
+          Latest blog
           <ArrowUpRight className="h-3 w-3 text-slate-400" aria-hidden />
         </div>
       </Link>
@@ -137,7 +137,7 @@ export function BlogLibraryHeroVisual({ posts }: Props) {
         <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#F58220]/10 text-[#F58220]">
           <Newspaper className="h-4 w-4" strokeWidth={1.75} aria-hidden />
         </span>
-        <span className="text-[12px] font-semibold text-navy">Featured buying guides</span>
+        <span className="text-[12px] font-semibold text-navy">Featured blogs</span>
         <ArrowUpRight className="h-3.5 w-3.5 text-slate-400" aria-hidden />
       </Link>
     </div>

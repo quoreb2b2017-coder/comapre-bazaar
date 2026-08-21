@@ -207,7 +207,7 @@ function buildVerticalCtaHtml(vertical) {
   <p style="margin:0 0 1rem;font-size:0.95rem;line-height:1.65;color:#475569;">
     Review our
     <a href="${v.comparisonHref}" title="${comparisonTitle}" class="blog-auto-link" style="color:#0B2A6F;font-weight:600;text-decoration:underline;text-underline-offset:3px;">${comparisonTitle}</a>
-    guide, then get matched vendor quotes with no obligation.
+    blog, then get matched vendor quotes with no obligation.
   </p>
   <p style="margin:0;display:flex;flex-wrap:wrap;gap:0.65rem;align-items:center;">
     <a href="${v.quoteHref}" class="blog-vertical-cta-btn" style="display:inline-flex;align-items:center;justify-content:center;padding:0.7rem 1.15rem;border-radius:999px;background:#0B2A6F;color:#fff;font-weight:700;font-size:0.92rem;text-decoration:none;">${quoteLabel}</a>
