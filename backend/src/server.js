@@ -17,6 +17,13 @@ if (unsplashKey) {
 const startServer = async () => {
   await connectDB();
 
+  try {
+    const { startBlogExcelQueueCron } = require("./jobs/blogExcelQueue.cron");
+    startBlogExcelQueueCron();
+  } catch (cronErr) {
+    console.error("[excel-queue] failed to start cron:", cronErr.message || cronErr);
+  }
+
   const server = http.createServer(app);
   server.listen(PORT, () => {
     console.log(`Backend running on http://localhost:${PORT}`);

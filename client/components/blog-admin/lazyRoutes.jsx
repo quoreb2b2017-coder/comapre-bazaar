@@ -15,6 +15,9 @@ export const BlogDetail = lazy(() =>
 export const GenerateBlog = lazy(() =>
   import(/* webpackChunkName: "blog-admin-generate" */ './pages/GenerateBlog').then((m) => ({ default: m.GenerateBlog })),
 )
+export const ExcelQueue = lazy(() =>
+  import(/* webpackChunkName: "blog-admin-excel-queue" */ './pages/ExcelQueue').then((m) => ({ default: m.ExcelQueue })),
+)
 export const Approvals = lazy(() =>
   import(/* webpackChunkName: "blog-admin-approvals" */ './pages/Approvals').then((m) => ({ default: m.Approvals })),
 )
@@ -66,6 +69,7 @@ export function prefetchBlogAdminRoutes() {
   void import('./pages/Blogs')
   void import('./pages/BlogDetail')
   void import('./pages/GenerateBlog')
+  void import('./pages/ExcelQueue')
   void import('./pages/Approvals')
   void import('./pages/Settings')
   void import('./pages/TrendsAssistant')

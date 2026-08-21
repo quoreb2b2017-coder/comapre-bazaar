@@ -9,6 +9,7 @@ import {
   Blogs,
   BlogDetail,
   GenerateBlog,
+  ExcelQueue,
   Approvals,
   Settings,
   TrendsAssistant,
@@ -77,6 +78,7 @@ function AppRoutes() {
           <Route path="blogs/:id" element={<RouteSuspense><BlogDetail /></RouteSuspense>} />
           <Route path="blogs/:id/edit" element={<RouteSuspense><BlogDetail /></RouteSuspense>} />
           <Route path="generate" element={<RouteSuspense><GenerateBlog /></RouteSuspense>} />
+          <Route path="excel-queue" element={<RouteSuspense><ExcelQueue /></RouteSuspense>} />
           <Route path="approvals" element={<RouteSuspense><Approvals /></RouteSuspense>} />
           <Route path="settings" element={<RouteSuspense><Settings /></RouteSuspense>} />
           <Route path="trends" element={<RouteSuspense><TrendsAssistant /></RouteSuspense>} />

@@ -16,6 +16,7 @@ import {
   Download,
   Shield,
   LayoutTemplate,
+  FileSpreadsheet,
 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 
@@ -26,6 +27,7 @@ const NAV = [
   { to: '/whitepapers/downloads', icon: Download, label: 'WP Downloads' },
   { to: '/service-pages', icon: LayoutTemplate, label: 'Service Pages' },
   { to: '/generate', icon: Zap, label: 'Generate Blog' },
+  { to: '/excel-queue', icon: FileSpreadsheet, label: 'Excel Queue' },
   { to: '/approvals', icon: Bell, label: 'Approvals' },
   { to: '/trends', icon: Sparkles, label: 'Trending chat' },
   { to: '/analytics', icon: ChartNoAxesCombined, label: 'Analytics' },
