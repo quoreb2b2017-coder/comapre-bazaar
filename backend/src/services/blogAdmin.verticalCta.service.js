@@ -229,8 +229,35 @@ function hasVerticalHref(html, vertical) {
   )
 }
 
+/** Remove every injected/legacy vertical CTA block so we never stack duplicates. */
+function stripVerticalCtaBlocks(html) {
+  let out = String(html || '')
+
+  // Marked CTA sections (all occurrences)
+  out = out.replace(
+    /<section\b[^>]*\bdata-blog-vertical-cta\b[^>]*>[\s\S]*?<\/section>/gi,
+    ''
+  )
+  out = out.replace(
+    /<section\b[^>]*\bblog-vertical-cta\b[^>]*>[\s\S]*?<\/section>/gi,
+    ''
+  )
+
+  // Legacy / Claude-written lookalikes: "Next step" + "Compare … on Compare Bazaar"
+  out = out.replace(
+    /<section\b[^>]*>\s*<p[^>]*>\s*Next step\s*<\/p>\s*<h2[^>]*>\s*Compare[\s\S]*?on Compare Bazaar\s*<\/h2>[\s\S]*?<\/section>/gi,
+    ''
+  )
+  out = out.replace(
+    /<(?:div|aside|section)\b[^>]*>\s*(?:<p[^>]*>\s*)?Next step(?:\s*<\/p>)?[\s\S]{0,120}?Compare[\s\S]{0,80}?on Compare Bazaar[\s\S]*?<\/(?:div|aside|section)>/gi,
+    ''
+  )
+
+  return out.replace(/\n{3,}/g, '\n\n').trim()
+}
+
 /**
- * Append or replace CTA so the resolved vertical links are always present.
+ * Ensure exactly one vertical CTA at the end of the article.
  */
 function injectVerticalCta(html, opts = {}) {
   const content = String(html || '')
@@ -238,22 +265,9 @@ function injectVerticalCta(html, opts = {}) {
 
   const vertical = opts.vertical || resolveVerticalCta(opts)
   const block = buildVerticalCtaHtml(vertical)
+  const cleaned = stripVerticalCtaBlocks(content)
 
-  if (hasVerticalCta(content)) {
-    const replaced = content.replace(
-      /<section\b[^>]*\bdata-blog-vertical-cta\b[^>]*>[\s\S]*?<\/section>/i,
-      block
-    )
-    // If regex missed (malformed HTML), append a fresh block
-    if (replaced === content) return `${content.trim()}\n\n${block}`
-    return replaced
-  }
-
-  if (hasVerticalHref(content, vertical)) {
-    return content
-  }
-
-  return `${content.trim()}\n\n${block}`
+  return `${cleaned}\n\n${block}`
 }
 
 function mergeVerticalTags(tags = [], vertical) {
@@ -269,7 +283,7 @@ function mergeVerticalTags(tags = [], vertical) {
 
 function verticalPromptInstructions(vertical) {
   const v = vertical || FALLBACK
-  return `Required CTA (end of article, after conclusion): include a short closing paragraph with (1) a hyperlink to ${v.comparisonHref} labeled "${v.comparisonTitle}" and (2) a clear CTA button/link to ${v.quoteHref} labeled "${v.quoteLabel}". Use real <a href="..."> tags with those exact paths. Do not invent other domains.`
+  return `Do NOT write a final "Next step" / "Compare … on Compare Bazaar" CTA box or quote buttons yourself. End with a normal conclusion only. The CMS will append exactly one CTA linking to ${v.comparisonHref} and ${v.quoteHref}. You may still use one short inline <a href="${v.comparisonHref}">${v.comparisonTitle}</a> mention mid-article if natural.`
 }
 
 module.exports = {
@@ -278,6 +292,7 @@ module.exports = {
   resolveVerticalCta,
   buildVerticalCtaHtml,
   injectVerticalCta,
+  stripVerticalCtaBlocks,
   mergeVerticalTags,
   verticalPromptInstructions,
   hasVerticalCta,
