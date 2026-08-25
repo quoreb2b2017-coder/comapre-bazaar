@@ -1,12 +1,10 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { buildMetadata } from '@/lib/seo'
-import {
-  getBlogTopics,
-  loadUnifiedBlogIndex,
-  resolveTopicFromSlug,
-  topicToSlug,
-} from '@/lib/blogCms'
+import { getBlogTopics, loadUnifiedBlogIndex } from '@/lib/blogCms'
+import { resolveBlogTopicRequest } from '@/lib/blogTopicHubs'
+import { topicIntro } from '@/lib/blogTopicCopy'
 import { BLOG_PAGE_SHELL } from '@/lib/blogLayout'
 import { BlogHubHero } from '@/components/blog/BlogHubHero'
 import { BlogFeaturedCarousel } from '@/components/blog/BlogFeaturedCarousel'
@@ -21,46 +19,59 @@ type BlogPageProps = {
   searchParams?: { topic?: string | string[] }
 }
 
-export async function generateMetadata({ searchParams }: BlogPageProps): Promise<Metadata> {
-  const titleBase = 'Business Software Buying Guides, Reviews & Tips 2026'
-  const description =
-    'Actionable business software buying guides from Compare Bazaar editors. CRM, payroll, marketing, HR, and operations software insights.'
-  const rawTopic = searchParams?.topic
-  const topicParam = Array.isArray(rawTopic) ? rawTopic[0] : rawTopic
+function topicQuery(searchParams?: BlogPageProps['searchParams']) {
+  const raw = searchParams?.topic
+  return Array.isArray(raw) ? raw[0] : raw
+}
 
-  if (topicParam) {
-    return {
-      robots: { index: false, follow: true },
-    }
+async function loadPosts() {
+  try {
+    return await loadUnifiedBlogIndex()
+  } catch {
+    return []
+  }
+}
+
+export async function generateMetadata({ searchParams }: BlogPageProps): Promise<Metadata> {
+  const titleBase = 'Business Software Blogs, Reviews & Tips 2026'
+  const description =
+    'Actionable business software blogs from Compare Bazaar editors. CRM, payroll, marketing, HR, and operations software insights.'
+  const topicParam = topicQuery(searchParams)
+
+  if (!topicParam) {
+    return buildMetadata({
+      title: titleBase,
+      description,
+      canonical: '/blog',
+    })
   }
 
+  const allPosts = await loadPosts()
+  const resolved = resolveBlogTopicRequest(topicParam, allPosts)
+  if (resolved.kind === 'redirect') redirect(resolved.href)
+
+  const countLabel = resolved.posts.length === 1 ? '1 blog' : `${resolved.posts.length} blogs`
   return buildMetadata({
-    title: titleBase,
-    description,
-    canonical: '/blog',
+    title: `${resolved.hub.label} Blogs`,
+    description: `${topicIntro(resolved.hub.label)} ${countLabel} from Compare Bazaar editors.`,
+    canonical: resolved.canonicalPath,
   })
 }
 
 export default async function BlogIndexPage({ searchParams }: BlogPageProps) {
-  let allPosts: Awaited<ReturnType<typeof loadUnifiedBlogIndex>> = []
-  try {
-    allPosts = await loadUnifiedBlogIndex()
-  } catch {
-    allPosts = []
-  }
+  const allPosts = await loadPosts()
+  const topicParam = topicQuery(searchParams)
+  const resolved = topicParam ? resolveBlogTopicRequest(topicParam, allPosts) : null
 
-  const rawTopic = searchParams?.topic
-  const topicParam = Array.isArray(rawTopic) ? rawTopic[0] : rawTopic
-  const activeTopicSlug = topicParam ? topicToSlug(topicParam) : undefined
-  const activeTopicLabel = topicParam ? resolveTopicFromSlug(topicParam, allPosts) : null
+  if (resolved?.kind === 'redirect') redirect(resolved.href)
 
-  const posts = activeTopicLabel
-    ? allPosts.filter((p) => p.category === activeTopicLabel)
-    : allPosts
+  const isTopicView = resolved?.kind === 'hub'
+  const activeTopicLabel = isTopicView ? resolved.hub.label : null
+  const activeTopicSlug = isTopicView ? resolved.hub.slug : undefined
+  const posts = isTopicView ? allPosts.filter((post) => resolved.posts.some((item) => item.slug === post.slug)) : allPosts
 
   const topics = getBlogTopics(allPosts)
   const hasPosts = posts.length > 0
-  const isTopicView = Boolean(activeTopicLabel)
   const hubFeaturedPosts = isTopicView ? [] : posts.slice(0, Math.min(5, posts.length))
   const hubLatestPosts = isTopicView ? [] : posts.slice(hubFeaturedPosts.length)
 

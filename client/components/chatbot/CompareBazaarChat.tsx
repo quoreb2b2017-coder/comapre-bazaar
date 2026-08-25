@@ -45,7 +45,7 @@ function detectChips(userMsg: string, botReply: string): Chip[] {
     ]
   if (combined.match(/crm|hubspot|salesforce|pipedrive|pipeline/))
     return [
-      { label: 'Get CRM Quotes ->', href: '/marketing/best-crm-software/get-free-quote' },
+      { label: 'Get CRM Quotes ->', href: '/marketing/best-crm-software/get-free-quotes' },
       { label: 'Compare CRM Software', href: '/marketing/best-crm-software' },
     ]
   if (combined.match(/email marketing|mailchimp|klaviyo|activecampaign/))

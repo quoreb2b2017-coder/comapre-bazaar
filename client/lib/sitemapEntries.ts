@@ -3,8 +3,8 @@ import { comparisonPages } from '@/data/comparisons'
 import { hubPages } from '@/data/hubs'
 import { lastVerifiedForPost, normalizeBlogSlug } from '@/lib/content-map'
 import { fetchPublishedBlogSummaries } from '@/lib/blogCms'
+import { BLOG_TOPIC_HUBS } from '@/lib/blogTopicHubs'
 import { QUOTE_PAGE_CONFIGS } from '@/lib/pageMetaDescriptions'
-import { buildReviewVendorQuotePath } from '@/lib/reviewQuoteCta'
 import { fetchPublishedWhitePapers } from '@/lib/whitePaperCms'
 
 export const SITEMAP_BASE_URL = 'https://www.compare-bazaar.com'
@@ -13,9 +13,9 @@ export const SITEMAP_BASE_URL = 'https://www.compare-bazaar.com'
 const SITEMAP_REDIRECT_PATHS = new Set([
   '/technology/best-employee-management-software',
   '/technology/best-employee-management-software/get-free-quotes',
-  '/sales/best-crm-software',
-  '/sales/best-crm-software/get-free-quotes',
+  '/technology/best-payroll-system/get-free-quotes',
   '/marketing/best-crm-software/get-free-quote',
+  '/marketing/get-free-quotes',
   '/privacy-policy/ccpa-opt-out',
   '/do-not-sell-my-info',
   '/resources/whitepapers',
@@ -45,11 +45,6 @@ function uniqueReviewProducts() {
   }
 
   return entries
-}
-
-function compareUrl(category: string, brand: string): string {
-  const params = new URLSearchParams({ category, brand })
-  return `${SITEMAP_BASE_URL}/compare?${params.toString()}`
 }
 
 export async function getSitemapEntries(): Promise<MetadataRoute.Sitemap> {
@@ -114,20 +109,12 @@ export async function getSitemapEntries(): Promise<MetadataRoute.Sitemap> {
 
   const quoteHubRoutes: MetadataRoute.Sitemap = [
     { url: `${SITEMAP_BASE_URL}/technology/get-free-quotes`, changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${SITEMAP_BASE_URL}/marketing/get-free-quotes`, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${SITEMAP_BASE_URL}/bz-get-free-quotes-fleet-management`, changeFrequency: 'yearly', priority: 0.4 },
     { url: `${SITEMAP_BASE_URL}/bz-get-free-quotes-payroll-software`, changeFrequency: 'yearly', priority: 0.4 },
   ]
 
-  const compareRoutes: MetadataRoute.Sitemap = comparisonPages.flatMap((page) =>
-    page.products.map((product) => ({
-      url: compareUrl(page.slug, product.id),
-      lastModified: new Date(page.lastReviewed),
-      changeFrequency: 'monthly' as const,
-      priority: 0.55,
-    }))
-  )
-
+  // Vendor query variants (?ref=&product=&vendor=) and /description whitepaper
+  // URLs canonical to a cleaner parent. Do not sitemap them.
   const reviewProducts = uniqueReviewProducts()
 
   const reviewRoutes: MetadataRoute.Sitemap = reviewProducts.map((entry) => ({
@@ -137,19 +124,13 @@ export async function getSitemapEntries(): Promise<MetadataRoute.Sitemap> {
     priority: 0.75,
   }))
 
-  const vendorQuoteRoutes: MetadataRoute.Sitemap = reviewProducts.flatMap((entry) => {
-    const path = buildReviewVendorQuotePath(entry.reviewSlug, entry.name, entry.categoryPath)
-    if (!path) return []
-
-    return [{
-      url: `${SITEMAP_BASE_URL}${path}`,
-      lastModified: entry.lastReviewed,
-      changeFrequency: 'yearly' as const,
-      priority: 0.35,
-    }]
-  })
-
   const cmsPosts = await fetchPublishedBlogSummaries()
+
+  const blogTopicRoutes: MetadataRoute.Sitemap = BLOG_TOPIC_HUBS.map((hub) => ({
+    url: `${SITEMAP_BASE_URL}/blog?topic=${encodeURIComponent(hub.slug)}`,
+    changeFrequency: 'weekly' as const,
+    priority: 0.55,
+  }))
 
   const blogRoutes: MetadataRoute.Sitemap = cmsPosts.map((post) => {
     const verified = lastVerifiedForPost(post.slug)
@@ -175,16 +156,6 @@ export async function getSitemapEntries(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }))
 
-  // /description sub-pages are real, self-canonical, indexable pages (unlike
-  // /reviews/[slug]/description, which is noindex + canonical-to-parent) —
-  // they were reachable via on-page links but missing from this sitemap.
-  const whitePaperDescriptionRoutes: MetadataRoute.Sitemap = whitePapers.map((paper) => ({
-    url: `${SITEMAP_BASE_URL}/resources/whitepapers/${paper.slug}/description`,
-    lastModified: paper.publishedAt ? new Date(paper.publishedAt) : now,
-    changeFrequency: 'monthly' as const,
-    priority: 0.5,
-  }))
-
   const combined = [
     ...staticRoutes,
     ...legalRoutes,
@@ -192,12 +163,10 @@ export async function getSitemapEntries(): Promise<MetadataRoute.Sitemap> {
     ...comparisonRoutes,
     ...quoteConfigRoutes,
     ...quoteHubRoutes,
-    ...compareRoutes,
     ...reviewRoutes,
-    ...vendorQuoteRoutes,
+    ...blogTopicRoutes,
     ...blogRoutes,
     ...whitePaperRoutes,
-    ...whitePaperDescriptionRoutes,
   ]
 
   const seen = new Set<string>()

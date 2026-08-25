@@ -72,7 +72,7 @@ const NAV_ITEMS: NavItem[] = [
 
 const QUOTE_SERVICES = [
   { label: 'All Software Quotes', href: '/technology/get-free-quotes', description: 'Tell us your needs and get matched' },
-  { label: 'CRM Software Quotes', href: '/marketing/best-crm-software/get-free-quote', description: 'HubSpot, Zoho, Salesforce, more' },
+  { label: 'CRM Software Quotes', href: '/marketing/best-crm-software/get-free-quotes', description: 'HubSpot, Zoho, Salesforce, more' },
   { label: 'Payroll Software Quotes', href: '/human-resources/best-payroll-software/get-free-quotes', description: 'ADP, Gusto, OnPay, Rippling' },
   { label: 'Business Phone System Quotes', href: '/technology/business-phone-systems/get-free-quotes', description: 'VoIP and cloud phone platforms' },
   { label: 'Fleet Management Quotes', href: '/technology/gps-fleet-management-software/get-free-quotes', description: 'Fleet management and telematics tools' },

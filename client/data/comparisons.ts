@@ -34,7 +34,7 @@ export const comparisonPages: ComparisonPageData[] = [
     tocItems: [{ label: 'Top CRM picks', anchor: 'picks' }, { label: 'Full comparison table', anchor: 'compare' }, { label: 'FAQ', anchor: 'faqs' }],
     ctaTitle: 'Compare CRM quotes for your team',
     ctaBody: "Tell us your team size and we'll match you with the right CRM vendors, free, no commitment.",
-    ctaSlug: '/marketing/best-crm-software/get-free-quote',
+    ctaSlug: '/marketing/best-crm-software/get-free-quotes',
   },
 
   // ─── EMAIL MARKETING ────────────────────────────────────────────────────
@@ -406,7 +406,7 @@ export const comparisonPages: ComparisonPageData[] = [
     tocItems: [{ label: 'Top payroll picks', anchor: 'picks' }, { label: 'Full comparison table', anchor: 'compare' }, { label: 'FAQ', anchor: 'faqs' }],
     ctaTitle: 'Compare payroll quotes',
     ctaBody: "Tell us your team size and we'll match you with the right payroll vendors.",
-    ctaSlug: '/technology/best-payroll-system/get-free-quotes',
+    ctaSlug: '/human-resources/best-payroll-software/get-free-quotes',
   },
 
   // ─── VOIP ───────────────────────────────────────────────────────────────

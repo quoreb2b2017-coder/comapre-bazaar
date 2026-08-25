@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { getComparisonPageBySlug } from '@/data/comparisons'
 import { resolveCompareSeoNames, resolveQuoteVendorTitlePrefix } from '@/lib/seoAuditOverrides'
-import { buildMetadata, SITE_URL } from '@/lib/seo'
+import { buildMetadata } from '@/lib/seo'
 
 const COMPARE_CATEGORY_LABELS: Record<string, string> = {
   'crm-software': 'CRM software',
@@ -30,6 +30,18 @@ export function buildCompareBrandMetaDescription(brandName: string, categorySlug
   return `See how ${brandName} compares to other ${categoryLabel} options. Honest review covering features, real pricing, and who it works best for.`
 }
 
+function compareToolMetadata(opts: {
+  title: string
+  description: string
+  canonical: string
+}): Metadata {
+  return buildMetadata({
+    ...opts,
+    // Brand/vs query variants are the same tool UI. Index the ranking page instead.
+    index: false,
+  })
+}
+
 export function buildComparePageMetadata(searchParams: {
   category?: string
   brand?: string | string[]
@@ -41,7 +53,7 @@ export function buildComparePageMetadata(searchParams: {
   const page = getComparisonPageBySlug(category)
 
   if (!page) {
-    return buildMetadata({
+    return compareToolMetadata({
       title: 'Compare Business Software',
       description:
         'Side-by-side software comparisons with expert reviews, pricing breakdowns, and ranked recommendations.',
@@ -50,19 +62,14 @@ export function buildComparePageMetadata(searchParams: {
   }
 
   const product = page.products.find((p) => p.id === brandId) ?? page.products[0]
-  const path = brandId
-    ? `/compare?category=${category}&brand=${brandId}`
-    : `/compare?category=${category}`
   const { metaName, titleName } = resolveCompareSeoNames(category, product.id, product.name)
   const title = `${titleName} Review and Pricing 2026`
   const description = buildCompareBrandMetaDescription(metaName, category)
 
-  return buildMetadata({
+  return compareToolMetadata({
     title,
     description,
-    canonical: path,
-    ogTitle: `${title} | Compare Bazaar`,
-    ogUrl: `${SITE_URL}${path}`,
+    canonical: page.canonical,
   })
 }
 
@@ -78,7 +85,7 @@ export async function buildComparePageMetadataAsync(searchParams: {
   const page = await loadComparisonPage(category)
 
   if (!page) {
-    return buildMetadata({
+    return compareToolMetadata({
       title: 'Compare Business Software',
       description:
         'Side-by-side software comparisons with expert reviews, pricing breakdowns, and ranked recommendations.',
@@ -87,19 +94,14 @@ export async function buildComparePageMetadataAsync(searchParams: {
   }
 
   const product = page.products.find((p) => p.id === brandId) ?? page.products[0]
-  const path = brandId
-    ? `/compare?category=${category}&brand=${brandId}`
-    : `/compare?category=${category}`
   const { metaName, titleName } = resolveCompareSeoNames(category, product.id, product.name)
   const title = `${titleName} Review and Pricing 2026`
   const description = buildCompareBrandMetaDescription(metaName, category)
 
-  return buildMetadata({
+  return compareToolMetadata({
     title,
     description,
-    canonical: path,
-    ogTitle: `${title} | Compare Bazaar`,
-    ogUrl: `${SITE_URL}${path}`,
+    canonical: page.canonical,
   })
 }
 
@@ -116,7 +118,7 @@ export type QuotePageConfig = {
 
 export const QUOTE_PAGE_CONFIGS = {
   'technology/best-payroll-system/get-free-quotes': {
-    baseTitle: 'Best Payroll Software 2026',
+    baseTitle: 'Get Free Payroll Software Quotes',
     canonical: '/technology/best-payroll-system/get-free-quotes',
     baseDescription:
       'Get free quotes from top Payroll Software providers. Compare pricing and features to find the right fit for your team.',
@@ -206,7 +208,7 @@ export const QUOTE_PAGE_CONFIGS = {
     vendorH1Category: 'CRM Software',
   },
   'human-resources/best-payroll-software/get-free-quotes': {
-    baseTitle: 'Best Payroll Software 2026',
+    baseTitle: 'Get Free Payroll Software Quotes',
     canonical: '/human-resources/best-payroll-software/get-free-quotes',
     baseDescription:
       'Get free quotes from top Payroll Software providers. Compare pricing and features to find the right fit for your team.',
@@ -296,7 +298,8 @@ export function buildQuotePageMetadata(
   const config = configOverride ?? QUOTE_PAGE_CONFIGS[key]
   const vendor = parseParam(searchParams?.vendor)
   const product = parseParam(searchParams?.product)
-  const path = buildQuotePagePath(config.canonical, searchParams)
+  const ref = parseParam(searchParams?.ref)
+  const hasQueryVariant = Boolean(vendor || product || ref)
   const title = vendor
     ? `${resolveQuoteVendorTitlePrefix(product, vendor)} ${config.vendorTitleSuffix}`
     : config.baseTitle
@@ -307,9 +310,9 @@ export function buildQuotePageMetadata(
   return buildMetadata({
     title,
     description,
-    canonical: path,
+    canonical: config.canonical,
     ogTitle: `${title} | Compare Bazaar`,
-    ogUrl: `${SITE_URL}${path}`,
+    index: !hasQueryVariant,
   })
 }
 

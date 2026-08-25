@@ -1,13 +1,15 @@
 import type { Metadata } from 'next'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
+import { blogPosts } from '@/data/blogPosts'
 import { buildBlogShareMetadata, buildMetadata, formatShareDescription } from '@/lib/seo'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { PostRelatedContent } from '@/components/seo/seo-components'
 import { lastVerifiedForPost, normalizeBlogSlug } from '@/lib/content-map'
+import { resolveLiveBlogSlug } from '@/lib/blogSlugAlias'
 import { blogPostingGraph, buildGraph } from '@/lib/schema'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
-import { blogPosts } from '@/data/blogPosts'
+import { blogHubCategoryLabel } from '@/lib/blogTopicHubs'
 import {
   fetchPublishedBlogBySlug,
   loadUnifiedBlogIndex,
@@ -212,7 +214,12 @@ async function CmsBlogArticle({
   cms: CmsBlogDetail
   allPosts: Awaited<ReturnType<typeof loadUnifiedBlogIndex>>
 }) {
-  const category = (cms.tags && cms.tags[0]) || cms.topic || 'Editorial'
+  const category = blogHubCategoryLabel({
+    tags: cms.tags,
+    topic: cms.topic,
+    title: cms.title,
+    slug: cms.slug,
+  })
   const readLabel =
     typeof cms.readingTime === 'number' && cms.readingTime > 0 ? `${cms.readingTime} min read` : '8 min read'
   const publishedRaw = cms.publishedAt ? new Date(cms.publishedAt) : new Date()
@@ -387,14 +394,24 @@ async function CmsBlogArticle({
 }
 
 export default async function BlogPostPage({ params }: Props) {
+  const requested = decodeURIComponent(params.slug)
   const [cms, allPosts] = await Promise.all([
-    fetchPublishedBlogBySlug(params.slug),
+    fetchPublishedBlogBySlug(requested),
     loadUnifiedBlogIndex(),
   ])
   if (cms) return <CmsBlogArticle cms={cms} allPosts={allPosts} />
 
-  const post = blogPosts.find((item) => item.slug === params.slug)
-  if (!post) notFound()
+  const post = blogPosts.find((item) => item.slug === requested)
+  if (!post) {
+    const stripped = normalizeBlogSlug(requested.replace(/andamp/gi, 'and'))
+    if (stripped !== requested) {
+      const cmsStripped = await fetchPublishedBlogBySlug(stripped)
+      if (cmsStripped) redirect(`/blog/${cmsStripped.slug}`)
+    }
+    const live = resolveLiveBlogSlug(requested, allPosts)
+    if (live && live !== requested) redirect(`/blog/${live}`)
+    notFound()
+  }
 
   const relatedPosts = pickRelatedBlogPosts(allPosts, {
     currentSlug: post.slug,

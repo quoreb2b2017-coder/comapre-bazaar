@@ -35,11 +35,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return buildWhitePaperShareMetadata({
     title: `Full description: ${title}`,
     description: paper.metaDescription || paper.description,
-    canonicalPath: `/resources/whitepapers/${paper.slug}/description`,
+    canonicalPath: `/resources/whitepapers/${paper.slug}`,
     publishedAt: paper.publishedAt,
     keywords: paper.metaKeywords,
     ogImageUrl: whitePaperOgImageUrl(paper.thumbnailUrl, paper.slug),
     resourceLabel: whitePaperResourceLabel(whitePaperResourceType(paper.metadata)),
+    index: false,
   })
 }
 

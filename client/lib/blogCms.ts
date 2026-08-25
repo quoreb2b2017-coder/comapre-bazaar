@@ -2,6 +2,9 @@ import { blogPosts } from '@/data/blogPosts'
 import { postsForHub } from '@/lib/content-map'
 import { assignUniqueBlogCovers, pickTopicCoverUrl, resolveCoverUrlFromCms } from '@/lib/blogTopicCovers'
 import { cmsBackendBase, cmsBackendBaseCandidates } from '@/lib/cmsBackendBase'
+import { blogHubCategoryLabel, resolveHubFromPost, topicToSlug } from '@/lib/blogTopicHubs'
+
+export { topicToSlug, findPostByTopicSlug } from '@/lib/blogTopicHubs'
 
 /** Server-side base URL for Express. Browser callers should use cmsBackendBase() (same-origin proxy). */
 export function blogCmsBackendBase(): string {
@@ -169,15 +172,6 @@ function formatPublishedDay(input: string | Date | undefined): string {
   return d.toISOString().slice(0, 10)
 }
 
-/** URL slug for blog topic filters (/blog?topic=crm-software). */
-export function topicToSlug(topic: string): string {
-  return topic
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-}
-
 /** Resolve ?topic= slug back to a category label present on posts. */
 export function resolveTopicFromSlug(slug: string, posts: UnifiedBlogCard[]): string | null {
   const key = topicToSlug(slug)
@@ -191,12 +185,15 @@ export type BlogTopicEntry = { label: string; slug: string; count: number }
 export function getBlogTopics(posts: UnifiedBlogCard[]): BlogTopicEntry[] {
   const map = new Map<string, BlogTopicEntry>()
   for (const post of posts) {
-    const slug = topicToSlug(post.category)
+    const hub = resolveHubFromPost(post)
+    const slug = hub?.slug || topicToSlug(post.category)
+    const label = hub?.label || post.category
+    if (!slug) continue
     const existing = map.get(slug)
     if (existing) {
       existing.count += 1
     } else {
-      map.set(slug, { label: post.category, slug, count: 1 })
+      map.set(slug, { label, slug, count: 1 })
     }
   }
   return [...map.values()].sort((a, b) => a.label.localeCompare(b.label))
@@ -285,7 +282,12 @@ function cmsSummaryToUnified(b: CmsBlogSummary): UnifiedBlogCard {
   const { stripFrom, stripTo } = stripGradientForSlug(b.slug)
   const rt =
     typeof b.readingTime === 'number' && b.readingTime > 0 ? `${b.readingTime} min read` : '8 min read'
-  const category = (b.tags && b.tags[0]) || b.topic || 'Editorial'
+  const category = blogHubCategoryLabel({
+    tags: b.tags,
+    topic: b.topic,
+    title: b.title,
+    slug: b.slug,
+  })
   const coverUrl = resolveCoverUrlFromCms({
     slug: b.slug,
     title: b.title,

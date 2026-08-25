@@ -60,7 +60,7 @@ export const HOME_CATEGORIES: HomeCategory[] = [
   },
   {
     href: '/marketing/best-crm-software',
-    quotesHref: '/marketing/best-crm-software/get-free-quote',
+    quotesHref: '/marketing/best-crm-software/get-free-quotes',
     icon: HandshakeIcon,
     shortTitle: 'CRM',
     vendors: '11 vendors',

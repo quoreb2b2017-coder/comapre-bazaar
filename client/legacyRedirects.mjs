@@ -4,7 +4,7 @@
  */
 export const LEGACY_REDIRECTS = [
   // ── Old PascalCase hub + category URLs (indexed legacy site) ───────────────
-  { source: '/Sales/best-crm-software', destination: '/marketing/best-crm-software' },
+  { source: '/Sales/best-crm-software', destination: '/sales/best-crm-software' },
   { source: '/Marketing/best-crm-software', destination: '/marketing/best-crm-software' },
   { source: '/Marketing/best-email-marketing-services', destination: '/marketing/best-email-marketing-services' },
   { source: '/Marketing/best-website-building-platform', destination: '/marketing/best-website-building-platform' },
@@ -26,12 +26,7 @@ export const LEGACY_REDIRECTS = [
   { source: '/bestcrmsoftware', destination: '/marketing/best-crm-software' },
   { source: '/BusinessPayroll', destination: '/human-resources/best-payroll-software' },
 
-  // ── Lowercase canonical consolidations (duplicate content) ─────────────────
-  { source: '/sales/best-crm-software', destination: '/marketing/best-crm-software' },
-  {
-    source: '/sales/best-crm-software/get-free-quotes',
-    destination: '/marketing/best-crm-software/get-free-quotes',
-  },
+  // ── Lowercase canonical consolidations (true duplicates only) ─────────────
   {
     source: '/marketing/best-crm-software/get-free-quote',
     destination: '/marketing/best-crm-software/get-free-quotes',
@@ -44,11 +39,22 @@ export const LEGACY_REDIRECTS = [
     source: '/technology/best-employee-management-software/get-free-quotes',
     destination: '/human-resources/best-employee-management-software/get-free-quotes',
   },
+  {
+    source: '/technology/best-payroll-system/get-free-quotes',
+    destination: '/human-resources/best-payroll-software/get-free-quotes',
+  },
 
   // ── Legacy contact / resources paths ───────────────────────────────────────
   { source: '/Contact-us/About-us', destination: '/about' },
+  { source: '/about-us', destination: '/about' },
+  { source: '/home', destination: '/' },
+  { source: '/gps-fleet-management', destination: '/technology/gps-fleet-management-software' },
+  { source: '/Resources/Whitepaper/iot-implementation-guide', destination: '/resources/whitepapers' },
+  { source: '/Resources/Whitepaper/blockchain-applications', destination: '/resources/whitepapers' },
+  { source: '/Resources/Whitepaper/customer-experience-transformation', destination: '/resources/whitepapers' },
   { source: '/Contact-us/Contact', destination: '/contact' },
   { source: '/Resources/Blogs', destination: '/blog' },
+  { source: '/Resources/Whitepaper', destination: '/resources/whitepapers' },
   { source: '/Resources/software-comparison-methodology', destination: '/editorial-process' },
   { source: '/Resources/smb-software-pricing-report-2026', destination: '/resources/whitepapers' },
   { source: '/Resources/link-building-playbook', destination: '/resources/whitepapers' },
@@ -56,6 +62,10 @@ export const LEGACY_REDIRECTS = [
   // ── Misc legacy paths ──────────────────────────────────────────────────────
   { source: '/accessibility-statement', destination: '/accessibility' },
   { source: '/marketing-solutions', destination: '/marketing' },
+  {
+    source: '/marketing/get-free-quotes',
+    destination: '/marketing/best-website-building-platform/get-free-quotes',
+  },
 ]
 
 /** Case-insensitive legacy lookup for middleware. Skips when already at destination. */

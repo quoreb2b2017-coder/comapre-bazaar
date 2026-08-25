@@ -69,7 +69,8 @@ const blogSchema = new mongoose.Schema(
 
 // Mongoose 8+: async save hooks must not use `next`; calling next() throws "next is not a function".
 blogSchema.pre("save", async function () {
-  if (this.isModified("title") || this.isNew) {
+  // Keep existing slugs stable so Google URLs do not 404 after a title edit.
+  if (this.isNew || !this.slug) {
     let slug = slugify(this.title, { lower: true, strict: true });
     const existing = await this.constructor.findOne({ slug, _id: { $ne: this._id } });
     if (existing) {

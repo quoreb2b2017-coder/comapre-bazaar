@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { BlogShareBar } from '@/components/blog/BlogShareBar'
 import { BlogSubscribeBox } from '@/components/blog/BlogSubscribeBox'
-import { topicToSlug } from '@/lib/blogCms'
+import { blogTopicHref } from '@/lib/blogTopicHubs'
 
 type TocItem = { id: string; label: string }
 type LatestItem = { slug: string; title: string }
@@ -20,8 +20,7 @@ export function BlogArticleSidebar({ currentSlug, currentTitle, toc, latest, cat
   const rows = toc.slice(0, 12)
   const latestRows = latest.slice(0, 6)
   const topicLabel = category || topic || tags?.[0] || 'this topic'
-  const topicSlug = topicToSlug(topicLabel)
-  const topicHref = topicSlug ? `/blog?topic=${encodeURIComponent(topicSlug)}#blog-articles` : '/blog#blog-articles'
+  const topicHref = blogTopicHref(topicLabel)
 
   return (
     <aside aria-label="Article sidebar" className="w-full space-y-5">

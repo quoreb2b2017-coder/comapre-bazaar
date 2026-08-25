@@ -274,7 +274,7 @@ function mergeVerticalTags(tags = [], vertical) {
   const v = vertical || FALLBACK
   return Array.from(
     new Set(
-      [...(Array.isArray(tags) ? tags : []), ...(v.matchTags || []), v.categoryLabel]
+      [...(v.matchTags || []), v.categoryLabel, ...(Array.isArray(tags) ? tags : [])]
         .map((t) => String(t || '').trim())
         .filter(Boolean)
     )

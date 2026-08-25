@@ -32,6 +32,7 @@ export function buildMetadata({
   openGraphType = 'website',
   ogTitle,
   ogUrl,
+  index = true,
 }: {
   title: string
   description: string
@@ -41,6 +42,8 @@ export function buildMetadata({
   ogTitle?: string
   /** Absolute og:url including query strings when needed. */
   ogUrl?: string
+  /** Set false for tool/filter URLs that must not compete in the index. */
+  index?: boolean
 }): Metadata {
   const pageUrl = canonical.startsWith('http') ? canonical : `${SITE_URL}${canonical}`
   const shareUrl = ogUrl ?? pageUrl
@@ -82,9 +85,9 @@ export function buildMetadata({
       images: [ogImage],
     },
     robots: {
-      index: true,
+      index,
       follow: true,
-      googleBot: { index: true, follow: true },
+      googleBot: { index, follow: true },
     },
   }
 }
@@ -154,6 +157,7 @@ export function buildWhitePaperShareMetadata(opts: {
   authorName?: string
   ogImageUrl?: string
   resourceLabel?: string
+  index?: boolean
 }): Metadata {
   const path = opts.canonicalPath.startsWith('/') ? opts.canonicalPath : `/${opts.canonicalPath}`
   const url = `${SITE_URL}${path}`
@@ -164,9 +168,16 @@ export function buildWhitePaperShareMetadata(opts: {
     opts.publishedAt != null && opts.publishedAt !== ''
       ? new Date(opts.publishedAt).toISOString()
       : undefined
-  const absoluteTitle = opts.title.includes('| Compare Bazaar')
-    ? opts.title
-    : `${opts.title} | Compare Bazaar`
+  const labeledTitle =
+    opts.resourceLabel &&
+    !opts.title.toLowerCase().includes(opts.resourceLabel.toLowerCase()) &&
+    !/whitepaper|research report|\breport\b/i.test(opts.title)
+      ? `${opts.title} (${opts.resourceLabel})`
+      : opts.title
+  const absoluteTitle = labeledTitle.includes('| Compare Bazaar')
+    ? labeledTitle
+    : `${labeledTitle} | Compare Bazaar`
+  const index = opts.index !== false
 
   const shareImage = {
     url: imageUrl,
@@ -183,7 +194,7 @@ export function buildWhitePaperShareMetadata(opts: {
     alternates: { canonical: url },
     authors: [{ name: author, url: `${SITE_URL}/editorial-process` }],
     openGraph: {
-      title: opts.title,
+      title: labeledTitle,
       description: desc,
       url,
       siteName: SITE_NAME,
@@ -196,11 +207,11 @@ export function buildWhitePaperShareMetadata(opts: {
     },
     twitter: {
       card: 'summary_large_image',
-      title: opts.title,
+      title: labeledTitle,
       description: desc,
       images: [imageUrl],
     },
-    robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
+    robots: { index, follow: true, googleBot: { index, follow: true } },
   }
 }
 

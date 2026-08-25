@@ -13,18 +13,42 @@ const REDIRECT_TESTS = [
   { url: `${BASE}/resources/whitepaper/test-slug`, expect: '/resources/whitepapers/test-slug' },
   { url: `${BASE}/privacy-policy/ccpa-opt-out`, expect: '/do-not-sell' },
   { url: `${BASE}/do-not-sell-my-info`, expect: '/do-not-sell' },
-  { url: `${BASE}/sales/best-crm-software`, expect: '/marketing/best-crm-software' },
+  { url: `${BASE}/home`, expect: '/' },
+  { url: `${BASE}/about-us`, expect: '/about' },
+  { url: `${BASE}/gps-fleet-management`, expect: '/technology/gps-fleet-management-software' },
+  {
+    url: `${BASE}/blog/gusto-vs-adp-vs-paychex-which-payroll-platform-fits-your-headcount`,
+    expect: '/blog/gusto-vs-adp-vs-paychex-complete-comparison',
+  },
+  {
+    url: `${BASE}/technology/best-payroll-system/get-free-quotes`,
+    expect: '/human-resources/best-payroll-software/get-free-quotes',
+  },
 ]
 
 const PAGE_SCHEMA_TESTS = [
   { path: '/human-resources/best-payroll-software', needs: ['@graph', 'ItemList', 'BreadcrumbList'] },
   { path: '/marketing/best-crm-software', needs: ['@graph', 'ItemList'] },
-  { path: '/blog/gusto-vs-adp-vs-paychex-which-payroll-platform-fits-your-headcount', needs: ['@graph', 'BlogPosting'] },
+  { path: '/blog/gusto-vs-adp-vs-paychex-complete-comparison', needs: ['@graph', 'BlogPosting'] },
 ]
 
 const PAGE_MODULE_TESTS = [
   { path: '/human-resources/best-payroll-software', needs: ['why-businesses-need-modern-payroll-systems', 'Further reading'] },
-  { path: '/blog/gusto-vs-adp-vs-paychex-which-payroll-platform-fits-your-headcount', needs: ['Compare the payroll software'] },
+]
+
+const COMPARE_CANONICAL_TESTS = [
+  {
+    path: '/compare?category=technology-payroll&brand=gusto',
+    canonical: 'https://www.compare-bazaar.com/technology/best-payroll-system',
+  },
+  {
+    path: '/marketing/best-crm-software/get-free-quotes?ref=review&product=pipedrive-sales-review&vendor=Pipedrive',
+    canonical: 'https://www.compare-bazaar.com/marketing/best-crm-software/get-free-quotes',
+  },
+  {
+    path: '/resources/whitepapers/payroll-switching-cost-report-2026/description',
+    canonical: 'https://www.compare-bazaar.com/resources/whitepapers/payroll-switching-cost-report-2026',
+  },
 ]
 
 async function fetchHead(url, redirects = 0) {
@@ -94,6 +118,21 @@ async function testPageModule({ path, needs }) {
   }
 }
 
+async function testCompareCanonical({ path, canonical }) {
+  const res = await fetch(`${BASE}${path}`)
+  const html = await res.text()
+  const match =
+    html.match(/rel="canonical"[^>]*href="([^"]+)"/i) || html.match(/href="([^"]+)"[^>]*rel="canonical"/i)
+  const href = (match?.[1] || '').replace(/&amp;/g, '&')
+  const canonicalOk = href === canonical
+  const noindex = /name="robots"[^>]*content="[^"]*noindex/i.test(html) || /content="[^"]*noindex[^"]*"[^>]*name="robots"/i.test(html)
+  return {
+    name: `compare canonical ${path}`,
+    pass: res.ok && canonicalOk && noindex,
+    detail: `canonical=${href || '(missing)'} noindex=${noindex} status=${res.status}`,
+  }
+}
+
 async function testRobots() {
   const res = await fetch(`${BASE}/robots.txt`)
   const text = await res.text()
@@ -133,6 +172,7 @@ async function main() {
   for (const url of REDIRECT_TESTS.map((t) => t.url)) results.push(await testRedirectChain(url))
   for (const test of PAGE_SCHEMA_TESTS) results.push(await testPageSchema(test))
   for (const test of PAGE_MODULE_TESTS) results.push(await testPageModule(test))
+  for (const test of COMPARE_CANONICAL_TESTS) results.push(await testCompareCanonical(test))
   results.push(await testRobots())
   results.push(await testSubdomain())
 

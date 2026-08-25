@@ -15,6 +15,6 @@ const TOPIC_COPY: Record<string, string> = {
 export function topicIntro(label: string): string {
   return (
     TOPIC_COPY[label] ??
-    `Independent buying guides and vendor comparisons for ${label} - structured research with clear trade-offs.`
+    `Independent blogs and vendor comparisons for ${label} - structured research with clear trade-offs.`
   )
 }

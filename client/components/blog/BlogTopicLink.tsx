@@ -1,19 +1,15 @@
 import Link from 'next/link'
-import { topicToSlug } from '@/lib/blogCms'
+import { blogTopicHref } from '@/lib/blogTopicHubs'
 
 type BlogTopicLinkProps = {
   category: string
   className?: string
 }
 
-/** Category label → filtered blog index (scrolls to articles). */
+/** Category label → canonical topic hub (or /blog). */
 export function BlogTopicLink({ category, className = '' }: BlogTopicLinkProps) {
-  const slug = topicToSlug(category)
   return (
-    <Link
-      href={`/blog?topic=${encodeURIComponent(slug)}#blog-articles`}
-      className={`transition-colors hover:text-brand ${className}`}
-    >
+    <Link href={blogTopicHref(category)} className={`transition-colors hover:text-brand ${className}`}>
       {category}
     </Link>
   )
