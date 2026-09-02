@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Plus_Jakarta_Sans, Source_Serif_4 } from 'next/font/google'
 import './globals.css'
 import { SiteChrome } from '@/components/layout/SiteChrome'
+import { AlliAiScript } from '@/components/seo/AlliAiScript'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { GA_MEASUREMENT_ID } from '@/lib/googleAnalytics'
 import { buildGraph, organizationGraph } from '@/lib/schema'
@@ -78,6 +79,7 @@ export default function RootLayout({
           </>
         ) : null}
         <JsonLd schema={buildGraph(...organizationGraph())} />
+        <AlliAiScript />
       </head>
       <body className={`${sans.className} flex min-h-screen flex-col overflow-x-hidden antialiased`}>
         <SiteChrome>{children}</SiteChrome>
