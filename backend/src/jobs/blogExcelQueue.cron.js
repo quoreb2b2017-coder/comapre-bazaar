@@ -2,10 +2,10 @@ const cron = require('node-cron')
 const { runDailyExcelQueueBatch } = require('../services/blogAdmin.excelQueue.service')
 
 /**
- * Daily Excel → blog pipeline.
- * Default: 09:00 Asia/Kolkata — 1 blog per distinct category still queued in Excel.
+ * Excel → blog pipeline.
+ * Default: Mon & Wed 23:00 Asia/Kolkata — 2 blogs (1 per category in today's group).
  * Set BLOG_EXCEL_CRON_ENABLED=false to disable.
- * Optional BLOG_EXCEL_DAILY_LIMIT = max posts/day (0 = all categories).
+ * Optional BLOG_EXCEL_DAILY_LIMIT = max posts/run (0 = all categories in group).
  */
 function startBlogExcelQueueCron() {
   const enabled = String(process.env.BLOG_EXCEL_CRON_ENABLED || 'true').trim().toLowerCase()
@@ -14,7 +14,8 @@ function startBlogExcelQueueCron() {
     return null
   }
 
-  const expression = String(process.env.BLOG_EXCEL_CRON || '0 9 * * *').trim()
+  // node-cron: 0 23 * * 1,3 = 23:00 on Monday (1) and Wednesday (3)
+  const expression = String(process.env.BLOG_EXCEL_CRON || '0 23 * * 1,3').trim()
   const timezone = String(process.env.BLOG_EXCEL_CRON_TZ || 'Asia/Kolkata').trim()
 
   if (!cron.validate(expression)) {
@@ -25,19 +26,19 @@ function startBlogExcelQueueCron() {
   const job = cron.schedule(
     expression,
     async () => {
-      console.log('[excel-queue] daily cron started (5 categories / day alternate)')
+      console.log('[excel-queue] Mon/Wed cron started (2 blogs / run)')
       try {
         const result = await runDailyExcelQueueBatch({ force: false })
-        console.log('[excel-queue] daily cron finished:', result.message || result)
+        console.log('[excel-queue] cron finished:', result.message || result)
       } catch (error) {
-        console.error('[excel-queue] daily cron failed:', error.message || error)
+        console.error('[excel-queue] cron failed:', error.message || error)
       }
     },
     { timezone }
   )
 
   console.log(
-    `[excel-queue] cron scheduled "${expression}" tz=${timezone} — alternate category groups (default 5/day)`
+    `[excel-queue] cron scheduled "${expression}" tz=${timezone} — Mon & Wed 11pm IST (default 2 blogs/run)`
   )
   return job
 }

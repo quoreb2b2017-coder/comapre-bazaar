@@ -2,6 +2,10 @@ const express = require('express')
 const router = express.Router()
 const Blog = require("../models/automationBlog.model")
 const BlogSubscriber = require("../models/blogSubscriber.model")
+const {
+  sendSubscribeConfirmationEmail,
+  sendUnsubscribeConfirmationEmail,
+} = require("../services/blogAdmin.email.service")
 
 /** Visible on Compare Bazaar /blog — only explicitly published posts */
 const PUBLIC_STATUSES = ['published']
@@ -106,8 +110,14 @@ router.post('/subscribe', async (req, res) => {
 
     const existing = await BlogSubscriber.findOne({ email: emailRaw })
     let subscriber
+    let isNew = false
+    let wasInactive = false
     if (existing) {
+      wasInactive = !existing.isActive
       existing.isActive = true
+      existing.unsubscribedAt = null
+      existing.unsubscribeReason = ''
+      existing.unsubscribeSource = ''
       if (!existing.subscribedFrom) existing.subscribedFrom = source || ''
       if (!existing.sourceBlogSlug) existing.sourceBlogSlug = sourceBlog?.slug || source || ''
       if (!existing.sourceBlogTitle) existing.sourceBlogTitle = sourceLabel
@@ -115,6 +125,7 @@ router.post('/subscribe', async (req, res) => {
       await existing.save()
       subscriber = existing
     } else {
+      isNew = true
       subscriber = await BlogSubscriber.create({
         email: emailRaw,
         isActive: true,
@@ -126,11 +137,16 @@ router.post('/subscribe', async (req, res) => {
       })
     }
 
+    // Welcome / confirmation email for new or re-activated subscribers (do not block API on email failure).
+    if (isNew || wasInactive) {
+      sendSubscribeConfirmationEmail(emailRaw).catch((err) => {
+        console.error('[subscribe] confirmation email failed:', err?.message || err)
+      })
+    }
+
     res.json({
       success: true,
-      message: subscriber?.createdAt && subscriber.createdAt.getTime() === subscriber.updatedAt.getTime()
-        ? 'Subscribed successfully'
-        : 'Subscription updated successfully',
+      message: isNew ? 'Subscribed successfully' : 'Subscription updated successfully',
     })
   } catch (error) {
     res.status(500).json({ success: false, message: error.message })
@@ -153,11 +169,19 @@ router.post('/unsubscribe', async (req, res) => {
       return res.status(404).json({ success: false, message: 'Subscription not found for this email' })
     }
 
+    if (!subscriber.isActive) {
+      return res.json({ success: true, message: 'Already unsubscribed' })
+    }
+
     subscriber.isActive = false
     subscriber.unsubscribedAt = new Date()
     if (reason) subscriber.unsubscribeReason = reason
     subscriber.unsubscribeSource = source
     await subscriber.save()
+
+    sendUnsubscribeConfirmationEmail(emailRaw).catch((err) => {
+      console.error('[unsubscribe] confirmation email failed:', err?.message || err)
+    })
 
     res.json({ success: true, message: 'Unsubscribed successfully' })
   } catch (error) {

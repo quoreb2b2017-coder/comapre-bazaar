@@ -13,12 +13,12 @@ const {
 } = require('./blogAdmin.verticalCta.service')
 
 /**
- * Optional safety cap (0 = unlimited).
- * Default 0 so daily count = how many distinct categories still have queued titles.
+ * Optional safety cap (0 = unlimited within today's category group).
+ * Default 2 = Mon/Wed batch size.
  */
-const DAILY_MAX = Math.max(0, Number(process.env.BLOG_EXCEL_DAILY_LIMIT || 0))
-/** How many categories run per day (e.g. 10 cats → 5 today, 5 tomorrow, repeat). */
-const CATEGORIES_PER_DAY = Math.max(1, Number(process.env.BLOG_EXCEL_CATEGORIES_PER_DAY || 5))
+const DAILY_MAX = Math.max(0, Number(process.env.BLOG_EXCEL_DAILY_LIMIT || 2))
+/** How many categories run per scheduled batch (e.g. 10 cats → 2 Mon, 2 Wed, rotate). */
+const CATEGORIES_PER_DAY = Math.max(1, Number(process.env.BLOG_EXCEL_CATEGORIES_PER_DAY || 2))
 const SETTINGS_LAST_RUN_KEY = 'excel_queue_last_daily_run'
 const SETTINGS_DAY_GROUP_KEY = 'excel_queue_day_group'
 

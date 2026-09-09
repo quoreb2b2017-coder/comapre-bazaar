@@ -28,7 +28,13 @@ export async function unsubscribeNewsletter(email: string, reason?: string) {
   const res = await fetch('/api/v1/blog-admin/public/blogs/unsubscribe', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: value, reason: reason || '', source: 'footer-form' }),
+    body: JSON.stringify({
+      email: value,
+      reason: reason || '',
+      source: typeof window !== 'undefined' && window.location.pathname.startsWith('/unsubscribe')
+        ? 'unsubscribe-page'
+        : 'footer-form',
+    }),
   })
   const data = await res.json()
   if (!res.ok || !data?.success) {

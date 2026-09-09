@@ -37,28 +37,30 @@ const dashboardBlogUrl = (blogId, query = "") => {
   return `${origin}${base}/blogs/${blogId}${q}`;
 };
 
-const sendWithResend = async ({ to, subject, html, from, apiKey: apiKeyOverride }) => {
+const sendWithResend = async ({ to, subject, html, from, apiKey: apiKeyOverride, headers }) => {
   const apiKey = apiKeyOverride || process.env.RESEND_API_KEY;
   if (!apiKey) {
     throw new Error("RESEND_API_KEY is not configured");
   }
 
-  await axios.post(
-    RESEND_API_URL,
-    {
-      from: from || process.env.RESEND_FROM_EMAIL || "Blog Admin <onboarding@resend.dev>",
-      to: [to],
-      subject,
-      html,
+  const payload = {
+    from: from || process.env.RESEND_FROM_EMAIL || "Blog Admin <onboarding@resend.dev>",
+    to: [to],
+    subject,
+    html,
+  };
+  // Resend expects a plain object of header name → value (not an array).
+  if (headers && typeof headers === "object" && !Array.isArray(headers)) {
+    payload.headers = headers;
+  }
+
+  await axios.post(RESEND_API_URL, payload, {
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
     },
-    {
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      timeout: 60000,
-    }
-  );
+    timeout: 60000,
+  });
 };
 
 const sendOTPEmail = async (email, otp) => {
@@ -153,9 +155,168 @@ const sendApprovalEmail = async (blog, recipientEmail, resendOpts = {}) => {
   }
 };
 
+const publicSiteOrigin = () =>
+  (
+    process.env.WEBSITE_URL ||
+    process.env.FRONTEND_URL ||
+    "https://www.compare-bazaar.com"
+  ).replace(/\/$/, "");
+
 const publicBlogUrl = (slug) => {
-  const origin = (process.env.FRONTEND_URL || "http://localhost:3000").replace(/\/$/, "");
+  const origin = publicSiteOrigin();
   return `${origin}/blog/${encodeURIComponent(String(slug || "").trim())}`;
+};
+
+const publicLogoUrl = () => `${publicSiteOrigin()}/favicon-96.png`;
+
+const unsubscribePageUrl = (email) => {
+  const origin = publicSiteOrigin();
+  const q = email ? `?email=${encodeURIComponent(String(email).trim().toLowerCase())}` : "";
+  return `${origin}/unsubscribe${q}`;
+};
+
+const blogHubUrl = () => `${publicSiteOrigin()}/blog`;
+
+/** Shared Compare Bazaar branded email chrome (navy + orange + logo). */
+const brandedEmailShell = ({ preheader, title, eyebrow, bodyHtml, footerHtml }) => {
+  const logo = escapeHtml(publicLogoUrl());
+  const site = escapeHtml(publicSiteOrigin());
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${escapeHtml(title || "Compare Bazaar")}</title>
+</head>
+<body style="margin:0;padding:0;background:#EEF2F8;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;">
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">
+    ${escapeHtml(preheader || "")}
+  </div>
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#EEF2F8;padding:28px 12px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:560px;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 12px 40px rgba(11,42,111,0.12);">
+          <tr>
+            <td style="background:#0B2A6F;padding:22px 28px;text-align:center;">
+              <img src="${logo}" width="48" height="48" alt="Compare Bazaar" style="display:block;margin:0 auto 10px;border:0;border-radius:10px;" />
+              <p style="margin:0;font-size:18px;font-weight:700;letter-spacing:0.02em;color:#ffffff;">
+                Compare<span style="color:#F58220;">Bazaar</span>
+              </p>
+              ${
+                eyebrow
+                  ? `<p style="margin:6px 0 0;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.72);">${escapeHtml(eyebrow)}</p>`
+                  : ""
+              }
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:28px 28px 8px;color:#1e293b;">
+              ${bodyHtml}
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:8px 28px 28px;color:#64748b;font-size:13px;line-height:1.6;">
+              ${footerHtml || ""}
+              <p style="margin:18px 0 0;font-size:12px;color:#94a3b8;line-height:1.5;">
+                © ${new Date().getFullYear()} Compare Bazaar ·
+                <a href="${site}" style="color:#0B2A6F;text-decoration:none;">compare-bazaar.com</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+};
+
+const primaryButton = (href, label) => `
+  <a href="${escapeHtml(href)}"
+     style="display:inline-block;background:#F58220;color:#ffffff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:12px 22px;border-radius:8px;">
+    ${escapeHtml(label)}
+  </a>`;
+
+const sendSubscribeConfirmationEmail = async (to, opts = {}) => {
+  try {
+    const from = opts.from || process.env.RESEND_FROM_EMAIL || process.env.EMAIL_FROM;
+    const manageUrl = unsubscribePageUrl(to);
+    const blogUrl = blogHubUrl();
+    await sendWithResend({
+      to,
+      apiKey: opts.apiKey,
+      from,
+      subject: "You're subscribed to Compare Bazaar updates",
+      headers: {
+        "List-Unsubscribe": `<${manageUrl}>`,
+      },
+      html: brandedEmailShell({
+        preheader: "Thanks for joining Compare Bazaar email updates.",
+        title: "Subscription confirmed",
+        eyebrow: "Subscription confirmed",
+        bodyHtml: `
+          <h1 style="margin:0 0 12px;font-size:22px;line-height:1.3;color:#0B2A6F;">You're on the list</h1>
+          <p style="margin:0 0 14px;font-size:15px;line-height:1.7;color:#334155;">
+            Thanks for subscribing. We'll send independent software comparisons, pricing notes, and new blogs from Compare Bazaar — no vendor spam.
+          </p>
+          <p style="margin:0 0 22px;font-size:14px;line-height:1.6;color:#64748b;">
+            Confirmed for <strong style="color:#0B2A6F;">${escapeHtml(to)}</strong>
+          </p>
+          <p style="margin:0 0 22px;">${primaryButton(blogUrl, "Browse latest blogs")}</p>
+        `,
+        footerHtml: `
+          <p style="margin:0;">
+            Changed your mind?
+            <a href="${escapeHtml(manageUrl)}" style="color:#F58220;font-weight:600;text-decoration:none;">Unsubscribe anytime</a>.
+          </p>
+        `,
+      }),
+    });
+    return { success: true };
+  } catch (error) {
+    const detail = error.response?.data || error.message;
+    console.error("[email] subscribe confirmation failed:", detail);
+    return { success: false, error: typeof detail === "object" ? JSON.stringify(detail) : String(detail) };
+  }
+};
+
+const sendUnsubscribeConfirmationEmail = async (to, opts = {}) => {
+  try {
+    const from = opts.from || process.env.RESEND_FROM_EMAIL || process.env.EMAIL_FROM;
+    const blogUrl = blogHubUrl();
+    const site = publicSiteOrigin();
+    await sendWithResend({
+      to,
+      apiKey: opts.apiKey,
+      from,
+      subject: "You've been unsubscribed from Compare Bazaar",
+      html: brandedEmailShell({
+        preheader: "You will no longer receive Compare Bazaar email updates.",
+        title: "Unsubscribed",
+        eyebrow: "Email preferences updated",
+        bodyHtml: `
+          <h1 style="margin:0 0 12px;font-size:22px;line-height:1.3;color:#0B2A6F;">You're unsubscribed</h1>
+          <p style="margin:0 0 14px;font-size:15px;line-height:1.7;color:#334155;">
+            We removed <strong style="color:#0B2A6F;">${escapeHtml(to)}</strong> from Compare Bazaar email updates.
+            You won't get new blog alerts from us unless you subscribe again.
+          </p>
+          <p style="margin:0 0 22px;">${primaryButton(blogUrl, "Keep browsing blogs")}</p>
+        `,
+        footerHtml: `
+          <p style="margin:0;">
+            Unsubscribed by mistake?
+            <a href="${escapeHtml(site)}/#newsletter" style="color:#F58220;font-weight:600;text-decoration:none;">Subscribe again from our site</a>.
+          </p>
+        `,
+      }),
+    });
+    return { success: true };
+  } catch (error) {
+    const detail = error.response?.data || error.message;
+    console.error("[email] unsubscribe confirmation failed:", detail);
+    return { success: false, error: typeof detail === "object" ? JSON.stringify(detail) : String(detail) };
+  }
 };
 
 const sendNewBlogPublishedEmail = async (to, blog, resendOpts = {}) => {
@@ -164,64 +325,37 @@ const sendNewBlogPublishedEmail = async (to, blog, resendOpts = {}) => {
     const safeTitle = escapeHtml(blog?.title || "New Blog");
     const fullBodyHtml = prepareBlogHtmlForEmail(blog?.content || "");
     const url = publicBlogUrl(blog?.slug);
+    const manageUrl = unsubscribePageUrl(to);
     await sendWithResend({
       to,
       apiKey: resendOpts.apiKey,
       from,
       subject: `New blog published: ${String(blog?.title || "Compare Bazaar").slice(0, 120)}`,
-      html: `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          <style>
-            body { margin:0; padding:0; background:#f8fafc; font-family:Segoe UI,Arial,sans-serif; }
-            .shell { max-width:700px; margin:14px auto; background:#ffffff; border-radius:14px; overflow:hidden; box-shadow:0 4px 24px rgba(0,0,0,.08); }
-            .head { background:linear-gradient(135deg,#0f1f3d 0%,#1d4ed8 100%); padding:22px 20px; }
-            .head h1 { color:#fff; margin:0; font-size:20px; line-height:1.3; }
-            .head p { color:rgba(255,255,255,.8); margin:7px 0 0; font-size:13px; }
-            .body { padding:20px; color:#334155; }
-            .body h2,.body h3 { color:#0f1f3d; line-height:1.35; margin:18px 0 10px; }
-            .body p,.body li { font-size:15px; line-height:1.7; color:#334155; }
-            .body ul,.body ol { margin:10px 0 14px 18px; padding:0; }
-            .body a { color:#1d4ed8; }
-            .meta { margin:0 0 14px; font-size:13px; color:#64748b; }
-            .cta { margin-top:14px; font-size:13px; color:#64748b; line-height:1.6; }
-            .footer { margin-top:16px; color:#94a3b8; font-size:12px; line-height:1.5; }
-            img, table, pre { max-width:100% !important; height:auto !important; }
-            @media only screen and (max-width: 640px) {
-              .shell { margin:0; border-radius:0; }
-              .head { padding:18px 14px; }
-              .head h1 { font-size:18px; }
-              .body { padding:14px; }
-              .body p,.body li { font-size:14px; }
-            }
-          </style>
-        </head>
-        <body>
-          <div class="shell">
-            <div class="head">
-              <h1>New post is live</h1>
-              <p>Compare Bazaar updates</p>
-            </div>
-            <div class="body">
-              <h2 style="margin:0 0 8px">${safeTitle}</h2>
-              <p class="meta">Full blog content</p>
-              <div>
-                ${fullBodyHtml || "<p><em>(No content)</em></p>"}
-              </div>
-              <p class="cta">
-                Prefer reading on site?
-                <a href="${escapeHtml(url)}" style="margin-left:4px">Open web version</a>
-              </p>
-              <p class="footer">
-                You are receiving this because you subscribed to blog updates.
-              </p>
-            </div>
+      headers: {
+        "List-Unsubscribe": `<${manageUrl}>`,
+      },
+      html: brandedEmailShell({
+        preheader: `New on Compare Bazaar: ${String(blog?.title || "Fresh blog").slice(0, 90)}`,
+        title: String(blog?.title || "New blog"),
+        eyebrow: "New blog published",
+        bodyHtml: `
+          <h1 style="margin:0 0 10px;font-size:20px;line-height:1.35;color:#0B2A6F;">${safeTitle}</h1>
+          <p style="margin:0 0 16px;">${primaryButton(url, "Read on Compare Bazaar")}</p>
+          <div style="font-size:15px;line-height:1.7;color:#334155;">
+            ${fullBodyHtml || "<p><em>(No content)</em></p>"}
           </div>
-        </body>
-        </html>
-      `,
+          <p style="margin:18px 0 0;font-size:13px;color:#64748b;">
+            Prefer the web version?
+            <a href="${escapeHtml(url)}" style="color:#F58220;font-weight:600;text-decoration:none;">Open article</a>
+          </p>
+        `,
+        footerHtml: `
+          <p style="margin:0;">
+            You received this because you subscribed to Compare Bazaar updates.
+            <a href="${escapeHtml(manageUrl)}" style="color:#F58220;font-weight:600;text-decoration:none;">Unsubscribe</a>
+          </p>
+        `,
+      }),
     });
     return { success: true };
   } catch (error) {
@@ -230,4 +364,11 @@ const sendNewBlogPublishedEmail = async (to, blog, resendOpts = {}) => {
   }
 };
 
-module.exports = { sendOTPEmail, sendApprovalEmail, sendNewBlogPublishedEmail };
+module.exports = {
+  sendOTPEmail,
+  sendApprovalEmail,
+  sendNewBlogPublishedEmail,
+  sendSubscribeConfirmationEmail,
+  sendUnsubscribeConfirmationEmail,
+  unsubscribePageUrl,
+};

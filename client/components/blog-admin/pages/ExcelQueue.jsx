@@ -272,8 +272,10 @@ export const ExcelQueue = () => {
         <p className="flex items-start gap-2">
           <FileSpreadsheet className="mt-0.5 h-4 w-4 shrink-0 text-[#F58220]" />
           <span>
-            Example with 10 categories: <strong>5 today</strong>, <strong>5 tomorrow</strong>, then repeat. Env:{' '}
-            <code className="rounded bg-slate-100 px-1">BLOG_EXCEL_CATEGORIES_PER_DAY=5</code>. Cron 09:00 IST.
+            Schedule: <strong>Monday & Wednesday 11:00 PM IST</strong>, <strong>2 blogs</strong> per run (rotating
+            category groups). Env:{' '}
+            <code className="rounded bg-slate-100 px-1">BLOG_EXCEL_CRON=0 23 * * 1,3</code>,{' '}
+            <code className="rounded bg-slate-100 px-1">BLOG_EXCEL_CATEGORIES_PER_DAY=2</code>.
             {stats?.lastRun ? (
               <>
                 {' '}
