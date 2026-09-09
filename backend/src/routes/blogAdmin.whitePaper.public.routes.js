@@ -2,6 +2,7 @@ const express = require('express')
 const axios = require('axios')
 const WhitePaper = require('../models/whitePaper.model')
 const WhitePaperLead = require('../models/whitePaperLead.model')
+const BlogSubscriber = require('../models/blogSubscriber.model')
 const { cloudinaryForceDownloadUrl, safePdfFileName } = require('../utils/pdf-download')
 const { isWorkEmail } = require('../utils/work-email')
 const { INSIDE_SECTIONS_MAX, resolveWhitePaperTitle, cleanWhitePaperTitle } = require('../services/blogAdmin.whitePaper.service')
@@ -247,6 +248,22 @@ router.post('/:slug/download-complete', async (req, res) => {
 
     if (isFirstDownload) {
       await WhitePaper.findByIdAndUpdate(paper._id, { $inc: { downloadCount: 1 } })
+    }
+
+    // Opt-out checkbox → no further email; deactivate newsletter subscriber if present.
+    if (!marketingConsent) {
+      await BlogSubscriber.findOneAndUpdate(
+        { email },
+        {
+          $set: {
+            isActive: false,
+            unsubscribedAt: new Date(),
+            unsubscribeReason: 'Opted out on white paper download form',
+            unsubscribeSource: 'whitepaper-opt-out',
+          },
+        },
+        { upsert: false }
+      )
     }
 
     const fileName = safePdfFileName(paper.slug, paper.title)

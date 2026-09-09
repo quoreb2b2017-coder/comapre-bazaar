@@ -102,28 +102,29 @@ export const Subscribers = () => {
 
       <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1060px] table-fixed">
+          <table className="w-full min-w-[1180px] table-fixed">
             <thead>
               <tr className="border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
-                <th className="w-[110px] text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Subscriber ID</th>
-                <th className="w-[300px] text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Email</th>
-                <th className="w-[280px] text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Blog</th>
+                <th className="w-[100px] text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Subscriber ID</th>
+                <th className="w-[260px] text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Email</th>
+                <th className="w-[200px] text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Blog</th>
                 <th className="w-[110px] text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Status</th>
-                <th className="w-[120px] text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Subscribed</th>
-                <th className="w-[110px] text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Notifications</th>
-                <th className="w-[170px] text-right px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Actions</th>
+                <th className="w-[220px] text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Opt-out reason</th>
+                <th className="w-[110px] text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Subscribed</th>
+                <th className="w-[90px] text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Notices</th>
+                <th className="w-[160px] text-right px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
               {loading ? (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-gray-500">
+                  <td colSpan={8} className="py-12 text-center text-gray-500">
                     <Loader2 className="w-5 h-5 animate-spin inline mr-2" /> Loading subscribers...
                   </td>
                 </tr>
               ) : rows.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-gray-500">No subscribers found.</td>
+                  <td colSpan={8} className="py-12 text-center text-gray-500">No subscribers found.</td>
                 </tr>
               ) : (
                 rows.map((s, idx) => {
@@ -132,6 +133,7 @@ export const Subscribers = () => {
                   const shortId = s.sourceBlogId ? `${prefix}-${String(s.sourceBlogId).slice(-4)}` : `${prefix}${seqNo}`
                   const blogText = s.sourceBlogTitle || s.sourceBlogSlug || s.subscribedFrom || '-'
                   const isActive = !!s.isActive
+                  const reasonText = s.unsubscribeReason || (s.unsubscribeSource ? `Source: ${s.unsubscribeSource}` : '')
                   return (
                   <tr key={s._id} className="hover:bg-gray-50 dark:hover:bg-gray-800/40">
                     <td className="px-4 py-3 text-xs text-gray-600 dark:text-gray-300 font-semibold whitespace-nowrap">{shortId}</td>
@@ -148,6 +150,25 @@ export const Subscribers = () => {
                       <span className={`px-2 py-1 rounded-full text-xs font-semibold ${isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-200 text-gray-700'}`}>
                         {isActive ? 'Active' : 'Unsubscribed'}
                       </span>
+                      {!isActive && s.unsubscribedAt ? (
+                        <p className="mt-1 text-[10px] text-gray-400">
+                          {new Date(s.unsubscribedAt).toLocaleDateString()}
+                        </p>
+                      ) : null}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
+                      {reasonText ? (
+                        <span className="block line-clamp-2" title={reasonText}>
+                          {shortLabel(reasonText, 48)}
+                        </span>
+                      ) : (
+                        <span className="text-gray-300">—</span>
+                      )}
+                      {s.unsubscribeSource ? (
+                        <p className="mt-0.5 text-[10px] uppercase tracking-wide text-gray-400">
+                          {s.unsubscribeSource}
+                        </p>
+                      ) : null}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">{new Date(s.createdAt).toLocaleDateString()}</td>
                     <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">{s.totalNotifications || 0}</td>

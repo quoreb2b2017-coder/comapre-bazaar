@@ -9,6 +9,10 @@ import { whitePaperDisplayTitle } from '@/lib/whitePaperDisplay'
 import { whitePaperBackendBase } from '@/lib/whitePaperCms'
 import { isWorkEmail, WORK_EMAIL_ERROR } from '@/lib/workEmail'
 import { WhitePaperHighlightFormFields } from '@/components/whitepaper/WhitePaperHighlightFormFields'
+import {
+  WhitePaperConsentBlock,
+  WhitePaperConsentFooter,
+} from '@/components/whitepaper/WhitePaperConsentBlock'
 import { parseHighlightQuestions, type HighlightQuestion } from '@/lib/highlightQuestions'
 import { WhitePaperInsideExplorer } from '@/components/whitepaper/WhitePaperInsideExplorer'
 import { WhitePaperShareBar } from '@/components/whitepaper/WhitePaperShareBar'
@@ -79,8 +83,9 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
     companyCity: '',
     companyState: '',
     companyCountry: '',
-    marketingConsent: false,
   })
+  const [termsAccepted, setTermsAccepted] = useState(false)
+  const [optOutCommunication, setOptOutCommunication] = useState(false)
   const [customAnswers, setCustomAnswers] = useState<string[]>([])
 
   const headline = whitePaperDisplayTitle(paper.title, paper.seoTitle)
@@ -103,6 +108,10 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
   const onEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    if (!termsAccepted) {
+      setError('Please agree to Compare Bazaar Terms of Use and Privacy Policy to continue.')
+      return
+    }
     const trimmed = email.trim()
     if (!isWorkEmail(trimmed)) {
       setError(WORK_EMAIL_ERROR)
@@ -131,6 +140,10 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
   const onProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    if (!termsAccepted) {
+      setError('Please agree to Compare Bazaar Terms of Use and Privacy Policy to continue.')
+      return
+    }
     setLoading(true)
     try {
       const res = await fetch(
@@ -141,6 +154,7 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
           body: JSON.stringify({
             email: email.trim(),
             ...form,
+            marketingConsent: !optOutCommunication,
             highlightAnswers: formQuestions.map((item, index) => ({
               question: item.question,
               answer: customAnswers[index] || '',
@@ -158,6 +172,13 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
       setDownloadUrl(fullUrl)
       setStep('done')
       triggerPdfDownload(fullUrl)
+      if (optOutCommunication && typeof window !== 'undefined') {
+        try {
+          window.localStorage.removeItem('cb_subscribed_email')
+        } catch {
+          // ignore
+        }
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
@@ -233,9 +254,19 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
                     <p className="mt-1 text-[11px] leading-snug text-gray-500">
                       Company email only. Not Gmail, Yahoo, Outlook, or other personal addresses.
                     </p>
+
+                  <WhitePaperConsentBlock
+                    idPrefix="wp-email"
+                    className="mt-4"
+                    termsAccepted={termsAccepted}
+                    optOutCommunication={optOutCommunication}
+                    onTermsChange={setTermsAccepted}
+                    onOptOutChange={setOptOutCommunication}
+                  />
+
                   {error ? <p className="mt-2 text-sm text-red-600">{error}</p> : null}
                   <div className="mt-4">
-                    <button type="submit" disabled={loading} className={btnPrimary}>
+                    <button type="submit" disabled={loading || !termsAccepted} className={btnPrimary}>
                       {loading ? (
                         <Loader2 className="mx-auto h-5 w-5 animate-spin" />
                       ) : (
@@ -245,6 +276,7 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
                         </span>
                       )}
                     </button>
+                    <WhitePaperConsentFooter />
                   </div>
                 </form>
               </section>
@@ -391,31 +423,29 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
                     inputClass={inputClass}
                   />
 
-                  <label className="mt-3 flex items-start gap-2.5 text-[13px] leading-snug text-gray-600">
-                    <input
-                      type="checkbox"
-                      checked={form.marketingConsent}
-                      onChange={(e) => setField('marketingConsent', e.target.checked)}
-                      className="mt-0.5 h-3.5 w-3.5 shrink-0 accent-cb-orange"
-                    />
-                    <span>
-                      I agree to receive relevant updates from {offeredBy}. You may unsubscribe at any time.
-                    </span>
-                  </label>
+                  <WhitePaperConsentBlock
+                    idPrefix="wp-profile"
+                    className="mt-4"
+                    termsAccepted={termsAccepted}
+                    optOutCommunication={optOutCommunication}
+                    onTermsChange={setTermsAccepted}
+                    onOptOutChange={setOptOutCommunication}
+                  />
 
                   {error ? <p className="mt-2 text-sm text-red-600">{error}</p> : null}
 
-                  <div className="mt-3">
-                    <button type="submit" disabled={loading} className={btnPrimary}>
+                  <div className="mt-4">
+                    <button type="submit" disabled={loading || !termsAccepted} className={btnPrimary}>
                       {loading ? (
                         <Loader2 className="mx-auto h-5 w-5 animate-spin" />
                       ) : (
                         <span className="inline-flex items-center justify-center gap-2">
                           <Download className="h-4 w-4" aria-hidden />
-                          Download PDF
+                          Download Now
                         </span>
                       )}
                     </button>
+                    <WhitePaperConsentFooter />
                   </div>
                 </form>
               </section>

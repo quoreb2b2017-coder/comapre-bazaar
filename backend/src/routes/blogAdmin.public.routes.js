@@ -145,12 +145,18 @@ router.post('/unsubscribe', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Valid email is required' })
     }
 
+    const reason = String(req.body?.reason || '').trim().slice(0, 500)
+    const source = String(req.body?.source || 'footer-form').trim().slice(0, 80) || 'footer-form'
+
     const subscriber = await BlogSubscriber.findOne({ email: emailRaw })
     if (!subscriber) {
       return res.status(404).json({ success: false, message: 'Subscription not found for this email' })
     }
 
     subscriber.isActive = false
+    subscriber.unsubscribedAt = new Date()
+    if (reason) subscriber.unsubscribeReason = reason
+    subscriber.unsubscribeSource = source
     await subscriber.save()
 
     res.json({ success: true, message: 'Unsubscribed successfully' })

@@ -17,6 +17,10 @@ const blogSubscriberSchema = new mongoose.Schema(
     sourceBlogTitle: { type: String, default: "" },
     lastNotifiedAt: { type: Date, default: null },
     totalNotifications: { type: Number, default: 0 },
+    /** Set when the user unsubscribes via footer form or white paper opt-out. */
+    unsubscribedAt: { type: Date, default: null },
+    unsubscribeReason: { type: String, default: "", maxlength: 500 },
+    unsubscribeSource: { type: String, default: "", maxlength: 80 },
   },
   { timestamps: true }
 );

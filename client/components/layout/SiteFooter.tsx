@@ -1,7 +1,9 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { CookiePreferencesTrigger } from '@/components/consent/CookiePreferencesTrigger'
+import { UnsubscribeModal } from '@/components/consent/UnsubscribeModal'
 import { NewsletterSubscribeForm } from '@/components/ui/NewsletterSubscribeForm'
 import { FACEBOOK_PAGE_URL, LINKEDIN_COMPANY_URL } from '@/lib/seo'
 
@@ -58,7 +60,10 @@ const LEGAL = [
 ]
 
 export function SiteFooter({ className = '' }: { className?: string }) {
+  const [unsubscribeOpen, setUnsubscribeOpen] = useState(false)
+
   return (
+    <>
     <footer
       className={`bg-[#0B2A6F] text-white mt-8 border-t-2 border-[#081F52] w-full self-stretch ${className}`}
     >
@@ -182,6 +187,13 @@ export function SiteFooter({ className = '' }: { className?: string }) {
           <p className="text-left">© {new Date().getFullYear()} CompareBazaar.com · All Rights Reserved</p>
           <div className="flex flex-wrap gap-4 items-center">
             <Link href="/privacy-policy" className="hover:text-[#FFE9CF] transition-colors">Privacy</Link>
+            <button
+              type="button"
+              onClick={() => setUnsubscribeOpen(true)}
+              className="bg-transparent border-0 p-0 cursor-pointer font-inherit text-xs text-white/90 hover:text-[#FFE9CF] transition-colors"
+            >
+              Unsubscribe
+            </button>
             <Link href="/terms-of-use" className="hover:text-[#FFE9CF] transition-colors">Terms</Link>
             <Link href="/advertising-disclosure" className="hover:text-[#FFE9CF] transition-colors">Advertising</Link>
             <CookiePreferencesTrigger className="text-white/90 hover:text-[#FFE9CF] transition-colors text-xs bg-transparent border-0 p-0 cursor-pointer font-inherit" />
@@ -189,5 +201,7 @@ export function SiteFooter({ className = '' }: { className?: string }) {
         </div>
       </div>
     </footer>
+    <UnsubscribeModal open={unsubscribeOpen} onClose={() => setUnsubscribeOpen(false)} />
+    </>
   )
 }

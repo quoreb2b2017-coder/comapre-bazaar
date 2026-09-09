@@ -25,7 +25,7 @@ export function WhitePaperLeadsTable({
             <th className="xl-th">Phone</th>
             <th className="xl-th">Company address</th>
             <th className="xl-th">Form answers</th>
-            <th className="xl-th xl-th-center">Consent</th>
+            <th className="xl-th xl-th-center">Marketing</th>
             <th className="xl-th">Submitted</th>
           </tr>
         </thead>
@@ -110,13 +110,19 @@ export function WhitePaperLeadsTable({
                     )}
                   </td>
                   <td className="xl-td text-center">
-                    {r.marketingConsent ? (
-                      <span className="inline-flex text-emerald-600 dark:text-emerald-400" title="Consent: Yes">
+                    {!r.profileCompleted ? (
+                      <span className="text-[11px] font-medium text-gray-400" title="Complete the download form to record marketing preference">
+                        Pending
+                      </span>
+                    ) : r.marketingConsent ? (
+                      <span className="inline-flex flex-col items-center text-emerald-600 dark:text-emerald-400" title="Marketing consent: Yes">
                         <Check className="h-4 w-4" strokeWidth={2.5} />
+                        <span className="mt-0.5 text-[10px] font-medium">OK</span>
                       </span>
                     ) : (
-                      <span className="inline-flex text-gray-300 dark:text-gray-600" title="Consent: No">
+                      <span className="inline-flex flex-col items-center text-amber-600 dark:text-amber-400" title="Opted out of further communication">
                         <X className="h-4 w-4" />
+                        <span className="mt-0.5 text-[10px] font-medium">Opt-out</span>
                       </span>
                     )}
                   </td>

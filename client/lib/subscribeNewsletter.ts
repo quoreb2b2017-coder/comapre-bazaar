@@ -18,3 +18,22 @@ export async function subscribeNewsletter(email: string, sourceSlug: string) {
   }
   return data as { success: boolean; message?: string }
 }
+
+export async function unsubscribeNewsletter(email: string, reason?: string) {
+  const value = email.trim().toLowerCase()
+  if (!EMAIL_RE.test(value)) {
+    throw new Error('Please enter a valid email address.')
+  }
+
+  const res = await fetch('/api/v1/blog-admin/public/blogs/unsubscribe', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: value, reason: reason || '', source: 'footer-form' }),
+  })
+  const data = await res.json()
+  if (!res.ok || !data?.success) {
+    throw new Error(data?.message || 'Unsubscribe failed')
+  }
+  return data as { success: boolean; message?: string }
+}
+

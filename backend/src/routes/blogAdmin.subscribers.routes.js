@@ -66,6 +66,15 @@ router.post("/:id/toggle", protect, async (req, res) => {
     const row = await BlogSubscriber.findById(req.params.id);
     if (!row) return res.status(404).json({ success: false, message: "Subscriber not found" });
     row.isActive = !row.isActive;
+    if (row.isActive) {
+      row.unsubscribedAt = null;
+      row.unsubscribeReason = "";
+      row.unsubscribeSource = "";
+    } else {
+      row.unsubscribedAt = new Date();
+      row.unsubscribeSource = row.unsubscribeSource || "admin-toggle";
+      if (!row.unsubscribeReason) row.unsubscribeReason = "Paused by admin";
+    }
     await row.save();
     res.json({ success: true, data: row, message: row.isActive ? "Subscriber activated" : "Subscriber paused" });
   } catch (error) {
