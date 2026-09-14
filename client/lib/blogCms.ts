@@ -11,7 +11,7 @@ export function blogCmsBackendBase(): string {
   return cmsBackendBase()
 }
 
-const REVALIDATE_SECONDS = 120
+const REVALIDATE_SECONDS = 60
 
 export type CmsBlogSummary = {
   slug: string
@@ -165,11 +165,12 @@ export function plainBlogExcerpt(raw: string | undefined | null, maxLen = 220): 
   return t.length <= maxLen ? t : `${t.slice(0, maxLen - 1)}…`
 }
 
-function formatPublishedDay(input: string | Date | undefined): string {
-  if (!input) return new Date().toISOString().slice(0, 10)
+function formatPublishedAt(input: string | Date | undefined): string {
+  if (!input) return new Date().toISOString()
   const d = typeof input === 'string' ? new Date(input) : input
-  if (Number.isNaN(d.getTime())) return new Date().toISOString().slice(0, 10)
-  return d.toISOString().slice(0, 10)
+  if (Number.isNaN(d.getTime())) return new Date().toISOString()
+  // Keep full timestamp so same-day publishes (Excel queue) sort newest-first correctly.
+  return d.toISOString()
 }
 
 /** Resolve ?topic= slug back to a category label present on posts. */
@@ -303,7 +304,7 @@ function cmsSummaryToUnified(b: CmsBlogSummary): UnifiedBlogCard {
     slug: b.slug,
     title: b.title,
     excerpt: plainBlogExcerpt(b.excerpt || b.metaDescription || ''),
-    publishedAt: formatPublishedDay(b.publishedAt),
+    publishedAt: formatPublishedAt(b.publishedAt),
     category,
     readTime: rt,
     authorName: 'Compare Bazaar Editorial',

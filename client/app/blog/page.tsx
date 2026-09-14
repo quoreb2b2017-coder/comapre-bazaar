@@ -13,7 +13,7 @@ import { BlogSubscribeBox } from '@/components/blog/BlogSubscribeBox'
 import { BlogTopicGuideIndex } from '@/components/blog/BlogTopicGuideIndex'
 import { BlogTopicsStrip } from '@/components/blog/BlogTopicsStrip'
 
-export const revalidate = 120
+export const revalidate = 60
 
 type BlogPageProps = {
   searchParams?: { topic?: string | string[] }
@@ -73,7 +73,9 @@ export default async function BlogIndexPage({ searchParams }: BlogPageProps) {
   const topics = getBlogTopics(allPosts)
   const hasPosts = posts.length > 0
   const hubFeaturedPosts = isTopicView ? [] : posts.slice(0, Math.min(5, posts.length))
-  const hubLatestPosts = isTopicView ? [] : posts.slice(hubFeaturedPosts.length)
+  // Include every published post (including the newest) so Excel-queue blogs show in this grid too —
+  // not only in the “Latest blog” carousel above.
+  const hubLatestPosts = isTopicView ? [] : posts
 
   return (
     <main className="min-h-screen bg-[#F4F6FA]">

@@ -7,6 +7,8 @@ import { HomeBlogSection } from '@/components/home/HomeBlogSection'
 import { HomeSubscribePopup } from '@/components/home/HomeSubscribePopup'
 import { loadHomeBlogPreview } from '@/lib/blogCms'
 
+export const revalidate = 60
+
 export const metadata: Metadata = buildMetadata({
   title: 'Best Business Software Comparisons & Reviews 2026',
   description:
