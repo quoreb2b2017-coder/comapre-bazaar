@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { CookiePreferencesTrigger } from '@/components/consent/CookiePreferencesTrigger'
 import { NewsletterSubscribeForm } from '@/components/ui/NewsletterSubscribeForm'
+import { NICHE_PUBLISHER_LINE } from '@/lib/publicEditorDisplay'
 import { FACEBOOK_PAGE_URL, LINKEDIN_COMPANY_URL } from '@/lib/seo'
 
 function LinkedInIcon({ className }: { className?: string }) {
@@ -179,7 +180,13 @@ export function SiteFooter({ className = '' }: { className?: string }) {
         </div>
 
         <div className="border-t border-white/35 pt-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-xs text-white/90">
-          <p className="text-left">© {new Date().getFullYear()} CompareBazaar.com · All Rights Reserved</p>
+          <p className="text-left">
+            © {new Date().getFullYear()} CompareBazaar.com · All Rights Reserved
+            <span className="mt-1 block sm:mt-0 sm:inline">
+              <span className="hidden sm:inline"> · </span>
+              {NICHE_PUBLISHER_LINE}
+            </span>
+          </p>
           <div className="flex flex-wrap gap-4 items-center">
             <Link href="/privacy-policy" className="hover:text-[#FFE9CF] transition-colors">Privacy</Link>
             <Link href="/unsubscribe" className="hover:text-[#FFE9CF] transition-colors">
