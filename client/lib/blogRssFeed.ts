@@ -10,7 +10,8 @@ export const BLOG_RSS_ALIAS_PATH = '/rss.xml'
 const FEED_TITLE = 'Compare Bazaar Blog'
 const FEED_DESCRIPTION =
   'Independent business software comparisons, pricing notes, and buying guides from Compare Bazaar editors.'
-const MAX_ITEMS = 50
+/** Soft cap only for extreme growth; all current published posts fit well under this. */
+const MAX_ITEMS = 500
 
 function escapeXml(value: string): string {
   return String(value || '')
