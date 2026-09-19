@@ -30,6 +30,16 @@ export const metadata: Metadata = {
   },
   description:
     'Independent reviews, side by side pricing, and ranked picks across CRM, payroll, HR, email marketing, and more. Trusted by 80,000 business buyers.',
+  alternates: {
+    types: {
+      'application/rss+xml': [
+        {
+          url: `${SITE_URL}/feed.xml`,
+          title: 'Compare Bazaar Blog RSS',
+        },
+      ],
+    },
+  },
   openGraph: {
     siteName: 'Compare Bazaar',
     type: 'website',
@@ -56,6 +66,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={`${sans.variable} ${serif.variable}`}>
       <head>
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title="Compare Bazaar Blog RSS"
+          href={`${SITE_URL}/feed.xml`}
+        />
         {GA_MEASUREMENT_ID ? (
           <>
             <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`} />
