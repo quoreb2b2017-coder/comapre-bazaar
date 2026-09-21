@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { ArrowLeft, BookOpen, Layers, Sparkles } from 'lucide-react'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
+import { NewsletterSubscribeForm } from '@/components/ui/NewsletterSubscribeForm'
 import { BLOG_PAGE_SHELL } from '@/lib/blogLayout'
 import type { BlogTopicEntry, UnifiedBlogCard } from '@/lib/blogCms'
 import { BlogLibraryHeroVisual } from '@/components/blog/BlogLibraryHeroVisual'
@@ -116,6 +117,8 @@ export function BlogHubHero({ activeTopicLabel, posts, allPosts, topics, isTopic
                     Get free quotes →
                   </Link>
                 </div>
+
+                <NewsletterSubscribeForm sourceSlug="blog-index" variant="blogHub" />
               </>
             )}
 

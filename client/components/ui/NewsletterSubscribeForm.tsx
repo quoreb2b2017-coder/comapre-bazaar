@@ -6,7 +6,7 @@ import { EMAIL_RE, SUBSCRIBE_EMAIL_KEY, subscribeNewsletter } from '@/lib/subscr
 type Props = {
   sourceSlug: string
   compact?: boolean
-  variant?: 'default' | 'editorial' | 'homepage' | 'hero' | 'footer'
+  variant?: 'default' | 'editorial' | 'homepage' | 'hero' | 'footer' | 'blogHub'
 }
 
 export function NewsletterSubscribeForm({
@@ -72,6 +72,41 @@ export function NewsletterSubscribeForm({
           </button>
         </form>
         {msg ? <p className={`mt-2 text-xs ${ok ? 'text-emerald-300' : 'text-red-300'}`}>{msg}</p> : null}
+      </div>
+    )
+  }
+
+  if (variant === 'blogHub') {
+    return (
+      <div className="mt-4 max-w-md">
+        <form
+          onSubmit={submit}
+          className="flex flex-col gap-2 sm:flex-row sm:items-stretch"
+          aria-label="Subscribe to Compare Bazaar blogs"
+        >
+          <input
+            type="email"
+            name="subscribeEmail"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Your work email"
+            className="h-11 min-w-0 flex-1 rounded-lg border border-slate-200 bg-white px-3.5 text-sm text-navy outline-none transition placeholder:text-slate-400 focus:border-[#F58220] focus:ring-2 focus:ring-[#F58220]/20"
+            required
+            aria-label="Email for blog updates"
+          />
+          <button
+            type="submit"
+            disabled={loading || isSubscribed}
+            className="h-11 shrink-0 rounded-lg bg-[#F58220] px-5 text-[13px] font-semibold text-white shadow-sm transition hover:bg-[#e67410] disabled:cursor-not-allowed disabled:opacity-60 sm:min-w-[138px]"
+          >
+            {loading ? 'Saving...' : isSubscribed ? 'Subscribed' : 'Subscribe now'}
+          </button>
+        </form>
+        {msg ? (
+          <p className={`mt-2 text-[12px] ${ok ? 'text-emerald-700' : 'text-red-600'}`}>{msg}</p>
+        ) : (
+          <p className="mt-2 text-[11px] text-slate-500">New blogs in your inbox. Unsubscribe anytime.</p>
+        )}
       </div>
     )
   }
