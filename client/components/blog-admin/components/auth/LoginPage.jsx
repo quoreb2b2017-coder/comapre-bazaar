@@ -1,12 +1,58 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Mail, KeyRound, ArrowRight, RefreshCw, PenTool, Loader2 } from 'lucide-react'
+import { Mail, KeyRound, ArrowRight, RefreshCw, PenTool, Loader2, ExternalLink, LayoutGrid } from 'lucide-react'
 import { SiteNav } from '@/components/layout/SiteNav'
 import { SiteFooter } from '@/components/layout/SiteFooter'
 import { useAuth } from '../../context/AuthContext'
 import api from '../../utils/api'
 import { useBlogAdminTheme } from '../../hooks/useBlogAdminTheme'
 import { ThemeSwitch } from '../ui/ThemeSwitch'
+
+/** Quore network — open any niche admin from Compare Bazaar login. */
+const NETWORK_ADMIN_PORTALS = [
+  {
+    id: 'compare-bazaar',
+    name: 'Compare Bazaar',
+    subtitle: 'Software comparisons',
+    href: null, // current page
+    accent: '#F58220',
+  },
+  {
+    id: 'cfomatics',
+    name: 'CFOmatics',
+    subtitle: 'Finance / CFO desk',
+    href: 'https://www.cfomatics.com/admin/login',
+    accent: '#0B2A6F',
+  },
+  {
+    id: 'cybersentry',
+    name: 'CyberSentry360',
+    subtitle: 'AI & cybersecurity',
+    href: 'https://www.cybersentry360.com/admin/login',
+    accent: '#0F766E',
+  },
+  {
+    id: 'hrmatics',
+    name: 'HRmatics',
+    subtitle: 'HR & people ops',
+    href: 'https://www.hrmatics.net/admin/login',
+    accent: '#7C3AED',
+  },
+  {
+    id: 'healthmatics',
+    name: 'Healthmatics',
+    subtitle: 'Healthcare desk',
+    href: 'https://www.healthmatics.net/admin/login',
+    accent: '#BE123C',
+  },
+  {
+    id: 'itmatics',
+    name: 'ITmatics News',
+    subtitle: 'Enterprise IT',
+    href: 'https://www.itmaticsnews.com/admin/login',
+    accent: '#1D4ED8',
+  },
+]
 
 export const LoginPage = ({ toast }) => {
   const navigate = useNavigate()
@@ -18,6 +64,7 @@ export const LoginPage = ({ toast }) => {
   const [loading, setLoading] = useState(false)
   const [devOtp, setDevOtp] = useState(null)
   const [countdown, setCountdown] = useState(0)
+  const [portalPickerOpen, setPortalPickerOpen] = useState(true)
 
   const startCountdown = () => {
     setCountdown(60)
@@ -64,9 +111,89 @@ export const LoginPage = ({ toast }) => {
     }
   }
 
+  const handlePortalPick = (portal) => {
+    if (!portal.href) {
+      setPortalPickerOpen(false)
+      return
+    }
+    window.location.assign(portal.href)
+  }
+
   return (
     <div className="flex min-h-screen flex-col bg-white dark:bg-gray-950">
       <SiteNav />
+
+      {portalPickerOpen ? (
+        <div
+          className="fixed inset-0 z-[200] flex items-center justify-center bg-navy/70 px-4 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="network-admin-title"
+        >
+          <div className="w-full max-w-2xl overflow-hidden rounded-2xl border border-white/15 bg-white shadow-2xl dark:border-gray-700 dark:bg-gray-900">
+            <div className="border-b border-gray-100 bg-gradient-to-r from-navy to-[#123a8c] px-5 py-5 sm:px-6">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#F58220]">
+                Quore B2B network
+              </p>
+              <h2 id="network-admin-title" className="mt-1 font-serif text-2xl text-white">
+                Choose admin portal
+              </h2>
+              <p className="mt-1.5 text-sm text-white/70">
+                Open any of the 6 niche admins. Compare Bazaar stays on this page.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 p-4 sm:grid-cols-2 sm:p-5">
+              {NETWORK_ADMIN_PORTALS.map((portal) => {
+                const isCurrent = !portal.href
+                return (
+                  <button
+                    key={portal.id}
+                    type="button"
+                    onClick={() => handlePortalPick(portal)}
+                    className={`group flex items-start gap-3 rounded-xl border px-4 py-3.5 text-left transition hover:border-[#F58220]/50 hover:bg-[#FFF7EF] dark:hover:bg-gray-800 ${
+                      isCurrent
+                        ? 'border-[#F58220] bg-[#FFF7EF] ring-1 ring-[#F58220]/30 dark:bg-orange-950/30'
+                        : 'border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900'
+                    }`}
+                  >
+                    <span
+                      className="mt-0.5 h-10 w-10 shrink-0 rounded-lg"
+                      style={{ backgroundColor: portal.accent }}
+                      aria-hidden
+                    />
+                    <span className="min-w-0 flex-1">
+                      <span className="flex items-center gap-1.5 font-semibold text-gray-900 dark:text-gray-50">
+                        {portal.name}
+                        {!isCurrent ? (
+                          <ExternalLink className="h-3.5 w-3.5 text-gray-400 opacity-0 transition group-hover:opacity-100" />
+                        ) : (
+                          <span className="rounded-full bg-[#F58220]/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#F58220]">
+                            Here
+                          </span>
+                        )}
+                      </span>
+                      <span className="mt-0.5 block text-xs text-gray-500 dark:text-gray-400">
+                        {portal.subtitle}
+                      </span>
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+
+            <div className="border-t border-gray-100 px-5 py-3 dark:border-gray-800">
+              <button
+                type="button"
+                onClick={() => setPortalPickerOpen(false)}
+                className="text-sm font-medium text-gray-500 transition hover:text-navy dark:hover:text-white"
+              >
+                Continue with Compare Bazaar login →
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       <main className="relative flex flex-1 flex-col justify-center bg-gradient-to-br from-navy via-navy-mid to-blue-900 px-4 py-10 sm:py-14">
         <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-10">
@@ -75,7 +202,15 @@ export const LoginPage = ({ toast }) => {
         </div>
 
         <div className="relative mx-auto w-full max-w-md">
-        <div className="flex justify-end mb-6">
+        <div className="mb-6 flex items-center justify-between gap-3">
+          <button
+            type="button"
+            onClick={() => setPortalPickerOpen(true)}
+            className="inline-flex items-center gap-2 rounded-xl bg-black/20 px-3 py-2 text-xs font-semibold text-white/90 ring-1 ring-white/15 backdrop-blur-md transition hover:bg-black/30"
+          >
+            <LayoutGrid className="h-3.5 w-3.5" aria-hidden />
+            Switch admin portal
+          </button>
           <div className="rounded-xl bg-black/20 px-3 py-2 ring-1 ring-white/15 backdrop-blur-md">
             <ThemeSwitch
               darkMode={darkMode}
@@ -90,7 +225,7 @@ export const LoginPage = ({ toast }) => {
             <PenTool className="w-8 h-8 text-white" />
           </div>
           <h1 className="font-serif text-3xl text-white mb-2">Blog Admin</h1>
-          <p className="text-white/60 text-sm">Automation Dashboard</p>
+          <p className="text-white/60 text-sm">Compare Bazaar · Automation Dashboard</p>
         </div>
 
         {/* Card */}
