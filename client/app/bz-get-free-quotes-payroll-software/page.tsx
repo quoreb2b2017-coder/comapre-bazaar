@@ -14,7 +14,7 @@ export default function BzPayrollSoftwareQuotesPage() {
     <BuyerZoneQuotePage
       title="Get Free Payroll Software Quotes"
       description="Tell vendors your headcount and payroll needs once. We match you with payroll software providers — free and no obligation."
-      categoryId="10113"
+      scoutEmbedId="20054"
       sideImageUrl="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1400&q=80"
       sideImageAlt="Finance team reviewing payroll and reports"
       sideEyebrow="Payroll software"

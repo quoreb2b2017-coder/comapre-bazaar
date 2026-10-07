@@ -49,12 +49,12 @@ export function BuyerZoneSplit({ form, panel }: BuyerZoneSplitProps) {
 
   return (
     <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,480px)_minmax(0,1fr)] lg:gap-8">
-      <div ref={formRef} className="bz-quote-widget w-full max-w-[480px] overflow-visible">
+      <div ref={formRef} className="w-full max-w-[480px] overflow-visible">
         {form}
       </div>
       <div
-        className="hidden w-full lg:block"
-        style={rowHeight ? { minHeight: rowHeight } : { minHeight: 640 }}
+        className="hidden w-full overflow-hidden rounded-2xl lg:block"
+        style={rowHeight ? { height: rowHeight } : { minHeight: 480 }}
       >
         {panel}
       </div>

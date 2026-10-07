@@ -14,7 +14,7 @@ export default function BzFleetManagementQuotesPage() {
     <BuyerZoneQuotePage
       title="Get Free Fleet Management Software Quotes"
       description="Tell vendors your fleet size and tracking needs once. We match you with fleet management software providers — free and no obligation."
-      categoryId="10230"
+      scoutEmbedId="20038"
       sideImageUrl="https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=1400&q=80"
       sideImageAlt="Commercial trucks on a highway for fleet operations"
       sideEyebrow="Fleet management software"

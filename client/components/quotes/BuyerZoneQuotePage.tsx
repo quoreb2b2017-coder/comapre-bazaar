@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { BuyerZoneSplit } from '@/components/quotes/BuyerZoneSplit'
-import { BuyerZoneWidget } from '@/components/quotes/BuyerZoneWidget'
+import { ScoutWidget } from '@/components/quotes/ScoutWidget'
 
 type SideHighlight = {
   title: string
@@ -16,7 +16,7 @@ type SideStat = {
 type BuyerZoneQuotePageProps = {
   title: string
   description: string
-  categoryId: string
+  scoutEmbedId: string
   sideImageUrl: string
   sideImageAlt: string
   sideEyebrow: string
@@ -30,7 +30,7 @@ type BuyerZoneQuotePageProps = {
 export function BuyerZoneQuotePage({
   title,
   description,
-  categoryId,
+  scoutEmbedId,
   sideImageUrl,
   sideImageAlt,
   sideEyebrow,
@@ -72,10 +72,10 @@ export function BuyerZoneQuotePage({
 
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10">
         <BuyerZoneSplit
-          form={<BuyerZoneWidget categoryId={categoryId} />}
+          form={<ScoutWidget embedId={scoutEmbedId} />}
           panel={
-            <aside className="flex h-full min-h-full flex-col overflow-hidden rounded-2xl bg-[#0B2A6F]">
-              <div className="relative min-h-[180px] flex-1">
+            <aside className="relative flex h-full min-h-full flex-col overflow-hidden rounded-2xl bg-[#0B2A6F] lg:justify-end">
+              <div className="relative min-h-[180px] flex-1 lg:absolute lg:inset-0 lg:min-h-0">
                 <Image
                   src={sideImageUrl}
                   alt={sideImageAlt}
@@ -85,21 +85,23 @@ export function BuyerZoneQuotePage({
                   priority
                 />
                 <div
-                  className="absolute inset-0 bg-gradient-to-t from-[#0B2A6F] via-[#0B2A6F]/40 to-transparent"
+                  className="absolute inset-0 bg-gradient-to-t from-[#0B2A6F] via-[#0B2A6F]/40 to-transparent lg:via-[#0B2A6F]/90"
                   aria-hidden
                 />
               </div>
 
-              <div className="shrink-0 px-6 py-6 sm:px-8 sm:py-7">
+              <div className="relative shrink-0 px-6 py-6 sm:px-8 sm:py-7 lg:py-5">
                 <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-cb-orange">
                   {sideEyebrow}
                 </p>
-                <h2 className="mt-2 font-serif text-[1.45rem] leading-snug text-white sm:text-[1.65rem]">
+                <h2 className="mt-2 font-serif text-[1.45rem] leading-snug text-white sm:text-[1.65rem] lg:text-[1.4rem]">
                   {sideHeading}
                 </h2>
-                <p className="mt-3 text-[14px] leading-relaxed text-white/85 sm:text-[15px]">{sideBody}</p>
+                <p className="mt-3 text-[14px] leading-relaxed text-white/85 sm:text-[15px] lg:mt-2 lg:text-[14px]">
+                  {sideBody}
+                </p>
 
-                <ul className="mt-5 space-y-3.5">
+                <ul className="mt-5 space-y-3.5 lg:mt-4 lg:space-y-2.5">
                   {sideHighlights.map((item) => (
                     <li key={item.title} className="flex gap-3">
                       <span
@@ -110,13 +112,13 @@ export function BuyerZoneQuotePage({
                       </span>
                       <div>
                         <p className="text-[14px] font-semibold text-white">{item.title}</p>
-                        <p className="mt-0.5 text-[13px] leading-relaxed text-white/75">{item.body}</p>
+                        <p className="mt-0.5 text-[13px] leading-relaxed text-white/75 lg:hidden">{item.body}</p>
                       </div>
                     </li>
                   ))}
                 </ul>
 
-                <dl className="mt-6 grid grid-cols-3 gap-3 border-t border-white/15 pt-5">
+                <dl className="mt-6 grid grid-cols-3 gap-3 border-t border-white/15 pt-5 lg:mt-4 lg:pt-4">
                   {sideStats.map((stat) => (
                     <div key={stat.label}>
                       <dt className="text-[10px] font-bold uppercase tracking-[0.12em] text-white/50">
