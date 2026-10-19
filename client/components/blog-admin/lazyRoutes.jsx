@@ -27,6 +27,11 @@ export const Settings = lazy(() =>
 export const TrendsAssistant = lazy(() =>
   import(/* webpackChunkName: "blog-admin-trends" */ './pages/TrendsAssistant').then((m) => ({ default: m.TrendsAssistant })),
 )
+export const KeywordResearch = lazy(() =>
+  import(/* webpackChunkName: "blog-admin-keyword-research" */ './pages/KeywordResearch').then((m) => ({
+    default: m.KeywordResearch,
+  })),
+)
 export const Analytics = lazy(() =>
   import(/* webpackChunkName: "blog-admin-analytics" */ './pages/Analytics').then((m) => ({ default: m.Analytics })),
 )
@@ -73,6 +78,7 @@ export function prefetchBlogAdminRoutes() {
   void import('./pages/Approvals')
   void import('./pages/Settings')
   void import('./pages/TrendsAssistant')
+  void import('./pages/KeywordResearch')
   void import('./pages/Analytics')
   void import('./pages/SuperAdminGoogleAnalytics')
   void import('./pages/CookiesReport')

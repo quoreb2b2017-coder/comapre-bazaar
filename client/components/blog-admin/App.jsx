@@ -13,6 +13,7 @@ import {
   Approvals,
   Settings,
   TrendsAssistant,
+  KeywordResearch,
   Analytics,
   CookiesReport,
   Subscribers,
@@ -82,6 +83,7 @@ function AppRoutes() {
           <Route path="approvals" element={<RouteSuspense><Approvals /></RouteSuspense>} />
           <Route path="settings" element={<RouteSuspense><Settings /></RouteSuspense>} />
           <Route path="trends" element={<RouteSuspense><TrendsAssistant /></RouteSuspense>} />
+          <Route path="keyword-research" element={<RouteSuspense><KeywordResearch /></RouteSuspense>} />
           <Route path="analytics" element={<RouteSuspense><Analytics /></RouteSuspense>} />
           <Route path="cookies-report" element={<RouteSuspense><CookiesReport /></RouteSuspense>} />
           <Route path="subscribers" element={<RouteSuspense><Subscribers /></RouteSuspense>} />

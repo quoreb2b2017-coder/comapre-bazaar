@@ -55,6 +55,7 @@ router.use("/blogs", require("./blogAdmin.blogs.routes"));
 router.use("/generate-blog", require("./blogAdmin.generate.routes"));
 router.use("/excel-queue", require("./blogAdmin.excelQueue.routes"));
 router.use("/trends-chat", require("./blogAdmin.trends.routes"));
+router.use("/keyword-research", require("./blogAdmin.keywordResearch.routes"));
 router.use("/settings", require("./blogAdmin.settings.routes"));
 router.use("/subscribers", require("./blogAdmin.subscribers.routes"));
 

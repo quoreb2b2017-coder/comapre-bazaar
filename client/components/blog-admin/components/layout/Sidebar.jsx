@@ -17,6 +17,7 @@ import {
   Shield,
   LayoutTemplate,
   FileSpreadsheet,
+  Search,
 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 
@@ -30,6 +31,7 @@ const NAV = [
   { to: '/excel-queue', icon: FileSpreadsheet, label: 'Excel Queue' },
   { to: '/approvals', icon: Bell, label: 'Approvals' },
   { to: '/trends', icon: Sparkles, label: 'Trending chat' },
+  { to: '/keyword-research', icon: Search, label: 'Keyword Research' },
   { to: '/analytics', icon: ChartNoAxesCombined, label: 'Analytics' },
   { to: '/cookies-report', icon: Cookie, label: 'Cookies & visitors' },
   { to: '/subscribers', icon: Users, label: 'Subscribers' },
