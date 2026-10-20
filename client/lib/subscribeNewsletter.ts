@@ -16,7 +16,7 @@ export async function subscribeNewsletter(email: string, sourceSlug: string) {
   if (!res.ok || !data?.success) {
     throw new Error(data?.message || 'Subscribe failed')
   }
-  return data as { success: boolean; message?: string }
+  return data as { success: boolean; message?: string; alreadySubscribed?: boolean }
 }
 
 export async function unsubscribeNewsletter(email: string, reason?: string) {

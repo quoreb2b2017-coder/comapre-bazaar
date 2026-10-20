@@ -109,6 +109,14 @@ router.post('/subscribe', async (req, res) => {
     const sourceLabel = sourceBlog?.title || SOURCE_LABELS[source] || source || ''
 
     const existing = await BlogSubscriber.findOne({ email: emailRaw })
+    if (existing?.isActive) {
+      return res.json({
+        success: true,
+        alreadySubscribed: true,
+        message: 'This email is already subscribed. You can subscribe a new email.',
+      })
+    }
+
     let subscriber
     let isNew = false
     let wasInactive = false

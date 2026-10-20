@@ -25,9 +25,13 @@ export function NewsletterSubscribeForm({
     setMsg('')
     setOk(null)
     try {
-      await subscribeNewsletter(email, sourceSlug)
+      const data = await subscribeNewsletter(email, sourceSlug)
       setOk(true)
-      setMsg('Subscribed. You can add another email.')
+      setMsg(
+        data.alreadySubscribed
+          ? 'This email is already subscribed. Enter a new email.'
+          : 'Subscribed. You can add another email.'
+      )
       setEmail('')
     } catch (err) {
       setOk(false)

@@ -55,11 +55,16 @@ export function HomeSubscribePopup() {
     setMsg('')
     setOk(null)
     try {
-      await subscribeNewsletter(email, 'home-popup')
+      const data = await subscribeNewsletter(email, 'home-popup')
+      setOk(true)
+      setEmail('')
+      if (data.alreadySubscribed) {
+        setMsg('This email is already subscribed. Enter a new email.')
+        return
+      }
       if (typeof window !== 'undefined') {
         window.sessionStorage.setItem(DISMISS_KEY, '1')
       }
-      setOk(true)
       setMsg('Subscribed. New guides will land in your inbox.')
       window.setTimeout(() => setOpen(false), 1200)
     } catch (err) {
