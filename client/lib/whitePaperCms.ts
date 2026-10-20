@@ -31,7 +31,12 @@ export type WhitePaperPublic = {
   insideSections?: { title: string; summary: string; body?: string; pages?: string }[]
   insidePoints?: string[]
   highlightQuestions?: HighlightQuestion[]
-  downloadFormFields?: { label: string; key: string; inputType?: string; required?: boolean }[]
+  downloadFormFields?: {
+    label: string
+    key: string
+    inputType?: 'text' | 'tel' | 'email'
+    required?: boolean
+  }[]
   downloadConsent?: {
     emailNote?: string
     termsText?: string
