@@ -15,6 +15,7 @@ import { generateWhitePaperStaticParams } from '@/lib/whitePaperCms'
 import { WhitePaperInsideExplorer } from '@/components/whitepaper/WhitePaperInsideExplorer'
 import { WhitePaperMetaBadges } from '@/components/whitepaper/WhitePaperMetaBadges'
 import { WhitePaperShareBar } from '@/components/whitepaper/WhitePaperShareBar'
+import { WhitePaperDownloadGate } from '@/components/whitepaper/WhitePaperDownloadGate'
 import { whitePaperBackToLibraryLabel, whitePaperRequestLabel, whitePaperResourceLabel } from '@/lib/whitePaperTaxonomy'
 import { whitePaperResourceType } from '@/lib/whitePaperResourceType'
 
@@ -90,7 +91,7 @@ export default async function WhitepaperDetailPage({ params }: PageProps) {
   }
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-white pb-28">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       <div>
@@ -109,7 +110,7 @@ export default async function WhitepaperDetailPage({ params }: PageProps) {
 
       <div className="mx-auto max-w-[1140px] px-4 py-7 sm:px-5 sm:py-8 lg:px-6">
         <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)] lg:gap-10 xl:grid-cols-[minmax(0,400px)_minmax(0,1fr)] xl:gap-12">
-          <div className="mx-auto w-full max-w-[280px] shrink-0 sm:max-w-[320px] lg:mx-0 lg:max-w-none">
+          <div className="order-2 mx-auto w-full max-w-[280px] shrink-0 sm:max-w-[320px] lg:order-1 lg:mx-0 lg:max-w-none">
             <div className="relative aspect-[4/5] w-full bg-[#f4f4f4] p-2">
               <Image
                 src={paper.thumbnailUrl}
@@ -145,7 +146,7 @@ export default async function WhitepaperDetailPage({ params }: PageProps) {
             </Link>
           </div>
 
-          <div className="min-w-0 max-w-[640px] text-left">
+          <div className="order-1 min-w-0 max-w-[640px] text-left lg:order-2">
             <WhitePaperMetaBadges paper={paper} linkVertical className="mb-3" />
 
             <p className="text-xs text-gray-500">{whitePaperRequestLabel(resourceType)}</p>
@@ -158,12 +159,9 @@ export default async function WhitepaperDetailPage({ params }: PageProps) {
               <p className="mt-4 text-sm leading-relaxed text-gray-600">{fullDescription}</p>
             ) : null}
 
-            <Link
-              href={`/resources/whitepapers/${paper.slug}/download`}
-              className="mt-4 inline-block bg-cb-orange px-6 py-2.5 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-cb-orange-hover"
-            >
-              Download now
-            </Link>
+            <div className="mt-5">
+              <WhitePaperDownloadGate paper={paper} embedded />
+            </div>
 
             <WhitePaperShareBar slug={paper.slug} title={headline} resourceType={resourceType} />
           </div>

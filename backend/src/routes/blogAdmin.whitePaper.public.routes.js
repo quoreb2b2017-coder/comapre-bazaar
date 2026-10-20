@@ -8,6 +8,8 @@ const { isWorkEmail } = require('../utils/work-email')
 const { INSIDE_SECTIONS_MAX, resolveWhitePaperTitle, cleanWhitePaperTitle } = require('../services/blogAdmin.whitePaper.service')
 const {
   parseHighlightQuestions,
+  parseDownloadFormFields,
+  parseDownloadConsent,
   validateHighlightAnswer,
 } = require('../utils/highlightQuestions')
 
@@ -92,6 +94,8 @@ function publicFields(p, { includePdf = false } = {}) {
       : [],
     insidePoints: Array.isArray(p.insidePoints) ? p.insidePoints.filter(Boolean).slice(0, INSIDE_SECTIONS_MAX) : [],
     highlightQuestions: parseHighlightQuestions(p.highlightQuestions),
+    downloadFormFields: parseDownloadFormFields(p.downloadFormFields),
+    downloadConsent: parseDownloadConsent(p.downloadConsent),
     testimonialsHeading: p.testimonialsHeading || 'Trusted by operations teams',
     testimonials: Array.isArray(p.testimonials)
       ? p.testimonials
@@ -199,15 +203,16 @@ router.post('/:slug/download-complete', async (req, res) => {
       })
     }
 
-    const required = ['firstName', 'lastName', 'jobTitle', 'workPhone', 'companyStreet', 'companyPostal', 'companyCity', 'companyCountry']
-    for (const key of required) {
-      if (!String(req.body?.[key] || '').trim()) {
-        return res.status(400).json({ success: false, message: `${key} is required` })
-      }
-    }
-
     const paper = await WhitePaper.findOne({ slug, status: 'published' })
     if (!paper) return res.status(404).json({ success: false, message: 'Not found' })
+
+    const formFields = parseDownloadFormFields(paper.downloadFormFields)
+    for (const field of formFields) {
+      if (!field.required) continue
+      if (!String(req.body?.[field.key] || '').trim()) {
+        return res.status(400).json({ success: false, message: `${field.label} is required` })
+      }
+    }
 
     const marketingConsent = req.body?.marketingConsent === true || req.body?.marketingConsent === 'true'
     const customAnswers = normalizeCustomAnswers(req.body, paper)
@@ -228,16 +233,16 @@ router.post('/:slug/download-complete', async (req, res) => {
         whitePaperId: paper._id,
         slug,
         email,
-        firstName: String(req.body.firstName).trim(),
-        lastName: String(req.body.lastName).trim(),
-        jobTitle: String(req.body.jobTitle).trim(),
-        workPhone: String(req.body.workPhone).trim(),
-        companyStreet: String(req.body.companyStreet).trim(),
+        firstName: String(req.body.firstName || '').trim(),
+        lastName: String(req.body.lastName || '').trim(),
+        jobTitle: String(req.body.jobTitle || '').trim(),
+        workPhone: String(req.body.workPhone || '').trim(),
+        companyStreet: String(req.body.companyStreet || '').trim(),
         companySuite: String(req.body.companySuite || '').trim(),
-        companyPostal: String(req.body.companyPostal).trim(),
-        companyCity: String(req.body.companyCity).trim(),
+        companyPostal: String(req.body.companyPostal || '').trim(),
+        companyCity: String(req.body.companyCity || '').trim(),
         companyState: String(req.body.companyState || '').trim(),
-        companyCountry: String(req.body.companyCountry).trim(),
+        companyCountry: String(req.body.companyCountry || '').trim(),
         customAnswers,
         marketingConsent,
         profileCompleted: true,

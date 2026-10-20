@@ -14,6 +14,8 @@ import {
   highlightQuestionsFromPaper,
   highlightQuestionsToPayload,
 } from './WhitePaperHighlightQuestions'
+import { WhitePaperFormSections, downloadFieldsFromPaper } from './WhitePaperFormSections'
+import { WhitePaperConsentEditor, consentFromPaper } from './WhitePaperConsentEditor'
 import {
   WHITEPAPER_RESOURCE_TYPES,
   WHITEPAPER_VERTICALS,
@@ -73,6 +75,8 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
   const [published, setPublished] = useState(null)
   const [seo, setSeo] = useState(emptySeoForm)
   const [highlightQuestions, setHighlightQuestions] = useState([])
+  const [downloadFormFields, setDownloadFormFields] = useState([])
+  const [downloadConsent, setDownloadConsent] = useState(() => consentFromPaper(null))
   const [savingSeo, setSavingSeo] = useState(false)
   const [seoMode, setSeoMode] = useState('claude')
   const [generatingClaude, setGeneratingClaude] = useState(false)
@@ -89,6 +93,8 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
     if (!editingPaper) {
       setSeo(emptySeoForm())
       setHighlightQuestions([])
+      setDownloadFormFields(downloadFieldsFromPaper(null))
+      setDownloadConsent(consentFromPaper(null))
       setResourceType('whitepaper')
       setSeoMode('claude')
       setClaudeSeoReady(false)
@@ -107,6 +113,8 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
     setPublished(null)
     setSeo(seoFormFromPaper(editingPaper))
     setHighlightQuestions(highlightQuestionsFromPaper(editingPaper))
+    setDownloadFormFields(downloadFieldsFromPaper(editingPaper))
+    setDownloadConsent(consentFromPaper(editingPaper))
     setSeoMode('manual')
     setClaudeSeoReady(false)
     setClaudeContent(null)
@@ -140,6 +148,8 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
     setPublished(null)
     setSeo(emptySeoForm())
     setHighlightQuestions([])
+    setDownloadFormFields(downloadFieldsFromPaper(null))
+    setDownloadConsent(consentFromPaper(null))
     setSeoMode('claude')
     setClaudeSeoReady(false)
     setClaudeContent(null)
@@ -283,6 +293,8 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
     form.append('description', description.trim())
     form.append('metadata', JSON.stringify(metadataPayload()))
     form.append('highlightQuestions', JSON.stringify(highlightQuestionsToPayload(highlightQuestions)))
+    form.append('downloadFormFields', JSON.stringify(downloadFormFields))
+    form.append('downloadConsent', JSON.stringify(downloadConsent))
     form.append('seoMode', seoMode)
     const seoPayload = seoFormToPayload(seo)
     if (seoMode === 'manual') {
@@ -407,6 +419,16 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
             </div>
           ) : (
             <form id="wp-upload-form" onSubmit={onSubmit} className="space-y-5">
+              <div className="space-y-4 rounded-xl border border-orange-200 bg-orange-50/60 p-3 dark:border-orange-900/50 dark:bg-orange-950/20">
+                <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Download form</p>
+                <p className="text-xs text-gray-500">
+                  These fields and checkboxes are what visitors see. Add a section or checkbox, then save.
+                </p>
+                <WhitePaperFormSections fields={downloadFormFields} onChange={setDownloadFormFields} />
+                <WhitePaperConsentEditor value={downloadConsent} onChange={setDownloadConsent} />
+                <WhitePaperHighlightQuestions questions={highlightQuestions} onChange={setHighlightQuestions} />
+              </div>
+
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-1.5">
                   <label className="label">
@@ -536,11 +558,6 @@ export function WhitePaperUploadDrawer({ open, onClose, onPublished, toast, edit
                   placeholder="Optional"
                 />
               </div>
-
-              <WhitePaperHighlightQuestions
-                questions={highlightQuestions}
-                onChange={setHighlightQuestions}
-              />
 
               {seoMode === 'manual' ? (
                 <WhitePaperSeoFields seo={seo} onChange={setSeo} variant="manual" />

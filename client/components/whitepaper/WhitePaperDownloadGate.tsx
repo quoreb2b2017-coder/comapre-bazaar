@@ -12,18 +12,31 @@ import { WhitePaperHighlightFormFields } from '@/components/whitepaper/WhitePape
 import {
   WhitePaperConsentBlock,
   WhitePaperConsentFooter,
+  resolveDownloadConsent,
+  type DownloadConsentCopy,
 } from '@/components/whitepaper/WhitePaperConsentBlock'
 import { parseHighlightQuestions, type HighlightQuestion } from '@/lib/highlightQuestions'
 import { WhitePaperInsideExplorer } from '@/components/whitepaper/WhitePaperInsideExplorer'
 import { WhitePaperShareBar } from '@/components/whitepaper/WhitePaperShareBar'
 import {
   whitePaperBackToLibraryLabel,
-  whitePaperDownloadFormTitle,
   whitePaperFreeBadgeLabel,
   whitePaperReturnToItemLabel,
   normalizeWhitePaperResourceType,
   type WhitePaperResourceType,
 } from '@/lib/whitePaperTaxonomy'
+
+type DownloadField = {
+  label: string
+  key: string
+  inputType?: 'text' | 'tel' | 'email'
+  required?: boolean
+}
+
+const DEFAULT_DOWNLOAD_FIELDS: DownloadField[] = [
+  { label: 'Zip/Postal Code', key: 'companyPostal', inputType: 'text', required: true },
+  { label: 'Phone', key: 'workPhone', inputType: 'tel', required: true },
+]
 
 type PaperPreview = {
   slug: string
@@ -33,6 +46,8 @@ type PaperPreview = {
   thumbnailUrl: string
   metadata?: { offeredBy?: string; resourceType?: string }
   highlightQuestions?: HighlightQuestion[]
+  downloadFormFields?: DownloadField[]
+  downloadConsent?: DownloadConsentCopy
   insideOverview?: string
   insideSections?: { title: string; summary: string; body?: string; pages?: string }[]
   insidePoints?: string[]
@@ -65,7 +80,14 @@ function triggerPdfDownload(url: string) {
   window.setTimeout(() => iframe.remove(), 120000)
 }
 
-export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
+export function WhitePaperDownloadGate({
+  paper,
+  embedded = false,
+}: {
+  paper: PaperPreview
+  /** Show only the gray form (used on the whitepaper page itself). */
+  embedded?: boolean
+}) {
   const [step, setStep] = useState<Step>('email')
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
@@ -85,7 +107,9 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
     companyCountry: '',
   })
   const [termsAccepted, setTermsAccepted] = useState(false)
+  const [partnersAccepted, setPartnersAccepted] = useState(false)
   const [optOutCommunication, setOptOutCommunication] = useState(false)
+  const [extraAccepted, setExtraAccepted] = useState<boolean[]>([])
   const [customAnswers, setCustomAnswers] = useState<string[]>([])
 
   const headline = whitePaperDisplayTitle(paper.title, paper.seoTitle)
@@ -94,10 +118,19 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
   const base = whitePaperBackendBase()
   const detailHref = `/resources/whitepapers/${paper.slug}`
   const formQuestions: HighlightQuestion[] = parseHighlightQuestions(paper.highlightQuestions)
+  const downloadFields: DownloadField[] =
+    Array.isArray(paper.downloadFormFields) && paper.downloadFormFields.length
+      ? paper.downloadFormFields
+      : DEFAULT_DOWNLOAD_FIELDS
+  const consent = resolveDownloadConsent(paper.downloadConsent)
 
   useEffect(() => {
     setCustomAnswers((prev) => formQuestions.map((_, i) => prev[i] || ''))
   }, [paper.slug, paper.highlightQuestions])
+
+  useEffect(() => {
+    setExtraAccepted((consent.extra || []).map(() => false))
+  }, [paper.slug, paper.downloadConsent])
 
   useEffect(() => {
     fetch(`${base}/api/v1/blog-admin/public/whitepapers/${encodeURIComponent(paper.slug)}/view`, {
@@ -105,11 +138,18 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
     }).catch(() => {})
   }, [base, paper.slug])
 
-  const onEmailSubmit = async (e: React.FormEvent) => {
+  const onFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    if (!termsAccepted) {
-      setError('Please agree to Compare Bazaar Terms of Use and Privacy Policy to continue.')
+    if ((consent.showTerms && !termsAccepted) || (consent.showPartners && !partnersAccepted)) {
+      setError('Please accept the required agreements to continue.')
+      return
+    }
+    const missingExtra = (consent.extra || []).findIndex(
+      (item, index) => item.required !== false && !extraAccepted[index]
+    )
+    if (missingExtra >= 0) {
+      setError('Please accept the required agreements to continue.')
       return
     }
     const trimmed = email.trim()
@@ -117,44 +157,40 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
       setError(WORK_EMAIL_ERROR)
       return
     }
+    for (const field of downloadFields) {
+      if (field.required && !String(form[field.key as keyof typeof form] || '').trim()) {
+        setError(`${field.label} is required`)
+        return
+      }
+    }
+    for (let i = 0; i < formQuestions.length; i += 1) {
+      if (!String(customAnswers[i] || '').trim()) {
+        setError(`Please answer: ${formQuestions[i].question}`)
+        return
+      }
+    }
     setLoading(true)
     try {
-      const res = await fetch(
+      const emailRes = await fetch(
         `${base}/api/v1/blog-admin/public/whitepapers/${encodeURIComponent(paper.slug)}/download-email`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: email.trim() }),
+          body: JSON.stringify({ email: trimmed }),
         }
       )
-      const json = await res.json()
-      if (!res.ok) throw new Error(json.message || 'Failed to save email')
-      setStep('profile')
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong')
-    } finally {
-      setLoading(false)
-    }
-  }
+      const emailJson = await emailRes.json()
+      if (!emailRes.ok) throw new Error(emailJson.message || 'Failed to save email')
 
-  const onProfileSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    if (!termsAccepted) {
-      setError('Please agree to Compare Bazaar Terms of Use and Privacy Policy to continue.')
-      return
-    }
-    setLoading(true)
-    try {
       const res = await fetch(
         `${base}/api/v1/blog-admin/public/whitepapers/${encodeURIComponent(paper.slug)}/download-complete`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            email: email.trim(),
+            email: trimmed,
             ...form,
-            marketingConsent: !optOutCommunication,
+            marketingConsent: (consent.showPartners ? partnersAccepted : true) && !optOutCommunication,
             highlightAnswers: formQuestions.map((item, index) => ({
               question: item.question,
               answer: customAnswers[index] || '',
@@ -190,8 +226,131 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
     setForm((f) => ({ ...f, [key]: value }))
   }
 
+  const idPrefix = embedded ? 'wp-embed' : 'wp'
+
+  const formCard = (
+            <div className={formPanelClass}>
+            {step !== 'done' && (
+              <section>
+                <form onSubmit={onFormSubmit}>
+                  <div className={formStack}>
+                    <Field label="Work email" required htmlFor={`${idPrefix}-email`}>
+                      <input
+                        id={`${idPrefix}-email`}
+                        type="email"
+                        required
+                        autoComplete="email"
+                        placeholder="you@yourcompany.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className={inputClass}
+                      />
+                    </Field>
+                    <p className="-mt-1 text-[11px] leading-snug text-gray-500">{consent.emailNote}</p>
+                    {downloadFields.map((field) => (
+                      <Field key={field.key} label={field.label} required={field.required} htmlFor={`${idPrefix}-${field.key}`}>
+                        <input
+                          id={`${idPrefix}-${field.key}`}
+                          required={field.required !== false}
+                          type={field.inputType === 'tel' ? 'tel' : field.inputType === 'email' ? 'email' : 'text'}
+                          value={form[field.key as keyof typeof form] || ''}
+                          onChange={(e) => setField(field.key as keyof typeof form, e.target.value)}
+                          className={inputClass}
+                        />
+                      </Field>
+                    ))}
+                  </div>
+
+                  <WhitePaperHighlightFormFields
+                    idPrefix={idPrefix}
+                    questions={formQuestions}
+                    values={customAnswers}
+                    onChange={(index, value) =>
+                      setCustomAnswers((prev) => {
+                        const next = [...prev]
+                        next[index] = value
+                        return next
+                      })
+                    }
+                    inputClass={inputClass}
+                  />
+
+                  <WhitePaperConsentBlock
+                    idPrefix={idPrefix}
+                    className="mt-4"
+                    copy={consent}
+                    termsAccepted={termsAccepted}
+                    partnersAccepted={partnersAccepted}
+                    optOutCommunication={optOutCommunication}
+                    onTermsChange={setTermsAccepted}
+                    onPartnersChange={setPartnersAccepted}
+                    onOptOutChange={setOptOutCommunication}
+                    extraAccepted={extraAccepted}
+                    onExtraChange={(index, checked) =>
+                      setExtraAccepted((prev) => {
+                        const next = [...prev]
+                        next[index] = checked
+                        return next
+                      })
+                    }
+                  />
+
+                  {error ? <p className="mt-2 text-sm text-red-600">{error}</p> : null}
+
+                  <div className="mt-5 flex flex-col items-center">
+                    <button
+                      type="submit"
+                      disabled={
+                        loading ||
+                        (consent.showTerms && !termsAccepted) ||
+                        (consent.showPartners && !partnersAccepted) ||
+                        (consent.extra || []).some((item, index) => item.required !== false && !extraAccepted[index])
+                      }
+                      className={btnPrimary}
+                    >
+                      {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Download Now'}
+                    </button>
+                    <WhitePaperConsentFooter text={consent.footerText} />
+                  </div>
+                </form>
+              </section>
+            )}
+
+            {step === 'done' && downloadUrl && (
+              <section>
+                <CheckCircle2 className="h-9 w-9 text-green-600" aria-hidden />
+                <h2 className="mt-3 text-base font-semibold text-navy">Download started</h2>
+                <p className="mt-1.5 text-[13px] leading-snug text-gray-600">
+                  Your PDF should save automatically. If it did not, use the button below.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => triggerPdfDownload(downloadUrl)}
+                  className={`mt-4 ${btnPrimary}`}
+                >
+                  <span className="inline-flex items-center justify-center gap-2">
+                    <Download className="h-4 w-4" aria-hidden />
+                    Download PDF again
+                  </span>
+                </button>
+                {!embedded ? (
+                  <p className="mt-4 text-sm">
+                    <Link href={detailHref} className="font-medium text-cb-orange hover:underline">
+                      {whitePaperReturnToItemLabel(resourceType)}
+                    </Link>
+                  </p>
+                ) : null}
+              </section>
+            )}
+            </div>
+  )
+
+  if (embedded) {
+    return <div className="w-full max-w-[420px]">{formCard}</div>
+  }
+
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-white pb-24">
       <div className="mx-auto max-w-5xl px-4 py-3 sm:px-6">
         <Link
           href="/resources/whitepapers"
@@ -230,252 +389,7 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
 
           {/* Form column */}
           <div className="min-w-0 lg:pl-4 xl:pl-8">
-            <div className={formPanelClass}>
-            {step === 'email' && (
-              <section>
-                <FormHeader
-                  title={whitePaperDownloadFormTitle(resourceType)}
-                  description={`Enter your work email. We will use it only to deliver your PDF and related resources from ${offeredBy}.`}
-                />
-
-                <form onSubmit={onEmailSubmit} className="mt-3">
-                  <Field label="Work email" required htmlFor="wp-email">
-                      <input
-                        id="wp-email"
-                        type="email"
-                        required
-                        autoComplete="work email"
-                        placeholder="you@yourcompany.com"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className={inputClass}
-                      />
-                    </Field>
-                    <p className="mt-1 text-[11px] leading-snug text-gray-500">
-                      Company email only. Not Gmail, Yahoo, Outlook, or other personal addresses.
-                    </p>
-
-                  <WhitePaperConsentBlock
-                    idPrefix="wp-email"
-                    className="mt-4"
-                    termsAccepted={termsAccepted}
-                    optOutCommunication={optOutCommunication}
-                    onTermsChange={setTermsAccepted}
-                    onOptOutChange={setOptOutCommunication}
-                  />
-
-                  {error ? <p className="mt-2 text-sm text-red-600">{error}</p> : null}
-                  <div className="mt-4">
-                    <button type="submit" disabled={loading || !termsAccepted} className={btnPrimary}>
-                      {loading ? (
-                        <Loader2 className="mx-auto h-5 w-5 animate-spin" />
-                      ) : (
-                        <span className="inline-flex items-center justify-center gap-2">
-                          <Download className="h-4 w-4" aria-hidden />
-                          Download Now
-                        </span>
-                      )}
-                    </button>
-                    <WhitePaperConsentFooter />
-                  </div>
-                </form>
-              </section>
-            )}
-
-            {step === 'profile' && (
-              <section>
-                <FormHeader
-                  title={whitePaperDownloadFormTitle(resourceType)}
-                  description={`A few more details to deliver your PDF from ${offeredBy}.`}
-                />
-
-                <form onSubmit={onProfileSubmit} className="mt-3">
-                  <Field label="Work email" required htmlFor="wp-email-readonly">
-                    <input
-                      id="wp-email-readonly"
-                      type="email"
-                      readOnly
-                      value={email}
-                      className={`${inputClass} bg-gray-50 text-gray-600`}
-                    />
-                  </Field>
-
-                  <fieldset className="mt-3 border-0 p-0">
-                    <legend className={sectionLegendClass}>Contact information</legend>
-                    <div className={formStack}>
-                      <Field label="First name" required htmlFor="wp-first">
-                        <input
-                          id="wp-first"
-                          required
-                          autoComplete="given-name"
-                          value={form.firstName}
-                          onChange={(e) => setField('firstName', e.target.value)}
-                          className={inputClass}
-                        />
-                      </Field>
-                      <Field label="Last name" required htmlFor="wp-last">
-                        <input
-                          id="wp-last"
-                          required
-                          autoComplete="family-name"
-                          value={form.lastName}
-                          onChange={(e) => setField('lastName', e.target.value)}
-                          className={inputClass}
-                        />
-                      </Field>
-                      <Field label="Job title" required htmlFor="wp-job">
-                        <input
-                          id="wp-job"
-                          required
-                          autoComplete="organization-title"
-                          value={form.jobTitle}
-                          onChange={(e) => setField('jobTitle', e.target.value)}
-                          className={inputClass}
-                        />
-                      </Field>
-                      <Field label="Work phone" required htmlFor="wp-phone">
-                        <input
-                          id="wp-phone"
-                          required
-                          type="tel"
-                          autoComplete="tel"
-                          value={form.workPhone}
-                          onChange={(e) => setField('workPhone', e.target.value)}
-                          className={inputClass}
-                        />
-                      </Field>
-                    </div>
-                  </fieldset>
-
-                  <fieldset className="mt-3 border-0 p-0">
-                    <legend className={sectionLegendClass}>Company address</legend>
-                    <div className={formStack}>
-                      <Field label="Street address" required htmlFor="wp-street">
-                        <input
-                          id="wp-street"
-                          required
-                          autoComplete="street-address"
-                          value={form.companyStreet}
-                          onChange={(e) => setField('companyStreet', e.target.value)}
-                          className={inputClass}
-                        />
-                      </Field>
-                      <Field label="Suite / office" htmlFor="wp-suite">
-                        <input
-                          id="wp-suite"
-                          value={form.companySuite}
-                          onChange={(e) => setField('companySuite', e.target.value)}
-                          className={inputClass}
-                        />
-                      </Field>
-                      <Field label="Postal / ZIP code" required htmlFor="wp-postal">
-                        <input
-                          id="wp-postal"
-                          required
-                          autoComplete="postal-code"
-                          value={form.companyPostal}
-                          onChange={(e) => setField('companyPostal', e.target.value)}
-                          className={inputClass}
-                        />
-                      </Field>
-                      <Field label="City" required htmlFor="wp-city">
-                        <input
-                          id="wp-city"
-                          required
-                          autoComplete="address-level2"
-                          value={form.companyCity}
-                          onChange={(e) => setField('companyCity', e.target.value)}
-                          className={inputClass}
-                        />
-                      </Field>
-                      <Field label="State / province" htmlFor="wp-state">
-                        <input
-                          id="wp-state"
-                          autoComplete="address-level1"
-                          value={form.companyState}
-                          onChange={(e) => setField('companyState', e.target.value)}
-                          className={inputClass}
-                        />
-                      </Field>
-                      <Field label="Country" required htmlFor="wp-country">
-                        <input
-                          id="wp-country"
-                          required
-                          autoComplete="country-name"
-                          value={form.companyCountry}
-                          onChange={(e) => setField('companyCountry', e.target.value)}
-                          className={inputClass}
-                        />
-                      </Field>
-                    </div>
-                  </fieldset>
-
-                  <WhitePaperHighlightFormFields
-                    questions={formQuestions}
-                    values={customAnswers}
-                    onChange={(index, value) =>
-                      setCustomAnswers((prev) => {
-                        const next = [...prev]
-                        next[index] = value
-                        return next
-                      })
-                    }
-                    inputClass={inputClass}
-                  />
-
-                  <WhitePaperConsentBlock
-                    idPrefix="wp-profile"
-                    className="mt-4"
-                    termsAccepted={termsAccepted}
-                    optOutCommunication={optOutCommunication}
-                    onTermsChange={setTermsAccepted}
-                    onOptOutChange={setOptOutCommunication}
-                  />
-
-                  {error ? <p className="mt-2 text-sm text-red-600">{error}</p> : null}
-
-                  <div className="mt-4">
-                    <button type="submit" disabled={loading || !termsAccepted} className={btnPrimary}>
-                      {loading ? (
-                        <Loader2 className="mx-auto h-5 w-5 animate-spin" />
-                      ) : (
-                        <span className="inline-flex items-center justify-center gap-2">
-                          <Download className="h-4 w-4" aria-hidden />
-                          Download Now
-                        </span>
-                      )}
-                    </button>
-                    <WhitePaperConsentFooter />
-                  </div>
-                </form>
-              </section>
-            )}
-
-            {step === 'done' && downloadUrl && (
-              <section>
-                <CheckCircle2 className="h-9 w-9 text-green-600" aria-hidden />
-                <h2 className="mt-3 text-base font-semibold text-navy">Download started</h2>
-                <p className="mt-1.5 text-[13px] leading-snug text-gray-600">
-                  Your PDF should save automatically. If it did not, use the button below.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => triggerPdfDownload(downloadUrl)}
-                  className={`mt-4 ${btnPrimary}`}
-                >
-                  <span className="inline-flex items-center justify-center gap-2">
-                    <Download className="h-4 w-4" aria-hidden />
-                    Download PDF again
-                  </span>
-                </button>
-                <p className="mt-4 text-sm">
-                  <Link href={detailHref} className="font-medium text-cb-orange hover:underline">
-                    {whitePaperReturnToItemLabel(resourceType)}
-                  </Link>
-                </p>
-              </section>
-            )}
-            </div>
+            {formCard}
 
             <WhitePaperInsideExplorer
               slug={paper.slug}
@@ -493,28 +407,16 @@ export function WhitePaperDownloadGate({ paper }: { paper: PaperPreview }) {
   )
 }
 
-/** One field per row */
-const formStack = 'flex flex-col gap-1.5'
+/** One field per row — gray panel like the reference download gate */
+const formStack = 'flex flex-col gap-3'
 
-const formPanelClass = 'max-w-md lg:max-w-lg'
-
-const sectionLegendClass = 'mb-1 block text-[13px] font-semibold text-navy'
+const formPanelClass = 'mx-auto w-full max-w-[420px] rounded-sm bg-[#f3f3f3] px-6 py-7'
 
 const inputClass =
-  'block h-8 w-full min-w-0 rounded-md border border-gray-200 bg-white px-2.5 text-[13px] leading-none text-navy transition-colors outline-none placeholder:text-gray-400 focus:border-cb-orange focus:outline-none focus:ring-0'
+  'block h-10 w-full min-w-0 rounded-sm border border-[#d5d5d5] bg-white px-3 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:border-gray-500 focus:ring-0'
 
 const btnPrimary =
-  'inline-flex min-w-[180px] items-center justify-center rounded-md bg-cb-orange px-6 py-2 text-xs font-semibold uppercase tracking-wide text-white transition-colors hover:bg-cb-orange-hover disabled:cursor-not-allowed disabled:opacity-60'
-
-function FormHeader({ title, description }: { title: string; description: string }) {
-  return (
-    <div>
-      <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-cb-orange">Free download</p>
-      <h2 className="mt-1 text-base font-semibold text-navy">{title}</h2>
-      <p className="mt-1 text-[13px] leading-snug text-gray-600">{description}</p>
-    </div>
-  )
-}
+  'mx-auto flex min-w-[160px] items-center justify-center rounded-sm bg-cb-orange px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-cb-orange-hover disabled:cursor-not-allowed disabled:bg-cb-orange disabled:opacity-70'
 
 function Field({
   label,

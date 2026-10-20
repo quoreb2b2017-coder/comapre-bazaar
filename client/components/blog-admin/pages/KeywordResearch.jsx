@@ -88,6 +88,13 @@ function formatNum(v) {
   return Number(v).toLocaleString()
 }
 
+function googleRankLabel(r) {
+  const n = Number(r?.currentRanking)
+  if (Number.isFinite(n) && n > 0) return `Google #${n}`
+  if (/not in top/i.test(r?.gscSource || '')) return 'Not in Google top 10'
+  return ''
+}
+
 function cleanText(s) {
   return String(s || '')
     .replace(/&amp;/gi, '&')
@@ -197,6 +204,7 @@ export const KeywordResearch = () => {
   const [actionFilter, setActionFilter] = useState('')
   const [sortBy, setSortBy] = useState('opportunity')
   const [demandFilter, setDemandFilter] = useState('') // high | medium | low | ''
+  const [kwQuery, setKwQuery] = useState('')
   const [manualInput, setManualInput] = useState('')
   const [addingKeywords, setAddingKeywords] = useState(false)
 
@@ -294,6 +302,7 @@ export const KeywordResearch = () => {
   useEffect(() => {
     setDemandFilter('')
     setActionFilter('')
+    setKwQuery('')
   }, [analysis?._id, activePageId])
 
   const onDiscover = async () => {
@@ -311,23 +320,57 @@ export const KeywordResearch = () => {
     }
   }
 
-  const onAddManual = async () => {
-    if (!manualUrl.trim()) return
+  const showAddedPage = (doc) => {
+    if (!doc?._id) return
+    setPages((prev) => [doc, ...prev.filter((p) => p._id !== doc._id)])
+    setActivePageId(doc._id)
+    setSelectedIds((prev) => (prev.includes(doc._id) ? prev : [...prev, doc._id]))
+    setQ('')
+  }
+
+  const addUrl = async (raw) => {
+    const url = String(raw || '').trim()
+    if (!url) return null
     setAddingUrl(true)
     try {
-      const res = await api.post('/keyword-research/pages/manual', { url: manualUrl.trim() })
+      const res = await api.post('/keyword-research/pages/manual', { url })
       toast.success('Page added')
       setManualUrl('')
-      await loadPages(1)
-      if (res.data?._id) {
-        setActivePageId(res.data._id)
-        setSelectedIds((prev) => (prev.includes(res.data._id) ? prev : [...prev, res.data._id]))
-      }
+      showAddedPage(res.data)
+      return res.data
     } catch (err) {
       toast.error(err.message || 'Could not add URL')
+      return null
     } finally {
       setAddingUrl(false)
     }
+  }
+
+  const onAddManual = () => addUrl(manualUrl)
+
+  const looksLikePageUrl = (value) => {
+    const text = String(value || '').trim()
+    return (
+      /^https?:\/\//i.test(text) ||
+      text.startsWith('/') ||
+      /^localhost(:\d+)?\//i.test(text) ||
+      /^[\w.-]+\.[a-z]{2,}(:\d+)?\//i.test(text)
+    )
+  }
+
+  const onSearchSubmit = async () => {
+    const text = q.trim()
+    if (looksLikePageUrl(text)) {
+      const found = pages.find((p) => text.includes(p.path) && p.path !== '/')
+      if (found) {
+        setActivePageId(found._id)
+        setQ('')
+        return
+      }
+      await addUrl(text)
+      return
+    }
+    await loadPages(1)
   }
 
   const toggleSelect = (id) => {
@@ -444,13 +487,29 @@ export const KeywordResearch = () => {
     let rows = [...allRecs]
     if (actionFilter) rows = rows.filter((r) => r.action === actionFilter)
     if (demandFilter) rows = rows.filter((r) => classifyDemand(r) === demandFilter)
+    const needle = kwQuery.trim().toLowerCase()
+    if (needle) {
+      rows = rows.filter((r) =>
+        `${r.proposedKeyword || ''} ${r.currentKeyword || ''}`.toLowerCase().includes(needle)
+      )
+    }
     rows.sort((a, b) => {
       if (sortBy === 'volume') return (b.searchVolume || 0) - (a.searchVolume || 0)
+      if (sortBy === 'rank') {
+        const ar = Number(a.currentRanking)
+        const br = Number(b.currentRanking)
+        const aOk = Number.isFinite(ar) && ar > 0
+        const bOk = Number.isFinite(br) && br > 0
+        if (aOk && bOk) return ar - br
+        if (aOk) return -1
+        if (bOk) return 1
+        return 0
+      }
       if (sortBy === 'action') return String(a.action).localeCompare(String(b.action))
       return (b.opportunityScore || 0) - (a.opportunityScore || 0)
     })
     return rows
-  }, [allRecs, actionFilter, sortBy, demandFilter])
+  }, [allRecs, actionFilter, sortBy, demandFilter, kwQuery])
 
   const actionCounts = useMemo(() => {
     const counts = { KEEP: 0, ADD: 0, REPLACE: 0, REMOVE: 0, INVESTIGATE: 0 }
@@ -617,8 +676,8 @@ export const KeywordResearch = () => {
               <input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && loadPages(1)}
-                placeholder="Search title or path…"
+                onKeyDown={(e) => e.key === 'Enter' && onSearchSubmit()}
+                placeholder="Search title, path, or paste a URL…"
                 className={`${inputClass} pl-9`}
               />
             </div>
@@ -681,8 +740,14 @@ export const KeywordResearch = () => {
             ) : pages.length === 0 ? (
               <div className="px-6 py-16 text-center">
                 <FileSearch className="mx-auto h-10 w-10 text-slate-300" />
-                <p className="mt-3 text-sm font-medium text-navy dark:text-white">No pages yet</p>
-                <p className="mt-1 text-xs text-slate-500">Click <strong>Scan site</strong> to pull sitemap + CMS URLs.</p>
+                <p className="mt-3 text-sm font-medium text-navy dark:text-white">
+                  {q.trim() ? 'No page matches this search' : 'No pages yet'}
+                </p>
+                <p className="mt-1 text-xs text-slate-500">
+                  {q.trim()
+                    ? 'Press Enter on a full URL to add that page and open it.'
+                    : <>Click <strong>Scan site</strong> to pull sitemap + CMS URLs.</>}
+                </p>
                 <button
                   type="button"
                   onClick={onDiscover}
@@ -1146,6 +1211,7 @@ export const KeywordResearch = () => {
                             Place in: {r.suggestedPlacement || 'title / H1'}
                             {r.searchIntent ? ` · ${r.searchIntent}` : ''}
                             {r.opportunityScore != null ? ` · score ${r.opportunityScore}` : ''}
+                            {googleRankLabel(r) ? ` · ${googleRankLabel(r)}` : ''}
                           </p>
                         </div>
                         <button
@@ -1223,14 +1289,27 @@ export const KeywordResearch = () => {
               {/* Recommendations */}
               <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-sm sm:p-5 dark:border-slate-700 dark:bg-slate-900/60">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <h3 className="font-serif text-lg text-navy dark:text-white">
-                    Recommendations
-                    <span className="ml-2 text-sm font-sans font-normal text-slate-400">
-                      {filteredRecs.length}
-                      {allRecs.length !== filteredRecs.length ? ` / ${allRecs.length}` : ''}
-                    </span>
-                  </h3>
+                  <div>
+                    <h3 className="font-serif text-lg text-navy dark:text-white">
+                      Recommendations
+                      <span className="ml-2 text-sm font-sans font-normal text-slate-400">
+                        {filteredRecs.length}
+                        {allRecs.length !== filteredRecs.length ? ` / ${allRecs.length}` : ''}
+                      </span>
+                    </h3>
+                    {(analysis.dataSources?.notes || []).find((n) => /google rank/i.test(n)) ? (
+                      <p className="mt-0.5 text-[11px] text-slate-500">
+                        {(analysis.dataSources.notes || []).find((n) => /google rank/i.test(n))}
+                      </p>
+                    ) : null}
+                  </div>
                   <div className="flex flex-wrap gap-2">
+                    <input
+                      value={kwQuery}
+                      onChange={(e) => setKwQuery(e.target.value)}
+                      placeholder="Search keywords…"
+                      className={selectClass}
+                    />
                     <select
                       value={actionFilter}
                       onChange={(e) => setActionFilter(e.target.value)}
@@ -1246,6 +1325,7 @@ export const KeywordResearch = () => {
                     <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className={selectClass}>
                       <option value="opportunity">Sort: opportunity</option>
                       <option value="volume">Sort: volume</option>
+                      <option value="rank">Sort: Google rank</option>
                       <option value="action">Sort: action</option>
                     </select>
                     <select
@@ -1368,6 +1448,9 @@ export const KeywordResearch = () => {
                               {r.suggestedPlacement && <span>Place in: {r.suggestedPlacement}</span>}
                               <span>Vol: {formatNum(r.searchVolume)}</span>
                               <span>KD: {formatNum(r.keywordDifficulty)}</span>
+                              <span className={googleRankLabel(r).startsWith('Google #') ? 'font-semibold text-emerald-700' : ''}>
+                                {googleRankLabel(r) || 'Google rank —'}
+                              </span>
                             </div>
                           </div>
                           <div className="flex shrink-0 gap-1.5">

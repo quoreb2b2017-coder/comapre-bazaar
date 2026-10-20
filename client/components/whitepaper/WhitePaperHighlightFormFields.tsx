@@ -9,6 +9,7 @@ type Props = {
   values: string[]
   onChange: (index: number, value: string) => void
   inputClass: string
+  idPrefix?: string
 }
 
 function Field({
@@ -33,48 +34,41 @@ function Field({
   )
 }
 
-export function WhitePaperHighlightFormFields({ questions, values, onChange, inputClass }: Props) {
+export function WhitePaperHighlightFormFields({ questions, values, onChange, inputClass, idPrefix = 'wp' }: Props) {
   const items = (questions || []).filter((q) => String(q.question || '').trim())
   if (!items.length) return null
 
-  const textInputClass = `${inputClass} h-10 rounded-lg px-3.5 shadow-[0_1px_2px_rgba(15,31,61,0.04)] transition-all duration-200 hover:border-gray-300 focus:border-[#1D4ED8]/40 focus:ring-[3px] focus:ring-[#1D4ED8]/8`
-
   return (
-    <fieldset className="mt-3 rounded-xl border border-gray-200/80 bg-[#FAFBFD] p-4">
-      <legend className="mb-3 block px-0.5 text-[13px] font-semibold text-navy">
-        A few quick questions
-      </legend>
-      <div className="flex flex-col gap-3">
-        {items.map((item, index) => {
-          const label = cleanDisplayText(item.question)
-          const id = `wp-custom-${index}`
-          const dropdown = isDropdownQuestion(item)
+    <div className="mt-3 flex flex-col gap-3">
+      {items.map((item, index) => {
+        const label = cleanDisplayText(item.question)
+        const id = `${idPrefix}-custom-${index}`
+        const dropdown = isDropdownQuestion(item)
 
-          return (
-            <Field key={`${index}-${item.question.slice(0, 24)}`} label={label} required htmlFor={id}>
-              {dropdown ? (
-                <WhitePaperCustomSelect
-                  id={id}
-                  required
-                  value={values[index] || ''}
-                  options={item.options}
-                  onChange={(value) => onChange(index, value)}
-                />
-              ) : (
-                <input
-                  id={id}
-                  type="text"
-                  required
-                  value={values[index] || ''}
-                  onChange={(e) => onChange(index, e.target.value)}
-                  className={textInputClass}
-                  maxLength={500}
-                />
-              )}
-            </Field>
-          )
-        })}
-      </div>
-    </fieldset>
+        return (
+          <Field key={`${index}-${item.question.slice(0, 24)}`} label={label} required htmlFor={id}>
+            {dropdown ? (
+              <WhitePaperCustomSelect
+                id={id}
+                required
+                value={values[index] || ''}
+                options={item.options}
+                onChange={(value) => onChange(index, value)}
+              />
+            ) : (
+              <input
+                id={id}
+                type="text"
+                required
+                value={values[index] || ''}
+                onChange={(e) => onChange(index, e.target.value)}
+                className={inputClass}
+                maxLength={500}
+              />
+            )}
+          </Field>
+        )
+      })}
+    </div>
   )
 }

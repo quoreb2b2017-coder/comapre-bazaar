@@ -10,6 +10,7 @@ import ArrowNavigation from '@/components/ArrowNavigation'
 import { GoogleAnalyticsConsent } from '@/components/analytics/GoogleAnalyticsConsent'
 import { SiteAnalyticsBeacon } from '@/components/consent/SiteAnalyticsBeacon'
 import { CookieConsentBanner } from '@/components/consent/CookieConsentBanner'
+import { WhitePaperSponsorBar } from '@/components/whitepaper/WhitePaperSponsorBar'
 
 const CompareBazaarChat = dynamic(
   () => import('@/components/chatbot/CompareBazaarChat').then((mod) => mod.CompareBazaarChat),
@@ -24,6 +25,11 @@ function isBlogAdminPath(pathname: string | null) {
 function isBuyerZoneQuotePath(pathname: string | null) {
   if (!pathname) return false
   return pathname.startsWith('/bz-get-free-quotes-')
+}
+
+function isWhitePaperPath(pathname: string | null) {
+  if (!pathname) return false
+  return pathname.startsWith('/resources/whitepapers/')
 }
 
 export function SiteChrome({ children }: { children: React.ReactNode }) {
@@ -45,6 +51,7 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
         <SiteAnalyticsBeacon />
       </Suspense>
       <CookieConsentBanner />
+      {isWhitePaperPath(pathname) ? <WhitePaperSponsorBar /> : null}
       <SiteFooter />
     </>
   )

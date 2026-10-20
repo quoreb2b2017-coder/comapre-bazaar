@@ -31,6 +31,18 @@ export type WhitePaperPublic = {
   insideSections?: { title: string; summary: string; body?: string; pages?: string }[]
   insidePoints?: string[]
   highlightQuestions?: HighlightQuestion[]
+  downloadFormFields?: { label: string; key: string; inputType?: string; required?: boolean }[]
+  downloadConsent?: {
+    emailNote?: string
+    termsText?: string
+    partnersText?: string
+    optOutText?: string
+    footerText?: string
+    showTerms?: boolean
+    showPartners?: boolean
+    showOptOut?: boolean
+    extra?: { text: string; required?: boolean }[]
+  }
   testimonialsHeading?: string
   testimonials?: {
     quote: string

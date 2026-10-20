@@ -18,6 +18,21 @@ const BULK_MAX = Math.min(10, Number(process.env.SEO_KEYWORD_BULK_MAX || 5) || 5
 
 let anthropicClient = null
 
+function siteDomain() {
+  try {
+    return new URL(siteBaseUrl()).hostname.replace(/^www\./i, '').toLowerCase()
+  } catch {
+    return 'compare-bazaar.com'
+  }
+}
+
+function hostMatchesSite(host, domain) {
+  const h = String(host || '').replace(/^www\./i, '').toLowerCase()
+  const d = String(domain || '').replace(/^www\./i, '').toLowerCase()
+  if (!h || !d) return false
+  return h === d || h.endsWith(`.${d}`)
+}
+
 function siteBaseUrl() {
   const raw = String(
     process.env.WEBSITE_URL || process.env.BLOG_VOICE_SITE_URL || 'https://www.compare-bazaar.com'
@@ -142,8 +157,23 @@ function classifyPageType(pathname) {
 function normalizePath(pathname) {
   let p = String(pathname || '/')
   if (!p.startsWith('/')) p = `/${p}`
+  p = p.split('?')[0].split('#')[0]
   if (p.length > 1 && p.endsWith('/')) p = p.slice(0, -1)
   return p || '/'
+}
+
+/** Pull /path out of a pasted URL, localhost link, or bare path so search still hits the page. */
+function pathFromSearch(raw) {
+  const text = String(raw || '').trim()
+  if (!text) return ''
+  if (text.startsWith('/')) return normalizePath(text)
+  const withProto = /^https?:\/\//i.test(text) ? text : /^[\w.-]+\.[a-z]{2,}(:\d+)?\//i.test(text) || /^localhost(:\d+)?\//i.test(text) ? `https://${text}` : ''
+  if (!withProto) return ''
+  try {
+    return normalizePath(new URL(withProto).pathname)
+  } catch {
+    return ''
+  }
 }
 
 function decodeHtmlEntities(s) {
@@ -439,18 +469,34 @@ async function listPages({ q = '', pageType = '', status = '', page = 1, limit =
   const filter = {}
   if (pageType) filter.pageType = pageType
   if (status) filter.analysisStatus = status
+  const exactPath = pathFromSearch(q)
   if (q) {
-    filter.$or = [
-      { title: new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i') },
-      { path: new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i') },
-      { url: new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i') },
+    const escaped = String(q).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const or = [
+      { title: new RegExp(escaped, 'i') },
+      { path: new RegExp(escaped, 'i') },
+      { url: new RegExp(escaped, 'i') },
     ]
+    if (exactPath) {
+      or.push({ path: exactPath })
+      const pathEsc = exactPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      or.push({ path: new RegExp(pathEsc, 'i') })
+      or.push({ url: new RegExp(pathEsc, 'i') })
+    }
+    filter.$or = or
   }
   const skip = (Math.max(1, page) - 1) * limit
   const [rows, total] = await Promise.all([
     SeoKeywordPage.find(filter).sort({ path: 1 }).skip(skip).limit(limit).lean(),
     SeoKeywordPage.countDocuments(filter),
   ])
+  if (exactPath) {
+    const exact = rows.find((row) => row.path === exactPath)
+    if (exact) {
+      rows.splice(rows.indexOf(exact), 1)
+      rows.unshift(exact)
+    }
+  }
   return {
     data: rows,
     pagination: {
@@ -463,7 +509,11 @@ async function listPages({ q = '', pageType = '', status = '', page = 1, limit =
 }
 
 async function addManualPage(rawUrl) {
-  const parsed = assertAllowedUrl(rawUrl)
+  let input = String(rawUrl || '').trim()
+  if (input && !/^https?:\/\//i.test(input)) {
+    input = input.startsWith('/') ? `${siteBaseUrl()}${input}` : `https://${input}`
+  }
+  const parsed = assertAllowedUrl(input)
   const base = siteBaseUrl()
   const path = normalizePath(parsed.pathname)
   const url = `${base}${path === '/' ? '' : path}`
@@ -657,6 +707,110 @@ async function fetchDataForSeoMetrics(keywords, region) {
   } catch (e) {
     console.warn('[keywordResearch] DataForSEO:', e.message)
     return { map: new Map(), used: false, note: `DataForSEO error: ${e.message}` }
+  }
+}
+
+function rankTargetKeywords(recs) {
+  const ordered = [...recs].sort((a, b) => {
+    const ah = a.highSearchCandidate ? 1 : 0
+    const bh = b.highSearchCandidate ? 1 : 0
+    if (bh !== ah) return bh - ah
+    return String(b.priority || '').localeCompare(String(a.priority || ''))
+  })
+  const out = []
+  const seen = new Set()
+  for (const rec of ordered) {
+    const kw = String(rec.proposedKeyword || rec.currentKeyword || '').trim()
+    const key = kw.toLowerCase()
+    if (!kw || seen.has(key)) continue
+    seen.add(key)
+    out.push(kw)
+    if (out.length >= 8) break
+  }
+  return out
+}
+
+/** Live Google organic position for this site. Never invents a rank. */
+async function fetchGoogleOrganicRanks(keywords, region) {
+  const login = String(process.env.DATAFORSEO_LOGIN || '').trim()
+  const password = String(process.env.DATAFORSEO_PASSWORD || '').trim()
+  const domain = siteDomain()
+  const list = [...new Set((keywords || []).map((k) => String(k || '').trim()).filter(Boolean))].slice(0, 8)
+  if (!list.length) return { map: new Map(), used: false, note: '' }
+  if (!login || !password) {
+    return {
+      map: new Map(),
+      used: false,
+      note: 'Google rank not checked — set DATAFORSEO_LOGIN and DATAFORSEO_PASSWORD',
+    }
+  }
+
+  const locationCode = Number(process.env.DATAFORSEO_LOCATION_CODE || 2840)
+  const languageCode = String(region?.language || 'en').slice(0, 10)
+
+  try {
+    const auth = Buffer.from(`${login}:${password}`).toString('base64')
+    const payload = list.map((keyword) => ({
+      keyword: keyword.slice(0, 80),
+      location_code: locationCode,
+      language_code: languageCode,
+      device: 'desktop',
+      os: 'windows',
+      depth: 10,
+    }))
+    const res = await axios.post(
+      'https://api.dataforseo.com/v3/serp/google/organic/live/regular',
+      payload,
+      {
+        timeout: 70000,
+        headers: {
+          Authorization: `Basic ${auth}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+    const map = new Map()
+    const tasks = res.data?.tasks || []
+    tasks.forEach((task, index) => {
+      const keyword = String(task?.data?.keyword || list[index] || '')
+        .toLowerCase()
+        .trim()
+      if (!keyword) return
+      const items = task?.result?.[0]?.items || []
+      let rank = null
+      for (const item of items) {
+        if (item?.type && item.type !== 'organic') continue
+        let host = String(item.domain || '')
+        if (!host && item.url) {
+          try {
+            host = new URL(item.url).hostname
+          } catch {
+            host = ''
+          }
+        }
+        if (!hostMatchesSite(host, domain)) continue
+        const n = Number(item.rank_group || item.rank_absolute)
+        if (Number.isFinite(n) && n > 0) {
+          rank = n
+          break
+        }
+      }
+      map.set(keyword, {
+        rank,
+        source:
+          rank != null
+            ? `Google organic live · ${domain}`
+            : `Google organic live: not in top 10 · ${domain}`,
+      })
+    })
+    return {
+      map,
+      used: map.size > 0,
+      note: `Google rank checked automatically for ${map.size} keyword(s) (${domain}, top 10)`,
+    }
+  } catch (e) {
+    console.warn('[keywordResearch] Google rank:', e.message)
+    return { map: new Map(), used: false, note: `Google rank check failed: ${e.message}` }
   }
 }
 
@@ -972,11 +1126,16 @@ async function runAnalysisJob(analysisId, apiKey) {
     if (dfs.used) dataNotes.push(dfs.note)
     else if (dfs.note) dataNotes.push(dfs.note)
 
+    const ranks = await fetchGoogleOrganicRanks(rankTargetKeywords(recs), analysis.region)
+    if (ranks.note) dataNotes.push(ranks.note)
+
     const scoringNotes = []
     recs = recs.slice(0, 35).map((r) => {
       const proposed = String(r.proposedKeyword || r.currentKeyword || '').trim()
       const key = proposed.toLowerCase()
       const metrics = dfs.map.get(key)
+      const rankHit = ranks.map.get(key)
+      const currentRanking = rankHit && Number.isFinite(Number(rankHit.rank)) ? Number(rankHit.rank) : null
       let searchVolume = null
       let searchVolumeSource = ''
       let keywordDifficulty = null
@@ -1014,7 +1173,7 @@ async function runAnalysisJob(analysisId, apiKey) {
         searchVolume,
         keywordDifficulty,
         relevance: r.relevance,
-        currentRanking: null,
+        currentRanking,
         highSearchCandidate,
         demandTier,
       })
@@ -1029,11 +1188,11 @@ async function runAnalysisJob(analysisId, apiKey) {
         searchVolumeSource,
         keywordDifficulty,
         keywordDifficultySource,
-        currentRanking: null,
+        currentRanking,
         impressions: null,
         clicks: null,
         ctr: null,
-        gscSource: '',
+        gscSource: rankHit?.source || '',
         relevance: Number.isFinite(Number(r.relevance)) ? Number(r.relevance) : null,
         opportunityScore: scored.score,
         priority,
@@ -1087,8 +1246,8 @@ async function runAnalysisJob(analysisId, apiKey) {
       claude: true,
       dataForSeo: dfs.used,
       googleAds: false,
-      gsc: false,
-      notes: dfs.used ? dataNotes.filter(Boolean) : [],
+      gsc: Boolean(ranks.used),
+      notes: dataNotes.filter(Boolean),
     }
     analysis.scoringNotes = [
       'Score = base 40 + relevance(0–30) + log volume(0–20) + (100−KD)*0.15 + SERP opportunity.',

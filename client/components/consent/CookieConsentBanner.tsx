@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import {
   parseConsentCookie,
   saveConsentCookie,
@@ -47,6 +48,8 @@ function postConsentEvent(consent: Pick<ConsentPreferences, 'analytics' | 'marke
 }
 
 export function CookieConsentBanner() {
+  const pathname = usePathname()
+  const aboveSponsorBar = Boolean(pathname?.startsWith('/resources/whitepapers/'))
   const [mounted, setMounted] = useState(false)
   const [stored, setStored] = useState<ConsentPreferences | null>(null)
   const [panel, setPanel] = useState<PanelMode>('bar')
@@ -128,7 +131,9 @@ export function CookieConsentBanner() {
 
   return (
     <div
-      className="fixed inset-x-0 bottom-0 z-[100] flex justify-center pointer-events-none px-3 pb-4 sm:px-4 sm:pb-5"
+      className={`fixed inset-x-0 z-[100] flex justify-center pointer-events-none px-3 pb-4 sm:px-4 sm:pb-5 ${
+        aboveSponsorBar ? 'bottom-16 sm:bottom-14' : 'bottom-0'
+      }`}
       role="dialog"
       aria-label="Cookie preferences"
       aria-modal="false"

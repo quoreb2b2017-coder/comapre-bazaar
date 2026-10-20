@@ -59,6 +59,49 @@ const whitePaperSchema = new mongoose.Schema(
       type: [{ type: String, trim: true, maxlength: 700 }],
       default: [],
     },
+    /**
+     * Admin-editable download form fields (gray panel).
+     * Empty = default Zip/Postal Code + Phone, like the TechTarget-style gate.
+     */
+    downloadFormFields: {
+      type: [
+        {
+          label: { type: String, trim: true, maxlength: 80 },
+          key: { type: String, trim: true, maxlength: 40 },
+          inputType: {
+            type: String,
+            enum: ['text', 'tel', 'email'],
+            default: 'text',
+          },
+          required: { type: Boolean, default: true },
+        },
+      ],
+      default: [],
+    },
+    /**
+     * Admin-editable consent copy on the download form.
+     * Empty strings fall back to the default Compare Bazaar wording.
+     * Tokens: {{terms}} {{privacy}} {{privacy-statement}} {{unsubscribe}} {{publisher}}
+     */
+    downloadConsent: {
+      emailNote: { type: String, trim: true, maxlength: 400, default: '' },
+      termsText: { type: String, trim: true, maxlength: 800, default: '' },
+      partnersText: { type: String, trim: true, maxlength: 800, default: '' },
+      optOutText: { type: String, trim: true, maxlength: 800, default: '' },
+      footerText: { type: String, trim: true, maxlength: 400, default: '' },
+      showTerms: { type: Boolean, default: true },
+      showPartners: { type: Boolean, default: true },
+      showOptOut: { type: Boolean, default: true },
+      extra: {
+        type: [
+          {
+            text: { type: String, trim: true, maxlength: 800 },
+            required: { type: Boolean, default: true },
+          },
+        ],
+        default: [],
+      },
+    },
     /** Admin-entered questions shown on download forms */
     highlightQuestions: {
       type: [

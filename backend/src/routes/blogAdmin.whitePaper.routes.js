@@ -3,6 +3,7 @@ const { protect } = require('../middlewares/blogAdminAuth.middleware')
 const { whitePaperUpload } = require('../middlewares/whitePaperUpload.middleware')
 const WhitePaper = require('../models/whitePaper.model')
 const WhitePaperLead = require('../models/whitePaperLead.model')
+const { parseDownloadFormFields, parseDownloadConsent } = require('../utils/highlightQuestions')
 const {
   parseMetadataInput,
   buildWhitePaperMetadata,
@@ -423,6 +424,8 @@ router.post('/', (req, res, next) => {
     })
     syncSeoTitleFromAdminTitle(draft, seoOverrides)
     draft.highlightQuestions = resolveHighlightQuestions(req.body?.highlightQuestions)
+    draft.downloadFormFields = parseDownloadFormFields(req.body?.downloadFormFields, { useDefault: false })
+    draft.downloadConsent = parseDownloadConsent(req.body?.downloadConsent)
     draft.pdfTextExcerpt = pdfText.slice(0, 5000)
     draft.status = 'published'
     draft.publishedAt = new Date()
@@ -558,6 +561,12 @@ router.put(
       syncSeoTitleFromAdminTitle(paper, seoOverrides)
 
       paper.highlightQuestions = resolveHighlightQuestions(req.body?.highlightQuestions)
+      if (req.body?.downloadFormFields != null) {
+        paper.downloadFormFields = parseDownloadFormFields(req.body.downloadFormFields, { useDefault: false })
+      }
+      if (req.body?.downloadConsent != null) {
+        paper.downloadConsent = parseDownloadConsent(req.body.downloadConsent)
+      }
       paper.status = 'published'
       if (!paper.publishedAt) paper.publishedAt = new Date()
       paper.processingError = ''
