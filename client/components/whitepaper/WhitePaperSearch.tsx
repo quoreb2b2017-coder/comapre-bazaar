@@ -162,8 +162,9 @@ export function WhitePaperSearch({
             Browse the library
           </h2>
           <p className="mt-1.5 max-w-xl text-[13px] leading-relaxed text-gray-500">
-            Filter by software category or content type. Each download is summarized from
-            independent PDF research.
+            {hideTypeFilter
+              ? 'Filter by software category. Each download is summarized from independent PDF research.'
+              : 'Filter by software category or content type. Each download is summarized from independent PDF research.'}
           </p>
         </div>
 

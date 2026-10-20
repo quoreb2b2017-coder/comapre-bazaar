@@ -108,7 +108,7 @@ export default function ResourcesPage() {
         crumbs={[{ label: 'Home', href: '/' }, { label: 'Resources' }]}
         eyebrow="Compare Bazaar · Resources"
         title="Resources"
-        description="Pick a section. Blogs, white papers, reports, case studies, guides, and webinars each open their own list."
+        description="Independent research for software buyers. Open the format that matches the decision: an article, a PDF, a benchmark, or a session."
         pillars={[
           { icon: Library, label: 'One library', sub: 'Articles and downloads in the same place.' },
           { icon: Layers, label: 'By format', sub: 'Open only the type you came for.' },
@@ -123,51 +123,46 @@ export default function ResourcesPage() {
             <div>
               <h2
                 id="featured-resources-heading"
-                className="text-lg font-semibold text-navy tracking-tight"
+                className="font-serif text-2xl font-normal tracking-tight text-navy"
               >
-                Sections
+                Choose a section
               </h2>
-              <p className="text-sm text-gray-500 mt-1 max-w-xl">
-                Open a section to see only that type of resource.
+              <p className="mt-1 max-w-xl text-sm leading-relaxed text-gray-500">
+                Six formats. Each card opens only that list.
               </p>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-7">
-            {SECTIONS.map((item) => {
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {SECTIONS.map((item, index) => {
               const Icon = item.icon
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="group relative block overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 shadow-[0_22px_56px_-34px_rgba(15,31,61,0.45)] transition-all duration-300 hover:-translate-y-1 hover:border-[#F6D1AF] hover:shadow-[0_28px_64px_-32px_rgba(15,31,61,0.52)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F58220] focus-visible:ring-offset-2"
+                  className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-[#F6D1AF] hover:shadow-[0_18px_40px_-28px_rgba(15,31,61,0.45)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F58220] focus-visible:ring-offset-2"
                 >
-                  <div className="relative flex flex-col h-full min-h-[220px]">
-                    <div className="flex items-start justify-between gap-3 mb-5">
-                      <div
-                        className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FFF4E8] text-[#C2410C] shadow-sm"
-                        aria-hidden
-                      >
-                        <Icon className="h-7 w-7" strokeWidth={2} />
-                      </div>
-                      <span className="shrink-0 rounded-full bg-white/90 px-3 py-1 text-[11px] font-medium text-gray-600 ring-1 ring-gray-200/80 shadow-sm">
-                        {item.chip}
-                      </span>
-                    </div>
-                    <h3 className="text-xl sm:text-[1.35rem] font-semibold text-navy tracking-tight mb-3">
-                      {item.title}
-                    </h3>
-                    <p className="text-sm sm:text-[15px] text-gray-600 leading-relaxed mb-8 flex-1">
-                      {item.description}
-                    </p>
-                    <span className="inline-flex items-center gap-2 text-sm font-semibold text-[#C2410C] group-hover:text-[#9C4302]">
-                      {item.cta}
-                      <ArrowRight
-                        className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
-                        aria-hidden
-                      />
+                  <span
+                    className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-gradient-to-r from-[#0B2A6F] via-[#F58220] to-[#0B2A6F] transition duration-300 group-hover:scale-x-100"
+                    aria-hidden
+                  />
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="font-serif text-[15px] tabular-nums text-[#F58220]">
+                      {String(index + 1).padStart(2, '0')}
+                    </span>
+                    <span className="rounded-full bg-[#F7F9FC] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#1D4ED8]">
+                      {item.chip}
                     </span>
                   </div>
+                  <span className="mt-4 flex h-11 w-11 items-center justify-center rounded-xl bg-[#0B1F3D] text-white">
+                    <Icon className="h-5 w-5" strokeWidth={1.75} aria-hidden />
+                  </span>
+                  <h3 className="mt-4 text-lg font-semibold tracking-tight text-navy">{item.title}</h3>
+                  <p className="mt-2 flex-1 text-sm leading-relaxed text-gray-600">{item.description}</p>
+                  <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-[#C2410C] group-hover:text-[#9C4302]">
+                    {item.cta}
+                    <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden />
+                  </span>
                 </Link>
               )
             })}
@@ -180,7 +175,7 @@ export default function ResourcesPage() {
         >
           <h2
             id="more-resources-heading"
-            className="text-lg sm:text-xl font-semibold text-navy tracking-tight mb-2"
+            className="mb-2 font-serif text-2xl font-normal tracking-tight text-navy"
           >
             Also helpful
           </h2>

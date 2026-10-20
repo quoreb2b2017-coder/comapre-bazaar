@@ -67,6 +67,10 @@ export default async function WhitepaperIndexPage({ searchParams }: PageProps) {
 
       {/* Hero */}
       <div className="relative border-b border-gray-200/80 bg-white/90 backdrop-blur-sm">
+        <div
+          className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#0B2A6F] via-[#F58220] to-[#0B2A6F]"
+          aria-hidden
+        />
         <div className="mx-auto max-w-[1140px] px-4 py-6 sm:px-5 sm:py-8 lg:px-6 lg:py-10">
           <Breadcrumb
             items={[

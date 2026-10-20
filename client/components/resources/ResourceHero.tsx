@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
-import { BookOpen, FileText, Newspaper } from 'lucide-react'
+import Link from 'next/link'
+import { BookOpen } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
 
@@ -44,6 +45,10 @@ export function ResourceHero({
 }) {
   return (
     <div className="relative border-b border-gray-200/80 bg-white/90 backdrop-blur-sm">
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#0B2A6F] via-[#F58220] to-[#0B2A6F]"
+        aria-hidden
+      />
       <div className="mx-auto max-w-[1140px] px-4 py-6 sm:px-5 sm:py-8 lg:px-6 lg:py-10">
         <Breadcrumb items={crumbs} className="mb-8 text-sm" />
         <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(300px,420px)] lg:gap-12 xl:gap-16">
@@ -81,32 +86,65 @@ export function ResourceHero({
   )
 }
 
-export function ResourceHubVisual() {
-  const cards = [
-    { label: 'Blogs', icon: Newspaper, className: 'left-[4%] top-[18%] z-10 w-[58%] -rotate-[5deg]' },
-    { label: 'White papers', icon: FileText, className: 'right-[2%] top-[8%] z-20 w-[60%] rotate-[6deg]' },
-    { label: 'Reports', icon: BookOpen, className: 'left-[16%] top-[2%] z-30 w-[64%] -rotate-[1deg]' },
-  ] as const
+const HUB_INDEX = ['Blogs', 'White papers', 'Reports', 'Case studies', 'Guides', 'Webinars'] as const
 
+export function ResourceHubVisual() {
   return (
-    <div className="relative mx-auto aspect-[5/4] w-full max-w-[400px]" aria-hidden>
-      <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-[#EEF2FF] via-[#F8FAFF] to-[#FFF7EF]" />
-      <div className="absolute -right-6 top-8 h-40 w-40 rounded-full bg-[#1D4ED8]/10 blur-3xl" />
-      <div className="absolute -left-4 bottom-6 h-32 w-32 rounded-full bg-[#F58220]/10 blur-3xl" />
-      <div className="relative h-full w-full">
-        {cards.map(({ label, icon: Icon, className }) => (
-          <div
-            key={label}
-            className={`absolute rounded-2xl border border-gray-200/80 bg-white px-4 py-4 shadow-[0_18px_40px_-24px_rgba(15,31,61,0.45)] ${className}`}
+    <div className="relative mx-auto w-full max-w-[380px]" aria-hidden>
+      <div className="pointer-events-none absolute -right-8 -top-6 h-36 w-36 rounded-full bg-[#1D4ED8]/10 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-8 -left-6 h-32 w-32 rounded-full bg-[#F58220]/15 blur-3xl" />
+      <div className="relative overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-[0_24px_60px_-28px_rgba(15,31,61,0.4)]">
+        <div className="flex items-center justify-between border-b border-gray-100 bg-[#F7F9FC] px-5 py-3.5">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#1D4ED8]">Library index</p>
+          <span className="text-[11px] font-medium text-gray-400">6 sections</span>
+        </div>
+        <ul>
+          {HUB_INDEX.map((label, index) => (
+            <li
+              key={label}
+              className="flex items-center gap-3 border-b border-gray-100 px-5 py-3 last:border-b-0"
+            >
+              <span className="w-7 font-serif text-[15px] tabular-nums text-[#F58220]">
+                {String(index + 1).padStart(2, '0')}
+              </span>
+              <span className="text-[14px] font-semibold text-navy">{label}</span>
+              <span className="ml-auto h-1.5 w-1.5 rounded-full bg-[#0B2A6F]/25" />
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  )
+}
+
+export function ResourceEmptyState({
+  title,
+  body,
+}: {
+  title: string
+  body: ReactNode
+}) {
+  return (
+    <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-[0_18px_48px_-32px_rgba(15,31,61,0.35)]">
+      <div className="h-1 bg-gradient-to-r from-[#0B2A6F] via-[#F58220] to-[#0B2A6F]" aria-hidden />
+      <div className="px-6 py-12 sm:px-10">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#F58220]">Coming soon</p>
+        <p className="mt-2 font-serif text-2xl text-navy">{title}</p>
+        <p className="mt-3 max-w-lg text-[15px] leading-relaxed text-gray-500">{body}</p>
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Link
+            href="/blog"
+            className="inline-flex items-center justify-center rounded-lg bg-navy px-4 py-2.5 text-[13px] font-semibold text-white transition hover:bg-[#0a2560]"
           >
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#EEF2FF] text-[#1D4ED8]">
-              <Icon className="h-4 w-4" strokeWidth={1.75} />
-            </span>
-            <p className="mt-3 text-[13px] font-semibold text-navy">{label}</p>
-            <div className="mt-2 h-1.5 w-16 rounded-full bg-[#1D4ED8]/20" />
-            <div className="mt-1.5 h-1.5 w-24 rounded-full bg-gray-200" />
-          </div>
-        ))}
+            Read the blog
+          </Link>
+          <Link
+            href="/resources/whitepapers?type=whitepaper"
+            className="inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-[13px] font-semibold text-navy transition hover:border-[#F6D1AF]"
+          >
+            Browse white papers
+          </Link>
+        </div>
       </div>
     </div>
   )

@@ -17,7 +17,7 @@ export default function ReportsPage() {
       title="Reports"
       description="Benchmark and trends reports for teams comparing business software. Numbers you can take into a shortlist meeting."
       emptyTitle="Reports are in production"
-      emptyBody="Nothing is published in Reports yet. In the meantime, browse"
+      emptyBody="Nothing is published in Reports yet. The blog and white papers are ready while this section is in production."
     />
   )
 }

@@ -17,7 +17,7 @@ export default function CaseStudiesPage() {
       title="Case studies"
       description="Customer and implementation stories from real software rollouts, written for buyers who need to see how a stack actually lands."
       emptyTitle="Case studies are in production"
-      emptyBody="Nothing is published in Case studies yet. In the meantime, browse"
+      emptyBody="Nothing is published in Case studies yet. The blog and white papers are ready while this section is in production."
     />
   )
 }

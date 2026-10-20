@@ -17,7 +17,7 @@ export default function WebinarsPage() {
       title="Webinars"
       description="On-demand sessions and replays for software buyers who want the discussion, not just the PDF."
       emptyTitle="Webinars are in production"
-      emptyBody="Nothing is published in Webinars yet. In the meantime, browse"
+      emptyBody="Nothing is published in Webinars yet. The blog and white papers are ready while this section is in production."
     />
   )
 }
