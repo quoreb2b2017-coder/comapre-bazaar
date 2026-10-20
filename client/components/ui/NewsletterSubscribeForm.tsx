@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { EMAIL_RE, SUBSCRIBE_EMAIL_KEY, subscribeNewsletter } from '@/lib/subscribeNewsletter'
+import { useState } from 'react'
+import { subscribeNewsletter } from '@/lib/subscribeNewsletter'
 
 type Props = {
   sourceSlug: string
@@ -18,15 +18,6 @@ export function NewsletterSubscribeForm({
   const [loading, setLoading] = useState(false)
   const [msg, setMsg] = useState('')
   const [ok, setOk] = useState<boolean | null>(null)
-  const [isSubscribed, setIsSubscribed] = useState(false)
-
-  useEffect(() => {
-    const saved = typeof window !== 'undefined' ? window.localStorage.getItem(SUBSCRIBE_EMAIL_KEY) || '' : ''
-    if (saved && EMAIL_RE.test(saved)) {
-      setEmail(saved)
-      setIsSubscribed(true)
-    }
-  }, [])
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -35,11 +26,9 @@ export function NewsletterSubscribeForm({
     setOk(null)
     try {
       await subscribeNewsletter(email, sourceSlug)
-      const value = email.trim().toLowerCase()
       setOk(true)
-      setMsg('Subscribed successfully. New guides will be sent to your email.')
-      setIsSubscribed(true)
-      if (typeof window !== 'undefined') window.localStorage.setItem(SUBSCRIBE_EMAIL_KEY, value)
+      setMsg('Subscribed. You can add another email.')
+      setEmail('')
     } catch (err) {
       setOk(false)
       setMsg(err instanceof Error ? err.message : 'Subscribe failed')
@@ -65,10 +54,10 @@ export function NewsletterSubscribeForm({
           />
           <button
             type="submit"
-            disabled={loading || isSubscribed}
+            disabled={loading}
             className="h-10 rounded-lg bg-[#F58220] px-4 text-sm font-semibold text-white transition hover:bg-[#e67410] disabled:opacity-60"
           >
-            {loading ? 'Saving...' : isSubscribed ? 'Subscribed' : 'Subscribe'}
+            {loading ? 'Saving...' : 'Subscribe'}
           </button>
         </form>
         {msg ? <p className={`mt-2 text-xs ${ok ? 'text-emerald-300' : 'text-red-300'}`}>{msg}</p> : null}
@@ -96,10 +85,10 @@ export function NewsletterSubscribeForm({
           />
           <button
             type="submit"
-            disabled={loading || isSubscribed}
+            disabled={loading}
             className="h-11 shrink-0 rounded-lg bg-[#F58220] px-5 text-[13px] font-semibold text-white shadow-sm transition hover:bg-[#e67410] disabled:cursor-not-allowed disabled:opacity-60 sm:min-w-[138px]"
           >
-            {loading ? 'Saving...' : isSubscribed ? 'Subscribed' : 'Subscribe now'}
+            {loading ? 'Saving...' : 'Subscribe now'}
           </button>
         </form>
         {msg ? (
@@ -130,10 +119,10 @@ export function NewsletterSubscribeForm({
           />
           <button
             type="submit"
-            disabled={loading || isSubscribed}
+            disabled={loading}
             className="h-10 shrink-0 rounded-full bg-[#F58220] px-5 text-[13px] font-semibold text-white transition hover:bg-[#e07418] disabled:opacity-60"
           >
-            {loading ? 'Saving...' : isSubscribed ? 'Subscribed' : 'Subscribe now'}
+            {loading ? 'Saving...' : 'Subscribe now'}
           </button>
         </form>
         {msg ? (
@@ -168,10 +157,10 @@ export function NewsletterSubscribeForm({
           />
           <button
             type="submit"
-            disabled={loading || isSubscribed}
+            disabled={loading}
             className="h-11 shrink-0 rounded-xl bg-brand px-6 text-sm font-semibold text-white transition hover:bg-brand-hover disabled:opacity-60 sm:min-w-[132px]"
           >
-            {loading ? 'Saving...' : isSubscribed ? 'Subscribed' : 'Subscribe'}
+            {loading ? 'Saving...' : 'Subscribe'}
           </button>
         </form>
         {msg ? <p className={`mt-3 text-sm ${ok ? 'text-emerald-700' : 'text-red-600'}`}>{msg}</p> : null}
@@ -217,12 +206,12 @@ export function NewsletterSubscribeForm({
         />
         <button
           type="submit"
-          disabled={loading || isSubscribed}
+          disabled={loading}
           className={`h-11 shrink-0 px-6 text-sm font-semibold text-white transition hover:bg-[#0a245f] disabled:opacity-60 ${
             editorial ? 'rounded-md bg-[#0B2A6F] sm:min-w-[128px]' : 'rounded-xl bg-brand'
           }`}
         >
-          {loading ? 'Saving...' : isSubscribed ? 'Subscribed' : 'Subscribe'}
+          {loading ? 'Saving...' : 'Subscribe'}
         </button>
       </form>
       {msg ? (

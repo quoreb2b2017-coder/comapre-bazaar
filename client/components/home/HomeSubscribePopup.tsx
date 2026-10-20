@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Check, X } from 'lucide-react'
 import logoIcon from '@/components/icon.png'
-import { EMAIL_RE, SUBSCRIBE_EMAIL_KEY, subscribeNewsletter } from '@/lib/subscribeNewsletter'
+import { subscribeNewsletter } from '@/lib/subscribeNewsletter'
 
 const DISMISS_KEY = 'cb_home_subscribe_popup_dismissed'
 const BENEFITS = [
@@ -24,8 +24,6 @@ export function HomeSubscribePopup() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return
-    const subscribed = window.localStorage.getItem(SUBSCRIBE_EMAIL_KEY) || ''
-    if (subscribed && EMAIL_RE.test(subscribed)) return
     if (window.sessionStorage.getItem(DISMISS_KEY) === '1') return
 
     const timer = window.setTimeout(() => setOpen(true), 2500)
@@ -58,9 +56,7 @@ export function HomeSubscribePopup() {
     setOk(null)
     try {
       await subscribeNewsletter(email, 'home-popup')
-      const value = email.trim().toLowerCase()
       if (typeof window !== 'undefined') {
-        window.localStorage.setItem(SUBSCRIBE_EMAIL_KEY, value)
         window.sessionStorage.setItem(DISMISS_KEY, '1')
       }
       setOk(true)
