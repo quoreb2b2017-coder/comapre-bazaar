@@ -97,7 +97,14 @@ function useTypewriterPlaceholder(phrases: string[], active: boolean) {
   return text
 }
 
-export function WhitePaperSearch({ papers }: { papers: WhitePaperPublic[] }) {
+export function WhitePaperSearch({
+  papers,
+  hideTypeFilter = false,
+}: {
+  papers: WhitePaperPublic[]
+  /** Section pages already contain one resource type. */
+  hideTypeFilter?: boolean
+}) {
   const [query, setQuery] = useState('')
   const [vertical, setVertical] = useState<string | null>(null)
   const [resourceType, setResourceType] = useState<'all' | WhitePaperResourceType>('all')
@@ -189,6 +196,7 @@ export function WhitePaperSearch({ papers }: { papers: WhitePaperPublic[] }) {
         </div>
       </div>
 
+      {hideTypeFilter ? null : (
       <div className="mb-4 flex flex-wrap items-center gap-2">
         <span className="mr-1 text-[11px] font-medium uppercase tracking-[0.12em] text-gray-400">
           Category
@@ -208,6 +216,7 @@ export function WhitePaperSearch({ papers }: { papers: WhitePaperPublic[] }) {
           </button>
         ))}
       </div>
+      )}
 
       <div className="mb-8 flex flex-wrap items-center gap-2">
         <span className="mr-1 text-[11px] font-medium uppercase tracking-[0.12em] text-gray-400">

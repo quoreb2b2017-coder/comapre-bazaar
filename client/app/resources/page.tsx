@@ -3,15 +3,18 @@ import Link from 'next/link'
 import {
   BookOpen,
   FileText,
+  Newspaper,
   ClipboardCheck,
   LayoutGrid,
   ArrowRight,
   Briefcase,
   Rocket,
   ShieldCheck,
+  Layers,
+  Library,
 } from 'lucide-react'
 import { buildMetadata } from '@/lib/seo'
-import { Breadcrumb } from '@/components/ui/Breadcrumb'
+import { ResourceHero, ResourceHubVisual, ResourcePageShell } from '@/components/resources/ResourceHero'
 
 export const metadata: Metadata = buildMetadata({
   title: 'Resources',
@@ -20,32 +23,54 @@ export const metadata: Metadata = buildMetadata({
   canonical: '/resources',
 })
 
-const FEATURED = [
+const SECTIONS = [
   {
-    title: 'Blog',
-    description:
-      'How-to guides, category breakdowns, and practical tips from editors who test tools against the same framework we publish.',
+    title: 'Blogs',
+    description: 'Articles, comparisons, and practical tips from the Compare Bazaar editors.',
     href: '/blog',
-    cta: 'Browse articles',
-    icon: BookOpen,
-    chip: 'Updated regularly',
-    accent:
-      'border-amber-200/80 bg-gradient-to-br from-amber-50/90 via-white to-orange-50/70 hover:border-amber-300/90',
-    iconBg: 'bg-[#FFF4E8] text-[#C2410C]',
-    decoration: 'from-[#F58220]/15 via-transparent to-transparent',
+    cta: 'View blogs',
+    icon: Newspaper,
+    chip: 'Articles',
   },
   {
-    title: 'Whitepapers',
-    description:
-      'Longer research-style downloads on topics that matter at procurement time: pricing traps, integration scope, and rollout risks.',
-    href: '/resources/whitepapers',
-    cta: 'View whitepapers',
+    title: 'White papers',
+    description: 'Longer research PDFs on pricing, rollout, and vendor comparisons.',
+    href: '/resources/whitepapers?type=whitepaper',
+    cta: 'View white papers',
     icon: FileText,
-    chip: 'Downloadable PDFs',
-    accent:
-      'border-slate-200/90 bg-gradient-to-br from-slate-50/95 via-white to-[#E8EEF8]/60 hover:border-navy/15',
-    iconBg: 'bg-navy/[0.08] text-navy',
-    decoration: 'from-navy/[0.08] via-transparent to-transparent',
+    chip: 'PDFs',
+  },
+  {
+    title: 'Reports',
+    description: 'Benchmarks and trend reports for procurement teams.',
+    href: '/resources/reports',
+    cta: 'View reports',
+    icon: ClipboardCheck,
+    chip: 'Benchmarks',
+  },
+  {
+    title: 'Case studies',
+    description: 'Implementation stories from real software rollouts.',
+    href: '/resources/case-studies',
+    cta: 'View case studies',
+    icon: Briefcase,
+    chip: 'Stories',
+  },
+  {
+    title: 'Guides',
+    description: 'Software comparison guides. New guides will show here once they are published.',
+    href: '/resources/guides',
+    cta: 'View guides',
+    icon: BookOpen,
+    chip: 'Articles',
+  },
+  {
+    title: 'Webinars',
+    description: 'On-demand sessions and replays for buyers.',
+    href: '/resources/webinars',
+    cta: 'View webinars',
+    icon: Rocket,
+    chip: 'Sessions',
   },
 ] as const
 
@@ -78,30 +103,20 @@ const ALSO_HELPFUL = [
 
 export default function ResourcesPage() {
   return (
-    <main className="relative min-h-[72vh] overflow-hidden bg-gradient-to-b from-[#FFFBF7] via-white to-[#F4F6FB]">
-      <div
-        className="pointer-events-none absolute inset-x-0 top-0 h-[420px] bg-[radial-gradient(ellipse_85%_70%_at_50%_-8%,rgba(245,130,32,0.14),transparent_65%)]"
-        aria-hidden
+    <ResourcePageShell>
+      <ResourceHero
+        crumbs={[{ label: 'Home', href: '/' }, { label: 'Resources' }]}
+        eyebrow="Compare Bazaar · Resources"
+        title="Resources"
+        description="Pick a section. Blogs, white papers, reports, case studies, guides, and webinars each open their own list."
+        pillars={[
+          { icon: Library, label: 'One library', sub: 'Articles and downloads in the same place.' },
+          { icon: Layers, label: 'By format', sub: 'Open only the type you came for.' },
+          { icon: ShieldCheck, label: 'Independent', sub: 'Vendors do not buy a better score.' },
+        ]}
+        visual={<ResourceHubVisual />}
       />
-      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
-        <Breadcrumb
-          items={[{ label: 'Home', href: '/' }, { label: 'Resources' }]}
-          className="mb-8"
-        />
-
-        <header className="mb-11 sm:mb-14 max-w-3xl">
-          <div className="inline-flex items-center gap-2 rounded-full border border-amber-200/80 bg-white/80 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#9C4302] shadow-sm backdrop-blur-sm mb-5">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#F58220]" aria-hidden />
-            Resources
-          </div>
-          <h1 className="font-serif text-[2rem] sm:text-[2.65rem] leading-[1.08] font-semibold text-navy tracking-tight mb-5">
-            Straight answers for teams buying business software
-          </h1>
-          <p className="text-[17px] sm:text-lg text-gray-600 leading-relaxed max-w-[52ch]">
-            Long-form stories on the blog, deeper downloads as whitepapers, and our published methodology
-            when you need to show stakeholders how Compare Bazaar stays independent.
-          </p>
-        </header>
+      <div className="relative mx-auto max-w-[1140px] px-4 py-10 sm:px-5 sm:py-12 lg:px-6 lg:py-14">
 
         <section aria-labelledby="featured-resources-heading" className="mb-14">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-6">
@@ -110,31 +125,27 @@ export default function ResourcesPage() {
                 id="featured-resources-heading"
                 className="text-lg font-semibold text-navy tracking-tight"
               >
-                Start here
+                Sections
               </h2>
               <p className="text-sm text-gray-500 mt-1 max-w-xl">
-                Pick the format that fits how much time you have right now.
+                Open a section to see only that type of resource.
               </p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-7">
-            {FEATURED.map((item) => {
+            {SECTIONS.map((item) => {
               const Icon = item.icon
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`group relative block overflow-hidden rounded-2xl border p-6 sm:p-8 shadow-[0_22px_56px_-34px_rgba(15,31,61,0.45)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_28px_64px_-32px_rgba(15,31,61,0.52)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F58220] focus-visible:ring-offset-2 ${item.accent}`}
+                  className="group relative block overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 shadow-[0_22px_56px_-34px_rgba(15,31,61,0.45)] transition-all duration-300 hover:-translate-y-1 hover:border-[#F6D1AF] hover:shadow-[0_28px_64px_-32px_rgba(15,31,61,0.52)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F58220] focus-visible:ring-offset-2"
                 >
-                  <div
-                    className={`pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-gradient-to-br ${item.decoration} blur-2xl opacity-90`}
-                    aria-hidden
-                  />
                   <div className="relative flex flex-col h-full min-h-[220px]">
                     <div className="flex items-start justify-between gap-3 mb-5">
                       <div
-                        className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ${item.iconBg} shadow-sm`}
+                        className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FFF4E8] text-[#C2410C] shadow-sm"
                         aria-hidden
                       >
                         <Icon className="h-7 w-7" strokeWidth={2} />
@@ -223,6 +234,6 @@ export default function ResourcesPage() {
           </div>
         </section>
       </div>
-    </main>
+    </ResourcePageShell>
   )
 }

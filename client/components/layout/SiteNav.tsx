@@ -59,13 +59,15 @@ const NAV_ITEMS: NavItem[] = [
   {
     label: 'Resources',
     href: '/resources',
-    dropdownTitle: 'Guides & research',
+    dropdownTitle: 'Resources',
     dropdownWide: true,
     children: [
-      { label: 'Blog', href: '/blog', description: 'Buying guides & practical comparisons' },
-      { label: 'Whitepapers', href: '/resources/whitepapers', description: 'Downloadable research for buyers' },
-      { label: 'Editorial process', href: '/editorial-process', description: 'How we test and rank vendors' },
-      { label: 'Browse all software', href: '/browse-all-software', description: 'Jump into any comparison hub' },
+      { label: 'Blogs', href: '/blog', description: 'Articles and comparisons' },
+      { label: 'White papers', href: '/resources/whitepapers?type=whitepaper', description: 'Downloadable research PDFs' },
+      { label: 'Reports', href: '/resources/reports', description: 'Benchmarks and trend reports' },
+      { label: 'Case studies', href: '/resources/case-studies', description: 'Implementation stories' },
+      { label: 'Guides', href: '/resources/guides', description: 'Coming soon' },
+      { label: 'Webinars', href: '/resources/webinars', description: 'Sessions and replays' },
     ],
   },
 ]

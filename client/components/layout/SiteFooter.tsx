@@ -42,7 +42,11 @@ const COMPANY = [
 const RESOURCES = [
   { label: 'Resources Hub', href: '/resources' },
   { label: 'Our Blogs', href: '/blog' },
-  { label: 'Whitepaper', href: '/resources/whitepapers' },
+  { label: 'White papers', href: '/resources/whitepapers?type=whitepaper' },
+  { label: 'Reports', href: '/resources/reports' },
+  { label: 'Case studies', href: '/resources/case-studies' },
+  { label: 'Guides', href: '/resources/guides' },
+  { label: 'Webinars', href: '/resources/webinars' },
   { label: 'Editorial Process', href: '/editorial-process' },
   { label: 'Advertising Disclosure', href: '/advertising-disclosure' },
   { label: 'Start a Business', href: '/start-a-business' },

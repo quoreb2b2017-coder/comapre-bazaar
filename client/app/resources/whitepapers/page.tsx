@@ -6,6 +6,8 @@ import { fetchPublishedWhitePapers } from '@/lib/whitePaperCms.server'
 import { WhitePaperSearch } from '@/components/whitepaper/WhitePaperSearch'
 import { WhitePaperLibraryHeroVisual } from '@/components/whitepaper/WhitePaperLibraryHeroVisual'
 import { BarChart2, BookOpen, Download, ShieldCheck } from 'lucide-react'
+import { normalizeWhitePaperResourceType, whitePaperResourceLabel, type WhitePaperResourceType } from '@/lib/whitePaperTaxonomy'
+import { whitePaperResourceType } from '@/lib/whitePaperResourceType'
 
 export const revalidate = 120
 
@@ -34,8 +36,23 @@ const LIBRARY_PILLARS = [
   },
 ] as const
 
-export default async function WhitepaperIndexPage() {
-  const papers = await fetchPublishedWhitePapers()
+type PageProps = { searchParams?: { type?: string } }
+
+function requestedType(raw?: string): WhitePaperResourceType | null {
+  if (!raw) return null
+  const normalized = normalizeWhitePaperResourceType(raw, 'whitepaper')
+  if (raw.trim().toLowerCase().replace(/[\s-]+/g, '_') === 'whitepaper' || ['report', 'case_study', 'webinar', 'casestudy'].includes(raw.trim().toLowerCase().replace(/[\s-]+/g, '_'))) {
+    return normalized
+  }
+  return null
+}
+
+export default async function WhitepaperIndexPage({ searchParams }: PageProps) {
+  const type = requestedType(searchParams?.type)
+  const papers = (await fetchPublishedWhitePapers()).filter((paper) =>
+    type ? whitePaperResourceType(paper.metadata) === type : true
+  )
+  const heading = type ? whitePaperResourceLabel(type) : 'Whitepapers & Research Reports'
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#F8F9FC]">
@@ -70,7 +87,7 @@ export default async function WhitepaperIndexPage() {
               </div>
 
               <h1 className="max-w-[16ch] font-serif text-[2rem] font-normal leading-[1.06] tracking-tight text-navy sm:text-[2.5rem] lg:text-[2.625rem]">
-                Whitepapers &amp; Research Reports
+                {heading}
               </h1>
 
               <p className="mt-5 max-w-[56ch] text-[16px] leading-[1.78] text-gray-600 sm:text-[17px]">
@@ -129,7 +146,7 @@ export default async function WhitepaperIndexPage() {
             </div>
           </div>
         ) : (
-          <WhitePaperSearch papers={papers} />
+          <WhitePaperSearch papers={papers} hideTypeFilter={Boolean(type)} />
         )}
       </div>
     </main>
