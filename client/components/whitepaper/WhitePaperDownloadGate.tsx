@@ -38,6 +38,11 @@ const DEFAULT_DOWNLOAD_FIELDS: DownloadField[] = [
   { label: 'Phone', key: 'workPhone', inputType: 'tel', required: true },
 ]
 
+const ALWAYS_PROFILE_FIELDS: DownloadField[] = [
+  { label: 'First name', key: 'firstName', inputType: 'text', required: true },
+  { label: 'Last name', key: 'lastName', inputType: 'text', required: true },
+]
+
 type PaperPreview = {
   slug: string
   title: string
@@ -122,6 +127,12 @@ export function WhitePaperDownloadGate({
     Array.isArray(paper.downloadFormFields) && paper.downloadFormFields.length
       ? paper.downloadFormFields
       : DEFAULT_DOWNLOAD_FIELDS
+  const profileFields: DownloadField[] = [
+    ...ALWAYS_PROFILE_FIELDS.map(
+      (name) => downloadFields.find((field) => field.key === name.key) || name
+    ),
+    ...downloadFields.filter((field) => field.key !== 'firstName' && field.key !== 'lastName'),
+  ]
   const consent = resolveDownloadConsent(paper.downloadConsent)
 
   useEffect(() => {
@@ -146,10 +157,6 @@ export function WhitePaperDownloadGate({
   const onEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    if (agreementsMissing) {
-      setError('Please accept the required agreements to continue.')
-      return
-    }
     const trimmed = email.trim()
     if (!isWorkEmail(trimmed)) {
       setError(WORK_EMAIL_ERROR)
@@ -187,7 +194,7 @@ export function WhitePaperDownloadGate({
       setError(WORK_EMAIL_ERROR)
       return
     }
-    for (const field of downloadFields) {
+    for (const field of profileFields) {
       if (field.required && !String(form[field.key as keyof typeof form] || '').trim()) {
         setError(`${field.label} is required`)
         return
@@ -287,20 +294,11 @@ export function WhitePaperDownloadGate({
                     />
                   </Field>
                   <p className="mt-1 text-[11px] leading-snug text-gray-500">{consent.emailNote}</p>
-                  {consentBlock(`${idPrefix}-email`)}
                   {error ? <p className="mt-2 text-sm text-red-600">{error}</p> : null}
                   <div className="mt-5 flex flex-col items-center">
-                    <button type="submit" disabled={loading || agreementsMissing} className={btnPrimary}>
-                      {loading ? (
-                        <Loader2 className="h-5 w-5 animate-spin" />
-                      ) : (
-                        <span className="inline-flex items-center justify-center gap-2">
-                          <Download className="h-4 w-4" aria-hidden />
-                          Download Now
-                        </span>
-                      )}
+                    <button type="submit" disabled={loading} className={btnPrimary}>
+                      {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Continue'}
                     </button>
-                    <WhitePaperConsentFooter text={consent.footerText} />
                   </div>
                 </form>
               </section>
@@ -320,7 +318,7 @@ export function WhitePaperDownloadGate({
                       />
                     </Field>
                     <p className="-mt-1 text-[11px] leading-snug text-gray-500">{consent.emailNote}</p>
-                    {downloadFields.map((field) => (
+                    {profileFields.map((field) => (
                       <Field key={field.key} label={field.label} required={field.required} htmlFor={`${idPrefix}-${field.key}`}>
                         <input
                           id={`${idPrefix}-${field.key}`}
