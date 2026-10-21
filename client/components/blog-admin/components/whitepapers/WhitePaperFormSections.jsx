@@ -72,31 +72,24 @@ export function WhitePaperFormSections({ fields, onChange }) {
         </button>
       </div>
       <p className="text-xs text-gray-500">
-        These fields show on the public gray download panel. Default is Zip and Phone. Add or rename sections — changes
-        apply after you save the white paper.
+        These fields show on the public download form. Default is Zip and Phone. Add a field, then save the white paper.
       </p>
 
       <ul className="space-y-2">
         {fields.map((field, index) => (
           <li
             key={`${field.key}-${index}`}
-            className="grid grid-cols-1 gap-2 rounded-xl border border-gray-200 bg-gray-50 p-2.5 sm:grid-cols-[1fr_1fr_auto_auto] dark:border-gray-700 dark:bg-gray-900/40"
+            className="flex items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 p-2.5 dark:border-gray-700 dark:bg-gray-900/40"
           >
-            <input
-              className="input"
-              value={field.label}
-              onChange={(e) => update(index, { label: e.target.value })}
-              placeholder="Label shown on form"
-            />
             <select
-              className="input"
+              className="input min-w-0 flex-1"
               value={field.key}
               onChange={(e) => {
                 const opt = DOWNLOAD_FIELD_OPTIONS.find((o) => o.key === e.target.value)
                 update(index, {
                   key: e.target.value,
                   inputType: opt?.inputType || 'text',
-                  label: field.label || opt?.label || '',
+                  label: opt?.label || '',
                 })
               }}
             >

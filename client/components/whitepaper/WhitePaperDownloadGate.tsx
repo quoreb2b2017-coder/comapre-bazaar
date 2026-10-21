@@ -138,17 +138,43 @@ export function WhitePaperDownloadGate({
     }).catch(() => {})
   }, [base, paper.slug])
 
-  const onFormSubmit = async (e: React.FormEvent) => {
+  const agreementsMissing =
+    (consent.showTerms && !termsAccepted) ||
+    (consent.showPartners && !partnersAccepted) ||
+    (consent.extra || []).some((item, index) => item.required !== false && !extraAccepted[index])
+
+  const onEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    if ((consent.showTerms && !termsAccepted) || (consent.showPartners && !partnersAccepted)) {
-      setError('Please accept the required agreements to continue.')
+    const trimmed = email.trim()
+    if (!isWorkEmail(trimmed)) {
+      setError(WORK_EMAIL_ERROR)
       return
     }
-    const missingExtra = (consent.extra || []).findIndex(
-      (item, index) => item.required !== false && !extraAccepted[index]
-    )
-    if (missingExtra >= 0) {
+    setLoading(true)
+    try {
+      const res = await fetch(
+        `${base}/api/v1/blog-admin/public/whitepapers/${encodeURIComponent(paper.slug)}/download-email`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: trimmed }),
+        }
+      )
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.message || 'Failed to save email')
+      setStep('profile')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const onProfileSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+    if (agreementsMissing) {
       setError('Please accept the required agreements to continue.')
       return
     }
@@ -171,17 +197,6 @@ export function WhitePaperDownloadGate({
     }
     setLoading(true)
     try {
-      const emailRes = await fetch(
-        `${base}/api/v1/blog-admin/public/whitepapers/${encodeURIComponent(paper.slug)}/download-email`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: trimmed }),
-        }
-      )
-      const emailJson = await emailRes.json()
-      if (!emailRes.ok) throw new Error(emailJson.message || 'Failed to save email')
-
       const res = await fetch(
         `${base}/api/v1/blog-admin/public/whitepapers/${encodeURIComponent(paper.slug)}/download-complete`,
         {
@@ -228,22 +243,67 @@ export function WhitePaperDownloadGate({
 
   const idPrefix = embedded ? 'wp-embed' : 'wp'
 
+  const consentBlock = (prefix: string) => (
+    <WhitePaperConsentBlock
+      idPrefix={prefix}
+      className="mt-4"
+      copy={consent}
+      termsAccepted={termsAccepted}
+      partnersAccepted={partnersAccepted}
+      optOutCommunication={optOutCommunication}
+      onTermsChange={setTermsAccepted}
+      onPartnersChange={setPartnersAccepted}
+      onOptOutChange={setOptOutCommunication}
+      extraAccepted={extraAccepted}
+      onExtraChange={(index, checked) =>
+        setExtraAccepted((prev) => {
+          const next = [...prev]
+          next[index] = checked
+          return next
+        })
+      }
+    />
+  )
+
   const formCard = (
             <div className={formPanelClass}>
-            {step !== 'done' && (
+            {step === 'email' && (
               <section>
-                <form onSubmit={onFormSubmit}>
+                <form onSubmit={onEmailSubmit}>
+                  <Field label="Work email" required htmlFor={`${idPrefix}-email`}>
+                    <input
+                      id={`${idPrefix}-email`}
+                      type="email"
+                      required
+                      autoComplete="email"
+                      placeholder="you@yourcompany.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className={inputClass}
+                    />
+                  </Field>
+                  <p className="mt-1 text-[11px] leading-snug text-gray-500">{consent.emailNote}</p>
+                  {error ? <p className="mt-2 text-sm text-red-600">{error}</p> : null}
+                  <div className="mt-5 flex flex-col items-center">
+                    <button type="submit" disabled={loading} className={btnPrimary}>
+                      {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Continue'}
+                    </button>
+                  </div>
+                </form>
+              </section>
+            )}
+
+            {step === 'profile' && (
+              <section>
+                <form onSubmit={onProfileSubmit}>
                   <div className={formStack}>
-                    <Field label="Work email" required htmlFor={`${idPrefix}-email`}>
+                    <Field label="Work email" required htmlFor={`${idPrefix}-email-saved`}>
                       <input
-                        id={`${idPrefix}-email`}
+                        id={`${idPrefix}-email-saved`}
                         type="email"
-                        required
-                        autoComplete="email"
-                        placeholder="you@yourcompany.com"
+                        readOnly
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className={inputClass}
+                        className={`${inputClass} bg-gray-50 text-gray-600`}
                       />
                     </Field>
                     <p className="-mt-1 text-[11px] leading-snug text-gray-500">{consent.emailNote}</p>
@@ -275,40 +335,20 @@ export function WhitePaperDownloadGate({
                     inputClass={inputClass}
                   />
 
-                  <WhitePaperConsentBlock
-                    idPrefix={idPrefix}
-                    className="mt-4"
-                    copy={consent}
-                    termsAccepted={termsAccepted}
-                    partnersAccepted={partnersAccepted}
-                    optOutCommunication={optOutCommunication}
-                    onTermsChange={setTermsAccepted}
-                    onPartnersChange={setPartnersAccepted}
-                    onOptOutChange={setOptOutCommunication}
-                    extraAccepted={extraAccepted}
-                    onExtraChange={(index, checked) =>
-                      setExtraAccepted((prev) => {
-                        const next = [...prev]
-                        next[index] = checked
-                        return next
-                      })
-                    }
-                  />
+                  {consentBlock(`${idPrefix}-profile`)}
 
                   {error ? <p className="mt-2 text-sm text-red-600">{error}</p> : null}
 
                   <div className="mt-5 flex flex-col items-center">
-                    <button
-                      type="submit"
-                      disabled={
-                        loading ||
-                        (consent.showTerms && !termsAccepted) ||
-                        (consent.showPartners && !partnersAccepted) ||
-                        (consent.extra || []).some((item, index) => item.required !== false && !extraAccepted[index])
-                      }
-                      className={btnPrimary}
-                    >
-                      {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Download Now'}
+                    <button type="submit" disabled={loading || agreementsMissing} className={btnPrimary}>
+                      {loading ? (
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                      ) : (
+                        <span className="inline-flex items-center justify-center gap-2">
+                          <Download className="h-4 w-4" aria-hidden />
+                          Download Now
+                        </span>
+                      )}
                     </button>
                     <WhitePaperConsentFooter text={consent.footerText} />
                   </div>

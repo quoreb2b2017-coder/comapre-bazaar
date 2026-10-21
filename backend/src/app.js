@@ -71,6 +71,12 @@ function isOriginAllowed(origin) {
 
   try {
     const url = new URL(normalized);
+    if (
+      process.env.NODE_ENV !== "production" &&
+      (url.hostname === "localhost" || url.hostname === "127.0.0.1")
+    ) {
+      return true;
+    }
     if (isCompareBazaarHost(url.hostname)) {
       return url.protocol === "https:" || process.env.NODE_ENV !== "production";
     }
