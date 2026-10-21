@@ -146,6 +146,10 @@ export function WhitePaperDownloadGate({
   const onEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    if (agreementsMissing) {
+      setError('Please accept the required agreements to continue.')
+      return
+    }
     const trimmed = email.trim()
     if (!isWorkEmail(trimmed)) {
       setError(WORK_EMAIL_ERROR)
@@ -283,11 +287,20 @@ export function WhitePaperDownloadGate({
                     />
                   </Field>
                   <p className="mt-1 text-[11px] leading-snug text-gray-500">{consent.emailNote}</p>
+                  {consentBlock(`${idPrefix}-email`)}
                   {error ? <p className="mt-2 text-sm text-red-600">{error}</p> : null}
                   <div className="mt-5 flex flex-col items-center">
-                    <button type="submit" disabled={loading} className={btnPrimary}>
-                      {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Continue'}
+                    <button type="submit" disabled={loading || agreementsMissing} className={btnPrimary}>
+                      {loading ? (
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                      ) : (
+                        <span className="inline-flex items-center justify-center gap-2">
+                          <Download className="h-4 w-4" aria-hidden />
+                          Download Now
+                        </span>
+                      )}
                     </button>
+                    <WhitePaperConsentFooter text={consent.footerText} />
                   </div>
                 </form>
               </section>
